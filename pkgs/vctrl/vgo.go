@@ -127,7 +127,9 @@ func (that *GoVersion) ArchivedVersions() (err error) {
 }
 
 func (that *GoVersion) AllVersions() (err error) {
-	that.GetDoc()
+	if that.Doc == nil {
+		that.GetDoc()
+	}
 	err = that.StableVersions()
 	if err != nil {
 		return
@@ -143,7 +145,41 @@ func (that *GoVersion) AllVersions() (err error) {
 	return
 }
 
-func (that *GoVersion) Run() {
-	that.AllVersions()
-	fmt.Println(that.Version)
+func (that *GoVersion) GetVersions() (vList []string) {
+	for v := range that.Version {
+		vList = append(vList, v)
+	}
+	return vList
+}
+
+const (
+	ShowAll      string = "1"
+	ShowStable   string = "2"
+	ShowUnstable string = "3"
+)
+
+func (that *GoVersion) ShowVersions(arg string) {
+	var v *utils.VComparator
+	if that.Doc == nil {
+		that.GetDoc()
+	}
+	switch arg {
+	case ShowAll:
+		if err := that.AllVersions(); err == nil {
+			v = utils.NewVComparator(that.GetVersions())
+			fmt.Println(strings.Join(v.Order(), "  "))
+		}
+	case ShowStable:
+		if err := that.StableVersions(); err == nil {
+			v = utils.NewVComparator(that.GetVersions())
+			fmt.Println(strings.Join(v.Order(), "  "))
+		}
+	case ShowUnstable:
+		if err := that.UnstableVersions(); err == nil {
+			v = utils.NewVComparator(that.GetVersions())
+			fmt.Println(strings.Join(v.Order(), "  "))
+		}
+	default:
+		fmt.Println("[Unknown show type] ", arg)
+	}
 }
