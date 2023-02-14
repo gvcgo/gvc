@@ -17,7 +17,7 @@ var (
 var (
 	GoTarFilesPath   string = filepath.Join(utils.GetHomeDir(), ".gvc/tarfiles/")
 	GoUnTarFilesPath string = filepath.Join(utils.GetHomeDir(), ".gvc/untarfiles/")
-	GoInstalled      string = filepath.Join(utils.GetHomeDir(), ".gvc/version.yml")
+	GoInstalled      string = filepath.Join(utils.GetHomeDir(), ".gvc/goversion.yml")
 )
 
 const (

@@ -12,6 +12,28 @@ import (
 	"github.com/gogf/gf/os/genv"
 )
 
+var ArchOSs map[string]string = map[string]string{
+	"x86-64":     "amd64",
+	"x86":        "386",
+	"arm64":      "arm64",
+	"armv6":      "arm",
+	"ppc64le":    "ppc64le",
+	"macos":      "darwin",
+	"os x 10.8+": "darwin",
+	"os x 10.6+": "darwin",
+	"linux":      "linux",
+	"windows":    "windows",
+	"freebsd":    "freebsd",
+}
+
+func MapArchAndOS(ArchOrOS string) (result string) {
+	result, ok := ArchOSs[strings.ToLower(ArchOrOS)]
+	if !ok {
+		result = ArchOrOS
+	}
+	return
+}
+
 func VerifyUrls(rawUrl string) (r bool) {
 	r = true
 	_, err := url.ParseRequestURI(rawUrl)

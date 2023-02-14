@@ -3,6 +3,7 @@ module github.com/moqsien/gvc
 go 1.20
 
 require (
+	github.com/PuerkitoBio/goquery v1.8.0
 	github.com/go-ping/ping v1.1.0
 	github.com/gogf/gf v1.16.9
 	github.com/knadh/koanf v1.5.0
@@ -11,6 +12,7 @@ require (
 )
 
 require (
+	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/google/uuid v1.3.0 // indirect

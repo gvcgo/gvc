@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -85,7 +84,7 @@ func (that *Conf) Initiate() {
 			that.Config = dConf
 			that.k.Load(structs.Provider(*that.Config, "koanf"), nil)
 			if b, err := that.k.Marshal(that.parser); err == nil && len(b) > 0 {
-				ioutil.WriteFile(that.path, b, 0666)
+				os.WriteFile(that.path, b, 0666)
 			}
 		}
 	} else if ok2, _ := utils.PahtIsExist(that.path); ok2 {
@@ -99,7 +98,7 @@ func (that *Conf) Initiate() {
 		that.Config = dConf
 		that.k.Load(structs.Provider(*that.Config, "koanf"), nil)
 		if b, err := that.k.Marshal(that.parser); err == nil && len(b) > 0 {
-			ioutil.WriteFile(that.path, b, 0666)
+			os.WriteFile(that.path, b, 0666)
 		}
 	}
 }
