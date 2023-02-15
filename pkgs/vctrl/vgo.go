@@ -222,6 +222,8 @@ func (that *GoVersion) download(version string) (r string) {
 				return fpath
 			}
 		}
+	} else {
+		fmt.Println("Cannot find version:", version, ".")
 	}
 	return
 }

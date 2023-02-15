@@ -1,16 +1,12 @@
 package main
 
 import (
-	"github.com/moqsien/gvc/pkgs/vctrl"
+	"os"
+
+	"github.com/moqsien/gvc/pkgs/cmd"
 )
 
 func main() {
-	h := vctrl.NewGoVersion()
-	h.UseVersion("1.20")
-	h.UseVersion("1.20.1")
-	h.ShowInstalled()
-	h.CheckAndInitEnv()
-	// h.ShowInstalled()
-	// c := config.New()
-	// c.Reset()
+	c := cmd.New()
+	c.Run(os.Args)
 }
