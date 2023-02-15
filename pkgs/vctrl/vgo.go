@@ -15,6 +15,8 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/gookit/color"
+	"github.com/mholt/archiver/v3"
 	"github.com/moqsien/gvc/pkgs/config"
 	"github.com/moqsien/gvc/pkgs/downloader"
 	"github.com/moqsien/gvc/pkgs/utils"
@@ -208,14 +210,17 @@ func (that *GoVersion) findPackage(version string, kind ...string) (p *Package) 
 	return
 }
 
-func (that *GoVersion) Download(version string) (r string) {
+func (that *GoVersion) download(version string) (r string) {
 	p := that.findPackage(version)
 	if p != nil {
-		fpath := filepath.Join(config.GoTarFilesPath, p.FileName)
+		fName := fmt.Sprintf("go-%s-%s.%s%s", version, p.OS, p.Arch, utils.GetExt(p.FileName))
+		fpath := filepath.Join(config.GoTarFilesPath, fName)
 		that.Downloader.Url = p.Url
 		that.Downloader.Timeout = 180 * time.Second
 		if size := that.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
-			that.CheckFile(p, fpath)
+			if ok := that.CheckFile(p, fpath); ok {
+				return fpath
+			}
 		}
 	}
 	return
@@ -253,10 +258,100 @@ func (that *GoVersion) CheckFile(p *Package, fpath string) (r bool) {
 	return true
 }
 
-func (that *GoVersion) CheckEnv() {
-
+func (that *GoVersion) CheckAndInitEnv() {
+	switch utils.GetShell() {
+	case utils.Win:
+	case utils.Bash:
+	case utils.Zsh:
+	default:
+	}
 }
 
-func (that *GoVersion) UseVersion(version string) {
+func (that *GoVersion) RemoveEnv() {}
 
+func (that *GoVersion) UseVersion(version string) {
+	untarfile := filepath.Join(config.GoUnTarFilesPath, version)
+	if ok, _ := utils.PathIsExist(untarfile); !ok {
+		if tarfile := that.download(version); tarfile != "" {
+			if err := archiver.Unarchive(tarfile, untarfile); err != nil {
+				os.RemoveAll(untarfile)
+				fmt.Println("[Unarchive failed] ", err)
+				return
+			}
+		}
+	}
+	if ok, _ := utils.PathIsExist(config.DefaultGoRoot); ok {
+		os.RemoveAll(config.DefaultGoRoot)
+	}
+	if err := utils.MkSymLink(filepath.Join(untarfile, "go"), config.DefaultGoRoot); err != nil {
+		fmt.Println("[Create link failed] ", err)
+		return
+	}
+	fmt.Println("Use", version, "successed!")
+}
+
+func (that *GoVersion) getCurrent() (current string) {
+	vFile := filepath.Join(config.DefaultGoRoot, "VERSION")
+	if ok, _ := utils.PathIsExist(vFile); ok {
+		if data, err := os.ReadFile(vFile); err == nil {
+			return strings.TrimLeft(string(data), "go")
+		}
+	}
+	return
+}
+
+func (that *GoVersion) ShowInstalled() {
+	current := that.getCurrent()
+	installedList, err := os.ReadDir(config.GoUnTarFilesPath)
+	if err != nil {
+		fmt.Println("[Read dir failed] ", err)
+		return
+	}
+	for _, v := range installedList {
+		if current == v.Name() {
+			s := fmt.Sprintf("%s <Current>", v.Name())
+			color.Yellow.Println(s)
+			continue
+		}
+		color.Cyan.Println(v.Name())
+	}
+}
+
+func (that *GoVersion) parseTarFileName(name string) (v string) {
+	v = strings.Split(name, "-")[1]
+	return
+}
+
+func (that *GoVersion) RemoveUnused() {
+	current := that.getCurrent()
+	installedList, err := os.ReadDir(config.GoUnTarFilesPath)
+	if err != nil {
+		fmt.Println("[Read dir failed] ", err)
+		return
+	}
+	tarFiles, _ := os.ReadDir(config.GoTarFilesPath)
+	for _, v := range installedList {
+		if current == v.Name() {
+			continue
+		}
+		os.RemoveAll(filepath.Join(config.GoUnTarFilesPath, v.Name()))
+		for _, vInfo := range tarFiles {
+			if v.Name() == that.parseTarFileName(vInfo.Name()) {
+				os.Remove(filepath.Join(config.GoTarFilesPath, vInfo.Name()))
+			}
+		}
+	}
+}
+
+func (that *GoVersion) RemoveVersion(version string) {
+	current := that.getCurrent()
+	if current != version {
+		tarFiles, _ := os.ReadDir(config.GoTarFilesPath)
+		os.RemoveAll(filepath.Join(config.GoUnTarFilesPath, version))
+		for _, vInfo := range tarFiles {
+			if version == that.parseTarFileName(vInfo.Name()) {
+				os.Remove(filepath.Join(config.GoTarFilesPath, vInfo.Name()))
+			}
+		}
+	}
 }

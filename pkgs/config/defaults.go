@@ -7,18 +7,19 @@ import (
 )
 
 var GVCWorkDir = filepath.Join(utils.GetHomeDir(), ".gvc/")
+var GoFilesDir = filepath.Join(GVCWorkDir, "go_files")
 
 var DefaultConfigPath = filepath.Join(GVCWorkDir, "config.yml")
 
 var (
-	DefaultGoRoot  string = filepath.Join(GVCWorkDir, "go_files/go")
+	DefaultGoRoot  string = filepath.Join(GoFilesDir, "go")
 	DefaultGoPath  string = filepath.Join(utils.GetHomeDir(), "go")
 	DefaultGoProxy string = "https://goproxy.cn,direct"
 )
 
 var (
-	GoTarFilesPath   string = filepath.Join(GVCWorkDir, "go_files/downloads")
-	GoUnTarFilesPath string = filepath.Join(GVCWorkDir, "go_files/versions")
+	GoTarFilesPath   string = filepath.Join(GoFilesDir, "downloads")
+	GoUnTarFilesPath string = filepath.Join(GoFilesDir, "versions")
 )
 
 const (

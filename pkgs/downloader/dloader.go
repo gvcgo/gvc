@@ -39,7 +39,7 @@ func (that *Downloader) GetFile(name string, flag int, perm fs.FileMode, force .
 	}
 	if ok, _ := utils.PathIsExist(name); ok && !forceToDownload {
 		fmt.Println("[Downloader] File already exists.")
-		return
+		return 100
 	}
 	resp := that.GetUrl()
 	if resp == nil {

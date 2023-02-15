@@ -49,15 +49,21 @@ func VerifyUrls(rawUrl string) (r bool) {
 	return
 }
 
+const (
+	Win  string = "win"
+	Zsh  string = "zsh"
+	Bash string = "bash"
+)
+
 func GetShell() (shell string) {
 	if strings.Contains(runtime.GOOS, "window") {
-		return "win"
+		return Win
 	}
 	s := os.Getenv("SHELL")
 	if strings.Contains(s, "zsh") {
-		return "zsh"
+		return Zsh
 	}
-	return "bash"
+	return Bash
 }
 
 func GetHomeDir() (homeDir string) {
@@ -87,4 +93,27 @@ func CopyFileOnUnixSudo(from, to string) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stdin = os.Stdin
 	return cmd.Run()
+}
+
+func MkSymLink(target, newfile string) (err error) {
+	if runtime.GOOS == "windows" {
+		if err = exec.Command("cmd", "/c", "mklink", "/j", newfile, target).Run(); err == nil {
+			return nil
+		}
+	}
+	return os.Symlink(target, newfile)
+}
+
+func GetExt(filename string) (ext string) {
+	if strings.Contains(filename, ".tar.gz") {
+		return ".tar.gz"
+	}
+	if strings.Contains(filename, ".zip") {
+		return ".zip"
+	}
+	if strings.Contains(filename, ".") {
+		l := strings.Split(filename, ".")
+		return l[len(l)-1]
+	}
+	return
 }

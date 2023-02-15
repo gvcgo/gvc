@@ -17,7 +17,6 @@ import (
 type GoConfig struct {
 	CompilerUrls []string `koanf:"compiler_urls"`
 	Proxies      []string `koanf:"proxies"`
-	Current      string   `koanf:"current"`
 }
 
 type GVConfig struct {
@@ -28,10 +27,6 @@ type GVConfig struct {
 	PingCount   int       `koanf:"ping_count"`
 	WorkerNum   int       `koanf:"worker_num"`
 	Go          *GoConfig `koanf:"go_config"`
-}
-
-func (that *GVConfig) GoSetCurrent(version string) {
-	that.Go.Current = version
 }
 
 var (
