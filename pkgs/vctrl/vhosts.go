@@ -102,7 +102,7 @@ func (that *Hosts) GetHosts() {
 		go func() {
 			defer that.wg.Done()
 			that.Url = url_
-			resp := that.Download()
+			resp := that.GetUrl()
 			resps <- resp
 		}()
 	}

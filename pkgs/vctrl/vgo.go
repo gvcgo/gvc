@@ -1,8 +1,16 @@
 package vctrl
 
 import (
+	"crypto/sha1"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
+	"hash"
+	"io"
 	"net/url"
+	"os"
+	"path/filepath"
+	"runtime"
 	"strings"
 	"time"
 
@@ -25,7 +33,7 @@ type Package struct {
 
 type GoVersion struct {
 	*downloader.Downloader
-	Version   map[string][]*Package
+	Versions  map[string][]*Package
 	Doc       *goquery.Document
 	Conf      *config.Conf
 	ParsedUrl *url.URL
@@ -33,7 +41,7 @@ type GoVersion struct {
 
 func NewGoVersion() (gv *GoVersion) {
 	return &GoVersion{
-		Version:    make(map[string][]*Package, 50),
+		Versions:   make(map[string][]*Package, 50),
 		Conf:       config.New(),
 		Downloader: &downloader.Downloader{},
 	}
@@ -47,7 +55,7 @@ func (that *GoVersion) GetDoc() {
 			panic(err)
 		}
 		that.Timeout = 30 * time.Second
-		if resp := that.Download(); resp != nil {
+		if resp := that.GetUrl(); resp != nil {
 			var err error
 			that.Doc, err = goquery.NewDocumentFromReader(resp.Body)
 			if err != nil {
@@ -97,7 +105,7 @@ func (that *GoVersion) StableVersions() (err error) {
 			return
 		}
 		vname = strings.TrimPrefix(vname, "go")
-		that.Version[vname] = that.findPackages(div.Find("table").First())
+		that.Versions[vname] = that.findPackages(div.Find("table").First())
 	})
 	return nil
 }
@@ -109,7 +117,7 @@ func (that *GoVersion) UnstableVersions() (err error) {
 			return
 		}
 		vname = strings.TrimPrefix(vname, "go")
-		that.Version[vname] = that.findPackages(div.Find("table").First())
+		that.Versions[vname] = that.findPackages(div.Find("table").First())
 	})
 	return nil
 }
@@ -121,7 +129,7 @@ func (that *GoVersion) ArchivedVersions() (err error) {
 			return
 		}
 		vname = strings.TrimPrefix(vname, "go")
-		that.Version[vname] = that.findPackages(div.Find("table").First())
+		that.Versions[vname] = that.findPackages(div.Find("table").First())
 	})
 	return nil
 }
@@ -146,7 +154,7 @@ func (that *GoVersion) AllVersions() (err error) {
 }
 
 func (that *GoVersion) GetVersions() (vList []string) {
-	for v := range that.Version {
+	for v := range that.Versions {
 		vList = append(vList, v)
 	}
 	return vList
@@ -158,7 +166,7 @@ const (
 	ShowUnstable string = "3"
 )
 
-func (that *GoVersion) ShowVersions(arg string) {
+func (that *GoVersion) ShowRemoteVersions(arg string) {
 	var v *utils.VComparator
 	if that.Doc == nil {
 		that.GetDoc()
@@ -182,4 +190,73 @@ func (that *GoVersion) ShowVersions(arg string) {
 	default:
 		fmt.Println("[Unknown show type] ", arg)
 	}
+}
+
+func (that *GoVersion) findPackage(version string, kind ...string) (p *Package) {
+	k := "archive"
+	if len(kind) > 0 {
+		k = kind[0]
+	}
+	that.AllVersions()
+	if vList, ok := that.Versions[version]; ok {
+		for _, v := range vList {
+			if v.OS == runtime.GOOS && v.Arch == runtime.GOARCH && v.Kind == k {
+				p = v
+			}
+		}
+	}
+	return
+}
+
+func (that *GoVersion) Download(version string) (r string) {
+	p := that.findPackage(version)
+	if p != nil {
+		fpath := filepath.Join(config.GoTarFilesPath, p.FileName)
+		that.Downloader.Url = p.Url
+		that.Downloader.Timeout = 180 * time.Second
+		if size := that.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
+			that.CheckFile(p, fpath)
+		}
+	}
+	return
+}
+
+func (that *GoVersion) CheckFile(p *Package, fpath string) (r bool) {
+	f, err := os.Open(fpath)
+	if err != nil {
+		fmt.Println("[Open file failed] ", err)
+		return false
+	}
+	defer f.Close()
+
+	var h hash.Hash
+	switch strings.ToLower(p.CheckType) {
+	case "sha256":
+		h = sha256.New()
+	case "sha1":
+		h = sha1.New()
+	default:
+		fmt.Println("[Crypto] ", p.CheckType, " not supported.")
+		return
+	}
+
+	if _, err = io.Copy(h, f); err != nil {
+		fmt.Println("[Copy file failed] ", err)
+		return
+	}
+
+	if p.Checksum != hex.EncodeToString(h.Sum(nil)) {
+		fmt.Println("Checksum failed.")
+		return
+	}
+	fmt.Println("Checksum successed.")
+	return true
+}
+
+func (that *GoVersion) CheckEnv() {
+
+}
+
+func (that *GoVersion) UseVersion(version string) {
+
 }

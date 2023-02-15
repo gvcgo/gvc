@@ -6,18 +6,19 @@ import (
 	"github.com/moqsien/gvc/pkgs/utils"
 )
 
-var DefaultConfigPath = filepath.Join(utils.GetHomeDir(), ".gvc/config.yml")
+var GVCWorkDir = filepath.Join(utils.GetHomeDir(), ".gvc/")
+
+var DefaultConfigPath = filepath.Join(GVCWorkDir, "config.yml")
 
 var (
-	DefaultGoRoot  string = filepath.Join(utils.GetHomeDir(), ".gvc/go/")
+	DefaultGoRoot  string = filepath.Join(GVCWorkDir, "go_files/go")
 	DefaultGoPath  string = filepath.Join(utils.GetHomeDir(), "go")
 	DefaultGoProxy string = "https://goproxy.cn,direct"
 )
 
 var (
-	GoTarFilesPath   string = filepath.Join(utils.GetHomeDir(), ".gvc/tarfiles/")
-	GoUnTarFilesPath string = filepath.Join(utils.GetHomeDir(), ".gvc/untarfiles/")
-	GoInstalled      string = filepath.Join(utils.GetHomeDir(), ".gvc/goversion.yml")
+	GoTarFilesPath   string = filepath.Join(GVCWorkDir, "go_files/downloads")
+	GoUnTarFilesPath string = filepath.Join(GVCWorkDir, "go_files/versions")
 )
 
 const (

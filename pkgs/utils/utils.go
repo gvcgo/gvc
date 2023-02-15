@@ -69,7 +69,7 @@ func GetHomeDir() (homeDir string) {
 	return u.HomeDir
 }
 
-func PahtIsExist(path string) (bool, error) {
+func PathIsExist(path string) (bool, error) {
 	_, _err := os.Stat(path)
 	if _err == nil {
 		return true, nil

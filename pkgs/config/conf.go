@@ -17,6 +17,7 @@ import (
 type GoConfig struct {
 	CompilerUrls []string `koanf:"compiler_urls"`
 	Proxies      []string `koanf:"proxies"`
+	Current      string   `koanf:"current"`
 }
 
 type GVConfig struct {
@@ -27,6 +28,10 @@ type GVConfig struct {
 	PingCount   int       `koanf:"ping_count"`
 	WorkerNum   int       `koanf:"worker_num"`
 	Go          *GoConfig `koanf:"go_config"`
+}
+
+func (that *GVConfig) GoSetCurrent(version string) {
+	that.Go.Current = version
 }
 
 var (
@@ -77,8 +82,8 @@ func New() *Conf {
 
 func (that *Conf) Initiate() {
 	dir := filepath.Dir(that.path)
-	if ok, _ := utils.PahtIsExist(dir); !ok {
-		if err := os.Mkdir(dir, os.ModePerm); err != nil {
+	if ok, _ := utils.PathIsExist(dir); !ok {
+		if err := os.MkdirAll(dir, os.ModePerm); err != nil {
 			fmt.Println("[mkdir Failed] ", err)
 		} else {
 			that.Config = dConf
@@ -87,7 +92,7 @@ func (that *Conf) Initiate() {
 				os.WriteFile(that.path, b, 0666)
 			}
 		}
-	} else if ok2, _ := utils.PahtIsExist(that.path); ok2 {
+	} else if ok2, _ := utils.PathIsExist(that.path); ok2 {
 		err := that.k.Load(file.Provider(that.path), that.parser)
 		if err != nil {
 			fmt.Println("[Config Load Failed] ", err)
@@ -96,6 +101,41 @@ func (that *Conf) Initiate() {
 		that.k.UnmarshalWithConf("", that.Config, koanf.UnmarshalConf{Tag: "koanf"})
 	} else {
 		that.Config = dConf
+		that.k.Load(structs.Provider(*that.Config, "koanf"), nil)
+		if b, err := that.k.Marshal(that.parser); err == nil && len(b) > 0 {
+			os.WriteFile(that.path, b, 0666)
+		}
+	}
+
+	if ok, _ := utils.PathIsExist(DefaultGoRoot); !ok {
+		if err := os.MkdirAll(DefaultGoRoot, os.ModePerm); err != nil {
+			fmt.Println("[mkdir Failed] ", err)
+		}
+	}
+	if ok, _ := utils.PathIsExist(GoTarFilesPath); !ok {
+		if err := os.MkdirAll(GoTarFilesPath, os.ModePerm); err != nil {
+			fmt.Println("[mkdir Failed] ", err)
+		}
+	}
+	if ok, _ := utils.PathIsExist(GoUnTarFilesPath); !ok {
+		if err := os.MkdirAll(GoUnTarFilesPath, os.ModePerm); err != nil {
+			fmt.Println("[mkdir Failed] ", err)
+		}
+	}
+}
+
+func (that *Conf) Reset() {
+	if ok, _ := utils.PathIsExist(that.path); ok {
+		that.Config = dConf
+		that.k.Load(structs.Provider(*that.Config, "koanf"), nil)
+		if b, err := that.k.Marshal(that.parser); err == nil && len(b) > 0 {
+			os.WriteFile(that.path, b, 0666)
+		}
+	}
+}
+
+func (that *Conf) Restore() {
+	if ok, _ := utils.PathIsExist(that.path); ok {
 		that.k.Load(structs.Provider(*that.Config, "koanf"), nil)
 		if b, err := that.k.Marshal(that.parser); err == nil && len(b) > 0 {
 			os.WriteFile(that.path, b, 0666)
