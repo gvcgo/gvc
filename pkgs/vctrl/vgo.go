@@ -259,15 +259,29 @@ func (that *GoVersion) CheckFile(p *Package, fpath string) (r bool) {
 }
 
 func (that *GoVersion) CheckAndInitEnv() {
-	switch utils.GetShell() {
-	case utils.Win:
-	case utils.Bash:
-	case utils.Zsh:
-	default:
+	st := utils.GetShell()
+	if st != utils.Win {
+		shellrc := utils.GetShellRcFile()
+		if shellrc == utils.Win {
+			return
+		}
+		if file, err := os.Open(shellrc); err == nil {
+			defer file.Close()
+			content, err := io.ReadAll(file)
+			if err == nil {
+				c := string(content)
+				os.WriteFile(fmt.Sprintf("%s.backup", shellrc), content, 0644)
+				envir := fmt.Sprintf(config.GoEnv, that.Conf.Config.Go.Proxies[0], fmt.Sprintf("$PATH:%s:%s", "$GOPATH/bin", "$GOROOT/bin"))
+				if !strings.Contains(c, "# Golang Start") {
+					s := fmt.Sprintf("%v\n%s", c, envir)
+					os.WriteFile(shellrc, []byte(strings.ReplaceAll(s, utils.GetHomeDir(), "$HOME")), 0644)
+				}
+			}
+		}
+	} else {
+		fmt.Println(utils.Win)
 	}
 }
-
-func (that *GoVersion) RemoveEnv() {}
 
 func (that *GoVersion) UseVersion(version string) {
 	untarfile := filepath.Join(config.GoUnTarFilesPath, version)

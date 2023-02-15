@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"os/user"
+	"path/filepath"
 	"runtime"
 	"strings"
 
@@ -64,6 +65,19 @@ func GetShell() (shell string) {
 		return Zsh
 	}
 	return Bash
+}
+
+func GetShellRcFile() (rc string) {
+	shell := GetShell()
+	switch shell {
+	case Zsh:
+		rc = filepath.Join(GetHomeDir(), ".zshrc")
+	case Bash:
+		rc = filepath.Join(GetHomeDir(), ".bashrc")
+	default:
+		rc = Win
+	}
+	return
 }
 
 func GetHomeDir() (homeDir string) {

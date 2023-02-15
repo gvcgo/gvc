@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"path/filepath"
 
 	"github.com/moqsien/gvc/pkgs/utils"
@@ -13,7 +14,7 @@ var DefaultConfigPath = filepath.Join(GVCWorkDir, "config.yml")
 
 var (
 	DefaultGoRoot  string = filepath.Join(GoFilesDir, "go")
-	DefaultGoPath  string = filepath.Join(utils.GetHomeDir(), "go")
+	DefaultGoPath  string = filepath.Join(utils.GetHomeDir(), "data/projects/go")
 	DefaultGoProxy string = "https://goproxy.cn,direct"
 )
 
@@ -26,3 +27,22 @@ const (
 	HostFilePathForNix = "/etc/hosts"
 	HostFilePathForWin = `C:\Windows\System32\drivers\etc\hosts`
 )
+
+var (
+	GoEnvsPattern string = `# Golang Start
+export GOROOT="%s"
+export GOPATH="%s"
+export GOBIN="%s"
+export GOPROXY="%s"
+export PATH="%s"
+# Golang End`
+	GoEnvsReg string = `# Golang Start[\s\S]# Golang End`
+	EnvPath          = "$PATH:%s"
+)
+
+var GoEnv string = fmt.Sprintf(GoEnvsPattern,
+	DefaultGoRoot,
+	DefaultGoPath,
+	filepath.Join(DefaultGoPath, "bin"),
+	`%s`,
+	`%s`)
