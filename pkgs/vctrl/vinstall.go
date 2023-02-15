@@ -27,6 +27,7 @@ func SelfInstall() {
 			setEnvForGVC(genvs)
 		}
 	}
+	config.New() // init dirs and files
 }
 
 func setEnvForGVC(genvs string) {

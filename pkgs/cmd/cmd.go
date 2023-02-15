@@ -43,7 +43,7 @@ func (that *Cmder) vgo() {
 	command := &cli.Command{
 		Name:        "go",
 		Aliases:     []string{"g"},
-		Usage:       "gvc go",
+		Usage:       "gvc go <Command>",
 		Description: "Go version control.",
 		Subcommands: []*cli.Command{},
 	}
@@ -76,7 +76,7 @@ func (that *Cmder) vgo() {
 	vuse := &cli.Command{
 		Name:        "use",
 		Aliases:     []string{"u"},
-		Usage:       "gvc use",
+		Usage:       "gvc go use",
 		Description: "Download and use version.",
 		Action: func(ctx *cli.Context) error {
 			version := ctx.Args().First()
@@ -92,7 +92,7 @@ func (that *Cmder) vgo() {
 	vlocal := &cli.Command{
 		Name:        "local",
 		Aliases:     []string{"l"},
-		Usage:       "gvc local",
+		Usage:       "gvc go local",
 		Description: "Show installed versions.",
 		Action: func(ctx *cli.Context) error {
 			gv := vctrl.NewGoVersion()
@@ -101,6 +101,47 @@ func (that *Cmder) vgo() {
 		},
 	}
 	command.Subcommands = append(command.Subcommands, vlocal)
+
+	rmunused := &cli.Command{
+		Name:        "remove-unused",
+		Aliases:     []string{"ru"},
+		Usage:       "gvc go ru",
+		Description: "Remove unused versions.",
+		Action: func(ctx *cli.Context) error {
+			gv := vctrl.NewGoVersion()
+			gv.RemoveUnused()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, rmunused)
+
+	rmversion := &cli.Command{
+		Name:        "remove-version",
+		Aliases:     []string{"rm"},
+		Usage:       "gvc go rm",
+		Description: "Remove a version.",
+		Action: func(ctx *cli.Context) error {
+			if version := ctx.Args().First(); version != "" {
+				gv := vctrl.NewGoVersion()
+				gv.RemoveVersion(version)
+			}
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, rmversion)
+
+	genvs := &cli.Command{
+		Name:        "add-envs",
+		Aliases:     []string{"env", "e", "ae"},
+		Usage:       "gvc go env",
+		Description: "Add envs for go.",
+		Action: func(ctx *cli.Context) error {
+			gv := vctrl.NewGoVersion()
+			gv.CheckAndInitEnv()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, genvs)
 
 	that.Commands = append(that.Commands, command)
 }
