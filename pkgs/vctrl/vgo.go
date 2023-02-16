@@ -298,6 +298,9 @@ func (that *GoVersion) CheckAndInitEnv() {
 		}
 		fmt.Println("set go envs successed!")
 	}
+	if ok, _ := utils.PathIsExist(config.DefaultGoPath); !ok {
+		os.MkdirAll(config.DefaultGoPath, 0644)
+	}
 }
 
 func (that *GoVersion) UseVersion(version string) {
