@@ -29,18 +29,35 @@ const (
 )
 
 var (
-	GoEnvsPattern string = `# Golang Start
+	GoUnixEnvsPattern string = `# Golang Start
 export GOROOT="%s"
 export GOPATH="%s"
 export GOBIN="%s"
 export GOPROXY="%s"
 export PATH="%s"
 # Golang End`
-	GoEnvsReg string = `# Golang Start[\s\S]# Golang End`
-	EnvPath          = "$PATH:%s"
 )
 
-var GoEnv string = fmt.Sprintf(GoEnvsPattern,
+var GoUnixEnv string = fmt.Sprintf(GoUnixEnvsPattern,
+	DefaultGoRoot,
+	DefaultGoPath,
+	filepath.Join(DefaultGoPath, "bin"),
+	`%s`,
+	`%s`)
+
+var (
+	GoWinBatPattern string = `@echo off
+setx "GOROOT" "%s"
+setx "GOPATH" "%s"
+setx "GORIN" "%s"
+setx "GOPROXY" "%s"
+setx Path "%s"
+@echo on
+`
+	GoWinBatPath = filepath.Join(GoFilesDir, "genv.bat")
+)
+
+var GoWinEnv string = fmt.Sprintf(GoWinBatPattern,
 	DefaultGoRoot,
 	DefaultGoPath,
 	filepath.Join(DefaultGoPath, "bin"),

@@ -110,33 +110,23 @@ func CopyFileOnUnixSudo(from, to string) error {
 	return cmd.Run()
 }
 
-func CopyFile(src, dst string) (int64, error) {
-	sourceFileStat, err := os.Stat(src)
+func CopyFile(src, dst string) (written int64, err error) {
+	srcFile, err := os.Open(src)
+
 	if err != nil {
-		return 0, err
+		fmt.Printf("open file err = %v\n", err)
+		return
 	}
+	defer srcFile.Close()
 
-	if !sourceFileStat.Mode().IsRegular() {
-		return 0, fmt.Errorf("%s is not a regular file", src)
-	}
-
-	source, err := os.Open(src)
+	dstFile, err := os.OpenFile(dst, os.O_WRONLY|os.O_CREATE, os.ModePerm)
 	if err != nil {
-		return 0, err
+		fmt.Printf("open file err = %v\n", err)
+		return
 	}
-	defer source.Close()
+	defer dstFile.Close()
 
-	destination, err := os.Create(dst)
-	if err != nil {
-		return 0, err
-	}
-
-	defer destination.Close()
-	nBytes, err := io.Copy(destination, source)
-	if nBytes > 0 && err == nil && !strings.Contains(runtime.GOOS, "window") {
-		os.Chmod(dst, 0555)
-	}
-	return nBytes, err
+	return io.Copy(dstFile, srcFile)
 }
 
 func MkSymLink(target, newfile string) (err error) {
@@ -146,6 +136,19 @@ func MkSymLink(target, newfile string) (err error) {
 		}
 	}
 	return os.Symlink(target, newfile)
+}
+
+func SetWinEnv(key, value string, isSys ...bool) (err error) {
+	if runtime.GOOS == "windows" {
+		var args []string
+		if len(isSys) > 0 && isSys[0] {
+			args = []string{"/c", "setx", key, value, "/m"}
+		} else {
+			args = []string{"/c", "setx", key, value}
+		}
+		err = exec.Command("cmd", args...).Run()
+	}
+	return
 }
 
 func GetExt(filename string) (ext string) {

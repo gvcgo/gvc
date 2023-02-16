@@ -9,6 +9,7 @@ import (
 	"io"
 	"net/url"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -273,7 +274,7 @@ func (that *GoVersion) CheckAndInitEnv() {
 			if err == nil {
 				c := string(content)
 				os.WriteFile(fmt.Sprintf("%s.backup", shellrc), content, 0644)
-				envir := fmt.Sprintf(config.GoEnv, that.Conf.Config.Go.Proxies[0], fmt.Sprintf("$PATH:%s:%s", "$GOPATH/bin", "$GOROOT/bin"))
+				envir := fmt.Sprintf(config.GoUnixEnv, that.Conf.Config.Go.Proxies[0], fmt.Sprintf("$PATH:%s:%s", "$GOPATH/bin", "$GOROOT/bin"))
 				if !strings.Contains(c, "# Golang Start") {
 					s := fmt.Sprintf("%v\n%s", c, envir)
 					os.WriteFile(shellrc, []byte(strings.ReplaceAll(s, utils.GetHomeDir(), "$HOME")), 0644)
@@ -281,7 +282,21 @@ func (that *GoVersion) CheckAndInitEnv() {
 			}
 		}
 	} else {
-		fmt.Println(utils.Win)
+		wbat := fmt.Sprintf(config.GoWinEnv,
+			that.Conf.Config.Go.Proxies[0],
+			fmt.Sprintf("%s;%s;%s", `%Path%`,
+				filepath.Join(config.DefaultGoPath, "bin"),
+				filepath.Join(config.DefaultGoRoot, "bin")),
+		)
+		if err := os.WriteFile(config.GoWinBatPath, []byte(wbat), 0777); err != nil {
+			fmt.Println("[create batfile failed] ", err)
+			return
+		}
+		if err := exec.Command("cmd", "/c", "start", config.GoWinBatPath).Run(); err != nil {
+			fmt.Println("[create batfile failed] ", err)
+			return
+		}
+		fmt.Println("set go envs successed!")
 	}
 }
 
@@ -303,7 +318,23 @@ func (that *GoVersion) UseVersion(version string) {
 		fmt.Println("[Create link failed] ", err)
 		return
 	}
+	if !that.isGoEnvsAvailable() {
+		that.CheckAndInitEnv()
+	}
 	fmt.Println("Use", version, "successed!")
+}
+
+func (that *GoVersion) isGoEnvsAvailable() (r bool) {
+	var ePath string
+	if runtime.GOOS == "windows" {
+		ePath = os.Getenv("Path")
+	} else {
+		ePath = os.Getenv("PATH")
+	}
+	if strings.Contains(ePath, filepath.Join(config.DefaultGoRoot, "bin")) {
+		r = true
+	}
+	return
 }
 
 func (that *GoVersion) getCurrent() (current string) {
