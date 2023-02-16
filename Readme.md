@@ -96,8 +96,9 @@ OPTIONS:
 
 ## Download
 -------------------
-- [MacOS]()
-- [MacOS arm]()
-- [Linux]()
-- [Linux arm]()
-- [Windows]()
+- [MacOS](https://github.com/moqsien/gvc/releases/download/v0.1.0/macos-amd64.zip)
+- [MacOS arm](https://github.com/moqsien/gvc/releases/download/v0.1.0/macos-arm64.zip)
+- [Linux](https://github.com/moqsien/gvc/releases/download/v0.1.0/linux-amd64.zip)
+- [Linux arm](https://github.com/moqsien/gvc/releases/download/v0.1.0/linux-arm64.zip)
+- [Windows](https://github.com/moqsien/gvc/releases/download/v0.1.0/windows-amd64.zip)
+- [Windows arm](https://github.com/moqsien/gvc/releases/download/v0.1.0/windows-arm64.zip)
