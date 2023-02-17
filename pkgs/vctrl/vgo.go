@@ -50,7 +50,7 @@ func NewGoVersion() (gv *GoVersion) {
 	}
 }
 
-func (that *GoVersion) GetDoc() {
+func (that *GoVersion) getDoc() {
 	if len(that.Conf.Config.Go.CompilerUrls) > 0 {
 		that.Url = that.Conf.Config.Go.CompilerUrls[0]
 		var err error
@@ -139,7 +139,7 @@ func (that *GoVersion) ArchivedVersions() (err error) {
 
 func (that *GoVersion) AllVersions() (err error) {
 	if that.Doc == nil {
-		that.GetDoc()
+		that.getDoc()
 	}
 	err = that.StableVersions()
 	if err != nil {
@@ -172,7 +172,7 @@ const (
 func (that *GoVersion) ShowRemoteVersions(arg string) {
 	var v *utils.VComparator
 	if that.Doc == nil {
-		that.GetDoc()
+		that.getDoc()
 	}
 	switch arg {
 	case ShowAll:

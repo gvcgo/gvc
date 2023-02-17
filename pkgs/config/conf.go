@@ -19,14 +19,22 @@ type GoConfig struct {
 	Proxies      []string `koanf:"proxies"`
 }
 
+type CodeConfig struct {
+	StableUrl      string   `koanf:"stable_url"`
+	CdnUrl         string   `koanf:"cdn_url"`
+	DownloadUrl    string   `koanf:"download_url"`
+	ExtIdentifiers []string `koanf:"ext_identifiers"`
+}
+
 type GVConfig struct {
-	SourceUrls  []string  `koanf:"source_urls"`
-	HostFilters []string  `koanf:"host_filters"`
-	ReqTimeout  int       `koanf:"req_timeout"`
-	MaxAvgRtt   int       `koanf:"max_avg_rtt"`
-	PingCount   int       `koanf:"ping_count"`
-	WorkerNum   int       `koanf:"worker_num"`
-	Go          *GoConfig `koanf:"go_config"`
+	SourceUrls  []string    `koanf:"source_urls"`
+	HostFilters []string    `koanf:"host_filters"`
+	ReqTimeout  int         `koanf:"req_timeout"`
+	MaxAvgRtt   int         `koanf:"max_avg_rtt"`
+	PingCount   int         `koanf:"ping_count"`
+	WorkerNum   int         `koanf:"worker_num"`
+	Go          *GoConfig   `koanf:"go_config"`
+	Code        *CodeConfig `koanf:"vscode"`
 }
 
 var (
@@ -52,6 +60,35 @@ var (
 			Proxies: []string{
 				"https://goproxy.cn,direct",
 				"https://repo.huaweicloud.com/repository/goproxy/,direct",
+			},
+		},
+		Code: &CodeConfig{
+			StableUrl:   "az764295.vo.msecnd.net",
+			CdnUrl:      "vscode.cdn.azure.cn",
+			DownloadUrl: "https://code.visualstudio.com/sha/download",
+			ExtIdentifiers: []string{
+				"moqsien.easynotes",
+				"doggy8088.go-extension-pack",
+				"galkowskit.go-interface-annotations",
+				"liuchao.go-struct-tag",
+				"tabnine.tabnine-vscode",
+				"gruntfuggly.todo-tree",
+				"zxh404.vscode-proto3",
+				"premparihar.gotestexplorer",
+				"ms-python.python",
+				"ms-python.vscode-pylance",
+				"donjayamanne.python-environment-manager",
+				"alefragnani.project-manager",
+				"yzhang.markdown-all-in-one",
+				"mhutchie.git-graph",
+				"asvetliakov.vscode-neovim",
+				"ms-ceintl.vscode-language-pack-zh-hans",
+				"bracketpaircolordlw.bracket-pair-color-dlw",
+				"rust-lang.rust-analyzer",
+				"vue.volar",
+				"joe-re.sql-language-server",
+				"akamud.vscode-theme-onedark",
+				"pkief.material-icon-theme",
 			},
 		},
 	}

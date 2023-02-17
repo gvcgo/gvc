@@ -14,13 +14,26 @@ import (
 )
 
 type Downloader struct {
-	Url     string
-	Timeout time.Duration
+	Url              string
+	Timeout          time.Duration
+	ManuallyRedirect bool
 }
 
 func (that *Downloader) GetUrl() (resp *http.Response) {
 	if that.Url != "" && utils.VerifyUrls(that.Url) {
-		r, err := (&http.Client{Timeout: that.Timeout}).Get(that.Url)
+		var (
+			r   *http.Response
+			err error
+			req *http.Request
+		)
+
+		if !that.ManuallyRedirect {
+			r, err = (&http.Client{Timeout: that.Timeout}).Get(that.Url)
+		} else {
+			if req, err = http.NewRequest(http.MethodGet, that.Url, nil); err == nil {
+				r, err = http.DefaultTransport.RoundTrip(req)
+			}
+		}
 		if err != nil {
 			fmt.Println("[Request Errored] URL: ", that.Url, ", err: ", err)
 			return nil
