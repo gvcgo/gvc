@@ -2,12 +2,15 @@ package vctrl
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"runtime"
 	"strings"
 	"time"
 
 	"github.com/moqsien/gvc/pkgs/config"
 	"github.com/moqsien/gvc/pkgs/downloader"
+	"github.com/moqsien/gvc/pkgs/utils"
 )
 
 type Code struct {
@@ -26,12 +29,27 @@ var CodeType TypeMap = TypeMap{
 	"darwin-arm64":  "darwin-arm64",
 }
 
-func NewCode() *Code {
-	return &Code{
+func NewCode() (co *Code) {
+	co = &Code{
 		Conf: config.New(),
 		Downloader: &downloader.Downloader{
 			ManuallyRedirect: true,
 		},
+	}
+	co.initeDirs()
+	return
+}
+
+func (that *Code) initeDirs() {
+	if ok, _ := utils.PathIsExist(config.CodeFileDir); !ok {
+		if err := os.MkdirAll(config.CodeFileDir, os.ModePerm); err != nil {
+			fmt.Println("[mkdir Failed] ", err)
+		}
+	}
+	if ok, _ := utils.PathIsExist(config.CodeTarFileDir); !ok {
+		if err := os.MkdirAll(config.CodeTarFileDir, os.ModePerm); err != nil {
+			fmt.Println("[mkdir Failed] ", err)
+		}
 	}
 }
 
@@ -52,7 +70,28 @@ func (that *Code) getRealUrl() (r string) {
 	return
 }
 
-func (that *Code) Run() {
+func (that *Code) download() (r string) {
 	dUrl := that.getRealUrl()
-	fmt.Println(dUrl)
+	if strings.HasSuffix(dUrl, ".zip") || strings.HasSuffix(dUrl, ".tar.gz") {
+		nameList := strings.Split(dUrl, "/")
+		fpath := filepath.Join(config.CodeTarFileDir, nameList[len(nameList)-1])
+		that.Url = dUrl
+		that.Timeout = 180 * time.Second
+		if size := that.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size == 0 {
+			fmt.Println("[VSCode download failed] ", fpath)
+		} else {
+			r = fpath
+		}
+	}
+	return
+}
+
+func (that *Code) InstallForWin() {}
+
+func (that *Code) InstallForMac() {}
+
+func (that *Code) InstallForLinux() {}
+
+func (that *Code) Run() {
+	that.download()
 }

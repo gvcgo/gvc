@@ -43,10 +43,30 @@ type GoVersion struct {
 }
 
 func NewGoVersion() (gv *GoVersion) {
-	return &GoVersion{
+	gv = &GoVersion{
 		Versions:   make(map[string][]*Package, 50),
 		Conf:       config.New(),
 		Downloader: &downloader.Downloader{},
+	}
+	gv.initeDirs()
+	return
+}
+
+func (that *GoVersion) initeDirs() {
+	if ok, _ := utils.PathIsExist(config.DefaultGoRoot); !ok {
+		if err := os.MkdirAll(config.DefaultGoRoot, os.ModePerm); err != nil {
+			fmt.Println("[mkdir Failed] ", err)
+		}
+	}
+	if ok, _ := utils.PathIsExist(config.GoTarFilesPath); !ok {
+		if err := os.MkdirAll(config.GoTarFilesPath, os.ModePerm); err != nil {
+			fmt.Println("[mkdir Failed] ", err)
+		}
+	}
+	if ok, _ := utils.PathIsExist(config.GoUnTarFilesPath); !ok {
+		if err := os.MkdirAll(config.GoUnTarFilesPath, os.ModePerm); err != nil {
+			fmt.Println("[mkdir Failed] ", err)
+		}
 	}
 }
 

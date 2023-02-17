@@ -240,9 +240,9 @@ func (that *Hosts) FormatAndSaveHosts(oldContent []byte) {
 		if utils.GetShell() == "win" {
 			err = os.WriteFile(that.configFile.GetHostsFilePath(), []byte(newStr), 0666)
 		} else {
-			err = os.WriteFile(that.configFile.GetTempHostsFilePath(), []byte(newStr), 0666)
+			err = os.WriteFile(config.TempHostsFilePath, []byte(newStr), 0666)
 			if err == nil {
-				err = utils.CopyFileOnUnixSudo(that.configFile.GetTempHostsFilePath(), that.configFile.GetHostsFilePath())
+				err = utils.CopyFileOnUnixSudo(config.TempHostsFilePath, that.configFile.GetHostsFilePath())
 			}
 		}
 		if err != nil {

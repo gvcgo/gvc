@@ -7,25 +7,35 @@ import (
 	"github.com/moqsien/gvc/pkgs/utils"
 )
 
-var GVCWorkDir = filepath.Join(utils.GetHomeDir(), ".gvc/")
-var GoFilesDir = filepath.Join(GVCWorkDir, "go_files")
-
-var DefaultConfigPath = filepath.Join(GVCWorkDir, "config.yml")
-
+/*
+gvc related
+*/
 var (
-	DefaultGoRoot  string = filepath.Join(GoFilesDir, "go")
-	DefaultGoPath  string = filepath.Join(utils.GetHomeDir(), "data/projects/go")
-	DefaultGoProxy string = "https://goproxy.cn,direct"
+	GVCWorkDir        = filepath.Join(utils.GetHomeDir(), ".gvc/")
+	DefaultConfigPath = filepath.Join(GVCWorkDir, "config.yml")
 )
 
-var (
-	GoTarFilesPath   string = filepath.Join(GoFilesDir, "downloads")
-	GoUnTarFilesPath string = filepath.Join(GoFilesDir, "versions")
-)
-
+/*
+hosts related
+*/
 const (
 	HostFilePathForNix = "/etc/hosts"
 	HostFilePathForWin = `C:\Windows\System32\drivers\etc\hosts`
+)
+
+var TempHostsFilePath = filepath.Join(GVCWorkDir, "/temp_hosts.txt")
+
+/*
+go related
+*/
+var GoFilesDir = filepath.Join(GVCWorkDir, "go_files")
+
+var (
+	DefaultGoRoot    string = filepath.Join(GoFilesDir, "go")
+	DefaultGoPath    string = filepath.Join(utils.GetHomeDir(), "data/projects/go")
+	DefaultGoProxy   string = "https://goproxy.cn,direct"
+	GoTarFilesPath   string = filepath.Join(GoFilesDir, "downloads")
+	GoUnTarFilesPath string = filepath.Join(GoFilesDir, "versions")
 )
 
 var (
@@ -36,14 +46,13 @@ export GOBIN="%s"
 export GOPROXY="%s"
 export PATH="%s"
 # Golang End`
+	GoUnixEnv string = fmt.Sprintf(GoUnixEnvsPattern,
+		DefaultGoRoot,
+		DefaultGoPath,
+		filepath.Join(DefaultGoPath, "bin"),
+		`%s`,
+		`%s`)
 )
-
-var GoUnixEnv string = fmt.Sprintf(GoUnixEnvsPattern,
-	DefaultGoRoot,
-	DefaultGoPath,
-	filepath.Join(DefaultGoPath, "bin"),
-	`%s`,
-	`%s`)
 
 var (
 	GoWinBatPattern string = `@echo off
@@ -54,12 +63,19 @@ setx "GOPROXY" "%s"
 setx Path "%s"
 @echo on
 `
-	GoWinBatPath = filepath.Join(GoFilesDir, "genv.bat")
+	GoWinBatPath string = filepath.Join(GoFilesDir, "genv.bat")
+	GoWinEnv     string = fmt.Sprintf(GoWinBatPattern,
+		DefaultGoRoot,
+		DefaultGoPath,
+		filepath.Join(DefaultGoPath, "bin"),
+		`%s`,
+		`%s`)
 )
 
-var GoWinEnv string = fmt.Sprintf(GoWinBatPattern,
-	DefaultGoRoot,
-	DefaultGoPath,
-	filepath.Join(DefaultGoPath, "bin"),
-	`%s`,
-	`%s`)
+/*
+vscode related
+*/
+var (
+	CodeFileDir    string = filepath.Join(GVCWorkDir, "vscode_file")
+	CodeTarFileDir string = filepath.Join(CodeFileDir, "downloads")
+)

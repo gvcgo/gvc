@@ -138,22 +138,6 @@ func (that *Conf) Initiate() {
 			os.WriteFile(that.path, b, 0666)
 		}
 	}
-
-	if ok, _ := utils.PathIsExist(DefaultGoRoot); !ok {
-		if err := os.MkdirAll(DefaultGoRoot, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
-		}
-	}
-	if ok, _ := utils.PathIsExist(GoTarFilesPath); !ok {
-		if err := os.MkdirAll(GoTarFilesPath, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
-		}
-	}
-	if ok, _ := utils.PathIsExist(GoUnTarFilesPath); !ok {
-		if err := os.MkdirAll(GoUnTarFilesPath, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
-		}
-	}
 }
 
 func (that *Conf) Reset() {
@@ -184,9 +168,4 @@ func (that *Conf) GetHostsFilePath() string {
 		return HostFilePathForWin
 	}
 	return HostFilePathForNix
-}
-
-func (that *Conf) GetTempHostsFilePath() string {
-	dir := filepath.Dir(that.path)
-	return filepath.Join(dir, "/temp_hosts.txt")
 }
