@@ -65,7 +65,7 @@ var (
 		Code: &CodeConfig{
 			StableUrl:   "az764295.vo.msecnd.net",
 			CdnUrl:      "vscode.cdn.azure.cn",
-			DownloadUrl: "https://code.visualstudio.com/sha/download",
+			DownloadUrl: "https://code.visualstudio.com/sha?build=stable",
 			ExtIdentifiers: []string{
 				"moqsien.easynotes",
 				"doggy8088.go-extension-pack",

@@ -1,11 +1,7 @@
 package vctrl
 
 import (
-	"crypto/sha1"
-	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
-	"hash"
 	"io"
 	"net/url"
 	"os"
@@ -23,7 +19,7 @@ import (
 	"github.com/moqsien/gvc/pkgs/utils"
 )
 
-type Package struct {
+type GoPackage struct {
 	Url       string
 	FileName  string
 	Kind      string
@@ -36,7 +32,7 @@ type Package struct {
 
 type GoVersion struct {
 	*downloader.Downloader
-	Versions  map[string][]*Package
+	Versions  map[string][]*GoPackage
 	Doc       *goquery.Document
 	Conf      *config.Conf
 	ParsedUrl *url.URL
@@ -44,7 +40,7 @@ type GoVersion struct {
 
 func NewGoVersion() (gv *GoVersion) {
 	gv = &GoVersion{
-		Versions:   make(map[string][]*Package, 50),
+		Versions:   make(map[string][]*GoPackage, 50),
 		Conf:       config.New(),
 		Downloader: &downloader.Downloader{},
 	}
@@ -88,7 +84,7 @@ func (that *GoVersion) getDoc() {
 	}
 }
 
-func (that *GoVersion) findPackages(table *goquery.Selection) (pkgs []*Package) {
+func (that *GoVersion) findPackages(table *goquery.Selection) (pkgs []*GoPackage) {
 	alg := strings.TrimSuffix(table.Find("thead").Find("th").Last().Text(), " Checksum")
 
 	table.Find("tr").Not(".first").Each(func(j int, tr *goquery.Selection) {
@@ -97,7 +93,7 @@ func (that *GoVersion) findPackages(table *goquery.Selection) (pkgs []*Package) 
 		if strings.HasPrefix(href, "/") { // relative paths
 			href = fmt.Sprintf("%s://%s%s", that.ParsedUrl.Scheme, that.ParsedUrl.Host, href)
 		}
-		pkgs = append(pkgs, &Package{
+		pkgs = append(pkgs, &GoPackage{
 			FileName:  td.Eq(0).Find("a").Text(),
 			Url:       href,
 			Kind:      strings.ToLower(td.Eq(1).Text()),
@@ -215,7 +211,7 @@ func (that *GoVersion) ShowRemoteVersions(arg string) {
 	}
 }
 
-func (that *GoVersion) findPackage(version string, kind ...string) (p *Package) {
+func (that *GoVersion) findPackage(version string, kind ...string) (p *GoPackage) {
 	k := "archive"
 	if len(kind) > 0 {
 		k = kind[0]
@@ -236,10 +232,10 @@ func (that *GoVersion) download(version string) (r string) {
 	if p != nil {
 		fName := fmt.Sprintf("go-%s-%s.%s%s", version, p.OS, p.Arch, utils.GetExt(p.FileName))
 		fpath := filepath.Join(config.GoTarFilesPath, fName)
-		that.Downloader.Url = p.Url
-		that.Downloader.Timeout = 180 * time.Second
+		that.Url = p.Url
+		that.Timeout = 180 * time.Second
 		if size := that.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
-			if ok := that.CheckFile(p, fpath); ok {
+			if ok := that.checkFile(p, fpath); ok {
 				return fpath
 			}
 		}
@@ -249,45 +245,14 @@ func (that *GoVersion) download(version string) (r string) {
 	return
 }
 
-func (that *GoVersion) CheckFile(p *Package, fpath string) (r bool) {
-	f, err := os.Open(fpath)
-	if err != nil {
-		fmt.Println("[Open file failed] ", err)
-		return false
-	}
-	defer f.Close()
-
-	var h hash.Hash
-	switch strings.ToLower(p.CheckType) {
-	case "sha256":
-		h = sha256.New()
-	case "sha1":
-		h = sha1.New()
-	default:
-		fmt.Println("[Crypto] ", p.CheckType, " not supported.")
-		return
-	}
-
-	if _, err = io.Copy(h, f); err != nil {
-		fmt.Println("[Copy file failed] ", err)
-		return
-	}
-
-	if p.Checksum != hex.EncodeToString(h.Sum(nil)) {
-		fmt.Println("Checksum failed.")
-		return
-	}
-	fmt.Println("Checksum successed.")
-	return true
+func (that *GoVersion) checkFile(p *GoPackage, fpath string) (r bool) {
+	return utils.CheckFile(fpath, p.CheckType, p.Checksum)
 }
 
 func (that *GoVersion) CheckAndInitEnv() {
 	st := utils.GetShell()
 	if st != utils.Win {
 		shellrc := utils.GetShellRcFile()
-		if shellrc == utils.Win {
-			return
-		}
 		if file, err := os.Open(shellrc); err == nil {
 			defer file.Close()
 			content, err := io.ReadAll(file)

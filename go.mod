@@ -12,6 +12,7 @@ require (
 	github.com/mholt/archiver/v3 v3.5.1
 	github.com/panjf2000/ants/v2 v2.7.1
 	github.com/schollz/progressbar/v3 v3.13.0
+	github.com/tidwall/gjson v1.14.4
 	github.com/urfave/cli/v2 v2.24.3
 )
 
@@ -36,6 +37,8 @@ require (
 	github.com/pierrec/lz4/v4 v4.1.2 // indirect
 	github.com/rivo/uniseg v0.4.3 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
+	github.com/tidwall/match v1.1.1 // indirect
+	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/ulikunitz/xz v0.5.9 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	github.com/xo/terminfo v0.0.0-20210125001918-ca9a967f8778 // indirect

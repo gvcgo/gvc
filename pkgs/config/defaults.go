@@ -76,6 +76,17 @@ setx Path "%s"
 vscode related
 */
 var (
-	CodeFileDir    string = filepath.Join(GVCWorkDir, "vscode_file")
-	CodeTarFileDir string = filepath.Join(CodeFileDir, "downloads")
+	CodeFileDir         string = filepath.Join(GVCWorkDir, "vscode_file")
+	CodeTarFileDir      string = filepath.Join(CodeFileDir, "downloads")
+	CodeUntarFile       string = filepath.Join(CodeFileDir, "vscode")
+	CodeMacInstallDir   string = "/Applications/"
+	CodeMacCmdBinaryDir string = filepath.Join(CodeMacInstallDir, "Visual Studio Code.app/Contents/Resources/app/bin")
+	CodeWinCmdBinaryDir string = filepath.Join(CodeUntarFile, "bin")
+	CodeWinShortcutPath string = filepath.Join(utils.GetHomeDir(), "Desktop/", "Visual Studio Code")
+)
+
+var (
+	CodeEnvForUnix string = `# VSCode start
+export PATH="$PATH:%s"
+# VSCode end`
 )

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"strings"
 
@@ -15,8 +14,7 @@ func main() {
 	ePath, _ := os.Executable()
 	if !strings.HasSuffix(ePath, "gvc") && !strings.HasSuffix(ePath, "gvc.exe") {
 		config.New().Reset()
-		fmt.Println("test")
-		vctrl.NewCode().Run()
+		vctrl.NewCode().Install()
 	} else if len(os.Args) < 2 {
 		vctrl.SelfInstall()
 	} else {

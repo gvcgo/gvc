@@ -2,36 +2,49 @@ package vctrl
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
 	"time"
 
+	"github.com/mholt/archiver/v3"
 	"github.com/moqsien/gvc/pkgs/config"
 	"github.com/moqsien/gvc/pkgs/downloader"
 	"github.com/moqsien/gvc/pkgs/utils"
+	"github.com/tidwall/gjson"
 )
 
+type CodePackage struct {
+	OsArchName string
+	Url        string
+	CheckSum   string
+	CheckType  string
+}
+
 type Code struct {
-	Conf *config.Conf
+	Version  string
+	Packages map[string]*CodePackage
+	Conf     *config.Conf
 	*downloader.Downloader
 }
 
-type TypeMap map[string]string
+type typeMap map[string]string
 
-var CodeType TypeMap = TypeMap{
-	"windows-amd64": "win32-x64-archive",
-	"windows-arm64": "win32-arm64-archive",
-	"linux-amd64":   "linux-x64",
-	"linux-arm64":   "linux-arm64",
-	"darwin-amd64":  "darwin",
-	"darwin-arm64":  "darwin-arm64",
+var codeType typeMap = typeMap{
+	"win32-x64-archive":   "windows-amd64",
+	"win32-arm64-archive": "windows-arm64",
+	"linux-x64":           "linux-amd64",
+	"linux-arm64":         "linux-arm64",
+	"darwin":              "darwin-amd64",
+	"darwin-arm64":        "darwin-arm64",
 }
 
 func NewCode() (co *Code) {
 	co = &Code{
-		Conf: config.New(),
+		Packages: make(map[string]*CodePackage),
+		Conf:     config.New(),
 		Downloader: &downloader.Downloader{
 			ManuallyRedirect: true,
 		},
@@ -53,45 +66,138 @@ func (that *Code) initeDirs() {
 	}
 }
 
-func (that *Code) getRealUrl() (r string) {
+func (that *Code) getPackages() (r string) {
+	that.Url = that.Conf.Config.Code.DownloadUrl
+	that.Timeout = 30 * time.Second
+	if resp := that.GetUrl(); resp != nil {
+		rjson, _ := io.ReadAll(resp.Body)
+		products := gjson.Get(string(rjson), "products")
+		for _, product := range products.Array() {
+			if that.Version == "" {
+				that.Version = product.Get("productVersion").String()
+			}
+			osArch := product.Get("platform.os")
+			if localOsArch, ok := codeType[osArch.String()]; ok {
+				that.Packages[localOsArch] = &CodePackage{
+					OsArchName: osArch.String(),
+					Url:        product.Get("url").String(),
+					CheckSum:   product.Get("sha256hash").String(),
+					CheckType:  "sha256",
+				}
+			}
+		}
+	} else {
+		fmt.Println("[Get vscode package info failed]")
+	}
+	return
+}
+
+func (that *Code) download() (r string) {
+	that.getPackages()
 	key := fmt.Sprintf("%s-%s", runtime.GOOS, runtime.GOARCH)
-	if t, ok := CodeType[key]; ok {
-		that.Url = fmt.Sprintf("%s?build=%s&os=%s", that.Conf.Config.Code.DownloadUrl, "stable", t)
-		that.Timeout = 30 * time.Second
-		if resp := that.GetUrl(); resp != nil {
-			location := resp.Header["Location"]
-			if len(location) > 0 {
-				r = strings.Replace(location[0], that.Conf.Config.Code.StableUrl, that.Conf.Config.Code.CdnUrl, 1)
-			} else {
-				fmt.Println("[Download failed] ", that.Url)
+	if p := that.Packages[key]; p != nil {
+		fmt.Println(p.Url)
+		var suffix string
+		if strings.HasSuffix(p.Url, ".zip") {
+			suffix = ".zip"
+		} else if strings.HasSuffix(p.Url, ".tar.gz") {
+			suffix = ".tar.gz"
+		} else {
+			fmt.Println("[Unsupported file type] ", p.Url)
+			return
+		}
+		fpath := filepath.Join(config.CodeTarFileDir, fmt.Sprintf("%s-%s%s", key, that.Version, suffix))
+		that.Url = strings.Replace(p.Url, that.Conf.Config.Code.StableUrl, that.Conf.Config.Code.CdnUrl, -1)
+		that.Timeout = 60 * time.Second
+		if size := that.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
+			if ok := utils.CheckFile(fpath, p.CheckType, p.CheckSum); ok {
+				r = fpath
+			}
+		}
+	} else {
+		fmt.Println("Cannot find package for ", key)
+	}
+	if ok, _ := utils.PathIsExist(config.CodeUntarFile); !ok {
+		if r != "" {
+			if err := archiver.Unarchive(r, config.CodeUntarFile); err != nil {
+				os.RemoveAll(config.CodeUntarFile)
+				fmt.Println("[Unarchive failed] ", err)
+				return
 			}
 		}
 	}
 	return
 }
 
-func (that *Code) download() (r string) {
-	dUrl := that.getRealUrl()
-	if strings.HasSuffix(dUrl, ".zip") || strings.HasSuffix(dUrl, ".tar.gz") {
-		nameList := strings.Split(dUrl, "/")
-		fpath := filepath.Join(config.CodeTarFileDir, nameList[len(nameList)-1])
-		that.Url = dUrl
-		that.Timeout = 180 * time.Second
-		if size := that.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size == 0 {
-			fmt.Println("[VSCode download failed] ", fpath)
-		} else {
-			r = fpath
+func (that *Code) InstallForWin() {
+	that.download()
+	if codeDir, _ := os.ReadDir(config.CodeUntarFile); len(codeDir) > 0 {
+		for _, file := range codeDir {
+			if strings.Contains(file.Name(), ".exe") {
+				if err := utils.WindowsSetEnv("Path", fmt.Sprintf("%s;%s", "%Path%", config.CodeWinCmdBinaryDir)); err != nil {
+					fmt.Println("[Set envs failed] ", err)
+					return
+				}
+				if err := utils.MkSymLink(filepath.Join(config.CodeUntarFile, "Code.exe"), config.CodeWinShortcutPath); err != nil {
+					fmt.Println("[Create shortcut failed] ", err)
+					return
+				}
+				break
+			}
 		}
 	}
-	return
 }
 
-func (that *Code) InstallForWin() {}
+func (that *Code) addEnvForUnix() {
+	shellrc := utils.GetShellRcFile()
+	if file, err := os.Open(shellrc); err == nil {
+		defer file.Close()
+		content, err := io.ReadAll(file)
+		if err == nil {
+			c := string(content)
+			os.WriteFile(fmt.Sprintf("%s.backup", shellrc), content, 0644)
+			envir := fmt.Sprintf(config.CodeEnvForUnix, config.CodeMacCmdBinaryDir)
+			if !strings.Contains(c, "# VSCode start") {
+				s := fmt.Sprintf("%v\n%s", c, envir)
+				os.WriteFile(shellrc, []byte(strings.ReplaceAll(s, utils.GetHomeDir(), "$HOME")), 0644)
+			}
+		}
+	}
+}
 
-func (that *Code) InstallForMac() {}
-
-func (that *Code) InstallForLinux() {}
-
-func (that *Code) Run() {
+func (that *Code) InstallForMac() {
 	that.download()
+	if codeDir, _ := os.ReadDir(config.CodeUntarFile); len(codeDir) > 0 {
+		for _, file := range codeDir {
+			if strings.Contains(file.Name(), ".app") {
+				source := filepath.Join(config.CodeUntarFile, file.Name())
+				if ok, _ := utils.PathIsExist(config.CodeMacCmdBinaryDir); !ok {
+					if err := utils.CopyFileOnUnixSudo(source, config.CodeMacInstallDir); err != nil {
+						fmt.Println("[Install vscode failed] ", err)
+					} else {
+						os.RemoveAll(config.CodeUntarFile)
+					}
+				}
+			}
+		}
+	}
+	that.addEnvForUnix()
+}
+
+func (that *Code) InstallForLinux() {
+	that.download()
+	that.addEnvForUnix()
+}
+
+func (that *Code) Install() {
+	switch runtime.GOOS {
+	case "windows":
+		that.InstallForWin()
+	case "darwin":
+		if ok, _ := utils.PathIsExist(config.CodeMacCmdBinaryDir); !ok {
+			that.InstallForMac()
+		}
+	case "linux":
+		that.InstallForLinux()
+	}
 }

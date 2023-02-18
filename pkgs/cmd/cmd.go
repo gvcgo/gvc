@@ -22,6 +22,7 @@ func New() *Cmder {
 func (that *Cmder) initiate() {
 	that.vhost()
 	that.vgo()
+	that.vscode()
 }
 
 func (that *Cmder) vhost() {
@@ -143,5 +144,28 @@ func (that *Cmder) vgo() {
 	}
 	command.Subcommands = append(command.Subcommands, genvs)
 
+	that.Commands = append(that.Commands, command)
+}
+
+func (that *Cmder) vscode() {
+	command := &cli.Command{
+		Name:        "vscode",
+		Aliases:     []string{"vsc", "vs", "v"},
+		Usage:       "gvc vscode <Command>",
+		Description: "VSCode management.",
+		Subcommands: []*cli.Command{},
+	}
+	genvs := &cli.Command{
+		Name:        "install",
+		Aliases:     []string{"i", "ins"},
+		Usage:       "gvc vscode install",
+		Description: "Automatically install vscode.",
+		Action: func(ctx *cli.Context) error {
+			gcode := vctrl.NewCode()
+			gcode.Install()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, genvs)
 	that.Commands = append(that.Commands, command)
 }

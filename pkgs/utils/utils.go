@@ -1,7 +1,11 @@
 package utils
 
 import (
+	"crypto/sha1"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
+	"hash"
 	"io"
 	"net/url"
 	"os"
@@ -102,7 +106,16 @@ func PathIsExist(path string) (bool, error) {
 }
 
 func CopyFileOnUnixSudo(from, to string) error {
-	cmd := exec.Command("sudo", "cp", from, to)
+	cmd := exec.Command("sudo", "cp", "-R", from, to)
+	cmd.Env = genv.All()
+	cmd.Stderr = os.Stderr
+	cmd.Stdout = os.Stdout
+	cmd.Stdin = os.Stdin
+	return cmd.Run()
+}
+
+func WindowsSetEnv(key, value string) error {
+	cmd := exec.Command("setx", key, value)
 	cmd.Env = genv.All()
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
@@ -163,4 +176,36 @@ func GetExt(filename string) (ext string) {
 		return l[len(l)-1]
 	}
 	return
+}
+
+func CheckFile(fpath, cType, cSum string) (r bool) {
+	f, err := os.Open(fpath)
+	if err != nil {
+		fmt.Println("[Open file failed] ", err)
+		return false
+	}
+	defer f.Close()
+
+	var h hash.Hash
+	switch strings.ToLower(cType) {
+	case "sha256":
+		h = sha256.New()
+	case "sha1":
+		h = sha1.New()
+	default:
+		fmt.Println("[Crypto] ", cType, " not supported.")
+		return
+	}
+
+	if _, err = io.Copy(h, f); err != nil {
+		fmt.Println("[Copy file failed] ", err)
+		return
+	}
+
+	if cSum != hex.EncodeToString(h.Sum(nil)) {
+		fmt.Println("Checksum failed.")
+		return
+	}
+	fmt.Println("Checksum successed.")
+	return true
 }
