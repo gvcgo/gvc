@@ -72,7 +72,7 @@ func (that *WebdavConf) set() {
 func (that *WebdavConf) Reset() {
 	that.RocalDir = GVCBackupDir
 	that.Host = "https://dav.jianguoyun.com/dav/"
-	that.DefaultFilesUrl = "https://github.com/moqsien/gvc/blob/main/misc/all.zip"
+	that.DefaultFilesUrl = "https://gitee.com/moqsien/gvc/releases/download/v1/misc-all.zip"
 	that.set()
 }
 
@@ -82,8 +82,7 @@ func (that *WebdavConf) Reload() {
 		fmt.Println("[Config Load Failed] ", err)
 		return
 	}
-	err = that.k.UnmarshalWithConf("", that, koanf.UnmarshalConf{Tag: "koanf"})
-	fmt.Println(that.Host, GVCWebdavConfigPath, err)
+	that.k.UnmarshalWithConf("", that, koanf.UnmarshalConf{Tag: "koanf"})
 	if that.Password != "" && that.Username != "" {
 		that.client = gowebdav.NewClient(that.Host, that.Username, that.Password)
 		if err := that.client.Connect(); err != nil {
@@ -129,7 +128,6 @@ func (that *WebdavConf) GetDefaultFiles() {
 	that.d.Timeout = 60 * time.Second
 	fpath := filepath.Join(GVCWorkDir, "all.zip")
 	if size := that.d.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
-		fmt.Println(fpath)
 		if l, _ := os.ReadDir(that.RocalDir); len(l) == 0 {
 			if err := archiver.Unarchive(fpath, that.RocalDir); err != nil {
 				fmt.Println("[Unarchive file failed] ", err)
@@ -138,14 +136,12 @@ func (that *WebdavConf) GetDefaultFiles() {
 			fmt.Println("[Local dir is not empty]")
 		}
 	}
-	// os.RemoveAll(fpath)
+	os.RemoveAll(fpath)
 }
 
 func (that *WebdavConf) Pull() {
 	if that.client != nil {
-		fmt.Println("=======")
 		iList, err := that.client.ReadDir(that.RemoteDir)
-		fmt.Println(iList)
 		if err != nil {
 			if strings.Contains(err.Error(), "404") {
 				if err := that.client.MkdirAll(that.RemoteDir, 0644); err != nil {
