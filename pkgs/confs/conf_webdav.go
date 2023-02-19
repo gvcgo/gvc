@@ -56,13 +56,17 @@ func (that *WebdavConf) set() {
 	}
 }
 
-func (that *WebdavConf) Reset() {
-	that.LocalDir = GVCBackupDir
-	if ok, _ := utils.PathIsExist(that.LocalDir); !ok {
+func (that *WebdavConf) checkBackupDir() {
+	if ok, _ := utils.PathIsExist(that.LocalDir); that.LocalDir != "" && !ok {
 		if err := os.MkdirAll(that.LocalDir, os.ModePerm); err != nil {
 			fmt.Println("[mkdir Failed] ", that.LocalDir, err)
 		}
 	}
+}
+
+func (that *WebdavConf) Reset() {
+	that.LocalDir = GVCBackupDir
+	that.checkBackupDir()
 	that.Host = "https://dav.jianguoyun.com/dav/"
 	that.DefaultFilesUrl = "https://gitee.com/moqsien/gvc/releases/download/v1/misc-all.zip"
 	that.set()
@@ -146,6 +150,7 @@ func (that *WebdavConf) Pull() {
 			}
 		}
 		if len(iList) > 0 {
+			that.checkBackupDir()
 			for _, info := range iList {
 				if !info.IsDir() {
 					b, _ := that.client.Read(filepath.Join(that.RemoteDir, info.Name()))

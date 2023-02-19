@@ -37,7 +37,7 @@ func New() (r *GVConfig) {
 		w:      NewWebdavConf(),
 		k:      koanf.New("."),
 		parser: yaml.Parser(),
-		path:   RealConfigPath,
+		path:   GVConfigPath,
 	}
 	r.initiate()
 	return
