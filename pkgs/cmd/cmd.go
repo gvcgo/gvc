@@ -1,6 +1,9 @@
 package cmd
 
 import (
+	"fmt"
+
+	"github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/vctrl"
 	"github.com/urfave/cli/v2"
 )
@@ -12,7 +15,9 @@ type Cmder struct {
 func New() *Cmder {
 	c := &Cmder{
 		App: &cli.App{
-			Commands: []*cli.Command{},
+			Usage:       "gvc <Command> <SubCommand>...",
+			Description: "A productive tool to manage your development environment.",
+			Commands:    []*cli.Command{},
 		},
 	}
 	c.initiate()
@@ -23,6 +28,7 @@ func (that *Cmder) initiate() {
 	that.vhost()
 	that.vgo()
 	that.vscode()
+	that.vconf()
 }
 
 func (that *Cmder) vhost() {
@@ -32,7 +38,7 @@ func (that *Cmder) vhost() {
 		Usage:       "gvc host",
 		Description: "Fetch hosts for github.",
 		Action: func(ctx *cli.Context) error {
-			h := vctrl.New()
+			h := vctrl.NewHosts()
 			h.Run()
 			return nil
 		},
@@ -167,5 +173,98 @@ func (that *Cmder) vscode() {
 		},
 	}
 	command.Subcommands = append(command.Subcommands, genvs)
+
+	installexts := &cli.Command{
+		Name:        "install-extensions",
+		Aliases:     []string{"ie", "iext"},
+		Usage:       "gvc vscode install-extensions",
+		Description: "Automatically install extensions for vscode.",
+		Action: func(ctx *cli.Context) error {
+			gcode := vctrl.NewCode()
+			gcode.InstallExts()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, installexts)
+
+	showexts := &cli.Command{
+		Name:        "sync-extensions",
+		Aliases:     []string{"se", "sext", "sync"},
+		Usage:       "gvc vscode sync-extensions",
+		Description: "Sync installed vscode extensions info to remote webdav.",
+		Action: func(ctx *cli.Context) error {
+			gcode := vctrl.NewCode()
+			gcode.SyncInstalledExts()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, showexts)
+
+	that.Commands = append(that.Commands, command)
+}
+
+func (that *Cmder) vconf() {
+	command := &cli.Command{
+		Name:        "config",
+		Aliases:     []string{"conf", "cnf", "c"},
+		Usage:       "gvc config <Command>",
+		Description: "GVC config file management.",
+		Subcommands: []*cli.Command{},
+	}
+	dav := &cli.Command{
+		Name:        "webdav",
+		Aliases:     []string{"dav", "w"},
+		Usage:       "gvc config webdav",
+		Description: "Setup webdav account info to backup settings of vscode and gvc.",
+		Action: func(ctx *cli.Context) error {
+			cnf := confs.New()
+			cnf.SetupWebdav()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, dav)
+
+	pull := &cli.Command{
+		Name:        "pull",
+		Aliases:     []string{"pl"},
+		Usage:       "gvc config pull",
+		Description: "Pull settings from your remote webdav.",
+		Action: func(ctx *cli.Context) error {
+			cnf := confs.New()
+			cnf.Pull()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, pull)
+
+	push := &cli.Command{
+		Name:        "push",
+		Aliases:     []string{"ph"},
+		Usage:       "gvc config push",
+		Description: "Push settings to your remote webdav.",
+		Action: func(ctx *cli.Context) error {
+			cnf := confs.New()
+			cnf.Push()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, push)
+
+	show := &cli.Command{
+		Name:        "show",
+		Aliases:     []string{"sh", "s"},
+		Usage:       "gvc config pull",
+		Description: "Show path to conf files.",
+		Action: func(ctx *cli.Context) error {
+			cnf := confs.New()
+			fmt.Println("GVC config file:")
+			cnf.ShowPath()
+			fmt.Println("WebDAV config file:")
+			cnf.ShowDavConfigPath()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, show)
+
 	that.Commands = append(that.Commands, command)
 }

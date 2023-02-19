@@ -4,13 +4,15 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
 	"time"
 
+	"github.com/gogf/gf/os/genv"
 	"github.com/mholt/archiver/v3"
-	"github.com/moqsien/gvc/pkgs/config"
+	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/downloader"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/tidwall/gjson"
@@ -26,7 +28,7 @@ type CodePackage struct {
 type Code struct {
 	Version  string
 	Packages map[string]*CodePackage
-	Conf     *config.Conf
+	Conf     *config.GVConfig
 	*downloader.Downloader
 }
 
@@ -67,7 +69,7 @@ func (that *Code) initeDirs() {
 }
 
 func (that *Code) getPackages() (r string) {
-	that.Url = that.Conf.Config.Code.DownloadUrl
+	that.Url = that.Conf.Code.DownloadUrl
 	that.Timeout = 30 * time.Second
 	if resp := that.GetUrl(); resp != nil {
 		rjson, _ := io.ReadAll(resp.Body)
@@ -108,7 +110,7 @@ func (that *Code) download() (r string) {
 			return
 		}
 		fpath := filepath.Join(config.CodeTarFileDir, fmt.Sprintf("%s-%s%s", key, that.Version, suffix))
-		that.Url = strings.Replace(p.Url, that.Conf.Config.Code.StableUrl, that.Conf.Config.Code.CdnUrl, -1)
+		that.Url = strings.Replace(p.Url, that.Conf.Code.StableUrl, that.Conf.Code.CdnUrl, -1)
 		that.Timeout = 60 * time.Second
 		if size := that.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
 			if ok := utils.CheckFile(fpath, p.CheckType, p.CheckSum); ok {
@@ -209,5 +211,45 @@ func (that *Code) Install() {
 		}
 	case "linux":
 		that.InstallForLinux()
+	}
+}
+
+func (that *Code) installExtension(extName string) error {
+	cmd := exec.Command("code", "--install-extension", extName)
+	cmd.Env = genv.All()
+	cmd.Stderr = os.Stderr
+	cmd.Stdout = os.Stdout
+	cmd.Stdin = os.Stdin
+	return cmd.Run()
+}
+
+func (that *Code) InstallExts() {
+	for _, extName := range that.Conf.Code.ExtIdentifiers {
+		that.installExtension(extName)
+	}
+}
+
+func (that *Code) SyncInstalledExts() {
+	cmd := exec.Command("code", "--list-extensions")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		fmt.Printf("cmd.Run() failed with %sn", err)
+		return
+	}
+	iNameList := strings.Split(string(out), "\n")
+	if len(iNameList) > 0 {
+		newList := []string{}
+		fmt.Println("Local installed vscode extensions: ")
+		for _, iName := range iNameList {
+			if strings.Contains(iName, ".") && len(iName) > 3 {
+				newList = append(newList, iName)
+				fmt.Println(iName)
+			}
+		}
+		if len(newList) > 0 {
+			that.Conf.Code.ExtIdentifiers = newList
+		}
+		that.Conf.Restore()
+		that.Conf.Push()
 	}
 }

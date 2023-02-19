@@ -17,20 +17,12 @@ import (
 	"github.com/studio-b12/gowebdav"
 )
 
-func init() {
-	if ok, _ := utils.PathIsExist(GVCWorkDir); !ok {
-		if err := os.MkdirAll(GVCWorkDir, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", GVCWorkDir, err)
-		}
-	}
-}
-
 type WebdavConf struct {
 	Host            string `koanf:"url"`
 	Username        string `koanf:"username"`
 	Password        string `koanf:"password"`
 	RemoteDir       string `koanf:"remote_dir"`
-	RocalDir        string `koanf:"local_dir"`
+	LocalDir        string `koanf:"local_dir"`
 	DefaultFilesUrl string `koanf:"default_files"`
 	k               *koanf.Koanf
 	parser          *yaml.YAML
@@ -38,7 +30,7 @@ type WebdavConf struct {
 	d               *downloader.Downloader
 }
 
-func NewWebdav() (r *WebdavConf) {
+func NewWebdavConf() (r *WebdavConf) {
 	r = &WebdavConf{
 		RemoteDir: "/gvc_backups",
 		k:         koanf.New("."),
@@ -55,11 +47,6 @@ func (that *WebdavConf) setupW() {
 	} else {
 		that.Reload()
 	}
-	if ok, _ := utils.PathIsExist(GVCBackupDir); !ok {
-		if err := os.MkdirAll(GVCBackupDir, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", GVCBackupDir, err)
-		}
-	}
 }
 
 func (that *WebdavConf) set() {
@@ -70,7 +57,12 @@ func (that *WebdavConf) set() {
 }
 
 func (that *WebdavConf) Reset() {
-	that.RocalDir = GVCBackupDir
+	that.LocalDir = GVCBackupDir
+	if ok, _ := utils.PathIsExist(that.LocalDir); !ok {
+		if err := os.MkdirAll(that.LocalDir, os.ModePerm); err != nil {
+			fmt.Println("[mkdir Failed] ", that.LocalDir, err)
+		}
+	}
 	that.Host = "https://dav.jianguoyun.com/dav/"
 	that.DefaultFilesUrl = "https://gitee.com/moqsien/gvc/releases/download/v1/misc-all.zip"
 	that.set()
@@ -128,8 +120,8 @@ func (that *WebdavConf) GetDefaultFiles() {
 	that.d.Timeout = 60 * time.Second
 	fpath := filepath.Join(GVCWorkDir, "all.zip")
 	if size := that.d.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
-		if l, _ := os.ReadDir(that.RocalDir); len(l) == 0 {
-			if err := archiver.Unarchive(fpath, that.RocalDir); err != nil {
+		if l, _ := os.ReadDir(that.LocalDir); len(l) == 0 {
+			if err := archiver.Unarchive(fpath, that.LocalDir); err != nil {
 				fmt.Println("[Unarchive file failed] ", err)
 			}
 		} else {
@@ -157,7 +149,7 @@ func (that *WebdavConf) Pull() {
 			for _, info := range iList {
 				if !info.IsDir() {
 					b, _ := that.client.Read(filepath.Join(that.RemoteDir, info.Name()))
-					os.WriteFile(filepath.Join(that.RocalDir, info.Name()), b, 0644)
+					os.WriteFile(filepath.Join(that.LocalDir, info.Name()), b, 0644)
 				}
 			}
 		} else if that.DefaultFilesUrl != "" {
@@ -181,10 +173,10 @@ func (that *WebdavConf) Push() {
 			fmt.Println(err)
 			return
 		}
-		if iList, _ := os.ReadDir(that.RocalDir); len(iList) > 0 {
+		if iList, _ := os.ReadDir(that.LocalDir); len(iList) > 0 {
 			for _, info := range iList {
 				if !info.IsDir() {
-					b, _ := os.ReadFile(filepath.Join(that.RocalDir, info.Name()))
+					b, _ := os.ReadFile(filepath.Join(that.LocalDir, info.Name()))
 					that.client.Write(filepath.Join(that.RemoteDir, info.Name()), b, 0644)
 				}
 			}

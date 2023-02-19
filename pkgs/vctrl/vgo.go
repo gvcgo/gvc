@@ -14,7 +14,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gookit/color"
 	"github.com/mholt/archiver/v3"
-	"github.com/moqsien/gvc/pkgs/config"
+	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/downloader"
 	"github.com/moqsien/gvc/pkgs/utils"
 )
@@ -34,7 +34,7 @@ type GoVersion struct {
 	*downloader.Downloader
 	Versions  map[string][]*GoPackage
 	Doc       *goquery.Document
-	Conf      *config.Conf
+	Conf      *config.GVConfig
 	ParsedUrl *url.URL
 }
 
@@ -67,8 +67,8 @@ func (that *GoVersion) initeDirs() {
 }
 
 func (that *GoVersion) getDoc() {
-	if len(that.Conf.Config.Go.CompilerUrls) > 0 {
-		that.Url = that.Conf.Config.Go.CompilerUrls[0]
+	if len(that.Conf.Go.CompilerUrls) > 0 {
+		that.Url = that.Conf.Go.CompilerUrls[0]
 		var err error
 		if that.ParsedUrl, err = url.Parse(that.Url); err != nil {
 			panic(err)
@@ -261,7 +261,7 @@ func (that *GoVersion) CheckAndInitEnv() {
 			if err == nil {
 				c := string(content)
 				os.WriteFile(fmt.Sprintf("%s.backup", shellrc), content, 0644)
-				envir := fmt.Sprintf(config.GoUnixEnv, that.Conf.Config.Go.Proxies[0], fmt.Sprintf("$PATH:%s:%s", "$GOPATH/bin", "$GOROOT/bin"))
+				envir := fmt.Sprintf(config.GoUnixEnv, that.Conf.Go.Proxies[0], fmt.Sprintf("$PATH:%s:%s", "$GOPATH/bin", "$GOROOT/bin"))
 				if !strings.Contains(c, "# Golang Start") {
 					s := fmt.Sprintf("%v\n%s", c, envir)
 					os.WriteFile(shellrc, []byte(strings.ReplaceAll(s, utils.GetHomeDir(), "$HOME")), 0644)
@@ -270,7 +270,7 @@ func (that *GoVersion) CheckAndInitEnv() {
 		}
 	} else {
 		wbat := fmt.Sprintf(config.GoWinEnv,
-			that.Conf.Config.Go.Proxies[0],
+			that.Conf.Go.Proxies[0],
 			fmt.Sprintf("%s;%s;%s", `%Path%`,
 				filepath.Join(config.DefaultGoPath, "bin"),
 				filepath.Join(config.DefaultGoRoot, "bin")),
@@ -345,12 +345,14 @@ func (that *GoVersion) ShowInstalled() {
 		return
 	}
 	for _, v := range installedList {
-		if current == v.Name() {
-			s := fmt.Sprintf("%s <Current>", v.Name())
-			color.Yellow.Println(s)
-			continue
+		if v.IsDir() {
+			if current == v.Name() {
+				s := fmt.Sprintf("%s <Current>", v.Name())
+				color.Yellow.Println(s)
+				continue
+			}
+			color.Cyan.Println(v.Name())
 		}
-		color.Cyan.Println(v.Name())
 	}
 }
 

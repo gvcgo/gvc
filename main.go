@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/moqsien/gvc/pkgs/cmd"
-	"github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/vctrl"
 )
 
@@ -13,12 +12,13 @@ func main() {
 	c := cmd.New()
 	ePath, _ := os.Executable()
 	if !strings.HasSuffix(ePath, "gvc") && !strings.HasSuffix(ePath, "gvc.exe") {
-		// config.New().Reset()
-		// vctrl.NewCode().Install()
-		w := confs.NewWebdav()
-		// w.Reset()
-		// w.SetConf()
-		w.Pull()
+		// c := confs.New()
+		// c.SetupWebdav()
+		// c.Reset()
+		v := vctrl.NewGoVersion()
+		v.ShowRemoteVersions(vctrl.ShowStable)
+		v.UseVersion("1.19.6")
+		v.ShowInstalled()
 	} else if len(os.Args) < 2 {
 		vctrl.SelfInstall()
 	} else {

@@ -12,11 +12,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-ping/ping"
-	"github.com/moqsien/gvc/pkgs/config"
+	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/downloader"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/panjf2000/ants/v2"
+	ping "github.com/prometheus-community/pro-bing"
 	"github.com/schollz/progressbar/v3"
 )
 
@@ -40,26 +40,26 @@ type host struct {
 type hostList map[string]host // key: host name, value: host
 
 type Hosts struct {
-	configFile *config.Conf
-	filePath   string
-	rawList    map[string]string
-	hList      hostList
-	lineReg    *regexp.Regexp
-	hostReg    *regexp.Regexp
-	lock       *sync.Mutex
-	wg         sync.WaitGroup
-	pool       *ants.PoolWithFunc
-	bar        *progressbar.ProgressBar
+	Conf     *config.GVConfig
+	filePath string
+	rawList  map[string]string
+	hList    hostList
+	lineReg  *regexp.Regexp
+	hostReg  *regexp.Regexp
+	lock     *sync.Mutex
+	wg       sync.WaitGroup
+	pool     *ants.PoolWithFunc
+	bar      *progressbar.ProgressBar
 	*downloader.Downloader
 }
 
-func New() *Hosts {
+func NewHosts() *Hosts {
 	conf := config.New()
 	lineReg := `((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}`
 	hostsReg := fmt.Sprintf(`%s[\s\S]*%s`, HEAD, TAIL)
 	return &Hosts{
-		configFile: conf,
-		filePath:   conf.GetHostsFilePath(),
+		Conf:       conf,
+		filePath:   config.GetHostsFilePath(),
 		rawList:    make(map[string]string, 200),
 		hList:      make(hostList, 200),
 		lineReg:    regexp.MustCompile(lineReg),
@@ -95,8 +95,8 @@ func (that *Hosts) ParseHosts(content []byte) {
 
 func (that *Hosts) GetHosts() {
 	resps := make(chan *http.Response, 10)
-	that.Timeout = time.Duration(that.configFile.Config.ReqTimeout) * time.Second
-	for _, url := range that.configFile.Config.SourceUrls {
+	that.Timeout = time.Duration(that.Conf.Hosts.ReqTimeout) * time.Second
+	for _, url := range that.Conf.Hosts.SourceUrls {
 		that.wg.Add(1)
 		var url_ string = url
 		go func() {
@@ -122,7 +122,7 @@ func (that *Hosts) GetHosts() {
 }
 
 func (that *Hosts) toSave(url string) bool {
-	filters := that.configFile.Config.HostFilters
+	filters := that.Conf.Hosts.HostFilters
 	if len(filters) == 0 {
 		return true
 	}
@@ -152,28 +152,28 @@ func (that *Hosts) pingHosts(args interface{}) {
 		fmt.Println("Ping hosts errored: ", err)
 		return
 	}
-	pinger.Count = that.configFile.Config.PingCount
+	pinger.Count = that.Conf.Hosts.PingCount
+	pinger.Count = 1
 	if utils.GetShell() == "win" {
 		pinger.SetPrivileged(true)
 	}
-	pinger.Timeout = time.Duration(that.configFile.Config.MaxAvgRtt) * time.Millisecond
+	pinger.Timeout = time.Duration(that.Conf.Hosts.ReqTimeout) * time.Millisecond
+	pinger.OnFinish = func(statics *ping.Statistics) {
+		if len(statics.Rtts) > 0 {
+			that.lock.Lock()
+			if old, ok := that.hList[url]; !ok {
+				that.hList[url] = host{IP: ip, AvgRTT: statics.AvgRtt}
+			} else {
+				if old.AvgRTT > statics.AvgRtt {
+					that.hList[url] = host{IP: ip, AvgRTT: statics.AvgRtt}
+				}
+			}
+			that.lock.Unlock()
+		}
+	}
 	err = pinger.Run()
 	if err != nil {
 		fmt.Println(err)
-		return
-	}
-	statics := pinger.Statistics()
-
-	if len(statics.Rtts) > 0 {
-		that.lock.Lock()
-		if old, ok := that.hList[url]; !ok {
-			that.hList[url] = host{IP: ip, AvgRTT: statics.AvgRtt}
-		} else {
-			if old.AvgRTT > statics.AvgRtt {
-				that.hList[url] = host{IP: ip, AvgRTT: statics.AvgRtt}
-			}
-		}
-		that.lock.Unlock()
 	}
 }
 
@@ -238,11 +238,11 @@ func (that *Hosts) FormatAndSaveHosts(oldContent []byte) {
 		}
 		var err error
 		if utils.GetShell() == "win" {
-			err = os.WriteFile(that.configFile.GetHostsFilePath(), []byte(newStr), 0666)
+			err = os.WriteFile(config.GetHostsFilePath(), []byte(newStr), 0666)
 		} else {
 			err = os.WriteFile(config.TempHostsFilePath, []byte(newStr), 0666)
 			if err == nil {
-				err = utils.CopyFileOnUnixSudo(config.TempHostsFilePath, that.configFile.GetHostsFilePath())
+				err = utils.CopyFileOnUnixSudo(config.TempHostsFilePath, config.GetHostsFilePath())
 			}
 		}
 		if err != nil {
@@ -255,7 +255,7 @@ func (that *Hosts) FormatAndSaveHosts(oldContent []byte) {
 
 func (that *Hosts) Run() {
 	that.GetHosts()
-	hostFilePath := that.configFile.GetHostsFilePath()
+	hostFilePath := config.GetHostsFilePath()
 	hostBackupFilePath := filepath.Join(filepath.Dir(hostFilePath), "hosts.backup")
 	oldContent := that.ReadAndBackupHosts(hostFilePath, hostBackupFilePath)
 
@@ -273,7 +273,7 @@ func (that *Hosts) Run() {
 		}))
 	that.bar = bar
 
-	if pool, err := ants.NewPoolWithFunc(that.configFile.Config.WorkerNum, func(args interface{}) {
+	if pool, err := ants.NewPoolWithFunc(that.Conf.Hosts.WorkerNum, func(args interface{}) {
 		that.pingHosts(args)
 	}); err != nil {
 		return

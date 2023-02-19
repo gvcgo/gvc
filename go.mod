@@ -4,13 +4,13 @@ go 1.20
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.0
-	github.com/go-ping/ping v1.1.0
 	github.com/gogf/gf v1.16.9
 	github.com/gookit/color v1.5.2
 	github.com/k0kubun/go-ansi v0.0.0-20180517002512-3bf9e2903213
 	github.com/knadh/koanf v1.5.0
 	github.com/mholt/archiver/v3 v3.5.1
 	github.com/panjf2000/ants/v2 v2.7.1
+	github.com/prometheus-community/pro-bing v0.1.0
 	github.com/schollz/progressbar/v3 v3.13.0
 	github.com/studio-b12/gowebdav v0.0.0-20230203202212-3282f94193f2
 	github.com/tidwall/gjson v1.14.4
@@ -44,9 +44,9 @@ require (
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	github.com/xo/terminfo v0.0.0-20210125001918-ca9a967f8778 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
-	golang.org/x/net v0.5.0 // indirect
+	golang.org/x/net v0.7.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
-	golang.org/x/sys v0.4.0 // indirect
-	golang.org/x/term v0.4.0 // indirect
+	golang.org/x/sys v0.5.0 // indirect
+	golang.org/x/term v0.5.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
