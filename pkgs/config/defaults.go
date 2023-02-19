@@ -87,6 +87,6 @@ var (
 
 var (
 	CodeEnvForUnix string = `# VSCode start
-export PATH="$PATH:%s"
+export PATH="%s:$PATH"
 # VSCode end`
 )

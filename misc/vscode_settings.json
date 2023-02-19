@@ -1,0 +1,12 @@
+{
+    "workbench.editor.enablePreview": true,
+    "tabnine.experimentalAutoImports": false,
+    "workbench.colorTheme": "Atom One Dark",
+    "editor.fontSize": 18,
+    "editor.suggest.preview": true,
+    "vscode-neovim.neovimExecutablePaths.darwin": "/usr/local/bin/nvim",
+    "workbench.iconTheme": "material-icon-theme",
+    "[python]": {
+        "editor.formatOnType": true
+    }
+}

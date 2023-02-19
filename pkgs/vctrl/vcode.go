@@ -95,6 +95,7 @@ func (that *Code) getPackages() (r string) {
 func (that *Code) download() (r string) {
 	that.getPackages()
 	key := fmt.Sprintf("%s-%s", runtime.GOOS, runtime.GOARCH)
+	// key := "windows-arm64"
 	if p := that.Packages[key]; p != nil {
 		fmt.Println(p.Url)
 		var suffix string
@@ -112,6 +113,8 @@ func (that *Code) download() (r string) {
 		if size := that.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
 			if ok := utils.CheckFile(fpath, p.CheckType, p.CheckSum); ok {
 				r = fpath
+			} else {
+				os.RemoveAll(fpath)
 			}
 		}
 	} else {
@@ -148,7 +151,7 @@ func (that *Code) InstallForWin() {
 	}
 }
 
-func (that *Code) addEnvForUnix() {
+func (that *Code) addEnvForUnix(binaryDir string) {
 	shellrc := utils.GetShellRcFile()
 	if file, err := os.Open(shellrc); err == nil {
 		defer file.Close()
@@ -156,7 +159,7 @@ func (that *Code) addEnvForUnix() {
 		if err == nil {
 			c := string(content)
 			os.WriteFile(fmt.Sprintf("%s.backup", shellrc), content, 0644)
-			envir := fmt.Sprintf(config.CodeEnvForUnix, config.CodeMacCmdBinaryDir)
+			envir := fmt.Sprintf(config.CodeEnvForUnix, binaryDir)
 			if !strings.Contains(c, "# VSCode start") {
 				s := fmt.Sprintf("%v\n%s", c, envir)
 				os.WriteFile(shellrc, []byte(strings.ReplaceAll(s, utils.GetHomeDir(), "$HOME")), 0644)
@@ -181,12 +184,19 @@ func (that *Code) InstallForMac() {
 			}
 		}
 	}
-	that.addEnvForUnix()
+	that.addEnvForUnix(config.CodeMacCmdBinaryDir)
 }
 
 func (that *Code) InstallForLinux() {
 	that.download()
-	that.addEnvForUnix()
+	if codeDir, _ := os.ReadDir(config.CodeUntarFile); len(codeDir) > 0 && len(codeDir) < 3 {
+		for _, file := range codeDir {
+			if file.IsDir() {
+				binaryDir := filepath.Join(config.CodeUntarFile, file.Name(), "bin")
+				that.addEnvForUnix(binaryDir)
+			}
+		}
+	}
 }
 
 func (that *Code) Install() {

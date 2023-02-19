@@ -237,6 +237,8 @@ func (that *GoVersion) download(version string) (r string) {
 		if size := that.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
 			if ok := that.checkFile(p, fpath); ok {
 				return fpath
+			} else {
+				os.RemoveAll(fpath)
 			}
 		}
 	} else {
