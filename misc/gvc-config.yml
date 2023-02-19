@@ -1,0 +1,46 @@
+go_config:
+    compiler_urls:
+        - https://golang.google.cn/dl/
+        - https://go.dev/dl/
+        - https://studygolang.com/dl
+    current: ""
+    proxies:
+        - https://goproxy.cn,direct
+        - https://repo.huaweicloud.com/repository/goproxy/,direct
+host_filters:
+    - github
+max_avg_rtt: 400
+ping_count: 10
+req_timeout: 30
+source_urls:
+    - https://www.foul.trade:3000/Johy/Hosts/raw/branch/main/hosts.txt
+    - https://gitlab.com/ineo6/hosts/-/raw/master/next-hosts
+    - https://raw.hellogithub.com/hosts
+vscode:
+    cdn_url: vscode.cdn.azure.cn
+    download_url: https://code.visualstudio.com/sha?build=stable
+    ext_identifiers:
+        - moqsien.easynotes
+        - doggy8088.go-extension-pack
+        - galkowskit.go-interface-annotations
+        - liuchao.go-struct-tag
+        - tabnine.tabnine-vscode
+        - gruntfuggly.todo-tree
+        - zxh404.vscode-proto3
+        - premparihar.gotestexplorer
+        - ms-python.python
+        - ms-python.vscode-pylance
+        - donjayamanne.python-environment-manager
+        - alefragnani.project-manager
+        - yzhang.markdown-all-in-one
+        - mhutchie.git-graph
+        - asvetliakov.vscode-neovim
+        - ms-ceintl.vscode-language-pack-zh-hans
+        - bracketpaircolordlw.bracket-pair-color-dlw
+        - rust-lang.rust-analyzer
+        - vue.volar
+        - joe-re.sql-language-server
+        - akamud.vscode-theme-onedark
+        - pkief.material-icon-theme
+    stable_url: az764295.vo.msecnd.net
+worker_num: 100

@@ -11,8 +11,11 @@ import (
 gvc related
 */
 var (
-	GVCWorkDir        = filepath.Join(utils.GetHomeDir(), ".gvc/")
-	DefaultConfigPath = filepath.Join(GVCWorkDir, "config.yml")
+	GVCWorkDir          = filepath.Join(utils.GetHomeDir(), ".gvc/")
+	GVCWebdavConfigPath = filepath.Join(GVCWorkDir, "webdav.yml")
+	GVCBackupDir        = filepath.Join(GVCWorkDir, "backup")
+	DefaultConfigPath   = filepath.Join(GVCWorkDir, "config.yml")
+	RealConfigPath      = filepath.Join(GVCBackupDir, "gvc-config.yml")
 )
 
 /*
