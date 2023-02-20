@@ -162,6 +162,7 @@ func (that *WebdavConf) Pull() {
 		}
 	} else {
 		fmt.Println("Please set your correct webdav info.")
+		fmt.Println("Use command like: gvc c w")
 	}
 }
 

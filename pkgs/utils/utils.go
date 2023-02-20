@@ -151,6 +151,10 @@ func MkSymLink(target, newfile string) (err error) {
 	return os.Symlink(target, newfile)
 }
 
+func GetWinAppdataEnv() string {
+	return os.Getenv("APPDATA")
+}
+
 func SetWinEnv(key, value string, isSys ...bool) (err error) {
 	if runtime.GOOS == "windows" {
 		var args []string

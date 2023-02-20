@@ -62,12 +62,16 @@ var (
 		"Library/Application Support/Code/User/settings.json")
 	CodeKeybindingsFilePathForMac string = filepath.Join(utils.GetHomeDir(),
 		"Library/Application Support/Code/User/keybindings.json")
-	CodeUserSettingsFilePathForWin   string = ""
-	CodeKeybindingsFilePathForWin    string = ""
-	CodeUserSettingsFilePathForLinux string = ""
-	CodeKeybindingsFilePathForLinux  string = ""
-	CodeUserSettingsBackupPath              = filepath.Join(GVCBackupDir, "vscode-settings.json")
-	CodeKeybindingsBackupPath               = filepath.Join(GVCBackupDir, "vscode-keybindings.json")
+	CodeUserSettingsFilePathForWin string = filepath.Join(utils.GetWinAppdataEnv(),
+		`Code\User\settings.json`)
+	CodeKeybindingsFilePathForWin string = filepath.Join(utils.GetWinAppdataEnv(),
+		`Code\User\keybindings.json`)
+	CodeUserSettingsFilePathForLinux string = filepath.Join(utils.GetHomeDir(),
+		".config/Code/User/settings.json")
+	CodeKeybindingsFilePathForLinux string = filepath.Join(utils.GetHomeDir(),
+		".config/Code/User/keybindings.json")
+	CodeUserSettingsBackupPath = filepath.Join(GVCBackupDir, "vscode-settings.json")
+	CodeKeybindingsBackupPath  = filepath.Join(GVCBackupDir, "vscode-keybindings.json")
 )
 
 func GetCodeUserSettingsPath() string {
