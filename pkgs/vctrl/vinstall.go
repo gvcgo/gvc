@@ -41,7 +41,7 @@ func setEnvForGVC(genvs string) {
 	if shellrc != utils.Win {
 		utils.SetUnixEnv(genvs)
 	} else {
-		utils.SetWinEnv("Path", fmt.Sprintf("%s;%s", "%Path%", config.GVCWorkDir))
+		utils.SetWinEnv("PATH", config.GVCWorkDir)
 	}
 	fmt.Println("GVC set env successed!")
 }

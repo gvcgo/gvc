@@ -96,7 +96,7 @@ func (that *NVim) getBinaryPath() (r string) {
 func (that *NVim) setenv() {
 	if ok, _ := utils.PathIsExist(that.getBinaryPath()); ok {
 		if runtime.GOOS == "windows" {
-			utils.WindowsSetEnv("Path", fmt.Sprintf("%s;%s", "%Path%", that.getBinaryPath()))
+			utils.SetWinEnv("PATH", that.getBinaryPath())
 		} else {
 			envars := fmt.Sprintf(config.NVimUnixEnv, that.getBinaryPath())
 			utils.SetUnixEnv(envars)

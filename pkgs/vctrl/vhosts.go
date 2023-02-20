@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strings"
 	"sync"
 	"time"
@@ -153,8 +154,7 @@ func (that *Hosts) pingHosts(args interface{}) {
 		return
 	}
 	pinger.Count = that.Conf.Hosts.PingCount
-	pinger.Count = 1
-	if utils.GetShell() == "win" {
+	if runtime.GOOS == "windows" {
 		pinger.SetPrivileged(true)
 	}
 	pinger.Timeout = time.Duration(that.Conf.Hosts.ReqTimeout) * time.Millisecond
@@ -293,6 +293,8 @@ func (that *Hosts) Run() {
 		}
 	}
 	that.wg.Wait()
+	time.Sleep(1 * time.Second)
+	fmt.Printf("Find available hosts: <%v/%v(raw)>", len(that.hList), len(that.rawList))
 	that.FormatAndSaveHosts(oldContent)
 }
 

@@ -27,15 +27,37 @@ func New() *Cmder {
 func (that *Cmder) vhost() {
 	command := &cli.Command{
 		Name:        "host",
-		Aliases:     []string{"h"},
+		Aliases:     []string{"h", "hosts"},
 		Usage:       "gvc host",
-		Description: "Fetch hosts for github.",
+		Description: "Manage system hosts file.",
+		Subcommands: []*cli.Command{},
+	}
+	fetch := &cli.Command{
+		Name:        "fetch",
+		Aliases:     []string{"f"},
+		Usage:       "gvc host fetch",
+		Description: "Fetch github hosts info.",
 		Action: func(ctx *cli.Context) error {
 			h := vctrl.NewHosts()
 			h.Run()
 			return nil
 		},
 	}
+	command.Subcommands = append(command.Subcommands, fetch)
+
+	showpath := &cli.Command{
+		Name:        "show",
+		Aliases:     []string{"s"},
+		Usage:       "gvc host show",
+		Description: "Show hosts file path.",
+		Action: func(ctx *cli.Context) error {
+			h := vctrl.NewHosts()
+			h.ShowFilePath()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, showpath)
+
 	that.Commands = append(that.Commands, command)
 }
 

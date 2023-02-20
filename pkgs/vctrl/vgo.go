@@ -261,51 +261,24 @@ func (that *GoVersion) checkFile(p *GoPackage, fpath string) (r bool) {
 
 func (that *GoVersion) CheckAndInitEnv() {
 	if runtime.GOOS != "windows" {
-		// shellrc := utils.GetShellRcFile()
-		// if file, err := os.Open(shellrc); err == nil {
-		// 	defer file.Close()
-		// 	content, err := io.ReadAll(file)
-		// 	if err == nil {
-		// 		c := string(content)
-		// 		os.WriteFile(fmt.Sprintf("%s.backup", shellrc), content, 0644)
-		// 		envir := fmt.Sprintf(config.GoUnixEnv, that.Conf.Go.Proxies[0], fmt.Sprintf("$PATH:%s:%s", "$GOPATH/bin", "$GOROOT/bin"))
-		// 		if !strings.Contains(c, "# Golang Start") {
-		// 			s := fmt.Sprintf("%v\n%s", c, envir)
-		// 			os.WriteFile(shellrc, []byte(strings.ReplaceAll(s, utils.GetHomeDir(), "$HOME")), 0644)
-		// 		}
-		// 	}
-		// }
 		envar := fmt.Sprintf(config.GoUnixEnv,
 			that.Conf.Go.Proxies[0],
 			fmt.Sprintf("%s:%s:$PATH", "$GOPATH/bin", "$GOROOT/bin"))
 		utils.SetUnixEnv(envar)
 	} else {
-		// wbat := fmt.Sprintf(config.GoWinEnv,
-		// 	that.Conf.Go.Proxies[0],
-		// 	fmt.Sprintf("%s;%s;%s", `%Path%`,
-		// 		filepath.Join(config.DefaultGoPath, "bin"),
-		// 		filepath.Join(config.DefaultGoRoot, "bin")),
-		// )
-		// if err := os.WriteFile(config.GoWinBatPath, []byte(wbat), 0777); err != nil {
-		// 	fmt.Println("[create batfile failed] ", err)
-		// 	return
-		// }
-		// if err := exec.Command("cmd", "/c", "start", config.GoWinBatPath).Run(); err != nil {
-		// 	fmt.Println("[create batfile failed] ", err)
-		// 	return
-		// }
 		envarList := map[string]string{
 			"GOROOT":  config.DefaultGoRoot,
 			"GOPATH":  config.DefaultGoPath,
 			"GOBIN":   filepath.Join(config.DefaultGoPath, "bin"),
 			"GOPROXY": that.Conf.Go.Proxies[0],
-			"Path": fmt.Sprintf("%s;%s;%s", `%Path%`,
-				filepath.Join(config.DefaultGoPath, "bin"),
-				filepath.Join(config.DefaultGoRoot, "bin")),
 		}
 		for key, value := range envarList {
 			utils.SetWinEnv(key, value)
 		}
+		ePath := fmt.Sprintf("%s;%s",
+			filepath.Join(config.DefaultGoPath, "bin"),
+			filepath.Join(config.DefaultGoRoot, "bin"))
+		utils.SetWinEnv("PATH", ePath)
 		fmt.Println("set go envs successed!")
 	}
 	if ok, _ := utils.PathIsExist(config.DefaultGoPath); !ok {

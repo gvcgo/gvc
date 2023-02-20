@@ -114,15 +114,6 @@ func CopyFileOnUnixSudo(from, to string) error {
 	return cmd.Run()
 }
 
-func WindowsSetEnv(key, value string) error {
-	cmd := exec.Command("setx", key, value)
-	cmd.Env = genv.All()
-	cmd.Stderr = os.Stderr
-	cmd.Stdout = os.Stdout
-	cmd.Stdin = os.Stdin
-	return cmd.Run()
-}
-
 func CopyFile(src, dst string) (written int64, err error) {
 	srcFile, err := os.Open(src)
 
@@ -157,15 +148,34 @@ func GetWinAppdataEnv() string {
 
 func SetWinEnv(key, value string, isSys ...bool) (err error) {
 	if runtime.GOOS == "windows" {
-		var args []string
-		if len(isSys) > 0 && isSys[0] {
-			args = []string{"/c", "setx", key, value, "/m"}
-		} else {
-			args = []string{"/c", "setx", key, value}
+		// handle path for windows.
+		k := strings.ToLower(key)
+		if k == "path" {
+			oldPath := strings.Trim(os.Getenv("Path"), ";")
+			if strings.Contains(oldPath, value) {
+				return
+			}
+			value = fmt.Sprintf("%s;%s", oldPath, value)
 		}
-		err = exec.Command("cmd", args...).Run()
+		var c *exec.Cmd
+		if len(isSys) > 0 && isSys[0] {
+			c = exec.Command("setx", key, value, "/m")
+		} else {
+			c = exec.Command("setx", key, value)
+		}
+		c.Env = os.Environ()
+		err = c.Run()
+		if k == "path" {
+			fmt.Println("!!!Close current window to make envs valid!!!")
+		}
 	}
 	return
+}
+
+func WinCmdExit() {
+	if runtime.GOOS == "windows" {
+		exec.Command("exit()").Run()
+	}
 }
 
 func SetUnixEnv(envars string) {
