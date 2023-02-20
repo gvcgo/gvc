@@ -14,7 +14,7 @@ gvc related
 const GVCVersion = "v0.1.0"
 
 var (
-	GVCWorkDir          = filepath.Join(utils.GetHomeDir(), ".gvc/")
+	GVCWorkDir          = filepath.Join(utils.GetHomeDir(), ".gvc")
 	GVCWebdavConfigPath = filepath.Join(GVCWorkDir, "webdav.yml")
 	GVCBackupDir        = filepath.Join(GVCWorkDir, "backup")
 	GVConfigPath        = filepath.Join(GVCBackupDir, "gvc-config.yml")
@@ -33,9 +33,10 @@ var TempHostsFilePath = filepath.Join(GVCWorkDir, "/temp_hosts.txt")
 func GetHostsFilePath() (r string) {
 	if runtime.GOOS == "windows" {
 		r = HostFilePathForWin
+		return
 	}
 	r = HostFilePathForNix
-	return r
+	return
 }
 
 /*
@@ -48,7 +49,7 @@ var (
 	CodeMacInstallDir   string = "/Applications/"
 	CodeMacCmdBinaryDir string = filepath.Join(CodeMacInstallDir, "Visual Studio Code.app/Contents/Resources/app/bin")
 	CodeWinCmdBinaryDir string = filepath.Join(CodeUntarFile, "bin")
-	CodeWinShortcutPath string = filepath.Join(utils.GetHomeDir(), "Desktop/", "Visual Studio Code")
+	CodeWinShortcutPath string = filepath.Join(utils.GetHomeDir(), `Desktop\Visual Studio Code`)
 )
 
 var (
@@ -105,9 +106,16 @@ go related
 */
 var GoFilesDir = filepath.Join(GVCWorkDir, "go_files")
 
+func getGoPath() string {
+	if runtime.GOOS != "windows" {
+		return "data/projects/go"
+	}
+	return `data\projects\go`
+}
+
 var (
 	DefaultGoRoot    string = filepath.Join(GoFilesDir, "go")
-	DefaultGoPath    string = filepath.Join(utils.GetHomeDir(), "data/projects/go")
+	DefaultGoPath    string = filepath.Join(utils.GetHomeDir(), getGoPath())
 	DefaultGoProxy   string = "https://goproxy.cn,direct"
 	GoTarFilesPath   string = filepath.Join(GoFilesDir, "downloads")
 	GoUnTarFilesPath string = filepath.Join(GoFilesDir, "versions")
@@ -128,24 +136,6 @@ export PATH="%s"
 		`%s`,
 		`%s`)
 )
-
-// var (
-// 	GoWinBatPattern string = `@echo off
-// setx "GOROOT" "%s"
-// setx "GOPATH" "%s"
-// setx "GORIN" "%s"
-// setx "GOPROXY" "%s"
-// setx Path "%s"
-// @echo on
-// `
-// 	GoWinBatPath string = filepath.Join(GoFilesDir, "genv.bat")
-// 	GoWinEnv     string = fmt.Sprintf(GoWinBatPattern,
-// 		DefaultGoRoot,
-// 		DefaultGoPath,
-// 		filepath.Join(DefaultGoPath, "bin"),
-// 		`%s`,
-// 		`%s`)
-// )
 
 /*
 Neovim related.

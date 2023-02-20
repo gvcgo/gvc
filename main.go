@@ -1,10 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
 	"github.com/moqsien/gvc/pkgs/cmd"
+	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/vctrl"
 )
 
@@ -19,8 +21,9 @@ func main() {
 		// v.ShowRemoteVersions(vctrl.ShowStable)
 		// v.UseVersion("1.19.6")
 		// v.ShowInstalled()
-		v := vctrl.NewNVim()
-		v.Install()
+		// v := vctrl.NewNVim()
+		// v.Install()
+		fmt.Println(utils.JoinUnixFilePath("/abc", "d", "/a/", "abc"))
 	} else if len(os.Args) < 2 {
 		vctrl.SelfInstall()
 	} else {

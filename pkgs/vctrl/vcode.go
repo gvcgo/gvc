@@ -154,20 +154,6 @@ func (that *Code) InstallForWin() {
 }
 
 func (that *Code) addEnvForUnix(binaryDir string) {
-	// shellrc := utils.GetShellRcFile()
-	// if file, err := os.Open(shellrc); err == nil {
-	// 	defer file.Close()
-	// 	content, err := io.ReadAll(file)
-	// 	if err == nil {
-	// 		c := string(content)
-	// 		os.WriteFile(fmt.Sprintf("%s.backup", shellrc), content, 0644)
-	// 		envir := fmt.Sprintf(config.CodeEnvForUnix, binaryDir)
-	// 		if !strings.Contains(c, "# VSCode start") {
-	// 			s := fmt.Sprintf("%v\n%s", c, envir)
-	// 			os.WriteFile(shellrc, []byte(strings.ReplaceAll(s, utils.GetHomeDir(), "$HOME")), 0644)
-	// 		}
-	// 	}
-	// }
 	utils.SetUnixEnv(fmt.Sprintf(config.CodeEnvForUnix, binaryDir))
 }
 

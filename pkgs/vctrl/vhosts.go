@@ -295,3 +295,7 @@ func (that *Hosts) Run() {
 	that.wg.Wait()
 	that.FormatAndSaveHosts(oldContent)
 }
+
+func (that *Hosts) ShowFilePath() {
+	fmt.Println("HostsFile: ", config.GetHostsFilePath())
+}

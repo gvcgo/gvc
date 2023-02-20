@@ -2,6 +2,7 @@ package confs
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -123,7 +124,7 @@ func (that *WebdavConf) GetDefaultFiles() {
 	that.d.Url = that.DefaultFilesUrl
 	that.d.Timeout = 60 * time.Second
 	fpath := filepath.Join(GVCWorkDir, "all.zip")
-	if size := that.d.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
+	if size := that.d.GetFile(fpath, os.O_CREATE|os.O_WRONLY, os.ModePerm); size > 0 {
 		if l, _ := os.ReadDir(that.LocalDir); len(l) == 0 {
 			if err := archiver.Unarchive(fpath, that.LocalDir); err != nil {
 				fmt.Println("[Unarchive file failed] ", err)
@@ -140,7 +141,7 @@ func (that *WebdavConf) Pull() {
 		iList, err := that.client.ReadDir(that.RemoteDir)
 		if err != nil {
 			if strings.Contains(err.Error(), "404") {
-				if err := that.client.MkdirAll(that.RemoteDir, 0644); err != nil {
+				if err := that.client.MkdirAll(that.RemoteDir, os.ModePerm); err != nil {
 					fmt.Println("Create a new dir for webdav failed! ", err)
 					return
 				}
@@ -153,8 +154,15 @@ func (that *WebdavConf) Pull() {
 			that.checkBackupDir()
 			for _, info := range iList {
 				if !info.IsDir() {
-					b, _ := that.client.Read(filepath.Join(that.RemoteDir, info.Name()))
-					os.WriteFile(filepath.Join(that.LocalDir, info.Name()), b, 0644)
+					rPath := utils.JoinUnixFilePath(that.RemoteDir, info.Name())
+					b, _ := that.client.Read(rPath)
+					if len(b) == 0 {
+						r, _ := that.client.ReadStream(rPath)
+						file, _ := os.OpenFile(filepath.Join(that.LocalDir, info.Name()), os.O_CREATE|os.O_WRONLY, 0666)
+						io.Copy(file, r)
+						return
+					}
+					os.WriteFile(filepath.Join(that.LocalDir, info.Name()), b, os.ModePerm)
 				}
 			}
 		} else if that.DefaultFilesUrl != "" {
@@ -171,7 +179,7 @@ func (that *WebdavConf) Push() {
 		_, err := that.client.ReadDir(that.RemoteDir)
 		if err != nil {
 			if strings.Contains(err.Error(), "404") {
-				if err := that.client.MkdirAll(that.RemoteDir, 0644); err != nil {
+				if err := that.client.MkdirAll(that.RemoteDir, os.ModePerm); err != nil {
 					fmt.Println("Create a new dir for webdav failed! ", err)
 					return
 				}
@@ -183,7 +191,8 @@ func (that *WebdavConf) Push() {
 			for _, info := range iList {
 				if !info.IsDir() {
 					b, _ := os.ReadFile(filepath.Join(that.LocalDir, info.Name()))
-					that.client.Write(filepath.Join(that.RemoteDir, info.Name()), b, 0644)
+					rPath := utils.JoinUnixFilePath(that.RemoteDir, info.Name())
+					that.client.Write(rPath, b, os.ModePerm)
 				}
 			}
 		} else {

@@ -231,3 +231,15 @@ func CheckFile(fpath, cType, cSum string) (r bool) {
 	fmt.Println("Checksum successed.")
 	return true
 }
+
+func JoinUnixFilePath(pathList ...string) (r string) {
+	newList := []string{}
+	for _, p := range pathList {
+		newList = append(newList, strings.Trim(p, "/"))
+	}
+	r = strings.Join(newList, "/")
+	if !strings.HasPrefix(r, "/") {
+		r = fmt.Sprintf("%s%s", "/", r)
+	}
+	return
+}

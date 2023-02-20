@@ -78,6 +78,9 @@ func (that *GoVersion) getDoc() {
 			if err != nil {
 				fmt.Println("[parse page errored] ", err)
 			}
+			c := []byte{}
+			resp.Body.Read(c)
+			resp.Body.Close()
 		}
 	}
 }
@@ -106,6 +109,13 @@ func (that *GoVersion) findPackages(table *goquery.Selection) (pkgs []*GoPackage
 }
 
 func (that *GoVersion) hasUnstableVersions() bool {
+	if that.Doc == nil {
+		that.getDoc()
+	}
+	label := that.Doc.Find("#unstable")
+	if label == nil {
+		return false
+	}
 	return that.Doc.Find("#unstable").Length() > 0
 }
 
@@ -287,7 +297,7 @@ func (that *GoVersion) CheckAndInitEnv() {
 		envarList := map[string]string{
 			"GOROOT":  config.DefaultGoRoot,
 			"GOPATH":  config.DefaultGoPath,
-			"GORIN":   filepath.Join(config.DefaultGoPath, "bin"),
+			"GOBIN":   filepath.Join(config.DefaultGoPath, "bin"),
 			"GOPROXY": that.Conf.Go.Proxies[0],
 			"Path": fmt.Sprintf("%s;%s;%s", `%Path%`,
 				filepath.Join(config.DefaultGoPath, "bin"),
