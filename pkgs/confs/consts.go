@@ -103,3 +103,30 @@ setx Path "%s"
 		`%s`,
 		`%s`)
 )
+
+/*
+Neovim related.
+*/
+var (
+	NVimFileDir        string = filepath.Join(GVCWorkDir, "nvim_files")
+	NVimWinInitPath    string = filepath.Join(utils.GetHomeDir(), `\AppData\Local\nvim\init.vim`)
+	NVimUnixInitPath   string = filepath.Join(utils.GetHomeDir(), ".config/nvim/init.vim")
+	NVimInitBackupPath string = filepath.Join(GVCBackupDir, "nvim-init.vim")
+)
+
+func GetNVimInitPath() string {
+	if runtime.GOOS == "windows" {
+		return NVimWinInitPath
+	}
+	return NVimUnixInitPath
+}
+
+func GetNVimPlugDir() string {
+	return filepath.Dir(GetNVimInitPath())
+}
+
+var (
+	NVimUnixEnv string = `# nvim start
+export PATH="%s:$PATH"
+# nvim end`
+)

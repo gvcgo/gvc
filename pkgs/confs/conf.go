@@ -23,6 +23,7 @@ type GVConfig struct {
 	Hosts  *HostsConf  `koanf:"hosts"`
 	Go     *GoConf     `koanf:"go"`
 	Code   *CodeConf   `koanf:"code"`
+	NVim   *NVimConf   `koanf:"nvim"`
 	w      *WebdavConf `koanf:"webdav"`
 	k      *koanf.Koanf
 	parser *yaml.YAML
@@ -62,6 +63,8 @@ func (that *GVConfig) Reset() {
 	that.Go.Reset()
 	that.Code = NewCodeConf()
 	that.Code.Reset()
+	that.NVim = NewNVimConf()
+	that.NVim.Reset()
 	that.Restore()
 }
 

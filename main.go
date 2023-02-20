@@ -15,10 +15,12 @@ func main() {
 		// c := confs.New()
 		// c.SetupWebdav()
 		// c.Reset()
-		v := vctrl.NewGoVersion()
-		v.ShowRemoteVersions(vctrl.ShowStable)
-		v.UseVersion("1.19.6")
-		v.ShowInstalled()
+		// v := vctrl.NewGoVersion()
+		// v.ShowRemoteVersions(vctrl.ShowStable)
+		// v.UseVersion("1.19.6")
+		// v.ShowInstalled()
+		v := vctrl.NewNVim()
+		v.Install()
 	} else if len(os.Args) < 2 {
 		vctrl.SelfInstall()
 	} else {

@@ -164,6 +164,24 @@ func SetWinEnv(key, value string, isSys ...bool) (err error) {
 	return
 }
 
+func SetUnixEnv(envars string) {
+	shellrc := GetShellRcFile()
+	if file, err := os.Open(shellrc); err == nil {
+		defer file.Close()
+		content, err := io.ReadAll(file)
+		if err == nil {
+			c := string(content)
+			os.WriteFile(fmt.Sprintf("%s.backup", shellrc), content, 0644)
+			flag := strings.Split(envars, "\n")[0]
+			if strings.Contains(c, flag) {
+				return
+			}
+			s := fmt.Sprintf("%v\n%s", c, envars)
+			os.WriteFile(shellrc, []byte(strings.ReplaceAll(s, GetHomeDir(), "$HOME")), 0644)
+		}
+	}
+}
+
 func GetExt(filename string) (ext string) {
 	if strings.Contains(filename, ".tar.gz") {
 		return ".tar.gz"
