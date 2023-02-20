@@ -254,3 +254,35 @@ func (that *Code) SyncInstalledExts() {
 		that.Conf.Push()
 	}
 }
+
+func (that *Code) GetSettings() {
+	// get vscode settings from remote webdav.
+	if ok, _ := utils.PathIsExist(config.CodeUserSettingsBackupPath); ok {
+		if ok, _ := utils.PathIsExist(filepath.Dir(config.GetCodeUserSettingsPath())); ok {
+			utils.CopyFile(config.CodeUserSettingsBackupPath, config.GetCodeUserSettingsPath())
+		}
+	}
+
+	if ok, _ := utils.PathIsExist(config.CodeKeybindingsBackupPath); ok {
+		if ok, _ := utils.PathIsExist(filepath.Dir(config.GetCodeKeybindingsPath())); ok {
+			utils.CopyFile(config.CodeKeybindingsBackupPath, config.GetCodeKeybindingsPath())
+		}
+	}
+}
+
+func (that *Code) SyncSettings() {
+	// push vscode settings to remote webdav.
+	if ok, _ := utils.PathIsExist(config.GetCodeUserSettingsPath()); ok {
+		if ok, _ := utils.PathIsExist(filepath.Dir(config.CodeUserSettingsBackupPath)); ok {
+			utils.CopyFile(config.GetCodeUserSettingsPath(), config.CodeUserSettingsBackupPath)
+			that.Conf.Push()
+		}
+	}
+
+	if ok, _ := utils.PathIsExist(config.GetCodeKeybindingsPath()); ok {
+		if ok, _ := utils.PathIsExist(filepath.Dir(config.CodeKeybindingsBackupPath)); ok {
+			utils.CopyFile(config.GetCodeKeybindingsPath(), config.CodeKeybindingsBackupPath)
+			that.Conf.Push()
+		}
+	}
+}

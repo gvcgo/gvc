@@ -57,6 +57,45 @@ export PATH="%s:$PATH"
 # VSCode end`
 )
 
+var (
+	CodeUserSettingsFilePathForMac string = filepath.Join(utils.GetHomeDir(),
+		"Library/Application Support/Code/User/settings.json")
+	CodeKeybindingsFilePathForMac string = filepath.Join(utils.GetHomeDir(),
+		"Library/Application Support/Code/User/keybindings.json")
+	CodeUserSettingsFilePathForWin   string = ""
+	CodeKeybindingsFilePathForWin    string = ""
+	CodeUserSettingsFilePathForLinux string = ""
+	CodeKeybindingsFilePathForLinux  string = ""
+	CodeUserSettingsBackupPath              = filepath.Join(GVCBackupDir, "vscode-settings.json")
+	CodeKeybindingsBackupPath               = filepath.Join(GVCBackupDir, "vscode-keybindings.json")
+)
+
+func GetCodeUserSettingsPath() string {
+	switch runtime.GOOS {
+	case "darwin":
+		return CodeUserSettingsFilePathForMac
+	case "linux":
+		return CodeUserSettingsFilePathForLinux
+	case "windows":
+		return CodeUserSettingsFilePathForWin
+	default:
+		return ""
+	}
+}
+
+func GetCodeKeybindingsPath() string {
+	switch runtime.GOOS {
+	case "darwin":
+		return CodeKeybindingsFilePathForMac
+	case "linux":
+		return CodeKeybindingsFilePathForLinux
+	case "windows":
+		return CodeKeybindingsFilePathForWin
+	default:
+		return ""
+	}
+}
+
 /*
 go related
 */
@@ -86,23 +125,23 @@ export PATH="%s"
 		`%s`)
 )
 
-var (
-	GoWinBatPattern string = `@echo off
-setx "GOROOT" "%s"
-setx "GOPATH" "%s"
-setx "GORIN" "%s"
-setx "GOPROXY" "%s"
-setx Path "%s"
-@echo on
-`
-	GoWinBatPath string = filepath.Join(GoFilesDir, "genv.bat")
-	GoWinEnv     string = fmt.Sprintf(GoWinBatPattern,
-		DefaultGoRoot,
-		DefaultGoPath,
-		filepath.Join(DefaultGoPath, "bin"),
-		`%s`,
-		`%s`)
-)
+// var (
+// 	GoWinBatPattern string = `@echo off
+// setx "GOROOT" "%s"
+// setx "GOPATH" "%s"
+// setx "GORIN" "%s"
+// setx "GOPROXY" "%s"
+// setx Path "%s"
+// @echo on
+// `
+// 	GoWinBatPath string = filepath.Join(GoFilesDir, "genv.bat")
+// 	GoWinEnv     string = fmt.Sprintf(GoWinBatPattern,
+// 		DefaultGoRoot,
+// 		DefaultGoPath,
+// 		filepath.Join(DefaultGoPath, "bin"),
+// 		`%s`,
+// 		`%s`)
+// )
 
 /*
 Neovim related.

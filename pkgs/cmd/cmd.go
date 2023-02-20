@@ -24,13 +24,6 @@ func New() *Cmder {
 	return c
 }
 
-func (that *Cmder) initiate() {
-	that.vhost()
-	that.vgo()
-	that.vscode()
-	that.vconf()
-}
-
 func (that *Cmder) vhost() {
 	command := &cli.Command{
 		Name:        "host",
@@ -189,9 +182,9 @@ func (that *Cmder) vscode() {
 
 	showexts := &cli.Command{
 		Name:        "sync-extensions",
-		Aliases:     []string{"se", "sext", "sync"},
+		Aliases:     []string{"se", "sext"},
 		Usage:       "gvc vscode sync-extensions",
-		Description: "Sync installed vscode extensions info to remote webdav.",
+		Description: "Push local installed vscode extensions info to remote webdav.",
 		Action: func(ctx *cli.Context) error {
 			gcode := vctrl.NewCode()
 			gcode.SyncInstalledExts()
@@ -199,6 +192,32 @@ func (that *Cmder) vscode() {
 		},
 	}
 	command.Subcommands = append(command.Subcommands, showexts)
+
+	getsettings := &cli.Command{
+		Name:        "get-settings",
+		Aliases:     []string{"gs", "gset"},
+		Usage:       "gvc vscode get-settings",
+		Description: "Get vscode settings(keybindings include) info from remote webdav.",
+		Action: func(ctx *cli.Context) error {
+			gcode := vctrl.NewCode()
+			gcode.GetSettings()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, getsettings)
+
+	pushsettings := &cli.Command{
+		Name:        "push-settings",
+		Aliases:     []string{"ps", "pset"},
+		Usage:       "gvc vscode push-settings",
+		Description: "Push vscode settings(keybindings include) info to remote webdav.",
+		Action: func(ctx *cli.Context) error {
+			gcode := vctrl.NewCode()
+			gcode.SyncSettings()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, pushsettings)
 
 	that.Commands = append(that.Commands, command)
 }
@@ -267,4 +286,35 @@ func (that *Cmder) vconf() {
 	command.Subcommands = append(command.Subcommands, show)
 
 	that.Commands = append(that.Commands, command)
+}
+
+func (that *Cmder) vnvim() {
+	command := &cli.Command{
+		Name:        "nvim",
+		Aliases:     []string{"neovim", "nv", "n"},
+		Usage:       "gvc nvim <Command>",
+		Description: "GVC neovim management.",
+		Subcommands: []*cli.Command{},
+	}
+	nvims := &cli.Command{
+		Name:        "install",
+		Aliases:     []string{"ins", "i"},
+		Usage:       "gvc nvim install",
+		Description: "Install neovim.",
+		Action: func(ctx *cli.Context) error {
+			v := vctrl.NewNVim()
+			v.Install()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, nvims)
+	that.Commands = append(that.Commands, command)
+}
+
+func (that *Cmder) initiate() {
+	that.vhost()
+	that.vgo()
+	that.vscode()
+	that.vconf()
+	that.vnvim()
 }
