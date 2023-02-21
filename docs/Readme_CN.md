@@ -1,36 +1,35 @@
-## [中文]()
+## [En]()
 ---------
 
-## Something nice about [gvc](https://github.com/moqsien/gvc).
+## 关于[gvc](https://github.com/moqsien/gvc)的一些美好的事情
 ---------
-- If only you don't need to work overtime every single day.
-- If only the code you maintained won't become a crap.
-- If only you really enjoy conding.
-- If only you will never be forced to accept silly dev requirements.
-- If only you could build your dev environments easily.
-- If only you could get it work and enjoy studying as a newbie.
-- If only you could work more efficiently without meaningless "involutions"(内卷).
-### Therefore, gvc war born!
-At Present, gvc has following features:
-- Automatically installation of golang compilers, version switching and env variables setup;
-- Automatically installation of vscode and extensions. You can also backup extensions info, user settings and keybindings;
-- Automatically installation of neovim with default init file from gvc. And It was made to work with vscode by default;
-- Hosts file updation to accelerate github visit in China；
-- Nearly all downloadings are accelerated for users in China；
-- Highly configurable. You can configure your fast downloading url in gvc-config.yml;
-- Sync config files to webdav if you have setup one;
-- Supported Platform: MacOS, Windows, Linux(untested at present);
+- 愿每一天都是不用加班的一天
+- 愿每一份代码都不会成为“屎山”
+- 愿写代码成为一件快乐的事情
+- 愿你不在为傻X无脑的需求点头哈腰
+- 愿你能在每一台机器上轻松搞定你需要的开发环境
+- 愿你即使是一个小白也能快速上手，轻松学习
+- 愿你致力于提高效率，而不是无意义地卷
+### 基于上述这些个美好的愿景，gvc诞生了！！！
+目前，gvc拥有以下功能或特点：
+- go编译器自动安装和添加环境变量，多版本轻松切换
+- vscode自动安装，一键安装插件(需要配置，也可以使用默认配置)，一键备份和同步插件信息、用户设置、快捷键设置到webdav网盘；
+- neovim自动安装和配置，默认与vscode-neovim插件配合，有默认配置可以使用；
+- hosts文件更新，加速github访问，对国内用户友好；
+- 所有上述需要下载的地方，如果在国内较慢的，一般都有加速；
+- 下载源可配置，如果你有更快的下载源，可以在gvc-config.yml中配置并注意保存；
+- WebDAV网盘同步配置信息，可以一键将本地的包括gvc-config.yml在内的必要配置同步到网盘，在新机器上只需要使用这些配置就能重新搭建一样的开发环境；
+- MacOS、Windows、Linux(暂未测试)全平台支持
+gvc将要提供的功能或特点：
+- Windows下的git.exe下载；
+- Rust自动安装和加速；
+- Java版本管理和加速；
+- HomeBrew安装和加速；
+- Python安装包加速；
+- NodeJS自动安装和加速；
+- Flutter自动安装；
 
-Fetures on the way：
-- Rust auto-installation and acceleration for users in China；
-- Java version-management；
-- HomeBrew auto-installation and acceleration for users in China；
-- Python acceleration for users in China；
-- NodeJS auto-installation and acceleration for users in China；
-- git.exe auto-installation under Windows；
-- Flutter auto-installation；
-
-## gvc Help Info
+## gvc具体功能展示
 ---------
 ### gvc -h
 ```shell
@@ -155,7 +154,7 @@ OPTIONS:
    --help, -h  show help
 ```
 
-### Download & Install
-Download files, unarchive, then double clik or just run with no subcommand or argument, gvc will install itself to default dir.
+### 下载和安装
+下载文件，解压，双击或者在命令行运行(不带子任何命令和参数)，即可安装到默认文件夹。
 - [github release]()
 - [gitee release]()
