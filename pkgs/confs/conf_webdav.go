@@ -99,7 +99,7 @@ func (that *WebdavConf) SetConf() {
 		name string
 		pass string
 	)
-	fmt.Println("Please enter your webdav host uri: ")
+	fmt.Println("Please enter your webdav host uri,\n[https://dav.jianguoyun.com/dav/]by default: ")
 	fmt.Scanln(&wUrl)
 	fmt.Println("Please enter your webdav username: ")
 	fmt.Scanln(&name)
@@ -110,6 +110,8 @@ func (that *WebdavConf) SetConf() {
 	pass = strings.Trim(pass, " ")
 	if utils.VerifyUrls(wUrl) {
 		that.Host = wUrl
+	} else if wUrl == "" {
+		that.Host = "https://dav.jianguoyun.com/dav/"
 	}
 	if name != "" {
 		that.Username = name

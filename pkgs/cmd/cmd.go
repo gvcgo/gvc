@@ -238,7 +238,7 @@ func (that *Cmder) vconf() {
 	dav := &cli.Command{
 		Name:    "webdav",
 		Aliases: []string{"dav", "w"},
-		Usage:   "Setup webdav account info to backup settings of vscode and gvc.",
+		Usage:   "Setup webdav account info to backup local settings of vscode and gvc.",
 		Action: func(ctx *cli.Context) error {
 			cnf := confs.New()
 			cnf.SetupWebdav()
@@ -250,7 +250,7 @@ func (that *Cmder) vconf() {
 	pull := &cli.Command{
 		Name:    "pull",
 		Aliases: []string{"pl"},
-		Usage:   "Pull settings from your remote webdav.",
+		Usage:   "Pull settings to local backup dir from your remote webdav.",
 		Action: func(ctx *cli.Context) error {
 			cnf := confs.New()
 			cnf.Pull()
@@ -262,7 +262,7 @@ func (that *Cmder) vconf() {
 	push := &cli.Command{
 		Name:    "push",
 		Aliases: []string{"ph"},
-		Usage:   "Push settings to your remote webdav.",
+		Usage:   "Push settings from local backup dir to your remote webdav.",
 		Action: func(ctx *cli.Context) error {
 			cnf := confs.New()
 			cnf.Push()
@@ -285,6 +285,30 @@ func (that *Cmder) vconf() {
 		},
 	}
 	command.Subcommands = append(command.Subcommands, show)
+
+	reset := &cli.Command{
+		Name:    "reset",
+		Aliases: []string{"rs", "r"},
+		Usage:   "Reset config file to default values.",
+		Action: func(ctx *cli.Context) error {
+			cnf := confs.New()
+			cnf.Reset()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, reset)
+
+	downbackfiles := &cli.Command{
+		Name:    "download",
+		Aliases: []string{"dl", "d"},
+		Usage:   "Download example config files from gitee when backup dir is empty.",
+		Action: func(ctx *cli.Context) error {
+			cnf := confs.New()
+			cnf.UseDefautFiles()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, downbackfiles)
 
 	that.Commands = append(that.Commands, command)
 }
