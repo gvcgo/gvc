@@ -238,7 +238,7 @@ func (that *Cmder) vconf() {
 	dav := &cli.Command{
 		Name:    "webdav",
 		Aliases: []string{"dav", "w"},
-		Usage:   "Setup webdav account info to backup local settings of vscode and gvc.",
+		Usage:   "Setup webdav account info to backup local settings for gvc, vscode, neovim etc.",
 		Action: func(ctx *cli.Context) error {
 			cnf := confs.New()
 			cnf.SetupWebdav()
