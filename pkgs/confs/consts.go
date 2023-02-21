@@ -179,11 +179,17 @@ var (
 	NVimInitBackupPath string = filepath.Join(GVCBackupDir, "nvim-init.vim")
 )
 
-func GetNVimInitPath() string {
+func GetNVimInitPath() (r string) {
 	if runtime.GOOS == "windows" {
-		return NVimWinInitPath
+		r = NVimWinInitPath
+	} else {
+		r = NVimUnixInitPath
 	}
-	return NVimUnixInitPath
+	dir := filepath.Dir(r)
+	if ok, _ := utils.PathIsExist(dir); !ok {
+		os.MkdirAll(dir, os.ModePerm)
+	}
+	return r
 }
 
 func GetNVimPlugDir() string {
