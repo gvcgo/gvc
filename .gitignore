@@ -2,4 +2,6 @@
 .vscode
 gvc
 gvc.exe
-versions
+versions/*.zip
+versions/gvc
+versions/gvc.exe
