@@ -20,6 +20,7 @@
 - 下载源可配置，如果你有更快的下载源，可以在gvc-config.yml中配置并注意保存；
 - WebDAV网盘同步配置信息，可以一键将本地的包括gvc-config.yml在内的必要配置同步到网盘，在新机器上只需要使用这些配置就能重新搭建一样的开发环境；
 - MacOS、Windows、Linux(暂未测试)全平台支持
+
 gvc将要提供的功能或特点：
 - Windows下的git.exe下载；
 - Rust自动安装和加速；
