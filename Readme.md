@@ -1,4 +1,4 @@
-## [中文]()
+## [中文](https://github.com/moqsien/gvc/blob/main/docs/Readme_CN.md)
 ---------
 
 ## Something nice about [gvc](https://github.com/moqsien/gvc).
@@ -10,7 +10,7 @@
 - If only you could build your dev environments easily.
 - If only you could get it work and enjoy studying as a newbie.
 - If only you could work more efficiently without meaningless "involutions"(内卷).
-### Therefore, gvc war born!
+### Therefore, gvc was born!
 At Present, gvc has following features:
 - Automatically installation of golang compilers, version switching and env variables setup;
 - Automatically installation of vscode and extensions. You can also backup extensions info, user settings and keybindings;
