@@ -3,7 +3,9 @@ package vctrl
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	config "github.com/moqsien/gvc/pkgs/confs"
@@ -30,6 +32,9 @@ func SelfInstall() {
 		if _, err := utils.CopyFile(ePath, filepath.Join(config.GVCWorkDir, name)); err == nil {
 			genvs := fmt.Sprintf(gPattern, config.GVCWorkDir)
 			setEnvForGVC(genvs)
+			if runtime.GOOS == "windows" {
+				setShortcut()
+			}
 		}
 	}
 	// init dirs and files
@@ -44,4 +49,10 @@ func setEnvForGVC(genvs string) {
 		utils.SetWinEnv("PATH", config.GVCWorkDir)
 	}
 	fmt.Println("GVC set env successed!")
+}
+
+func setShortcut() {
+	if ok, _ := utils.PathIsExist(filepath.Join(config.GVCWorkDir, "gvc.exe")); ok {
+		exec.Command("wscript", config.GVCShortcutCommand...)
+	}
 }

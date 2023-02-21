@@ -1,6 +1,7 @@
 package vctrl
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -152,13 +153,11 @@ func (that *Code) InstallForWin() {
 }
 
 func (that *Code) GenerateShortcut() error {
-	if ok, _ := utils.PathIsExist(config.WinShortcutCreatorPath); !ok {
-		if err := os.WriteFile(config.WinShortcutCreatorPath, []byte(config.WinShortcutCreator), os.ModePerm); err != nil {
-			fmt.Println("[Generate shortcut failed] ", err)
-			return err
-		}
+	config.SaveWinShortcutCreator()
+	if ok, _ := utils.PathIsExist(config.WinShortcutCreatorPath); ok {
+		return exec.Command("wscript", config.WinVSCodeShortcutCommand...).Run()
 	}
-	return exec.Command("wscript", config.WinVSCodeShortcutCommand...).Run()
+	return errors.New("shortcut script not found")
 }
 
 func (that *Code) addEnvForUnix(binaryDir string) {

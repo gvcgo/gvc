@@ -2,6 +2,7 @@ package confs
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 	"runtime"
 
@@ -113,8 +114,22 @@ var (
 	WinShortcutCreatorPath   string = filepath.Join(GVCWorkDir, WinShortcutCreatorName)
 	WinVSCodeShortcutCommand        = []string{
 		WinShortcutCreatorPath,
-		fmt.Sprintf(`/target:"%s"`, filepath.Join(CodeUntarFile, "Code.exe")),
-		fmt.Sprintf(`/shortcut:"%s"`, CodeWinShortcutPath),
+		fmt.Sprintf(`/target:%s`, filepath.Join(CodeUntarFile, "Code.exe")),
+		fmt.Sprintf(`/shortcut:%s`, CodeWinShortcutPath),
+	}
+)
+
+func SaveWinShortcutCreator() {
+	if ok, _ := utils.PathIsExist(WinShortcutCreatorPath); !ok {
+		os.WriteFile(WinShortcutCreatorPath, []byte(WinShortcutCreator), os.ModePerm)
+	}
+}
+
+var (
+	GVCShortcutCommand = []string{
+		WinShortcutCreatorPath,
+		fmt.Sprintf(`/target:%s`, filepath.Join(GVCWorkDir, "gvc.exe")),
+		fmt.Sprintf(`/shortcut:%s`, filepath.Join(GVCWorkDir, "gvc")),
 	}
 )
 
