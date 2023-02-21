@@ -28,15 +28,13 @@ func (that *Cmder) vhost() {
 	command := &cli.Command{
 		Name:        "host",
 		Aliases:     []string{"h", "hosts"},
-		Usage:       "gvc host",
-		Description: "Manage system hosts file.",
+		Usage:       "Manage system hosts file.",
 		Subcommands: []*cli.Command{},
 	}
 	fetch := &cli.Command{
-		Name:        "fetch",
-		Aliases:     []string{"f"},
-		Usage:       "gvc host fetch",
-		Description: "Fetch github hosts info.",
+		Name:    "fetch",
+		Aliases: []string{"f"},
+		Usage:   "Fetch github hosts info.",
 		Action: func(ctx *cli.Context) error {
 			h := vctrl.NewHosts()
 			h.Run()
@@ -46,10 +44,9 @@ func (that *Cmder) vhost() {
 	command.Subcommands = append(command.Subcommands, fetch)
 
 	showpath := &cli.Command{
-		Name:        "show",
-		Aliases:     []string{"s"},
-		Usage:       "gvc host show",
-		Description: "Show hosts file path.",
+		Name:    "show",
+		Aliases: []string{"s"},
+		Usage:   "Show hosts file path.",
 		Action: func(ctx *cli.Context) error {
 			h := vctrl.NewHosts()
 			h.ShowFilePath()
@@ -65,8 +62,7 @@ func (that *Cmder) vgo() {
 	command := &cli.Command{
 		Name:        "go",
 		Aliases:     []string{"g"},
-		Usage:       "gvc go <Command>",
-		Description: "Go version control.",
+		Usage:       "Go version control.",
 		Subcommands: []*cli.Command{},
 	}
 	var showall bool
@@ -81,8 +77,7 @@ func (that *Cmder) vgo() {
 				Destination: &showall,
 			},
 		},
-		Usage:       "gvc go r",
-		Description: "Show remote versions.",
+		Usage: "Show remote versions.",
 		Action: func(ctx *cli.Context) error {
 			gv := vctrl.NewGoVersion()
 			arg := vctrl.ShowStable
@@ -96,10 +91,9 @@ func (that *Cmder) vgo() {
 	command.Subcommands = append(command.Subcommands, vremote)
 
 	vuse := &cli.Command{
-		Name:        "use",
-		Aliases:     []string{"u"},
-		Usage:       "gvc go use",
-		Description: "Download and use version.",
+		Name:    "use",
+		Aliases: []string{"u"},
+		Usage:   "Download and use version.",
 		Action: func(ctx *cli.Context) error {
 			version := ctx.Args().First()
 			if version != "" {
@@ -112,10 +106,9 @@ func (that *Cmder) vgo() {
 	command.Subcommands = append(command.Subcommands, vuse)
 
 	vlocal := &cli.Command{
-		Name:        "local",
-		Aliases:     []string{"l"},
-		Usage:       "gvc go local",
-		Description: "Show installed versions.",
+		Name:    "local",
+		Aliases: []string{"l"},
+		Usage:   "Show installed versions.",
 		Action: func(ctx *cli.Context) error {
 			gv := vctrl.NewGoVersion()
 			gv.ShowInstalled()
@@ -125,10 +118,9 @@ func (that *Cmder) vgo() {
 	command.Subcommands = append(command.Subcommands, vlocal)
 
 	rmunused := &cli.Command{
-		Name:        "remove-unused",
-		Aliases:     []string{"ru"},
-		Usage:       "gvc go ru",
-		Description: "Remove unused versions.",
+		Name:    "remove-unused",
+		Aliases: []string{"ru"},
+		Usage:   "Remove unused versions.",
 		Action: func(ctx *cli.Context) error {
 			gv := vctrl.NewGoVersion()
 			gv.RemoveUnused()
@@ -138,10 +130,9 @@ func (that *Cmder) vgo() {
 	command.Subcommands = append(command.Subcommands, rmunused)
 
 	rmversion := &cli.Command{
-		Name:        "remove-version",
-		Aliases:     []string{"rm"},
-		Usage:       "gvc go rm",
-		Description: "Remove a version.",
+		Name:    "remove-version",
+		Aliases: []string{"rm"},
+		Usage:   "Remove a version.",
 		Action: func(ctx *cli.Context) error {
 			if version := ctx.Args().First(); version != "" {
 				gv := vctrl.NewGoVersion()
@@ -153,10 +144,9 @@ func (that *Cmder) vgo() {
 	command.Subcommands = append(command.Subcommands, rmversion)
 
 	genvs := &cli.Command{
-		Name:        "add-envs",
-		Aliases:     []string{"env", "e", "ae"},
-		Usage:       "gvc go env",
-		Description: "Add envs for go.",
+		Name:    "add-envs",
+		Aliases: []string{"env", "e", "ae"},
+		Usage:   "Add envs for go.",
 		Action: func(ctx *cli.Context) error {
 			gv := vctrl.NewGoVersion()
 			gv.CheckAndInitEnv()
@@ -172,15 +162,13 @@ func (that *Cmder) vscode() {
 	command := &cli.Command{
 		Name:        "vscode",
 		Aliases:     []string{"vsc", "vs", "v"},
-		Usage:       "gvc vscode <Command>",
-		Description: "VSCode management.",
+		Usage:       "VSCode management.",
 		Subcommands: []*cli.Command{},
 	}
 	genvs := &cli.Command{
-		Name:        "install",
-		Aliases:     []string{"i", "ins"},
-		Usage:       "gvc vscode install",
-		Description: "Automatically install vscode.",
+		Name:    "install",
+		Aliases: []string{"i", "ins"},
+		Usage:   "Automatically install vscode.",
 		Action: func(ctx *cli.Context) error {
 			gcode := vctrl.NewCode()
 			gcode.Install()
@@ -190,10 +178,9 @@ func (that *Cmder) vscode() {
 	command.Subcommands = append(command.Subcommands, genvs)
 
 	installexts := &cli.Command{
-		Name:        "install-extensions",
-		Aliases:     []string{"ie", "iext"},
-		Usage:       "gvc vscode install-extensions",
-		Description: "Automatically install extensions for vscode.",
+		Name:    "install-extensions",
+		Aliases: []string{"ie", "iext"},
+		Usage:   "Automatically install extensions for vscode.",
 		Action: func(ctx *cli.Context) error {
 			gcode := vctrl.NewCode()
 			gcode.InstallExts()
@@ -203,10 +190,9 @@ func (that *Cmder) vscode() {
 	command.Subcommands = append(command.Subcommands, installexts)
 
 	showexts := &cli.Command{
-		Name:        "sync-extensions",
-		Aliases:     []string{"se", "sext"},
-		Usage:       "gvc vscode sync-extensions",
-		Description: "Push local installed vscode extensions info to remote webdav.",
+		Name:    "sync-extensions",
+		Aliases: []string{"se", "sext"},
+		Usage:   "Push local installed vscode extensions info to remote webdav.",
 		Action: func(ctx *cli.Context) error {
 			gcode := vctrl.NewCode()
 			gcode.SyncInstalledExts()
@@ -216,10 +202,9 @@ func (that *Cmder) vscode() {
 	command.Subcommands = append(command.Subcommands, showexts)
 
 	getsettings := &cli.Command{
-		Name:        "get-settings",
-		Aliases:     []string{"gs", "gset"},
-		Usage:       "gvc vscode get-settings",
-		Description: "Get vscode settings(keybindings include) info from remote webdav.",
+		Name:    "get-settings",
+		Aliases: []string{"gs", "gset"},
+		Usage:   "Get vscode settings(keybindings include) info from remote webdav.",
 		Action: func(ctx *cli.Context) error {
 			gcode := vctrl.NewCode()
 			gcode.GetSettings()
@@ -229,10 +214,9 @@ func (that *Cmder) vscode() {
 	command.Subcommands = append(command.Subcommands, getsettings)
 
 	pushsettings := &cli.Command{
-		Name:        "push-settings",
-		Aliases:     []string{"ps", "pset"},
-		Usage:       "gvc vscode push-settings",
-		Description: "Push vscode settings(keybindings include) info to remote webdav.",
+		Name:    "push-settings",
+		Aliases: []string{"ps", "pset"},
+		Usage:   "Push vscode settings(keybindings include) info to remote webdav.",
 		Action: func(ctx *cli.Context) error {
 			gcode := vctrl.NewCode()
 			gcode.SyncSettings()
@@ -248,15 +232,13 @@ func (that *Cmder) vconf() {
 	command := &cli.Command{
 		Name:        "config",
 		Aliases:     []string{"conf", "cnf", "c"},
-		Usage:       "gvc config <Command>",
-		Description: "GVC config file management.",
+		Usage:       "GVC config file management.",
 		Subcommands: []*cli.Command{},
 	}
 	dav := &cli.Command{
-		Name:        "webdav",
-		Aliases:     []string{"dav", "w"},
-		Usage:       "gvc config webdav",
-		Description: "Setup webdav account info to backup settings of vscode and gvc.",
+		Name:    "webdav",
+		Aliases: []string{"dav", "w"},
+		Usage:   "Setup webdav account info to backup settings of vscode and gvc.",
 		Action: func(ctx *cli.Context) error {
 			cnf := confs.New()
 			cnf.SetupWebdav()
@@ -266,10 +248,9 @@ func (that *Cmder) vconf() {
 	command.Subcommands = append(command.Subcommands, dav)
 
 	pull := &cli.Command{
-		Name:        "pull",
-		Aliases:     []string{"pl"},
-		Usage:       "gvc config pull",
-		Description: "Pull settings from your remote webdav.",
+		Name:    "pull",
+		Aliases: []string{"pl"},
+		Usage:   "Pull settings from your remote webdav.",
 		Action: func(ctx *cli.Context) error {
 			cnf := confs.New()
 			cnf.Pull()
@@ -279,10 +260,9 @@ func (that *Cmder) vconf() {
 	command.Subcommands = append(command.Subcommands, pull)
 
 	push := &cli.Command{
-		Name:        "push",
-		Aliases:     []string{"ph"},
-		Usage:       "gvc config push",
-		Description: "Push settings to your remote webdav.",
+		Name:    "push",
+		Aliases: []string{"ph"},
+		Usage:   "Push settings to your remote webdav.",
 		Action: func(ctx *cli.Context) error {
 			cnf := confs.New()
 			cnf.Push()
@@ -292,10 +272,9 @@ func (that *Cmder) vconf() {
 	command.Subcommands = append(command.Subcommands, push)
 
 	show := &cli.Command{
-		Name:        "show",
-		Aliases:     []string{"sh", "s"},
-		Usage:       "gvc config pull",
-		Description: "Show path to conf files.",
+		Name:    "show",
+		Aliases: []string{"sh", "s"},
+		Usage:   "Show path to conf files.",
 		Action: func(ctx *cli.Context) error {
 			cnf := confs.New()
 			fmt.Println("GVC config file:")
@@ -314,15 +293,13 @@ func (that *Cmder) vnvim() {
 	command := &cli.Command{
 		Name:        "nvim",
 		Aliases:     []string{"neovim", "nv", "n"},
-		Usage:       "gvc nvim <Command>",
-		Description: "GVC neovim management.",
+		Usage:       "GVC neovim management.",
 		Subcommands: []*cli.Command{},
 	}
 	nvims := &cli.Command{
-		Name:        "install",
-		Aliases:     []string{"ins", "i"},
-		Usage:       "gvc nvim install",
-		Description: "Install neovim.",
+		Name:    "install",
+		Aliases: []string{"ins", "i"},
+		Usage:   "Install neovim.",
 		Action: func(ctx *cli.Context) error {
 			v := vctrl.NewNVim()
 			v.Install()
