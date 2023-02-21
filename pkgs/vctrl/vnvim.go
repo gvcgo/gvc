@@ -28,7 +28,14 @@ func NewNVim() (nv *NVim) {
 		checksum:   "",
 		checktype:  "sha256",
 	}
+	nv.setup()
 	return
+}
+
+func (that *NVim) setup() {
+	if ok, _ := utils.PathIsExist(config.NVimFileDir); !ok {
+		os.MkdirAll(config.NVimFileDir, os.ModePerm)
+	}
 }
 
 func (that *NVim) getChecksum() {

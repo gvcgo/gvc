@@ -49,7 +49,7 @@ var (
 	CodeMacInstallDir   string = "/Applications/"
 	CodeMacCmdBinaryDir string = filepath.Join(CodeMacInstallDir, "Visual Studio Code.app/Contents/Resources/app/bin")
 	CodeWinCmdBinaryDir string = filepath.Join(CodeUntarFile, "bin")
-	CodeWinShortcutPath string = filepath.Join(utils.GetHomeDir(), `Desktop\Visual Studio Code`)
+	CodeWinShortcutPath string = filepath.Join(utils.GetHomeDir(), `Desktop\vscode`)
 )
 
 var (
@@ -100,6 +100,23 @@ func GetCodeKeybindingsPath() string {
 		return ""
 	}
 }
+
+// shortcut maker for windows.
+var WinShortcutCreator = `set WshShell = WScript.CreateObject("WScript.Shell" )
+set oShellLink = WshShell.CreateShortcut(Wscript.Arguments.Named("shortcut") & ".lnk")
+oShellLink.TargetPath = Wscript.Arguments.Named("target")
+oShellLink.WindowStyle = 1
+oShellLink.Save`
+
+var (
+	WinShortcutCreatorName          = "sc.vbs"
+	WinShortcutCreatorPath   string = filepath.Join(GVCWorkDir, WinShortcutCreatorName)
+	WinVSCodeShortcutCommand        = []string{
+		WinShortcutCreatorPath,
+		fmt.Sprintf(`/target:"%s"`, filepath.Join(CodeUntarFile, "Code.exe")),
+		fmt.Sprintf(`/shortcut:"%s"`, CodeWinShortcutPath),
+	}
+)
 
 /*
 go related

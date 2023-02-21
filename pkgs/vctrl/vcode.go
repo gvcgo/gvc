@@ -143,11 +143,22 @@ func (that *Code) InstallForWin() {
 					fmt.Println("[Set envs failed] ", err)
 					return
 				}
-				// TODO: automatically make shortcut.
+				// Automatically create shortcut.
+				that.GenerateShortcut()
 				break
 			}
 		}
 	}
+}
+
+func (that *Code) GenerateShortcut() error {
+	if ok, _ := utils.PathIsExist(config.WinShortcutCreatorPath); !ok {
+		if err := os.WriteFile(config.WinShortcutCreatorPath, []byte(config.WinShortcutCreator), os.ModePerm); err != nil {
+			fmt.Println("[Generate shortcut failed] ", err)
+			return err
+		}
+	}
+	return exec.Command("wscript", config.WinVSCodeShortcutCommand...).Run()
 }
 
 func (that *Code) addEnvForUnix(binaryDir string) {
