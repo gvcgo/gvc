@@ -37,11 +37,23 @@ func (that *Cmder) vhost() {
 		Usage:   "Fetch github hosts info.",
 		Action: func(ctx *cli.Context) error {
 			h := vctrl.NewHosts()
-			h.Run()
+			h.Run(true)
 			return nil
 		},
 	}
 	command.Subcommands = append(command.Subcommands, fetch)
+
+	fetchall := &cli.Command{
+		Name:    "fetchall",
+		Aliases: []string{"fa"},
+		Usage:   "Get all github hosts info with no ping filters.",
+		Action: func(ctx *cli.Context) error {
+			h := vctrl.NewHosts()
+			h.Run()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, fetchall)
 
 	showpath := &cli.Command{
 		Name:    "show",

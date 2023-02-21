@@ -253,12 +253,18 @@ func (that *Hosts) FormatAndSaveHosts(oldContent []byte) {
 	}
 }
 
-func (that *Hosts) Run() {
+func (that *Hosts) Run(toPing ...bool) {
 	that.GetHosts()
 	hostFilePath := config.GetHostsFilePath()
 	hostBackupFilePath := filepath.Join(filepath.Dir(hostFilePath), "hosts.backup")
 	oldContent := that.ReadAndBackupHosts(hostFilePath, hostBackupFilePath)
-
+	if len(toPing) == 0 || (len(toPing) > 0 && !toPing[0]) {
+		for ip, hUrl := range that.rawList {
+			that.hList[hUrl] = host{IP: ip, AvgRTT: 0}
+		}
+		that.FormatAndSaveHosts(oldContent)
+		return
+	}
 	length := len(that.rawList)
 	bar := progressbar.NewOptions(length,
 		progressbar.OptionEnableColorCodes(true),
