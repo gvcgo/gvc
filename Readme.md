@@ -5,7 +5,7 @@
 ---------
 - If only you don't need to work overtime every single day.
 - If only the code you maintained won't become a crap.
-- If only you really enjoy conding.
+- If only you really enjoy coding.
 - If only you will never be forced to accept silly dev requirements.
 - If only you could build your dev environments easily.
 - If only you could get it work and enjoy studying as a newbie.
@@ -15,7 +15,7 @@ At Present, gvc has following features:
 - Automatically installation of golang compilers, version switching and env variables setup;
 - Automatically installation of vscode and extensions. You can also backup extensions info, user settings and keybindings;
 - Automatically installation of neovim with default init file from gvc. And It was made to work with vscode by default;
-- Hosts file updation to accelerate github visit in China；
+- Hosts file management to accelerate github visit in China；
 - Nearly all downloadings are accelerated for users in China；
 - Highly configurable. You can configure your fast downloading url in gvc-config.yml;
 - Sync config files to webdav if you have setup one;
