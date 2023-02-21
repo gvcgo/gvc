@@ -156,5 +156,5 @@ OPTIONS:
 
 ### 下载和安装
 下载文件，解压，双击或者在命令行运行(不带子任何命令和参数)，即可安装到默认文件夹。
-- [github release]()
-- [gitee release]()
+- [github release](https://github.com/moqsien/gvc/releases)
+- [gitee release](https://gitee.com/moqsien/gvc/releases/tag/v2)
