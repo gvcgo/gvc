@@ -147,9 +147,10 @@ USAGE:
    gvc host command [command options] [arguments...]
 
 COMMANDS:
-   fetch, f  Fetch github hosts info.
-   show, s   Show hosts file path.
-   help, h   Shows a list of commands or help for one command
+   fetch, f      Fetch github hosts info.
+   fetchall, fa  Get all github hosts info with no ping filters.
+   show, s       Show hosts file path.
+   help, h       Shows a list of commands or help for one command
 
 OPTIONS:
    --help, -h  show help
