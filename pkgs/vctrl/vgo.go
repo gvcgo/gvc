@@ -15,6 +15,7 @@ import (
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/downloader"
 	"github.com/moqsien/gvc/pkgs/utils"
+	"github.com/moqsien/gvc/pkgs/utils/sorts"
 )
 
 type GoPackage struct {
@@ -194,25 +195,21 @@ const (
 )
 
 func (that *GoVersion) ShowRemoteVersions(arg string) {
-	var v *utils.VComparator
 	if that.Doc == nil {
 		that.getDoc()
 	}
 	switch arg {
 	case ShowAll:
 		if err := that.AllVersions(); err == nil {
-			v = utils.NewVComparator(that.GetVersions())
-			fmt.Println(strings.Join(v.Order(), "  "))
+			fmt.Println(strings.Join(sorts.SortGoVersion(that.GetVersions()), "  "))
 		}
 	case ShowStable:
 		if err := that.StableVersions(); err == nil {
-			v = utils.NewVComparator(that.GetVersions())
-			fmt.Println(strings.Join(v.Order(), "  "))
+			fmt.Println(strings.Join(sorts.SortGoVersion(that.GetVersions()), "  "))
 		}
 	case ShowUnstable:
 		if err := that.UnstableVersions(); err == nil {
-			v = utils.NewVComparator(that.GetVersions())
-			fmt.Println(strings.Join(v.Order(), "  "))
+			fmt.Println(strings.Join(sorts.SortGoVersion(that.GetVersions()), "  "))
 		}
 	default:
 		fmt.Println("[Unknown show type] ", arg)

@@ -10,6 +10,7 @@ import (
 type GoConf struct {
 	CompilerUrls []string `koanf:"compiler_urls"`
 	Proxies      []string `koanf:"proxies"`
+	SearchUrl    string   `koanf:"search_url"`
 	path         string
 }
 
@@ -39,4 +40,5 @@ func (that *GoConf) Reset() {
 		"https://goproxy.cn,direct",
 		"https://repo.huaweicloud.com/repository/goproxy/,direct",
 	}
+	that.SearchUrl = `https://pkg.go.dev/search?limit=100&m=package&q=%s#more-results`
 }

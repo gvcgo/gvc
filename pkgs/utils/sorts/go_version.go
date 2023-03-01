@@ -1,11 +1,11 @@
-package utils
+package sorts
 
 import (
 	"strconv"
 	"strings"
 )
 
-type version struct {
+type gVersion struct {
 	Major  int
 	Minor  int
 	Patch  int
@@ -14,7 +14,11 @@ type version struct {
 	Origin string
 }
 
-func (that *version) Greater(v *version) bool {
+func (that *gVersion) Greater(item Item) bool {
+	v, ok := item.(*gVersion)
+	if !ok {
+		panic("unknown item")
+	}
 	if that.Major > v.Major {
 		return true
 	}
@@ -46,13 +50,16 @@ func (that *version) Greater(v *version) bool {
 	return false
 }
 
-type VComparator struct {
-	Versions []string
-	v        []*version
+func (that *gVersion) String() string {
+	return that.Origin
 }
 
-func NewVComparator(vs []string) *VComparator {
-	vList := []*version{}
+func (that *gVersion) GetOrigin() interface{} {
+	return that.Origin
+}
+
+func SortGoVersion(vs []string) []string {
+	vList := []Item{}
 	var vresult []string
 	m := make(map[string]struct{}, 50)
 	for _, v := range vs {
@@ -60,7 +67,7 @@ func NewVComparator(vs []string) *VComparator {
 			continue
 		}
 		m[v] = struct{}{}
-		vs_ := version{}
+		vs_ := gVersion{}
 		if strings.Contains(v, "beta") {
 			result := strings.Split(v, "beta")
 			vresult = strings.Split(result[0], ".")
@@ -85,35 +92,5 @@ func NewVComparator(vs []string) *VComparator {
 		vs_.Origin = v
 		vList = append(vList, &vs_)
 	}
-
-	return &VComparator{Versions: make([]string, 0), v: vList}
-}
-
-func (that *VComparator) sort(vList []*version) (r []*version) {
-	if len(vList) < 1 {
-		return vList
-	}
-	mid := vList[0]
-	left := make([]*version, 0)
-	right := make([]*version, 0)
-	for i := 1; i < len(vList); i++ {
-		if mid.Greater(vList[i]) {
-			left = append(left, vList[i])
-		} else {
-			right = append(right, vList[i])
-		}
-	}
-	left, right = that.sort(left), that.sort(right)
-	r = append(r, left...)
-	r = append(r, mid)
-	r = append(r, right...)
-	return r
-}
-
-func (that *VComparator) Order() []string {
-	vs := that.sort(that.v)
-	for _, v := range vs {
-		that.Versions = append(that.Versions, v.Origin)
-	}
-	return that.Versions
+	return QuickSort(vList)
 }
