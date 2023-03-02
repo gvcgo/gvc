@@ -3,7 +3,6 @@ package sorts
 type Item interface {
 	Greater(Item) bool
 	String() string
-	GetOrigin() interface{}
 }
 
 func QSort(iList []Item) (r []Item) {

@@ -58,7 +58,7 @@ GLOBAL OPTIONS:
 ```
 ### gvc go -h
 ```shell
-moqsien@iMac-Pro gvc % gvc go -h
+moqsien@iMac-Pro gvc % gvc go help
 NAME:
    gvc go - Go version control.
 
@@ -66,13 +66,14 @@ USAGE:
    gvc go command [command options] [arguments...]
 
 COMMANDS:
-   remote, r             Show remote versions.
-   use, u                Download and use version.
-   local, l              Show installed versions.
-   remove-unused, ru     Remove unused versions.
-   remove-version, rm    Remove a version.
-   add-envs, env, e, ae  Add envs for go.
-   help, h               Shows a list of commands or help for one command
+   remote, r                   Show remote versions.
+   use, u                      Download and use version.
+   local, l                    Show installed versions.
+   remove-unused, ru           Remove unused versions.
+   remove-version, rm          Remove a version.
+   add-envs, env, e, ae        Add envs for go.
+   search-package, sp, search  Search for third-party packages.
+   help, h                     Shows a list of commands or help for one command
 
 OPTIONS:
    --help, -h  show help

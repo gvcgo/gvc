@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/moqsien/gvc/pkgs/confs"
+	"github.com/moqsien/gvc/pkgs/utils/sorts"
 	"github.com/moqsien/gvc/pkgs/vctrl"
 	"github.com/urfave/cli/v2"
 )
@@ -166,6 +167,42 @@ func (that *Cmder) vgo() {
 		},
 	}
 	command.Subcommands = append(command.Subcommands, genvs)
+
+	var (
+		orderByUpdate bool
+		libName       string
+	)
+	vsearch := &cli.Command{
+		Name:    "search-package",
+		Aliases: []string{"sp", "search"},
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:        "package-name",
+				Aliases:     []string{"n", "name"},
+				Usage:       "Name of the package.",
+				Destination: &libName,
+			},
+			&cli.BoolFlag{
+				Name:        "order-by-time",
+				Aliases:     []string{"o", "ou"},
+				Usage:       "Order by update time.",
+				Destination: &orderByUpdate,
+			},
+		},
+		Usage: "Search for third-party packages.",
+		Action: func(ctx *cli.Context) error {
+			gv := vctrl.NewGoVersion()
+			var orderBy int = sorts.ByImported
+			if orderByUpdate {
+				orderBy = sorts.ByUpdate
+			}
+			if libName != "" {
+				gv.SearchLibs(libName, orderBy)
+			}
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vsearch)
 
 	that.Commands = append(that.Commands, command)
 }

@@ -54,10 +54,6 @@ func (that *gVersion) String() string {
 	return that.Origin
 }
 
-func (that *gVersion) GetOrigin() interface{} {
-	return that.Origin
-}
-
 func SortGoVersion(vs []string) []string {
 	vList := []Item{}
 	var vresult []string
