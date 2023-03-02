@@ -437,7 +437,7 @@ func (that *GoVersion) SearchLibs(name string, sortby int) {
 			currentPage += 1
 			fmt.Println("Choose what to do next: ")
 			fmt.Println("1- [n] Show next page.")
-			fmt.Println("1- [e] Exit.")
+			fmt.Println("2- [e] Exit.")
 			fmt.Scan(&op)
 			if op == "n" {
 				if currentPage >= totalPage-1 {

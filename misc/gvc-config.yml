@@ -33,6 +33,7 @@ go:
     proxies:
         - https://goproxy.cn,direct
         - https://repo.huaweicloud.com/repository/goproxy/,direct
+    search_url: https://pkg.go.dev/search?limit=100&m=package&q=%s#more-results
 hosts:
     host_filters:
         - github
@@ -44,3 +45,20 @@ hosts:
         - https://gitlab.com/ineo6/hosts/-/raw/master/next-hosts
         - https://raw.hellogithub.com/hosts
     worker_num: 100
+nvim:
+    checksum_url: https://gitee.com/moqsien/gvc/releases/download/v1/nvim-sha256.txt
+    github_proxy: https://ghproxy.com/
+    plugins_url: https://gitee.com/moqsien/gvc/releases/download/v1/nvim-plugins.zip
+    urls:
+        darwin:
+            ext: .tar.gz
+            name: nvim-macos
+            url: https://gitee.com/moqsien/gvc/releases/download/v1/nvim-macos.tar.gz
+        linux:
+            ext: .tar.gz
+            name: nvim-linux64
+            url: https://gitee.com/moqsien/gvc/releases/download/v1/nvim-linux64.tar.gz
+        windows:
+            ext: .zip
+            name: nvim-win64
+            url: https://gitee.com/moqsien/gvc/releases/download/v1/nvim-win64.zip
