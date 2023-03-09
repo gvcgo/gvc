@@ -24,6 +24,7 @@ type GVConfig struct {
 	Go     *GoConf     `koanf:"go"`
 	Code   *CodeConf   `koanf:"code"`
 	NVim   *NVimConf   `koanf:"nvim"`
+	Proxy  *ProxyConf  `koanf:"proxy"`
 	w      *WebdavConf `koanf:"webdav"`
 	k      *koanf.Koanf
 	parser *yaml.YAML
@@ -35,6 +36,7 @@ func New() (r *GVConfig) {
 		Hosts:  NewHostsConf(),
 		Go:     NewGoConf(),
 		Code:   NewCodeConf(),
+		Proxy:  NewProxyConf(),
 		w:      NewWebdavConf(),
 		k:      koanf.New("."),
 		parser: yaml.Parser(),
@@ -65,6 +67,8 @@ func (that *GVConfig) Reset() {
 	that.Code.Reset()
 	that.NVim = NewNVimConf()
 	that.NVim.Reset()
+	that.Proxy = NewProxyConf()
+	that.Proxy.Reset()
 	that.Restore()
 }
 

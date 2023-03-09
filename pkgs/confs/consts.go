@@ -201,3 +201,8 @@ var (
 export PATH="%s:$PATH"
 # nvim end`
 )
+
+/*
+Proxy related
+*/
+var ProxyFilesDir = filepath.Join(GVCWorkDir, "proxy_files")

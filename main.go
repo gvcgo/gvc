@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
@@ -23,8 +24,9 @@ func main() {
 		// v := vctrl.NewNVim()
 		// v.Install()
 		// fmt.Println(utils.JoinUnixFilePath("/abc", "d", "/a/", "abc"))
-		g := vctrl.NewGoVersion()
-		g.SearchLibs("json", 1)
+		// g := vctrl.NewGoVersion()
+		// g.SearchLibs("json", 1)
+		fmt.Println(c.Proxy.GetSubUrls())
 	} else if len(os.Args) < 2 {
 		vctrl.SelfInstall()
 	} else {
