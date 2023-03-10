@@ -52,6 +52,7 @@ func (that *ProxyConf) Reset() {
 	that.SubUrls = []string{
 		`https://clashnode.com/wp-content/uploads/%s.txt`,
 		`https://nodefree.org/dy/%s.txt`,
+		"https://gitlab.com/mianfeifq/share/-/raw/master/data2023036.txt",
 		"https://raw.fastgit.org/freefq/free/master/v2",
 		"https://raw.githubusercontent.com/mfuu/v2ray/master/v2ray",
 		"https://sub.nicevpn.top/long",

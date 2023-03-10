@@ -27,6 +27,8 @@ func main() {
 		// g := vctrl.NewGoVersion()
 		// g.SearchLibs("json", 1)
 		fmt.Println(c.Proxy.GetSubUrls())
+		v := vctrl.NewProxy()
+		v.GetProxyList()
 	} else if len(os.Args) < 2 {
 		vctrl.SelfInstall()
 	} else {
