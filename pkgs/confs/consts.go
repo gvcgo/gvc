@@ -206,3 +206,13 @@ export PATH="%s:$PATH"
 Proxy related
 */
 var ProxyFilesDir = filepath.Join(GVCWorkDir, "proxy_files")
+
+/*
+Java related
+*/
+var JavaFilesDir = filepath.Join(GVCWorkDir, "java_files")
+
+var (
+	JavaTarFilesPath   = filepath.Join(JavaFilesDir, "downloads")
+	JavaUnTarFilesPath = filepath.Join(JavaFilesDir, "versions")
+)
