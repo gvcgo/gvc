@@ -26,9 +26,12 @@ func main() {
 		// fmt.Println(utils.JoinUnixFilePath("/abc", "d", "/a/", "abc"))
 		// g := vctrl.NewGoVersion()
 		// g.SearchLibs("json", 1)
-		fmt.Println(c.Proxy.GetSubUrls())
-		v := vctrl.NewProxy()
-		v.GetProxyList()
+		// fmt.Println(c.Proxy.GetSubUrls())
+		// v := vctrl.NewProxy()
+		// v.GetProxyList()
+		v := vctrl.NewJavaVersion()
+		p := v.Download("java17")
+		fmt.Println(p)
 	} else if len(os.Args) < 2 {
 		vctrl.SelfInstall()
 	} else {

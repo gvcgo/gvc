@@ -22,6 +22,7 @@ func init() {
 type GVConfig struct {
 	Hosts  *HostsConf  `koanf:"hosts"`
 	Go     *GoConf     `koanf:"go"`
+	Java   *JavaConf   `koanf:"java"`
 	Code   *CodeConf   `koanf:"code"`
 	NVim   *NVimConf   `koanf:"nvim"`
 	Proxy  *ProxyConf  `koanf:"proxy"`
@@ -35,6 +36,7 @@ func New() (r *GVConfig) {
 	r = &GVConfig{
 		Hosts:  NewHostsConf(),
 		Go:     NewGoConf(),
+		Java:   NewJavaConf(),
 		Code:   NewCodeConf(),
 		Proxy:  NewProxyConf(),
 		w:      NewWebdavConf(),
@@ -63,6 +65,8 @@ func (that *GVConfig) Reset() {
 	that.Hosts.Reset()
 	that.Go = NewGoConf()
 	that.Go.Reset()
+	that.Java = NewJavaConf()
+	that.Java.Reset()
 	that.Code = NewCodeConf()
 	that.Code.Reset()
 	that.NVim = NewNVimConf()

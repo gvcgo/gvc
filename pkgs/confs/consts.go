@@ -213,6 +213,13 @@ Java related
 var JavaFilesDir = filepath.Join(GVCWorkDir, "java_files")
 
 var (
+	DefaultJavaRoot    = filepath.Join(JavaFilesDir, "java")
 	JavaTarFilesPath   = filepath.Join(JavaFilesDir, "downloads")
 	JavaUnTarFilesPath = filepath.Join(JavaFilesDir, "versions")
 )
+
+var JavaEnvVarPattern string = `# Java Env started
+export JAVA_HOME="%s"
+export CLASS_PATH="$JAVA_HOME/lib"
+export PATH="$JAVA_HOME/bin:$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/dt.jar:$PATH"
+# Java Env Ended`
