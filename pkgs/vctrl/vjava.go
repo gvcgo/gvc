@@ -12,6 +12,7 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly/v2"
+	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/downloader"
 	"github.com/moqsien/gvc/pkgs/utils"
@@ -37,6 +38,7 @@ type JavaPackage struct {
 type JavaVersion struct {
 	c        *colly.Collector
 	d        *downloader.Downloader
+	dir      string
 	Versions map[string][]*JavaPackage
 	Doc      *goquery.Document
 	Conf     *config.GVConfig
@@ -110,6 +112,7 @@ func (that *JavaVersion) getVersions() {
 				return
 			}
 			tArchive := strings.ToLower(s.Find("td").Eq(0).Text())
+			tArchive = strings.ReplaceAll(tArchive, " ", "")
 			tSize := s.Find("td").Eq(1).Text()
 			tUrl, _ := s.Find("td").Eq(2).Find("a").Eq(0).Attr("href")
 			tSha, _ := s.Find("td").Eq(2).Find("a").Eq(1).Attr("href")
@@ -122,8 +125,12 @@ func (that *JavaVersion) getVersions() {
 				p.OS = runtime.GOOS
 				p.Size = tSize
 				p.Url = tUrl
-				fName := strings.Split(tUrl, "/")
-				p.FileName = fName[len(fName)-1]
+				fName := "jdk%s-%s_%s%s"
+				if strings.HasSuffix(p.Url, ".zip") {
+					p.FileName = fmt.Sprintf(fName, vn, p.OS, p.Arch, ".zip")
+				} else {
+					p.FileName = fmt.Sprintf(fName, vn, p.OS, p.Arch, ".tar.gz")
+				}
 				p.Checksum = that.getSha(tSha)
 				that.Versions[vn] = append(that.Versions[vn], p)
 			}
@@ -140,14 +147,14 @@ func (that *JavaVersion) ShowVersions() {
 	fmt.Println(strings.Join(vList, "  "))
 }
 
-func (that *JavaVersion) Download(version string) (r string) {
+func (that *JavaVersion) download(version string) (r string) {
 	vList := strings.Split(version, "java")
 	v := vList[len(vList)-1]
 	that.getVersions()
 	if pList, ok := that.Versions[v]; ok {
 		p := pList[0]
 		that.d.Url = p.Url
-		that.d.Timeout = 300 * time.Minute
+		that.d.Timeout = 100 * time.Minute
 		fpath := filepath.Join(config.JavaTarFilesPath, p.FileName)
 		if size := that.d.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
 			if ok := utils.CheckFile(fpath, "sha256", p.Checksum); ok {
@@ -158,4 +165,76 @@ func (that *JavaVersion) Download(version string) (r string) {
 		}
 	}
 	return
+}
+
+func (that *JavaVersion) isJavaEnvsAvailable() (r bool) {
+	var ePath string
+	if runtime.GOOS == "windows" {
+		ePath = os.Getenv("Path")
+	} else {
+		ePath = os.Getenv("PATH")
+	}
+	if strings.Contains(ePath, filepath.Join(config.DefaultJavaRoot, "bin")) {
+		r = true
+	}
+	return
+}
+
+func (that *JavaVersion) CheckAndInitEnv() {
+	if runtime.GOOS != "windows" {
+		envar := fmt.Sprintf(config.JavaEnvVarPattern,
+			config.DefaultJavaRoot)
+		utils.SetUnixEnv(envar)
+	} else {
+		envarList := map[string]string{
+			"JAVA_HOME":  config.DefaultJavaRoot,
+			"CLASS_PATH": "$JAVA_HOME/lib",
+		}
+		for key, value := range envarList {
+			utils.SetWinEnv(key, value)
+		}
+		ePath := fmt.Sprintf("%s;%s;%s",
+			"$JAVA_HOME/bin",
+			"AVA_HOME/lib/tools.jar",
+			"$JAVA_HOME/lib/dt.jar")
+		utils.SetWinEnv("PATH", ePath)
+		fmt.Println("set go envs successed!")
+	}
+}
+
+func (that *JavaVersion) findDir(untarfile string) {
+	if rd, err := os.ReadDir(untarfile); err == nil {
+		for _, d := range rd {
+			if d.IsDir() && d.Name() == "bin" {
+				that.dir = untarfile
+			} else if d.IsDir() {
+				that.findDir(filepath.Join(untarfile, d.Name()))
+			}
+		}
+	}
+}
+
+func (that *JavaVersion) UseVersion(version string) {
+	untarfile := filepath.Join(config.JavaUnTarFilesPath, version)
+	if ok, _ := utils.PathIsExist(untarfile); !ok {
+		if tarfile := that.download(version); tarfile != "" {
+			if err := archiver.Unarchive(tarfile, untarfile); err != nil {
+				os.RemoveAll(untarfile)
+				fmt.Println("[Unarchive failed] ", err)
+				return
+			}
+		}
+	}
+	if ok, _ := utils.PathIsExist(config.DefaultJavaRoot); ok {
+		os.RemoveAll(config.DefaultJavaRoot)
+	}
+	that.findDir(untarfile)
+	if err := utils.MkSymLink(that.dir, config.DefaultJavaRoot); err != nil {
+		fmt.Println("[Create link failed] ", err)
+		return
+	}
+	if !that.isJavaEnvsAvailable() {
+		that.CheckAndInitEnv()
+	}
+	fmt.Println("Use", version, "successed!")
 }

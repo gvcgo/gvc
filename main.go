@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"strings"
 
@@ -30,8 +29,8 @@ func main() {
 		// v := vctrl.NewProxy()
 		// v.GetProxyList()
 		v := vctrl.NewJavaVersion()
-		p := v.Download("java17")
-		fmt.Println(p)
+		v.ShowVersions()
+		// v.UseVersion("java19")
 	} else if len(os.Args) < 2 {
 		vctrl.SelfInstall()
 	} else {
