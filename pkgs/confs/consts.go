@@ -223,3 +223,8 @@ export JAVA_HOME="%s"
 export CLASS_PATH="$JAVA_HOME/lib"
 export PATH="$JAVA_HOME/bin:$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/dt.jar:$PATH"
 # Java Env Ended`
+
+/*
+Rust related
+*/
+var RustFilesDir = filepath.Join(GVCWorkDir, "rust_files")
