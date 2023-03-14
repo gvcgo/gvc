@@ -36,7 +36,7 @@ gvc将要提供的功能或特点：
 ---------
 ### gvc -h
 ```shell
-moqsien@iMac-Pro gvc % gvc -h
+moqsien@iMac gvc % gvc -h  
 NAME:
    gvc - gvc <Command> <SubCommand>...
 
@@ -52,6 +52,7 @@ COMMANDS:
    vscode, vsc, vs, v    VSCode management.
    config, conf, cnf, c  GVC config file management.
    nvim, neovim, nv, n   GVC neovim management.
+   java, jdk, j          GVC jdk management.
    help, h               Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
