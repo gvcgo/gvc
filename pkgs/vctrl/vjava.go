@@ -163,6 +163,8 @@ func (that *JavaVersion) download(version string) (r string) {
 				os.RemoveAll(fpath)
 			}
 		}
+	} else {
+		fmt.Println("Invalid jdk version.")
 	}
 	return
 }

@@ -13,7 +13,8 @@
 ### 基于上述这些个美好的愿景，gvc诞生了！！！
 # GVC 是一个跨平台多机器开发环境配置管理工具，让你轻松使用vscode进行多语言开发。
 目前，gvc拥有以下功能或特点：
-- go编译器自动安装和添加环境变量，多版本轻松切换
+- go编译器自动安装和添加环境变量，多版本轻松切换；
+- java自动安装和添加环境变量，版本切换(jdk17 or jdk19)；
 - vscode自动安装，一键安装插件(需要配置，也可以使用默认配置)，一键备份和同步插件信息、用户设置、快捷键设置到webdav网盘；
 - neovim自动安装和配置，默认与vscode-neovim插件配合，有默认配置可以使用；
 - hosts文件更新，加速github访问，对国内用户友好；
@@ -153,6 +154,24 @@ COMMANDS:
    fetchall, fa  Get all github hosts info with no ping filters.
    show, s       Show hosts file path.
    help, h       Shows a list of commands or help for one command
+
+OPTIONS:
+   --help, -h  show help
+```
+
+### gvc java -h
+```shell
+moqsien@iMac gvc % gvc java -h
+NAME:
+   gvc java - GVC jdk management.
+
+USAGE:
+   gvc java command [command options] [arguments...]
+
+COMMANDS:
+   use, u   Download and use jdk.
+   show, s  Show available versions.
+   help, h  Shows a list of commands or help for one command
 
 OPTIONS:
    --help, -h  show help

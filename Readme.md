@@ -13,6 +13,7 @@
 ### Therefore, gvc was born!
 At Present, gvc has following features:
 - Automatically installation of golang compilers, version switching and env variables setup;
+- Automatically installation of jdk, version switching and env variables setup;
 - Automatically installation of vscode and extensions. You can also backup extensions info, user settings and keybindings;
 - Automatically installation of neovim with default init file from gvc. And It was made to work with vscode by default;
 - Hosts file management to accelerate github visit in China；
@@ -152,6 +153,24 @@ COMMANDS:
    fetchall, fa  Get all github hosts info with no ping filters.
    show, s       Show hosts file path.
    help, h       Shows a list of commands or help for one command
+
+OPTIONS:
+   --help, -h  show help
+```
+
+### gvc java -h
+```shell
+moqsien@iMac gvc % gvc java -h
+NAME:
+   gvc java - GVC jdk management.
+
+USAGE:
+   gvc java command [command options] [arguments...]
+
+COMMANDS:
+   use, u   Download and use jdk.
+   show, s  Show available versions.
+   help, h  Shows a list of commands or help for one command
 
 OPTIONS:
    --help, -h  show help

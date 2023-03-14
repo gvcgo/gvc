@@ -383,10 +383,47 @@ func (that *Cmder) vnvim() {
 	that.Commands = append(that.Commands, command)
 }
 
+func (that *Cmder) vjava() {
+	command := &cli.Command{
+		Name:        "java",
+		Aliases:     []string{"jdk", "j"},
+		Usage:       "GVC jdk management.",
+		Subcommands: []*cli.Command{},
+	}
+	vuse := &cli.Command{
+		Name:    "use",
+		Aliases: []string{"u"},
+		Usage:   "Download and use jdk.",
+		Action: func(ctx *cli.Context) error {
+			version := ctx.Args().First()
+			if version != "" {
+				gv := vctrl.NewJavaVersion()
+				gv.UseVersion(version)
+			}
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vuse)
+
+	vshow := &cli.Command{
+		Name:    "show",
+		Aliases: []string{"s"},
+		Usage:   "Show available versions.",
+		Action: func(ctx *cli.Context) error {
+			gv := vctrl.NewJavaVersion()
+			gv.ShowVersions()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vshow)
+	that.Commands = append(that.Commands, command)
+}
+
 func (that *Cmder) initiate() {
 	that.vhost()
 	that.vgo()
 	that.vscode()
 	that.vconf()
 	that.vnvim()
+	that.vjava()
 }
