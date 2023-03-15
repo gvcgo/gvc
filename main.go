@@ -28,8 +28,8 @@ func main() {
 		// fmt.Println(c.Proxy.GetSubUrls())
 		// v := vctrl.NewProxy()
 		// v.GetProxyList()
-		v := vctrl.NewJavaVersion()
-		v.ShowVersions()
+		v := vctrl.NewRustInstaller()
+		v.Install()
 		// v.UseVersion("java19")
 	} else if len(os.Args) < 2 {
 		vctrl.SelfInstall()

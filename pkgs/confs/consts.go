@@ -232,3 +232,8 @@ var (
 	DistServerEnvName = "RUSTUP_DIST_SERVER"
 	UpdateRootEnvName = "RUSTUP_UPDATE_ROOT"
 )
+
+var RustEnvPattern string = `# Rust env start
+export %s=%s
+export %s=%s
+# Rust env end`

@@ -419,6 +419,27 @@ func (that *Cmder) vjava() {
 	that.Commands = append(that.Commands, command)
 }
 
+func (that *Cmder) vrust() {
+	command := &cli.Command{
+		Name:        "rust",
+		Aliases:     []string{"rustc", "ru", "r"},
+		Usage:       "GVC rust management.",
+		Subcommands: []*cli.Command{},
+	}
+	iRust := &cli.Command{
+		Name:    "install",
+		Aliases: []string{"ins", "i"},
+		Usage:   "Install the latest rust compiler tools.",
+		Action: func(ctx *cli.Context) error {
+			v := vctrl.NewRustInstaller()
+			v.Install()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, iRust)
+	that.Commands = append(that.Commands, command)
+}
+
 func (that *Cmder) initiate() {
 	that.vhost()
 	that.vgo()
@@ -426,4 +447,5 @@ func (that *Cmder) initiate() {
 	that.vconf()
 	that.vnvim()
 	that.vjava()
+	that.vrust()
 }

@@ -8,11 +8,13 @@ import (
 )
 
 type RustConf struct {
-	UrlUnix    string `koanf:"url_unix"`
-	UrlWin     string `koanf:"url_win"`
-	DistServer string `koanf:"RUSTUP_DIST_SERVER"`
-	UpdateRoot string `koanf:"RUSTUP_UPDATE_ROOT"`
-	path       string
+	UrlUnix      string `koanf:"url_unix"`
+	FileNameUnix string `koanf:"filename_unix"`
+	UrlWin       string `koanf:"url_win"`
+	FileNameWin  string `koanf:"filename_win"`
+	DistServer   string `koanf:"RUSTUP_DIST_SERVER"`
+	UpdateRoot   string `koanf:"RUSTUP_UPDATE_ROOT"`
+	path         string
 }
 
 func NewRustConf() (r *RustConf) {
@@ -33,7 +35,9 @@ func (that *RustConf) setup() {
 
 func (that *RustConf) Reset() {
 	that.UrlWin = "https://static.rust-lang.org/rustup/dist/i686-pc-windows-gnu/rustup-init.exe"
+	that.FileNameWin = "rustup-init.exe"
 	that.UrlUnix = "https://sh.rustup.rs"
+	that.FileNameUnix = "rustup-init.sh"
 	that.DistServer = "https://mirrors.ustc.edu.cn/rust-static"
 	that.UpdateRoot = "https://mirrors.ustc.edu.cn/rust-static/rustup"
 }
