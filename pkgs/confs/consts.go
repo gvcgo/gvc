@@ -227,4 +227,8 @@ export PATH="$JAVA_HOME/bin:$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/dt.jar:$PATH
 /*
 Rust related
 */
-var RustFilesDir = filepath.Join(GVCWorkDir, "rust_files")
+var (
+	RustFilesDir      = filepath.Join(GVCWorkDir, "rust_files")
+	DistServerEnvName = "RUSTUP_DIST_SERVER"
+	UpdateRootEnvName = "RUSTUP_UPDATE_ROOT"
+)
