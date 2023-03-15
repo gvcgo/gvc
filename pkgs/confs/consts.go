@@ -237,3 +237,15 @@ var RustEnvPattern string = `# Rust env start
 export %s=%s
 export %s=%s
 # Rust env end`
+
+/*
+Nodejs related
+*/
+var (
+	NodejsFilesDir   = filepath.Join(GVCWorkDir, "nodejs_files")
+	NodejsRoot       = filepath.Join(NodejsFilesDir, "nodejs")
+	NodejsTarFiles   = filepath.Join(NodejsFilesDir, "downloads")
+	NodejsUntarFiles = filepath.Join(NodejsFilesDir, "versions")
+	NodejsGlobal     = filepath.Join(NodejsFilesDir, "node_global")
+	NodejsCache      = filepath.Join(NodejsFilesDir, "node_cache")
+)

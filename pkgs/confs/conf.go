@@ -25,6 +25,7 @@ type GVConfig struct {
 	Java   *JavaConf   `koanf:"java"`
 	Rust   *RustConf   `koanf:"rust"`
 	Code   *CodeConf   `koanf:"code"`
+	Nodejs *NodejsConf `koanf:"nodejs"`
 	NVim   *NVimConf   `koanf:"nvim"`
 	Proxy  *ProxyConf  `koanf:"proxy"`
 	w      *WebdavConf `koanf:"webdav"`
@@ -40,6 +41,7 @@ func New() (r *GVConfig) {
 		Java:   NewJavaConf(),
 		Rust:   NewRustConf(),
 		Code:   NewCodeConf(),
+		Nodejs: NewNodejsConf(),
 		Proxy:  NewProxyConf(),
 		w:      NewWebdavConf(),
 		k:      koanf.New("."),
@@ -73,6 +75,8 @@ func (that *GVConfig) Reset() {
 	that.Rust.Reset()
 	that.Code = NewCodeConf()
 	that.Code.Reset()
+	that.Nodejs = NewNodejsConf()
+	that.Nodejs.Reset()
 	that.NVim = NewNVimConf()
 	that.NVim.Reset()
 	that.Proxy = NewProxyConf()
