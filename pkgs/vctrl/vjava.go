@@ -188,17 +188,19 @@ func (that *JavaVersion) CheckAndInitEnv() {
 			config.DefaultJavaRoot)
 		utils.SetUnixEnv(envar)
 	} else {
+		classPath := filepath.Join(config.DefaultJavaRoot, "lib")
+		binPath := filepath.Join(config.DefaultJavaRoot, "bin")
 		envarList := map[string]string{
 			"JAVA_HOME":  config.DefaultJavaRoot,
-			"CLASS_PATH": "$JAVA_HOME/lib",
+			"CLASS_PATH": classPath,
 		}
 		for key, value := range envarList {
 			utils.SetWinEnv(key, value)
 		}
 		ePath := fmt.Sprintf("%s;%s;%s",
-			"$JAVA_HOME/bin",
-			"AVA_HOME/lib/tools.jar",
-			"$JAVA_HOME/lib/dt.jar")
+			binPath,
+			filepath.Join(classPath, "tools.jar"),
+			filepath.Join(classPath, "dt.jar"))
 		utils.SetWinEnv("PATH", ePath)
 		fmt.Println("set go envs successed!")
 	}
