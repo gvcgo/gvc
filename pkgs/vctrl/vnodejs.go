@@ -107,6 +107,9 @@ func (that *NodeVersion) getVersions() (r []string) {
 	that.c.Visit(that.Conf.Nodejs.CompilerUrl)
 
 	for i, v := range that.vList {
+		if v.Version == "" {
+			continue
+		}
 		p := &NodePackage{}
 		p.VUrl, _ = url.JoinPath(that.Conf.Nodejs.ReleaseUrl, v.Version)
 		p.Arch = runtime.GOARCH
