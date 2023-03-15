@@ -107,21 +107,22 @@ func (that *NodeVersion) getVersions() (r []string) {
 	that.c.Visit(that.Conf.Nodejs.CompilerUrl)
 
 	for i, v := range that.vList {
+		p := &NodePackage{}
+		p.VUrl, _ = url.JoinPath(that.Conf.Nodejs.ReleaseUrl, v.Version)
+		p.Arch = runtime.GOARCH
+		p.OS = runtime.GOOS
+		that.Versions[v.Version] = p
 		lts := that.parseLTS(v.Lts)
 		if i == 0 || lts != "" {
+			// Show only lts versions.
 			r = append(r, v.Version)
-			p := &NodePackage{}
-			p.VUrl, _ = url.JoinPath(that.Conf.Nodejs.ReleaseUrl, v.Version)
-			p.Arch = runtime.GOARCH
-			p.OS = runtime.GOOS
 			p.Lts = lts
-			that.Versions[v.Version] = p
 			if lts != "" {
 				v.Version = fmt.Sprintf("%s(%s)", v.Version, lts)
 			}
-			p.FileName = fmt.Sprintf("nodejs%s-%s-%s%s",
-				v.Version, p.OS, p.Arch, that.getSuffix())
 		}
+		p.FileName = fmt.Sprintf("nodejs%s-%s-%s%s",
+			v.Version, p.OS, p.Arch, that.getSuffix())
 	}
 	return
 }

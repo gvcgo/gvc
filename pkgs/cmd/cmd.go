@@ -440,6 +440,10 @@ func (that *Cmder) vrust() {
 	that.Commands = append(that.Commands, command)
 }
 
+func (that *Cmder) vnodejs() {
+
+}
+
 func (that *Cmder) initiate() {
 	that.vhost()
 	that.vgo()
@@ -448,4 +452,5 @@ func (that *Cmder) initiate() {
 	that.vnvim()
 	that.vjava()
 	that.vrust()
+	that.vnodejs()
 }
