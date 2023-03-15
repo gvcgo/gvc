@@ -29,7 +29,7 @@ func NewRustInstaller() (ri *RustInstaller) {
 
 func (that *RustInstaller) getInstaller() (fPath string) {
 	that.Timeout = 10 * time.Minute
-	if runtime.GOOS == "windows" {
+	if runtime.GOOS == utils.Windows {
 		that.Url = that.Conf.Rust.UrlWin
 		fPath = filepath.Join(config.RustFilesDir, that.Conf.Rust.FileNameWin)
 
@@ -42,7 +42,7 @@ func (that *RustInstaller) getInstaller() (fPath string) {
 }
 
 func (that *RustInstaller) SetAccelerationEnv() {
-	if runtime.GOOS == "windows" {
+	if runtime.GOOS == utils.Windows {
 		if os.Getenv(config.DistServerEnvName) == "" {
 			utils.SetWinEnv(config.DistServerEnvName, that.Conf.Rust.DistServer)
 			utils.SetWinEnv(config.UpdateRootEnvName, that.Conf.Rust.UpdateRoot)
@@ -71,7 +71,7 @@ func (that *RustInstaller) getEnv() (r []string) {
 func (that *RustInstaller) Install() {
 	that.SetAccelerationEnv()
 	iPath := that.getInstaller()
-	if runtime.GOOS == "windows" {
+	if runtime.GOOS == utils.Windows {
 		if err := exec.Command("cmd", "/c", iPath).Run(); err != nil {
 			fmt.Println("[Execute installer errored] ", err)
 		}

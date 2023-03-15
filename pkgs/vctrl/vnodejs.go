@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -13,6 +14,7 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly/v2"
+	"github.com/gookit/color"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/downloader"
@@ -85,7 +87,7 @@ func (that *NodeVersion) initeDirs() {
 
 func (that *NodeVersion) getSuffix() string {
 	suffix := ".tar.gz"
-	if runtime.GOOS == "windows" {
+	if runtime.GOOS == utils.Windows {
 		suffix = ".zip"
 	}
 	return suffix
@@ -191,7 +193,7 @@ func (that *NodeVersion) download(version string) string {
 }
 
 func (that *NodeVersion) setEnv(nodeHome string) {
-	if runtime.GOOS != "windows" {
+	if runtime.GOOS != utils.Windows {
 		envar := fmt.Sprintf(config.NodejsEnvPattern, nodeHome)
 		utils.SetUnixEnv(envar)
 	} else {
@@ -218,8 +220,9 @@ func (that *NodeVersion) findDir(untarfile string) {
 
 func (that *NodeVersion) UseVersion(version string) {
 	untarfile := filepath.Join(config.NodejsUntarFiles, version)
+	var tarfile string
 	if ok, _ := utils.PathIsExist(untarfile); !ok {
-		if tarfile := that.download(version); tarfile != "" {
+		if tarfile = that.download(version); tarfile != "" {
 			if err := archiver.Unarchive(tarfile, untarfile); err != nil {
 				os.RemoveAll(untarfile)
 				fmt.Println("[Unarchive failed] ", err)
@@ -238,6 +241,90 @@ func (that *NodeVersion) UseVersion(version string) {
 		fmt.Println("[Create link failed] ", err)
 		return
 	}
+	vFilePath := filepath.Join(that.dir, "version.txt")
+	if ok, _ := utils.PathIsExist(vFilePath); !ok {
+		vFile, err := os.OpenFile(vFilePath, os.O_WRONLY|os.O_CREATE, os.ModePerm)
+		if err != nil {
+			fmt.Printf("open file err = %v\n", err)
+			return
+		}
+		defer vFile.Close()
+		io.Copy(vFile, bytes.NewBuffer([]byte(version)))
+	}
 	that.setEnv(config.NodejsRoot)
+	that.setNpm()
 	fmt.Println("Use", version, "successed!")
+}
+
+func (that *NodeVersion) getCurrent() (v string) {
+	vPath := filepath.Join(config.NodejsRoot, "version.txt")
+	if ok, _ := utils.PathIsExist(vPath); ok {
+		f, _ := os.Open(vPath)
+		content, _ := io.ReadAll(f)
+		v = string(content)
+	}
+	return
+}
+
+func (that *NodeVersion) ShowInstalled() {
+	current := that.getCurrent()
+	if rd, err := os.ReadDir(config.NodejsUntarFiles); err == nil {
+		for _, v := range rd {
+			if v.IsDir() {
+				if current == v.Name() {
+					s := fmt.Sprintf("%s <Current>", v.Name())
+					color.Yellow.Println(s)
+					continue
+				}
+				color.Cyan.Println(v.Name())
+			}
+		}
+	}
+}
+
+func (that *NodeVersion) RemoveVersion(version string) {
+	current := that.getCurrent()
+	if version == "all" {
+		if rd, err := os.ReadDir(config.NodejsUntarFiles); err == nil {
+			for _, v := range rd {
+				if v.IsDir() {
+					if current == v.Name() {
+						continue
+					}
+					os.RemoveAll(filepath.Join(config.NodejsUntarFiles, v.Name()))
+				}
+			}
+		}
+		if rd, err := os.ReadDir(config.NodejsTarFiles); err == nil {
+			for _, v := range rd {
+				if !v.IsDir() && !strings.Contains(v.Name(), current) {
+					os.RemoveAll(filepath.Join(config.NodejsTarFiles, v.Name()))
+				}
+			}
+		}
+	} else if version != current {
+		os.RemoveAll(filepath.Join(config.NodejsUntarFiles, version))
+		if rd, err := os.ReadDir(config.NodejsTarFiles); err == nil {
+			for _, v := range rd {
+				if !v.IsDir() && strings.Contains(v.Name(), version) {
+					os.RemoveAll(filepath.Join(config.NodejsTarFiles, v.Name()))
+				}
+			}
+		}
+	}
+}
+
+func (that *NodeVersion) setNpm() {
+	var binPath string
+	if runtime.GOOS == utils.Windows {
+		binPath = filepath.Join(config.NodejsRoot, "npm")
+	} else {
+		binPath = filepath.Join(config.NodejsRoot, "bin/npm")
+	}
+	if ok, _ := utils.PathIsExist(binPath); ok {
+		// npm config set registry=http://registry.npm.taobao.org
+		utils.RunCommand(binPath, "config", "set", fmt.Sprintf("registry=%s", that.Conf.Nodejs.ProxyUrls[0]))
+		utils.RunCommand(binPath, "config", "set", "prefix", config.NodejsGlobal)
+		utils.RunCommand(binPath, "config", "set", "cache", config.NodejsCache)
+	}
 }

@@ -32,7 +32,7 @@ func SelfInstall() {
 		if _, err := utils.CopyFile(ePath, filepath.Join(config.GVCWorkDir, name)); err == nil {
 			genvs := fmt.Sprintf(gPattern, config.GVCWorkDir)
 			setEnvForGVC(genvs)
-			if runtime.GOOS == "windows" {
+			if runtime.GOOS == utils.Windows {
 				setShortcut()
 			}
 		}

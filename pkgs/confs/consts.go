@@ -12,7 +12,9 @@ import (
 /*
 gvc related
 */
-const GVCVersion = "v0.1.0"
+const (
+	GVCVersion = "v0.1.0"
+)
 
 var (
 	GVCWorkDir          = filepath.Join(utils.GetHomeDir(), ".gvc")
@@ -32,7 +34,7 @@ const (
 var TempHostsFilePath = filepath.Join(GVCWorkDir, "/temp_hosts.txt")
 
 func GetHostsFilePath() (r string) {
-	if runtime.GOOS == "windows" {
+	if runtime.GOOS == utils.Windows {
 		r = HostFilePathForWin
 		return
 	}
@@ -78,11 +80,11 @@ var (
 
 func GetCodeUserSettingsPath() string {
 	switch runtime.GOOS {
-	case "darwin":
+	case utils.MacOS:
 		return CodeUserSettingsFilePathForMac
-	case "linux":
+	case utils.Linux:
 		return CodeUserSettingsFilePathForLinux
-	case "windows":
+	case utils.Windows:
 		return CodeUserSettingsFilePathForWin
 	default:
 		return ""
@@ -91,11 +93,11 @@ func GetCodeUserSettingsPath() string {
 
 func GetCodeKeybindingsPath() string {
 	switch runtime.GOOS {
-	case "darwin":
+	case utils.MacOS:
 		return CodeKeybindingsFilePathForMac
-	case "linux":
+	case utils.Linux:
 		return CodeKeybindingsFilePathForLinux
-	case "windows":
+	case utils.Windows:
 		return CodeKeybindingsFilePathForWin
 	default:
 		return ""
@@ -139,7 +141,7 @@ go related
 var GoFilesDir = filepath.Join(GVCWorkDir, "go_files")
 
 func getGoPath() string {
-	if runtime.GOOS != "windows" {
+	if runtime.GOOS != utils.Windows {
 		return "data/projects/go"
 	}
 	return `data\projects\go`
@@ -180,7 +182,7 @@ var (
 )
 
 func GetNVimInitPath() (r string) {
-	if runtime.GOOS == "windows" {
+	if runtime.GOOS == utils.Windows {
 		r = NVimWinInitPath
 	} else {
 		r = NVimUnixInitPath

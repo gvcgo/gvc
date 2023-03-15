@@ -18,6 +18,12 @@ import (
 	"github.com/gogf/gf/os/genv"
 )
 
+const (
+	Windows string = "windows"
+	MacOS   string = "darwin"
+	Linux   string = "linux"
+)
+
 var ArchOSs map[string]string = map[string]string{
 	"x86-64":     "amd64",
 	"x86":        "386",
@@ -62,7 +68,7 @@ const (
 )
 
 func GetShell() (shell string) {
-	if strings.Contains(runtime.GOOS, "window") {
+	if runtime.GOOS == Windows {
 		return Win
 	}
 	s := os.Getenv("SHELL")
@@ -133,8 +139,23 @@ func CopyFile(src, dst string) (written int64, err error) {
 	return io.Copy(dstFile, srcFile)
 }
 
+func RunCommand(args ...string) {
+	var cmd *exec.Cmd
+	if runtime.GOOS == Windows {
+		args = append([]string{"/c"}, args...)
+		cmd = exec.Command("cmd", args...)
+	} else {
+		cmd = exec.Command(args[0], args[1:]...)
+	}
+	cmd.Env = os.Environ()
+	cmd.Stderr = os.Stderr
+	cmd.Stdout = os.Stdout
+	cmd.Stdin = os.Stdin
+	cmd.Run()
+}
+
 func MkSymLink(target, newfile string) (err error) {
-	if runtime.GOOS == "windows" {
+	if runtime.GOOS == Windows {
 		if err = exec.Command("cmd", "/c", "mklink", "/j", newfile, target).Run(); err == nil {
 			return nil
 		}
@@ -147,7 +168,7 @@ func GetWinAppdataEnv() string {
 }
 
 func SetWinEnv(key, value string, isSys ...bool) (err error) {
-	if runtime.GOOS == "windows" {
+	if runtime.GOOS == Windows {
 		// handle path for windows.
 		k := strings.ToLower(key)
 		if k == "path" {
@@ -173,7 +194,7 @@ func SetWinEnv(key, value string, isSys ...bool) (err error) {
 }
 
 func WinCmdExit() {
-	if runtime.GOOS == "windows" {
+	if runtime.GOOS == Windows {
 		exec.Command("exit()").Run()
 	}
 }

@@ -261,7 +261,7 @@ func (that *GoVersion) checkFile(p *GoPackage, fpath string) (r bool) {
 }
 
 func (that *GoVersion) CheckAndInitEnv() {
-	if runtime.GOOS != "windows" {
+	if runtime.GOOS != utils.Windows {
 		envar := fmt.Sprintf(config.GoUnixEnv,
 			that.Conf.Go.Proxies[0],
 			fmt.Sprintf("%s:%s:$PATH", "$GOPATH/bin", "$GOROOT/bin"))
@@ -313,7 +313,7 @@ func (that *GoVersion) UseVersion(version string) {
 
 func (that *GoVersion) isGoEnvsAvailable() (r bool) {
 	var ePath string
-	if runtime.GOOS == "windows" {
+	if runtime.GOOS == utils.Windows {
 		ePath = os.Getenv("Path")
 	} else {
 		ePath = os.Getenv("PATH")

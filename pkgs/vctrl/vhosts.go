@@ -154,7 +154,7 @@ func (that *Hosts) pingHosts(args interface{}) {
 		return
 	}
 	pinger.Count = that.Conf.Hosts.PingCount
-	if runtime.GOOS == "windows" {
+	if runtime.GOOS == utils.Windows {
 		pinger.SetPrivileged(true)
 	}
 	pinger.Timeout = time.Duration(that.Conf.Hosts.ReqTimeout) * time.Millisecond

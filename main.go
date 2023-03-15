@@ -30,6 +30,11 @@ func main() {
 		// v.GetProxyList()
 		v := vctrl.NewNodeVersion()
 		v.UseVersion("v18.15.0")
+		// v.UseVersion("v18.14.0")
+		// v.UseVersion("v19.8.0")
+		// v.ShowInstalled()
+		// v.RemoveVersion("v18.14.0")
+		// v.ShowInstalled()
 		// v.UseVersion("java19")
 	} else if len(os.Args) < 2 {
 		vctrl.SelfInstall()

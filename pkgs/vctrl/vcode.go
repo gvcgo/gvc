@@ -98,7 +98,6 @@ func (that *Code) getPackages() (r string) {
 func (that *Code) download() (r string) {
 	that.getPackages()
 	key := fmt.Sprintf("%s-%s", runtime.GOOS, runtime.GOARCH)
-	// key := "windows-arm64"
 	if p := that.Packages[key]; p != nil {
 		fmt.Println(p.Url)
 		var suffix string
@@ -197,13 +196,13 @@ func (that *Code) InstallForLinux() {
 
 func (that *Code) Install() {
 	switch runtime.GOOS {
-	case "windows":
+	case utils.Windows:
 		that.InstallForWin()
-	case "darwin":
+	case utils.MacOS:
 		if ok, _ := utils.PathIsExist(config.CodeMacCmdBinaryDir); !ok {
 			that.InstallForMac()
 		}
-	case "linux":
+	case utils.Linux:
 		that.InstallForLinux()
 	}
 }

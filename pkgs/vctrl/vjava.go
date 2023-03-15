@@ -171,7 +171,7 @@ func (that *JavaVersion) download(version string) (r string) {
 
 func (that *JavaVersion) isJavaEnvsAvailable() (r bool) {
 	var ePath string
-	if runtime.GOOS == "windows" {
+	if runtime.GOOS == utils.Windows {
 		ePath = os.Getenv("Path")
 	} else {
 		ePath = os.Getenv("PATH")
@@ -183,7 +183,7 @@ func (that *JavaVersion) isJavaEnvsAvailable() (r bool) {
 }
 
 func (that *JavaVersion) CheckAndInitEnv() {
-	if runtime.GOOS != "windows" {
+	if runtime.GOOS != utils.Windows {
 		envar := fmt.Sprintf(config.JavaEnvVarPattern,
 			config.DefaultJavaRoot)
 		utils.SetUnixEnv(envar)

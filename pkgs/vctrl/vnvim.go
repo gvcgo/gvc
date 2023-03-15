@@ -94,7 +94,7 @@ func (that *NVim) download() (r string) {
 func (that *NVim) getBinaryPath() (r string) {
 	nurl := that.Conf.NVim.Urls[runtime.GOOS]
 	r = filepath.Join(config.NVimFileDir, nurl.Name, "bin")
-	if runtime.GOOS == "windows" {
+	if runtime.GOOS == utils.Windows {
 		utils.MkSymLink(filepath.Join(r, "nvim.exe"), filepath.Join("nvim"))
 	}
 	return r
@@ -102,7 +102,7 @@ func (that *NVim) getBinaryPath() (r string) {
 
 func (that *NVim) setenv() {
 	if ok, _ := utils.PathIsExist(that.getBinaryPath()); ok {
-		if runtime.GOOS == "windows" {
+		if runtime.GOOS == utils.Windows {
 			utils.SetWinEnv("PATH", that.getBinaryPath())
 		} else {
 			envars := fmt.Sprintf(config.NVimUnixEnv, that.getBinaryPath())
