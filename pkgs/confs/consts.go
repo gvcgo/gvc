@@ -249,3 +249,8 @@ var (
 	NodejsGlobal     = filepath.Join(NodejsFilesDir, "node_global")
 	NodejsCache      = filepath.Join(NodejsFilesDir, "node_cache")
 )
+
+var NodejsEnvPattern string = `# Nodejs env start
+export NODE_HOME="%s"
+export PATH="$NODE_HOME/bin:$PATH"
+# Nodejs env end`

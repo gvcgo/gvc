@@ -9,9 +9,11 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly/v2"
+	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/downloader"
 	"github.com/moqsien/gvc/pkgs/utils"
@@ -45,7 +47,6 @@ type NodeVersion struct {
 	c        *colly.Collector
 	d        *downloader.Downloader
 	dir      string
-	shaList  []string
 	Versions map[string]*NodePackage
 	vList    []*nV
 	Conf     *config.GVConfig
@@ -116,9 +117,8 @@ func (that *NodeVersion) getVersions() (r []string) {
 			if lts != "" {
 				v.Version = fmt.Sprintf("%s(%s)", v.Version, lts)
 			}
-			p.FileName = filepath.Join(config.NodejsTarFiles,
-				fmt.Sprintf("nodejs%s-%s-%s%s",
-					v.Version, p.OS, p.Arch, that.getSuffix()))
+			p.FileName = fmt.Sprintf("nodejs%s-%s-%s%s",
+				v.Version, p.OS, p.Arch, that.getSuffix())
 		}
 	}
 	return
@@ -139,7 +139,7 @@ func (that *NodeVersion) ShowVersions() {
 	fmt.Println(strings.Join(that.getVersions(), "  "))
 }
 
-func (that *NodeVersion) download(version string) {
+func (that *NodeVersion) download(version string) string {
 	if len(that.vList) == 0 {
 		that.getVersions()
 	}
@@ -174,13 +174,70 @@ func (that *NodeVersion) download(version string) {
 			})
 			that.c.Visit(sumUrl)
 			if v.Checksum != "" {
-				fmt.Println(v.Checksum)
-				fmt.Println(v.Url)
+				that.d.Url = v.Url
+				that.d.Timeout = 100 * time.Minute
+				fpath := filepath.Join(config.NodejsTarFiles, v.FileName)
+				if size := that.d.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
+					if ok := utils.CheckFile(fpath, "sha256", v.Checksum); ok {
+						return fpath
+					} else {
+						os.RemoveAll(fpath)
+					}
+				}
+			}
+		}
+	}
+	return ""
+}
+
+func (that *NodeVersion) setEnv(nodeHome string) {
+	if runtime.GOOS != "windows" {
+		envar := fmt.Sprintf(config.NodejsEnvPattern, nodeHome)
+		utils.SetUnixEnv(envar)
+	} else {
+		utils.SetWinEnv("NODE_HOME", nodeHome)
+		utils.SetWinEnv("Path", nodeHome)
+	}
+}
+
+func (that *NodeVersion) findDir(untarfile string) {
+	if rd, err := os.ReadDir(untarfile); err == nil {
+		for _, d := range rd {
+			if d.IsDir() && d.Name() == "bin" {
+				if ok, _ := utils.PathIsExist(filepath.Join(untarfile, "bin/node")); ok {
+					that.dir = untarfile
+				}
+			} else if !d.IsDir() && d.Name() == "node.exe" {
+				that.dir = untarfile
+			} else if d.IsDir() {
+				that.findDir(filepath.Join(untarfile, d.Name()))
 			}
 		}
 	}
 }
 
 func (that *NodeVersion) UseVersion(version string) {
-	that.download(version)
+	untarfile := filepath.Join(config.NodejsUntarFiles, version)
+	if ok, _ := utils.PathIsExist(untarfile); !ok {
+		if tarfile := that.download(version); tarfile != "" {
+			if err := archiver.Unarchive(tarfile, untarfile); err != nil {
+				os.RemoveAll(untarfile)
+				fmt.Println("[Unarchive failed] ", err)
+				return
+			}
+		}
+	}
+	if ok, _ := utils.PathIsExist(config.NodejsRoot); ok {
+		os.RemoveAll(config.NodejsRoot)
+	}
+	that.findDir(untarfile)
+	if that.dir == "" {
+		return
+	}
+	if err := utils.MkSymLink(that.dir, config.NodejsRoot); err != nil {
+		fmt.Println("[Create link failed] ", err)
+		return
+	}
+	that.setEnv(config.NodejsRoot)
+	fmt.Println("Use", version, "successed!")
 }
