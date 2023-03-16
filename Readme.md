@@ -34,7 +34,7 @@ Fetures on the way：
 ---------
 ### gvc -h
 ```shell
-moqsien@iMac gvc % gvc -h  
+moqsien@iMac gvc % gvc -h
 NAME:
    gvc - gvc <Command> <SubCommand>...
 
@@ -51,6 +51,8 @@ COMMANDS:
    config, conf, cnf, c  GVC config file management.
    nvim, neovim, nv, n   GVC neovim management.
    java, jdk, j          GVC jdk management.
+   rust, rustc, ru, r    GVC rust management.
+   nodejs, node, no      Nodejs version control.
    help, h               Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
@@ -171,6 +173,44 @@ COMMANDS:
    use, u   Download and use jdk.
    show, s  Show available versions.
    help, h  Shows a list of commands or help for one command
+
+OPTIONS:
+   --help, -h  show help
+```
+
+### gvc rust -h
+```shell
+moqsien@iMac gvc % gvc rust -h
+NAME:
+   gvc rust - GVC rust management.
+
+USAGE:
+   gvc rust command [command options] [arguments...]
+
+COMMANDS:
+   install, ins, i  Install the latest rust compiler tools.
+   help, h          Shows a list of commands or help for one command
+
+OPTIONS:
+   --help, -h  show help
+```
+
+### gvc node -h
+```shell
+moqsien@iMac gvc % gvc node -h
+NAME:
+   gvc nodejs - Nodejs version control.
+
+USAGE:
+   gvc nodejs command [command options] [arguments...]
+
+COMMANDS:
+   remote, r           Show remote versions.
+   use, u              Download and use version.
+   local, l            Show installed versions.
+   remove-unused, ru   Remove unused versions.
+   remove-version, rm  Remove a version.
+   help, h             Shows a list of commands or help for one command
 
 OPTIONS:
    --help, -h  show help
