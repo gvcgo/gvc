@@ -15,6 +15,7 @@ At Present, gvc has following features:
 - Automatically installation of golang compilers, version switching and env variables setup;
 - Automatically installation of jdk, version switching and env variables setup;
 - Automatically installation of the latest rust compiler, env variables setup;
+- Automatically installation of nodejs, version switching and env variables setup;
 - Automatically installation of vscode and extensions. You can also backup extensions info, user settings and keybindings;
 - Automatically installation of neovim with default init file from gvc. And It was made to work with vscode by default;
 - Hosts file management to accelerate github visit in China；
@@ -26,7 +27,6 @@ At Present, gvc has following features:
 Fetures on the way：
 - HomeBrew auto-installation and acceleration for users in China；
 - Python acceleration for users in China；
-- NodeJS auto-installation and acceleration for users in China；
 - git.exe auto-installation under Windows；
 - Flutter auto-installation；
 
