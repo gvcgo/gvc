@@ -441,7 +441,78 @@ func (that *Cmder) vrust() {
 }
 
 func (that *Cmder) vnodejs() {
+	command := &cli.Command{
+		Name:        "nodejs",
+		Aliases:     []string{"node", "no"},
+		Usage:       "Nodejs version control.",
+		Subcommands: []*cli.Command{},
+	}
+	vremote := &cli.Command{
+		Name:    "remote",
+		Aliases: []string{"r"},
+		Usage:   "Show remote versions.",
+		Action: func(ctx *cli.Context) error {
+			nv := vctrl.NewNodeVersion()
+			nv.ShowVersions()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vremote)
 
+	vuse := &cli.Command{
+		Name:    "use",
+		Aliases: []string{"u"},
+		Usage:   "Download and use version.",
+		Action: func(ctx *cli.Context) error {
+			version := ctx.Args().First()
+			if version != "" {
+				nv := vctrl.NewNodeVersion()
+				nv.UseVersion(version)
+			}
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vuse)
+
+	vlocal := &cli.Command{
+		Name:    "local",
+		Aliases: []string{"l"},
+		Usage:   "Show installed versions.",
+		Action: func(ctx *cli.Context) error {
+			nv := vctrl.NewNodeVersion()
+			nv.ShowInstalled()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vlocal)
+
+	rmunused := &cli.Command{
+		Name:    "remove-unused",
+		Aliases: []string{"ru"},
+		Usage:   "Remove unused versions.",
+		Action: func(ctx *cli.Context) error {
+			nv := vctrl.NewNodeVersion()
+			nv.RemoveVersion("all")
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, rmunused)
+
+	rmversion := &cli.Command{
+		Name:    "remove-version",
+		Aliases: []string{"rm"},
+		Usage:   "Remove a version.",
+		Action: func(ctx *cli.Context) error {
+			if version := ctx.Args().First(); version != "" {
+				nv := vctrl.NewNodeVersion()
+				nv.RemoveVersion(version)
+			}
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, rmversion)
+
+	that.Commands = append(that.Commands, command)
 }
 
 func (that *Cmder) initiate() {
