@@ -13,6 +13,7 @@ type PyConf struct {
 	PyenvUnix   string   `koanf:"pyenv_unix"`
 	PyenvWin    string   `koanf:"pyenv_win"`
 	PypiProxies []string `koanf:"pypi_proxies"`
+	PyBuildUrls []string `koanf:"python_build_urls"`
 	path        string
 }
 
@@ -42,5 +43,8 @@ func (that *PyConf) Reset() {
 		"https://pypi.mirrors.ustc.edu.cn/simple/",
 		"http://mirrors.aliyun.com/pypi/simple/",
 		"http://pypi.douban.com/simple/",
+	}
+	that.PyBuildUrls = []string{
+		"https://registry.npmmirror.com/-/binary/python/",
 	}
 }

@@ -52,6 +52,11 @@ func (that *PyVenv) initeDirs() {
 			fmt.Println("[mkdir Failed] ", err)
 		}
 	}
+	if ok, _ := utils.PathIsExist(config.PyenvCacheDir); !ok {
+		if err := os.MkdirAll(config.PyenvCacheDir, os.ModePerm); err != nil {
+			fmt.Println("[mkdir Failed] ", err)
+		}
+	}
 }
 
 func (that *PyVenv) handlePyenvUntarfile() {
@@ -165,15 +170,29 @@ func (that *PyVenv) UpdatePyenv() {
 	that.getPyenv(true)
 }
 
+func (that *PyVenv) setTempEnvs() {
+	os.Setenv(config.GetPyenvRootEnvName(), config.PyenvRootPath)
+	os.Setenv("PYTHON_BUILD_MIRROR_URL", that.Conf.Python.PyBuildUrls[0])
+}
+
 func (that *PyVenv) ListRemoteVersions() {
 	that.getPyenv()
-	os.Setenv(config.GetPyenvRootEnvName(), config.PyenvRootPath)
+	that.setTempEnvs()
 	utils.ExecuteCommand(that.getExecutable(), "install", "--list")
+}
+
+func (that *PyVenv) downloadCache(version string) {
+	name := fmt.Sprintf("Python-%s.tar.xz", version)
+	that.Url = fmt.Sprintf("%s%s/%s", that.Conf.Python.PyBuildUrls[0], version, name)
+	that.Timeout = 10 * time.Minute
+	fpath := filepath.Join(config.PyenvCacheDir, name)
+	that.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644)
 }
 
 func (that *PyVenv) InstallVersion(version string) {
 	that.getPyenv()
-	os.Setenv(config.GetPyenvRootEnvName(), config.PyenvRootPath)
+	that.setTempEnvs()
+	that.downloadCache(version)
 	utils.ExecuteCommand(that.getExecutable(), "install", version)
 	utils.ExecuteCommand(that.getExecutable(), "global", version)
 	that.setPipAcceleration()
@@ -181,13 +200,13 @@ func (that *PyVenv) InstallVersion(version string) {
 
 func (that *PyVenv) RemoveVersion(version string) {
 	that.getPyenv()
-	os.Setenv(config.GetPyenvRootEnvName(), config.PyenvRootPath)
+	that.setTempEnvs()
 	utils.ExecuteCommand(that.getExecutable(), "uninstall", version)
 }
 
 func (that *PyVenv) ShowInstalled() {
 	that.getPyenv()
-	os.Setenv(config.GetPyenvRootEnvName(), config.PyenvRootPath)
+	that.setTempEnvs()
 	utils.ExecuteCommand(that.getExecutable(), "versions")
 }
 

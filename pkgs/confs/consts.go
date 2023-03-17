@@ -269,9 +269,10 @@ var (
 	PythonFilesDir    string = filepath.Join(GVCWorkDir, "py_files")
 	PythonToolsPath   string = filepath.Join(PythonFilesDir, "tools")
 	PyenvInstallDir   string = filepath.Join(PythonToolsPath, "pyenv")
-	PyenvVersionsPath string = filepath.Join(PythonFilesDir, "versions")
 	PyenvRootPath     string = PythonFilesDir
-	PythonRootPath    string = filepath.Join(PythonFilesDir, "shims")
+	PyenvVersionsPath string = filepath.Join(PyenvRootPath, "versions")
+	PyenvCacheDir     string = filepath.Join(PyenvRootPath, "cache")
+	PythonRootPath    string = filepath.Join(PyenvRootPath, "shims")
 	// PythonPortableDir string = filepath.Join(PythonToolsPath, "portable")
 	// PythonPipBinary   string = filepath.Join(PythonPortableDir, "pip.pyz")
 	// PythonWinBinary   string = filepath.Join(PythonPortableDir, "python.exe")

@@ -515,6 +515,69 @@ func (that *Cmder) vnodejs() {
 	that.Commands = append(that.Commands, command)
 }
 
+func (that *Cmder) vpython() {
+	command := &cli.Command{
+		Name:        "python",
+		Aliases:     []string{"py"},
+		Usage:       "Python version management.",
+		Subcommands: []*cli.Command{},
+	}
+	vremote := &cli.Command{
+		Name:    "remote",
+		Aliases: []string{"r"},
+		Usage:   "Show remote versions.",
+		Action: func(ctx *cli.Context) error {
+			nv := vctrl.NewPyVenv()
+			nv.ListRemoteVersions()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vremote)
+
+	vuse := &cli.Command{
+		Name:    "use",
+		Aliases: []string{"u"},
+		Usage:   "Download and use a version.",
+		Action: func(ctx *cli.Context) error {
+			version := ctx.Args().First()
+			if version != "" {
+				nv := vctrl.NewPyVenv()
+				nv.InstallVersion(version)
+			}
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vuse)
+
+	vlocal := &cli.Command{
+		Name:    "local",
+		Aliases: []string{"l"},
+		Usage:   "Show installed versions.",
+		Action: func(ctx *cli.Context) error {
+			nv := vctrl.NewPyVenv()
+			nv.ShowInstalled()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vlocal)
+
+	rmversion := &cli.Command{
+		Name:    "remove-version",
+		Aliases: []string{"rm"},
+		Usage:   "Remove a version.",
+		Action: func(ctx *cli.Context) error {
+			if version := ctx.Args().First(); version != "" {
+				nv := vctrl.NewPyVenv()
+				nv.RemoveVersion(version)
+			}
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, rmversion)
+
+	that.Commands = append(that.Commands, command)
+}
+
 func (that *Cmder) initiate() {
 	that.vhost()
 	that.vgo()
@@ -524,4 +587,5 @@ func (that *Cmder) initiate() {
 	that.vjava()
 	that.vrust()
 	that.vnodejs()
+	that.vpython()
 }

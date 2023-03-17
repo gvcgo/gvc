@@ -29,7 +29,7 @@ func main() {
 		// v := vctrl.NewProxy()
 		// v.GetProxyList()
 		v := vctrl.NewPyVenv()
-		v.InstallVersion("3.11.2")
+		v.InstallVersion("3.10.0")
 		// v.UseVersion("v18.14.0")
 		// v.UseVersion("v19.8.0")
 		// v.ShowInstalled()
