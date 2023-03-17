@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -181,6 +182,16 @@ func (that *PyVenv) ListRemoteVersions() {
 	utils.ExecuteCommand(that.getExecutable(), "install", "--list")
 }
 
+func (that *PyVenv) isInstalled(version string) (r bool) {
+	cmd := exec.Command(that.getExecutable(), "versions")
+	cmd.Env = os.Environ()
+	output, _ := cmd.CombinedOutput()
+	if strings.Contains(string(output), version) {
+		r = true
+	}
+	return
+}
+
 func (that *PyVenv) downloadCache(version string) {
 	name := fmt.Sprintf("Python-%s.tar.xz", version)
 	that.Url = fmt.Sprintf("%s%s/%s", that.Conf.Python.PyBuildUrls[0], version, name)
@@ -192,8 +203,10 @@ func (that *PyVenv) downloadCache(version string) {
 func (that *PyVenv) InstallVersion(version string) {
 	that.getPyenv()
 	that.setTempEnvs()
-	that.downloadCache(version)
-	utils.ExecuteCommand(that.getExecutable(), "install", version)
+	if !that.isInstalled(version) {
+		that.downloadCache(version)
+		utils.ExecuteCommand(that.getExecutable(), "install", version)
+	}
 	utils.ExecuteCommand(that.getExecutable(), "global", version)
 	that.setPipAcceleration()
 }
