@@ -296,4 +296,22 @@ export %s=%s
 # pyenv & python executable path
 export PATH=%s:%s:$PATH
 # python env end`
+	PipConfig = `[global]
+timeout = 6000 
+index-url = %s
+trusted-host = %s`
 )
+
+func GetPipConfPath() (r string) {
+	if runtime.GOOS != utils.Windows {
+		r = filepath.Join(utils.GetHomeDir(), ".pip/pip.conf")
+	} else {
+		appdata := os.Getenv("APPDATA")
+		if ok, _ := utils.PathIsExist(appdata); ok {
+			r = filepath.Join(appdata, "pip/pip.ini")
+		} else {
+			fmt.Println("Cannot find appdata dir.")
+		}
+	}
+	return
+}

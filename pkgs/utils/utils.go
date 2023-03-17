@@ -215,6 +215,7 @@ func SetUnixEnv(envars string) {
 			os.WriteFile(shellrc, []byte(strings.ReplaceAll(s, GetHomeDir(), "$HOME")), 0644)
 		}
 	}
+	FlushPathEnvForUnix()
 }
 
 func GetExt(filename string) (ext string) {

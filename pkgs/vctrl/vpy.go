@@ -2,6 +2,7 @@ package vctrl
 
 import (
 	"fmt"
+	"net/url"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -175,6 +176,7 @@ func (that *PyVenv) InstallVersion(version string) {
 	os.Setenv(config.GetPyenvRootEnvName(), config.PyenvRootPath)
 	utils.ExecuteCommand(that.getExecutable(), "install", version)
 	utils.ExecuteCommand(that.getExecutable(), "global", version)
+	that.setPipAcceleration()
 }
 
 func (that *PyVenv) RemoveVersion(version string) {
@@ -192,4 +194,21 @@ func (that *PyVenv) ShowInstalled() {
 func (that *PyVenv) ShowVersionPath() {
 	fmt.Println("Python versions are installed in: ")
 	fmt.Println(config.PyenvVersionsPath)
+}
+
+func (that *PyVenv) setPipAcceleration() {
+	p := config.GetPipConfPath()
+	pDir := filepath.Dir(p)
+	if ok, _ := utils.PathIsExist(p); !ok {
+		if ok, _ := utils.PathIsExist(pDir); !ok {
+			if err := os.MkdirAll(pDir, os.ModePerm); err != nil {
+				fmt.Println("[mkdir Failed] ", err)
+				return
+			}
+		}
+		pUrl := that.Conf.Python.PypiProxies[0]
+		parser, _ := url.Parse(pUrl)
+		content := fmt.Sprintf(config.PipConfig, pUrl, parser.Host)
+		os.WriteFile(p, []byte(content), 0644)
+	}
 }
