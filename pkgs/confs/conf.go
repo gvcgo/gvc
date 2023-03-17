@@ -26,8 +26,10 @@ type GVConfig struct {
 	Rust   *RustConf   `koanf:"rust"`
 	Code   *CodeConf   `koanf:"code"`
 	Nodejs *NodejsConf `koanf:"nodejs"`
+	Python *PyConf     `koanf:"python"`
 	NVim   *NVimConf   `koanf:"nvim"`
 	Proxy  *ProxyConf  `koanf:"proxy"`
+	Github *GithubConf `koanf:"github"`
 	w      *WebdavConf `koanf:"webdav"`
 	k      *koanf.Koanf
 	parser *yaml.YAML
@@ -42,7 +44,9 @@ func New() (r *GVConfig) {
 		Rust:   NewRustConf(),
 		Code:   NewCodeConf(),
 		Nodejs: NewNodejsConf(),
+		Python: NewPyConf(),
 		Proxy:  NewProxyConf(),
+		Github: NewGithubConf(),
 		w:      NewWebdavConf(),
 		k:      koanf.New("."),
 		parser: yaml.Parser(),
@@ -77,10 +81,14 @@ func (that *GVConfig) Reset() {
 	that.Code.Reset()
 	that.Nodejs = NewNodejsConf()
 	that.Nodejs.Reset()
+	that.Python = NewPyConf()
+	that.Python.Reset()
 	that.NVim = NewNVimConf()
 	that.NVim.Reset()
 	that.Proxy = NewProxyConf()
 	that.Proxy.Reset()
+	that.Github = NewGithubConf()
+	that.Github.Reset()
 	that.Restore()
 }
 

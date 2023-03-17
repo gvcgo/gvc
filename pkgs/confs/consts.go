@@ -256,3 +256,44 @@ var NodejsEnvPattern string = `# Nodejs env start
 export NODE_HOME="%s"
 export PATH="$NODE_HOME/bin:$PATH"
 # Nodejs env end`
+
+/*
+Python related
+*/
+var (
+	PythonBinPath  string = "/usr/bin/python"
+	Python3BinPath string = "/usr/bin/python3"
+)
+
+var (
+	PythonFilesDir    string = filepath.Join(GVCWorkDir, "py_files")
+	PythonToolsPath   string = filepath.Join(PythonFilesDir, "tools")
+	PyenvInstallDir   string = filepath.Join(PythonToolsPath, "pyenv")
+	PyenvVersionsPath string = filepath.Join(PythonFilesDir, "versions")
+	PyenvRootPath     string = PythonFilesDir
+	PythonRootPath    string = filepath.Join(PythonFilesDir, "shims")
+	// PythonPortableDir string = filepath.Join(PythonToolsPath, "portable")
+	// PythonPipBinary   string = filepath.Join(PythonPortableDir, "pip.pyz")
+	// PythonWinBinary   string = filepath.Join(PythonPortableDir, "python.exe")
+	// PythonWorkonHome  string = filepath.Join(PythonFilesDir, "venvs")
+	// WorkonName        string = "WORKON_HOME"
+	// VPythonName       string = "VIRTUALENVWRAPPER_PYTHON"
+)
+
+func GetPyenvRootEnvName() (r string) {
+	if runtime.GOOS == utils.Windows {
+		r = "PYENV_HOME"
+	} else {
+		r = "PYENV_ROOT"
+	}
+	return
+}
+
+var (
+	PythonUnixEnvPattern string = `# python env start
+# pyenv root
+export %s=%s
+# pyenv & python executable path
+export PATH=%s:%s:$PATH
+# python env end`
+)

@@ -274,3 +274,33 @@ func JoinUnixFilePath(pathList ...string) (r string) {
 	}
 	return
 }
+
+func FlushPathEnvForUnix() (err error) {
+	if runtime.GOOS != Windows {
+		return exec.Command("source", GetShellRcFile()).Run()
+	}
+	return
+}
+
+func ExecuteCommand(args ...string) error {
+	var cmd *exec.Cmd
+	if runtime.GOOS == Windows {
+		args = append([]string{"/c"}, args...)
+		cmd = exec.Command("cmd", args...)
+	} else {
+		FlushPathEnvForUnix()
+		cmd = exec.Command(args[0], args[1:]...)
+	}
+	cmd.Env = os.Environ()
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	return cmd.Run()
+}
+
+func ClearDir(dirPath string) {
+	fList, _ := os.ReadDir(dirPath)
+	for _, f := range fList {
+		os.RemoveAll(filepath.Join(dirPath, f.Name()))
+	}
+}
