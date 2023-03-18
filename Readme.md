@@ -16,6 +16,7 @@ At Present, gvc has following features:
 - Automatically installation of jdk, version switching and env variables setup;
 - Automatically installation of the latest rust compiler, env variables setup;
 - Automatically installation of nodejs, version switching and env variables setup;
+- Automatically installation of python, version switching, env variables setup, pip acceleration;
 - Automatically installation of vscode and extensions. You can also backup extensions info, user settings and keybindings;
 - Automatically installation of neovim with default init file from gvc. And It was made to work with vscode by default;
 - Hosts file management to accelerate github visit in China；
@@ -26,7 +27,6 @@ At Present, gvc has following features:
 
 Fetures on the way：
 - HomeBrew auto-installation and acceleration for users in China；
-- Python acceleration for users in China；
 - git.exe auto-installation under Windows；
 - Flutter auto-installation；
 
@@ -34,7 +34,7 @@ Fetures on the way：
 ---------
 ### gvc -h
 ```shell
-moqsien@iMac gvc % gvc -h
+moqsien@iMac gvc % gvc -h 
 NAME:
    gvc - gvc <Command> <SubCommand>...
 
@@ -53,11 +53,13 @@ COMMANDS:
    java, jdk, j          GVC jdk management.
    rust, rustc, ru, r    GVC rust management.
    nodejs, node, no      Nodejs version control.
+   python, py            Python version management.
    help, h               Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
    --help, -h  show help
 ```
+
 ### gvc go -h
 ```shell
 moqsien@iMac-Pro gvc % gvc go help
@@ -210,6 +212,27 @@ COMMANDS:
    local, l            Show installed versions.
    remove-unused, ru   Remove unused versions.
    remove-version, rm  Remove a version.
+   help, h             Shows a list of commands or help for one command
+
+OPTIONS:
+   --help, -h  show help
+```
+
+### gvc py -h
+```shell
+moqsien@iMac gvc % gvc py -h  
+NAME:
+   gvc python - Python version management.
+
+USAGE:
+   gvc python command [command options] [arguments...]
+
+COMMANDS:
+   remote, r           Show remote versions.
+   use, u              Download and use a version.
+   local, l            Show installed versions.
+   remove-version, rm  Remove a version.
+   update, up          Install or update pyenv.
    help, h             Shows a list of commands or help for one command
 
 OPTIONS:

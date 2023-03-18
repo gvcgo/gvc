@@ -17,6 +17,7 @@
 - java jdk自动安装和添加环境变量，版本切换(jdk17 or jdk19)；
 - Rust编译器自动安装和加速；
 - Nodejs自动安装和添加环境变量，多版本轻松切换，安装包加速；
+- Python自动安装，使用国内源解决下载慢问题，编译安装过程可能需要等待一段时间，同时自动配置环境变量和pip加速源；
 - vscode自动安装，一键安装插件(需要配置，也可以使用默认配置)，一键备份和同步插件信息、用户设置、快捷键设置到webdav网盘；
 - neovim自动安装和配置，默认与vscode-neovim插件配合，有默认配置可以使用；
 - hosts文件更新，加速github访问，对国内用户友好；
@@ -28,14 +29,13 @@
 gvc将要提供的功能或特点：
 - Windows下的git.exe下载；
 - HomeBrew安装和加速；
-- Python安装包加速；
 - Flutter自动安装；
 
 ## gvc具体功能展示
 ---------
 ### gvc -h
 ```shell
-moqsien@iMac gvc % gvc -h
+moqsien@iMac gvc % gvc -h 
 NAME:
    gvc - gvc <Command> <SubCommand>...
 
@@ -54,11 +54,13 @@ COMMANDS:
    java, jdk, j          GVC jdk management.
    rust, rustc, ru, r    GVC rust management.
    nodejs, node, no      Nodejs version control.
+   python, py            Python version management.
    help, h               Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
    --help, -h  show help
 ```
+
 ### gvc go -h
 ```shell
 moqsien@iMac-Pro gvc % gvc go help
@@ -211,6 +213,27 @@ COMMANDS:
    local, l            Show installed versions.
    remove-unused, ru   Remove unused versions.
    remove-version, rm  Remove a version.
+   help, h             Shows a list of commands or help for one command
+
+OPTIONS:
+   --help, -h  show help
+```
+
+### gvc py -h
+```shell
+moqsien@iMac gvc % gvc py -h  
+NAME:
+   gvc python - Python version management.
+
+USAGE:
+   gvc python command [command options] [arguments...]
+
+COMMANDS:
+   remote, r           Show remote versions.
+   use, u              Download and use a version.
+   local, l            Show installed versions.
+   remove-version, rm  Remove a version.
+   update, up          Install or update pyenv.
    help, h             Shows a list of commands or help for one command
 
 OPTIONS:
