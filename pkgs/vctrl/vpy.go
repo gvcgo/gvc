@@ -103,17 +103,21 @@ func (that *PyVenv) getPyenvPath(p string) {
 
 func (that *PyVenv) setEnv() {
 	if runtime.GOOS == utils.Windows {
-		utils.SetWinEnv(config.GetPyenvRootEnvName(), config.PyenvRootPath)
+		utils.SetWinEnv(config.PyenvRootName, config.PyenvRootPath)
 		utils.SetWinEnv("Path", fmt.Sprintf("%s;%s",
 			that.pyenvPath, config.PythonRootPath))
 	} else {
 		envars := fmt.Sprintf(config.PythonUnixEnvPattern,
-			config.GetPyenvRootEnvName(),
+			config.PyenvRootName,
 			config.PyenvRootPath,
 			that.pyenvPath,
 			config.PythonRootPath)
 		utils.SetUnixEnv(envars)
 	}
+}
+
+func (that *PyVenv) modifyAccelertion(pyenvDir string) {
+
 }
 
 func (that *PyVenv) getPyenv(force ...bool) {
@@ -145,12 +149,14 @@ func (that *PyVenv) getPyenv(force ...bool) {
 				return
 			}
 			that.handlePyenvUntarfile()
-			that.getPyenvPath(filepath.Join(config.PyenvInstallDir, "pyenv"))
+			pDir := filepath.Join(config.PyenvInstallDir, "pyenv")
+			that.getPyenvPath(pDir)
 			if that.pyenvPath != "" {
 				that.setEnv()
 			} else {
 				fmt.Println("[Cannot set env for Pyenv]")
 			}
+			that.modifyAccelertion(pDir)
 		}
 	}
 }
@@ -172,8 +178,9 @@ func (that *PyVenv) UpdatePyenv() {
 }
 
 func (that *PyVenv) setTempEnvs() {
-	os.Setenv(config.GetPyenvRootEnvName(), config.PyenvRootPath)
-	os.Setenv("PYTHON_BUILD_MIRROR_URL", that.Conf.Python.PyBuildUrls[0])
+	os.Setenv(config.PyenvRootName, config.PyenvRootPath)
+	os.Setenv("PYTHON_BUILD_MIRROR_URL", that.Conf.Python.PyBuildUrl)
+	os.Setenv("PYENV_PYTHON_MIRROR_URL", that.Conf.Python.PyBuildUrl)
 }
 
 func (that *PyVenv) ListRemoteVersions() {
@@ -192,9 +199,9 @@ func (that *PyVenv) isInstalled(version string) (r bool) {
 	return
 }
 
-func (that *PyVenv) downloadCache(version string) {
+func (that *PyVenv) downloadCache(version, cUrl string) {
 	name := fmt.Sprintf("Python-%s.tar.xz", version)
-	that.Url = fmt.Sprintf("%s%s/%s", that.Conf.Python.PyBuildUrls[0], version, name)
+	that.Url = fmt.Sprintf("%s%s/%s", cUrl, version, name)
 	that.Timeout = 10 * time.Minute
 	fpath := filepath.Join(config.PyenvCacheDir, name)
 	that.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644)
@@ -204,7 +211,13 @@ func (that *PyVenv) InstallVersion(version string) {
 	that.getPyenv()
 	that.setTempEnvs()
 	if !that.isInstalled(version) {
-		that.downloadCache(version)
+		if runtime.GOOS != utils.Windows {
+			cUrl := that.Conf.Python.PyBuildUrls[0]
+			fmt.Println("[**] Download cache file from ", cUrl)
+			that.downloadCache(version, cUrl)
+		} else {
+			fmt.Println(os.Environ())
+		}
 		utils.ExecuteCommand(that.getExecutable(), "install", version)
 	}
 	utils.ExecuteCommand(that.getExecutable(), "global", version)

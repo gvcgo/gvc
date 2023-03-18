@@ -266,13 +266,16 @@ var (
 )
 
 var (
-	PythonFilesDir    string = filepath.Join(GVCWorkDir, "py_files")
-	PythonToolsPath   string = filepath.Join(PythonFilesDir, "tools")
-	PyenvInstallDir   string = filepath.Join(PythonToolsPath, "pyenv")
-	PyenvRootPath     string = PythonFilesDir
-	PyenvVersionsPath string = filepath.Join(PyenvRootPath, "versions")
-	PyenvCacheDir     string = filepath.Join(PyenvRootPath, "cache")
-	PythonRootPath    string = filepath.Join(PyenvRootPath, "shims")
+	PythonFilesDir     string = filepath.Join(GVCWorkDir, "py_files")
+	PythonToolsPath    string = filepath.Join(PythonFilesDir, "tools")
+	PyenvInstallDir    string = filepath.Join(PythonToolsPath, "pyenv")
+	PyenvRootPath      string = PythonFilesDir
+	PyenvRootName      string = "PYENV_ROOT"
+	PyenvVersionsPath  string = filepath.Join(PyenvRootPath, "versions")
+	PyenvCacheDir      string = filepath.Join(PyenvRootPath, "cache")
+	PythonRootPath     string = filepath.Join(PyenvRootPath, "shims")
+	PyenvMirrorEnvName string = "PYENV_PYTHON_MIRROR_URL"
+
 	// PythonPortableDir string = filepath.Join(PythonToolsPath, "portable")
 	// PythonPipBinary   string = filepath.Join(PythonPortableDir, "pip.pyz")
 	// PythonWinBinary   string = filepath.Join(PythonPortableDir, "python.exe")
@@ -280,15 +283,6 @@ var (
 	// WorkonName        string = "WORKON_HOME"
 	// VPythonName       string = "VIRTUALENVWRAPPER_PYTHON"
 )
-
-func GetPyenvRootEnvName() (r string) {
-	if runtime.GOOS == utils.Windows {
-		r = "PYENV_HOME"
-	} else {
-		r = "PYENV_ROOT"
-	}
-	return
-}
 
 var (
 	PythonUnixEnvPattern string = `# python env start

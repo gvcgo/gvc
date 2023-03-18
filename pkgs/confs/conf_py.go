@@ -14,6 +14,7 @@ type PyConf struct {
 	PyenvWin    string   `koanf:"pyenv_win"`
 	PypiProxies []string `koanf:"pypi_proxies"`
 	PyBuildUrls []string `koanf:"python_build_urls"`
+	PyBuildUrl  string   `koanf:"python_build_url"`
 	path        string
 }
 
@@ -47,4 +48,5 @@ func (that *PyConf) Reset() {
 	that.PyBuildUrls = []string{
 		"https://registry.npmmirror.com/-/binary/python/",
 	}
+	that.PyBuildUrl = "https://jedore.vercel.app/tools/python-mirrors/"
 }
