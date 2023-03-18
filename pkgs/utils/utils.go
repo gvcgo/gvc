@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"hash"
 	"io"
+	"io/fs"
 	"net/url"
 	"os"
 	"os/exec"
@@ -167,16 +168,28 @@ func GetWinAppdataEnv() string {
 	return os.Getenv("APPDATA")
 }
 
+func GetPathForWindows() string {
+	content := os.Getenv("PATH")
+	return strings.ReplaceAll(content, ";;", ";")
+}
+
+func FormatPathForWindows(newPath string) string {
+	l := []string{}
+	old := GetPathForWindows()
+	for _, v := range strings.Split(newPath, ";") {
+		if !strings.Contains(old, v) {
+			l = append(l, v)
+		}
+	}
+	return fmt.Sprintf("%s;%s", old, strings.Join(l, ";"))
+}
+
 func SetWinEnv(key, value string, isSys ...bool) (err error) {
 	if runtime.GOOS == Windows {
 		// handle path for windows.
 		k := strings.ToLower(key)
 		if k == "path" {
-			oldPath := strings.Trim(os.Getenv("Path"), ";")
-			if strings.Contains(oldPath, value) {
-				return
-			}
-			value = fmt.Sprintf("%s;%s", oldPath, value)
+			value = FormatPathForWindows(value)
 		}
 		var c *exec.Cmd
 		if len(isSys) > 0 && isSys[0] {
@@ -303,5 +316,18 @@ func ClearDir(dirPath string) {
 	fList, _ := os.ReadDir(dirPath)
 	for _, f := range fList {
 		os.RemoveAll(filepath.Join(dirPath, f.Name()))
+	}
+}
+
+func ReplaceFileContent(filePath, old, new string, perm fs.FileMode) {
+	if ok, _ := PathIsExist(filePath); ok {
+		if oldContent, err := os.ReadFile(filePath); err == nil {
+			if !strings.Contains(string(oldContent), new) {
+				newContent := strings.Replace(string(oldContent), old, new, -1)
+				if len(newContent) > 0 {
+					os.WriteFile(filePath, []byte(newContent), perm)
+				}
+			}
+		}
 	}
 }

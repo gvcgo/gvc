@@ -47,6 +47,7 @@ func (that *PyConf) Reset() {
 	}
 	that.PyBuildUrls = []string{
 		"https://registry.npmmirror.com/-/binary/python/",
+		"https://npm.taobao.org/mirrors/python/",
 	}
-	that.PyBuildUrl = "https://jedore.vercel.app/tools/python-mirrors/"
+	that.PyBuildUrl = "https://npm.taobao.org/mirrors/python/"
 }

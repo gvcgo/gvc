@@ -266,23 +266,26 @@ var (
 )
 
 var (
-	PythonFilesDir     string = filepath.Join(GVCWorkDir, "py_files")
-	PythonToolsPath    string = filepath.Join(PythonFilesDir, "tools")
-	PyenvInstallDir    string = filepath.Join(PythonToolsPath, "pyenv")
-	PyenvRootPath      string = PythonFilesDir
-	PyenvRootName      string = "PYENV_ROOT"
-	PyenvVersionsPath  string = filepath.Join(PyenvRootPath, "versions")
-	PyenvCacheDir      string = filepath.Join(PyenvRootPath, "cache")
-	PythonRootPath     string = filepath.Join(PyenvRootPath, "shims")
-	PyenvMirrorEnvName string = "PYENV_PYTHON_MIRROR_URL"
-
-	// PythonPortableDir string = filepath.Join(PythonToolsPath, "portable")
-	// PythonPipBinary   string = filepath.Join(PythonPortableDir, "pip.pyz")
-	// PythonWinBinary   string = filepath.Join(PythonPortableDir, "python.exe")
-	// PythonWorkonHome  string = filepath.Join(PythonFilesDir, "venvs")
-	// WorkonName        string = "WORKON_HOME"
-	// VPythonName       string = "VIRTUALENVWRAPPER_PYTHON"
+	PythonFilesDir         string = filepath.Join(GVCWorkDir, "py_files")
+	PythonToolsPath        string = filepath.Join(PythonFilesDir, "tools")
+	PyenvInstallDir        string = filepath.Join(PythonToolsPath, "pyenv")
+	PyenvRootPath          string = GetPyenvRootPath()
+	PyenvRootName          string = "PYENV_ROOT"
+	PyenvVersionsPath      string = filepath.Join(PyenvRootPath, "versions")
+	PyenvCacheDir          string = filepath.Join(PyenvRootPath, "cache")
+	PythonBinaryPath       string = filepath.Join(PyenvRootPath, "shims")
+	PyenvMirrorEnvName     string = "PYTHON_BUILD_MIRROR_URL"
+	PyenvMirrorEnabledName string = "PYTHON_BUILD_MIRROR_URL_SKIP_CHECKSUM"
 )
+
+func GetPyenvRootPath() (r string) {
+	if runtime.GOOS == utils.Windows {
+		r = filepath.Join(PyenvInstallDir, "pyenv/pyenv-win")
+	} else {
+		r = PythonFilesDir
+	}
+	return
+}
 
 var (
 	PythonUnixEnvPattern string = `# python env start
@@ -291,6 +294,7 @@ export %s=%s
 # pyenv & python executable path
 export PATH=%s:%s:$PATH
 # python env end`
+
 	PipConfig = `[global]
 timeout = 6000 
 index-url = %s
@@ -310,3 +314,21 @@ func GetPipConfPath() (r string) {
 	}
 	return
 }
+
+var (
+	PyenvModifyForUnix   string = `    verify_checksum "$package_filename" "$checksum" >&4 2>&1 || return 1`
+	PyenvAfterModifyUnix string = `    #verify_checksum "$package_filename" "$checksum" >&4 2>&1 || return 1
+	echo "download completed."`
+	PyenvModifyForwin1   string = `verDef = versions(version)`
+	PyenvAfterModifyWin1 string = `verDef = versions(version)
+	Dim list
+	Dim url
+	Dim mirror
+	mirror = objws.Environment("Process")("PYTHON_BUILD_MIRROR_URL")
+	If mirror = "" Then mirror = "https://www.python.org/ftp/python"
+	list = split(verDef(LV_URL), "/ftp/python/")
+	url = mirror+list(1)
+	WScript.Echo url`
+	PyenvModifyForwin2   string = `verDef(LV_URL), _`
+	PyenvAfterModifyWin2 string = `url, _`
+)

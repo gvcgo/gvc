@@ -38,24 +38,26 @@ func (that *PyVenv) initeDirs() {
 			fmt.Println("[mkdir Failed] ", err)
 		}
 	}
-	if ok, _ := utils.PathIsExist(config.PythonRootPath); !ok {
-		if err := os.MkdirAll(config.PythonRootPath, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
-		}
-	}
-	if ok, _ := utils.PathIsExist(config.PyenvVersionsPath); !ok {
-		if err := os.MkdirAll(config.PyenvVersionsPath, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
-		}
-	}
 	if ok, _ := utils.PathIsExist(config.PyenvInstallDir); !ok {
 		if err := os.MkdirAll(config.PyenvInstallDir, os.ModePerm); err != nil {
 			fmt.Println("[mkdir Failed] ", err)
 		}
 	}
-	if ok, _ := utils.PathIsExist(config.PyenvCacheDir); !ok {
-		if err := os.MkdirAll(config.PyenvCacheDir, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+	if runtime.GOOS != utils.Windows {
+		if ok, _ := utils.PathIsExist(config.PyenvCacheDir); !ok {
+			if err := os.MkdirAll(config.PyenvCacheDir, os.ModePerm); err != nil {
+				fmt.Println("[mkdir Failed] ", err)
+			}
+		}
+		if ok, _ := utils.PathIsExist(config.PythonBinaryPath); !ok {
+			if err := os.MkdirAll(config.PythonBinaryPath, os.ModePerm); err != nil {
+				fmt.Println("[mkdir Failed] ", err)
+			}
+		}
+		if ok, _ := utils.PathIsExist(config.PyenvVersionsPath); !ok {
+			if err := os.MkdirAll(config.PyenvVersionsPath, os.ModePerm); err != nil {
+				fmt.Println("[mkdir Failed] ", err)
+			}
 		}
 	}
 }
@@ -70,16 +72,16 @@ func (that *PyVenv) handlePyenvUntarfile() {
 			}
 		}
 
-		if len(fList) == 1 {
+		if len(fList) == 1 && fList[0].IsDir() {
 			os.Rename(filepath.Join(config.PyenvInstallDir, fList[0].Name()), p)
 		}
 
-		if len(fList) == 2 {
+		if len(fList) >= 2 {
 			if ok, _ := utils.PathIsExist(p); ok {
 				os.RemoveAll(p)
 			}
 			for _, f := range fList {
-				if f.IsDir() && f.Name() == dirName {
+				if f.IsDir() && f.Name() != dirName {
 					os.Rename(filepath.Join(config.PyenvInstallDir, f.Name()), p)
 				}
 			}
@@ -99,25 +101,47 @@ func (that *PyVenv) getPyenvPath(p string) {
 			}
 		}
 	}
+	if runtime.GOOS == utils.Windows {
+		that.pyenvPath = filepath.Join(config.PyenvInstallDir, "pyenv/pyenv-win/bin")
+	}
 }
 
 func (that *PyVenv) setEnv() {
 	if runtime.GOOS == utils.Windows {
+		fmt.Println("[set envs for pyenv]")
+		fmt.Println("[Pyenv Binary]", config.PyenvRootPath)
 		utils.SetWinEnv(config.PyenvRootName, config.PyenvRootPath)
-		utils.SetWinEnv("Path", fmt.Sprintf("%s;%s",
-			that.pyenvPath, config.PythonRootPath))
+		value := fmt.Sprintf("%s;%s", that.pyenvPath, config.PythonBinaryPath)
+		fmt.Println("[Python Binary] ", value)
+		utils.SetWinEnv("Path", value)
 	} else {
 		envars := fmt.Sprintf(config.PythonUnixEnvPattern,
 			config.PyenvRootName,
 			config.PyenvRootPath,
 			that.pyenvPath,
-			config.PythonRootPath)
+			config.PythonBinaryPath)
 		utils.SetUnixEnv(envars)
 	}
 }
 
 func (that *PyVenv) modifyAccelertion(pyenvDir string) {
-
+	if runtime.GOOS == utils.Windows {
+		fpath := filepath.Join(pyenvDir, "pyenv-win/libexec/pyenv-install.vbs")
+		utils.ReplaceFileContent(fpath,
+			config.PyenvModifyForwin1,
+			config.PyenvAfterModifyWin1,
+			0777)
+		utils.ReplaceFileContent(fpath,
+			config.PyenvModifyForwin2,
+			config.PyenvAfterModifyWin2,
+			0777)
+	} else {
+		fpath := filepath.Join(pyenvDir, "plugins/python-build/bin/python-build")
+		utils.ReplaceFileContent(fpath,
+			config.PyenvModifyForUnix,
+			config.PyenvAfterModifyUnix,
+			0777)
+	}
 }
 
 func (that *PyVenv) getPyenv(force ...bool) {
@@ -144,6 +168,7 @@ func (that *PyVenv) getPyenv(force ...bool) {
 		}
 		if size := that.GetFile(fPath, os.O_CREATE|os.O_WRONLY, 0644); size != 0 {
 			if err := archiver.Unarchive(fPath, config.PyenvInstallDir); err != nil {
+				fmt.Println("[unarchive pyenv failed.]")
 				os.RemoveAll(fPath)
 				os.RemoveAll(config.PyenvInstallDir)
 				return
@@ -166,9 +191,13 @@ func (that *PyVenv) InstallPyenv() {
 }
 
 func (that *PyVenv) getExecutable() (exePath string) {
-	that.getPyenvPath(filepath.Join(config.PyenvInstallDir, "pyenv"))
+	p := filepath.Join(config.PyenvInstallDir, "pyenv")
+	that.getPyenvPath(p)
 	if that.pyenvPath != "" {
 		exePath = filepath.Join(that.pyenvPath, "pyenv")
+		if ok, _ := utils.PathIsExist(exePath); !ok {
+			exePath = ""
+		}
 	}
 	return
 }
@@ -179,8 +208,8 @@ func (that *PyVenv) UpdatePyenv() {
 
 func (that *PyVenv) setTempEnvs() {
 	os.Setenv(config.PyenvRootName, config.PyenvRootPath)
-	os.Setenv("PYTHON_BUILD_MIRROR_URL", that.Conf.Python.PyBuildUrl)
-	os.Setenv("PYENV_PYTHON_MIRROR_URL", that.Conf.Python.PyBuildUrl)
+	os.Setenv(config.PyenvMirrorEnvName, that.Conf.Python.PyBuildUrl)
+	os.Setenv(config.PyenvMirrorEnabledName, "true")
 }
 
 func (that *PyVenv) ListRemoteVersions() {
@@ -211,12 +240,10 @@ func (that *PyVenv) InstallVersion(version string) {
 	that.getPyenv()
 	that.setTempEnvs()
 	if !that.isInstalled(version) {
-		if runtime.GOOS != utils.Windows {
+		if runtime.GOOS != utils.Windows && os.Getenv("PYENV_PRE_CACHE") != "" {
 			cUrl := that.Conf.Python.PyBuildUrls[0]
 			fmt.Println("[**] Download cache file from ", cUrl)
 			that.downloadCache(version, cUrl)
-		} else {
-			fmt.Println(os.Environ())
 		}
 		utils.ExecuteCommand(that.getExecutable(), "install", version)
 	}

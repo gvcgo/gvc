@@ -575,6 +575,30 @@ func (that *Cmder) vpython() {
 	}
 	command.Subcommands = append(command.Subcommands, rmversion)
 
+	updatePyenv := &cli.Command{
+		Name:    "update",
+		Aliases: []string{"up"},
+		Usage:   "Install or update pyenv.",
+		Action: func(ctx *cli.Context) error {
+			nv := vctrl.NewPyVenv()
+			nv.InstallPyenv()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, updatePyenv)
+
+	showPath := &cli.Command{
+		Name:    "path",
+		Aliases: []string{"pth"},
+		Usage:   "Show pyenv versions path.",
+		Action: func(ctx *cli.Context) error {
+			nv := vctrl.NewPyVenv()
+			nv.ShowVersionPath()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, showPath)
+
 	that.Commands = append(that.Commands, command)
 }
 
