@@ -26,7 +26,7 @@ func NewSelf() (s *Self) {
 
 func (that *Self) setEnv() {
 	if runtime.GOOS != utils.Windows {
-		that.env.UpdateSub(utils.SUB_GVC, fmt.Sprintf(gvcEnv, config.GVCWorkDir))
+		that.env.UpdateSub(utils.SUB_GVC, fmt.Sprintf(utils.GvcEnv, config.GVCWorkDir))
 	} else {
 		utils.SetWinEnv("PATH", config.GVCWorkDir)
 	}
@@ -64,10 +64,12 @@ func (that *Self) Uninstall() {
 	var r string
 	fmt.Println("Are you sure to delete gvc and the softwares it installed?[Y/N]")
 	fmt.Scan(&r)
+	r = strings.TrimSpace(r)
 	if strings.ToLower(r) == "y" || strings.ToLower(r) == "yes" {
 		that.env.RemoveSubs()
 		fmt.Println("Restore your config files to webdav?[Y/N]")
 		fmt.Scan(&r)
+		r = strings.TrimSpace(r)
 		if strings.ToLower(r) == "y" || strings.ToLower(r) == "yes" || r == "" {
 			that.Conf.Push()
 		}
