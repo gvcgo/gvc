@@ -276,20 +276,29 @@ func (that *GoVersion) CheckAndInitEnv() {
 			fmt.Sprintf("%s:%s:$PATH", "$GOPATH/bin", "$GOROOT/bin"))
 		that.env.UpdateSub(utils.SUB_GO, goEnv)
 	} else {
+		// envarList := map[string]string{
+		// 	"GOROOT":  config.DefaultGoRoot,
+		// 	"GOPATH":  config.DefaultGoPath,
+		// 	"GOBIN":   filepath.Join(config.DefaultGoPath, "bin"),
+		// 	"GOPROXY": that.Conf.Go.Proxies[0],
+		// }
+		// for key, value := range envarList {
+		// 	utils.SetWinEnv(key, value)
+		// }
+		// ePath := fmt.Sprintf("%s;%s",
+		// 	filepath.Join(config.DefaultGoPath, "bin"),
+		// 	filepath.Join(config.DefaultGoRoot, "bin"))
+		// utils.SetWinEnv("PATH", ePath)
+		// fmt.Println("set go envs successed!")
 		envarList := map[string]string{
 			"GOROOT":  config.DefaultGoRoot,
 			"GOPATH":  config.DefaultGoPath,
 			"GOBIN":   filepath.Join(config.DefaultGoPath, "bin"),
 			"GOPROXY": that.Conf.Go.Proxies[0],
+			"PATH":    filepath.Join(config.DefaultGoPath, "bin"),
+			"PATH1":   filepath.Join(config.DefaultGoRoot, "bin"),
 		}
-		for key, value := range envarList {
-			utils.SetWinEnv(key, value)
-		}
-		ePath := fmt.Sprintf("%s;%s",
-			filepath.Join(config.DefaultGoPath, "bin"),
-			filepath.Join(config.DefaultGoRoot, "bin"))
-		utils.SetWinEnv("PATH", ePath)
-		fmt.Println("set go envs successed!")
+		that.env.SetEnvForWin(envarList)
 	}
 	if ok, _ := utils.PathIsExist(config.DefaultGoPath); !ok {
 		os.MkdirAll(config.DefaultGoPath, os.ModePerm)
@@ -319,19 +328,6 @@ func (that *GoVersion) UseVersion(version string) {
 	}
 	fmt.Println("Use", version, "succeeded!")
 }
-
-// func (that *GoVersion) isGoEnvsAvailable() (r bool) {
-// 	var ePath string
-// 	if runtime.GOOS == utils.Windows {
-// 		ePath = os.Getenv("Path")
-// 	} else {
-// 		ePath = os.Getenv("PATH")
-// 	}
-// 	if strings.Contains(ePath, filepath.Join(config.DefaultGoRoot, "bin")) {
-// 		r = true
-// 	}
-// 	return
-// }
 
 func (that *GoVersion) getCurrent() (current string) {
 	vFile := filepath.Join(config.DefaultGoRoot, "VERSION")

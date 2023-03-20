@@ -28,7 +28,11 @@ func (that *Self) setEnv() {
 	if runtime.GOOS != utils.Windows {
 		that.env.UpdateSub(utils.SUB_GVC, fmt.Sprintf(utils.GvcEnv, config.GVCWorkDir))
 	} else {
-		utils.SetWinEnv("PATH", config.GVCWorkDir)
+		// utils.SetWinEnv("PATH", config.GVCWorkDir)
+		gEnv := map[string]string{
+			"PATH": config.GVCWorkDir,
+		}
+		that.env.SetEnvForWin(gEnv)
 	}
 }
 

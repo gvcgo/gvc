@@ -81,6 +81,12 @@ export %s=%s
 export PATH=%s:%s:$PATH`
 
 /*
+Rust Envs for acceleration
+*/
+var RustEnv string = `export %s=%s
+export %s=%s`
+
+/*
 Neovim Envs
 */
 var NVimEnv string = `export PATH="%s:$PATH"`
@@ -147,6 +153,9 @@ func (that *EnvsHandler) flushEnvs() {
 }
 
 func (that *EnvsHandler) getOldContents() {
+	if runtime.GOOS == Windows {
+		return
+	}
 	if ok, _ := PathIsExist(that.rcFilePath); ok {
 		that.oldContent, _ = os.ReadFile(that.rcFilePath)
 	} else {
@@ -225,6 +234,45 @@ func (that *EnvsHandler) RemoveSubs() {
 	}
 }
 
-func (that *EnvsHandler) DoesEnvExist(subname string) bool {
-	return strings.Contains(string(that.oldContent), fmt.Sprintf(SUB_BLOCK_START, subname))
+func (that *EnvsHandler) DoesEnvExist(subname string, name ...string) bool {
+	if runtime.GOOS != Windows {
+		return strings.Contains(string(that.oldContent), fmt.Sprintf(SUB_BLOCK_START, subname))
+	} else {
+		if len(name) == 0 {
+			panic("[An env name is required]")
+		}
+		return os.Getenv(name[0]) != ""
+	}
+}
+
+/*
+Windows PowerShell Environment Settings
+*/
+var (
+	PwSetPathEnv  string = `[Environment]::SetEnvironmentVariable("PATH", $Env:Path + ";%s", "User")`
+	PwSetOtherEnv string = `[Environment]::SetEnvironmentVariable("%s", "%s", "User")`
+)
+
+func (that *EnvsHandler) setOneEnvForWin(key, value string) {
+	var arg string
+	_key := strings.ToLower(key)
+	if strings.HasPrefix(_key, "path") && !strings.Contains(_key, "_") {
+		arg = fmt.Sprintf(PwSetPathEnv, value)
+	} else {
+		arg = fmt.Sprintf(PwSetOtherEnv, key, value)
+	}
+	cmd := exec.Command("powershell", arg)
+	cmd.Env = os.Environ()
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	if err := cmd.Run(); err != nil {
+		fmt.Println("[Set env failed]", err, key)
+	}
+}
+
+func (that *EnvsHandler) SetEnvForWin(envList map[string]string) {
+	for key, value := range envList {
+		that.setOneEnvForWin(key, value)
+	}
 }

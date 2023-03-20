@@ -203,8 +203,11 @@ func (that *NodeVersion) setEnv(nodeHome string) {
 		nodeEnv := fmt.Sprintf(utils.NodeEnv, nodeHome)
 		that.env.UpdateSub(utils.SUB_NODE, nodeEnv)
 	} else {
-		utils.SetWinEnv("NODE_HOME", nodeHome)
-		utils.SetWinEnv("Path", nodeHome)
+		envList := map[string]string{
+			"NODE_HOME": nodeHome,
+			"PATH":      nodeHome,
+		}
+		that.env.SetEnvForWin(envList)
 	}
 }
 

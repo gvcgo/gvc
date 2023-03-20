@@ -109,19 +109,13 @@ func (that *PyVenv) getPyenvPath(p string) {
 
 func (that *PyVenv) setEnv() {
 	if runtime.GOOS == utils.Windows {
-		fmt.Println("[set envs for pyenv]")
-		fmt.Println("[Pyenv Binary]", config.PyenvRootPath)
-		utils.SetWinEnv(config.PyenvRootName, config.PyenvRootPath)
-		value := fmt.Sprintf("%s;%s", that.pyenvPath, config.PythonBinaryPath)
-		fmt.Println("[Python Binary] ", value)
-		utils.SetWinEnv("Path", value)
+		envList := map[string]string{
+			config.PyenvRootName: config.PyenvRootPath,
+			"PATH":               that.pyenvPath,
+			"PATH1":              config.PythonBinaryPath,
+		}
+		that.env.SetEnvForWin(envList)
 	} else {
-		// envars := fmt.Sprintf(config.PythonUnixEnvPattern,
-		// 	config.PyenvRootName,
-		// 	config.PyenvRootPath,
-		// 	that.pyenvPath,
-		// 	config.PythonBinaryPath)
-		// utils.SetUnixEnv(envars)
 		pyEnv := fmt.Sprintf(utils.PyEnv,
 			config.PyenvRootName,
 			config.PyenvRootPath,

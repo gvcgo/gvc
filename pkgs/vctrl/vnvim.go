@@ -105,7 +105,9 @@ func (that *NVim) getBinaryPath() (r string) {
 func (that *NVim) setenv() {
 	if ok, _ := utils.PathIsExist(that.getBinaryPath()); ok {
 		if runtime.GOOS == utils.Windows {
-			utils.SetWinEnv("PATH", that.getBinaryPath())
+			that.env.SetEnvForWin(map[string]string{
+				"PATH": that.getBinaryPath(),
+			})
 		} else {
 			nvimEnv := fmt.Sprintf(utils.NVimEnv, that.getBinaryPath())
 			that.env.UpdateSub(utils.SUB_NVIM, nvimEnv)

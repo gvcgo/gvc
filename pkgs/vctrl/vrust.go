@@ -17,12 +17,14 @@ import (
 type RustInstaller struct {
 	*downloader.Downloader
 	Conf *config.GVConfig
+	env  *utils.EnvsHandler
 }
 
 func NewRustInstaller() (ri *RustInstaller) {
 	ri = &RustInstaller{
 		Downloader: &downloader.Downloader{},
 		Conf:       config.New(),
+		env:        utils.NewEnvsHandler(),
 	}
 	return
 }
@@ -44,17 +46,19 @@ func (that *RustInstaller) getInstaller() (fPath string) {
 func (that *RustInstaller) SetAccelerationEnv() {
 	if runtime.GOOS == utils.Windows {
 		if os.Getenv(config.DistServerEnvName) == "" {
-			utils.SetWinEnv(config.DistServerEnvName, that.Conf.Rust.DistServer)
-			utils.SetWinEnv(config.UpdateRootEnvName, that.Conf.Rust.UpdateRoot)
+			envList := map[string]string{
+				config.DistServerEnvName: that.Conf.Rust.DistServer,
+				config.UpdateRootEnvName: that.Conf.Rust.UpdateRoot,
+			}
+			that.env.SetEnvForWin(envList)
 		}
 	} else {
 		if os.Getenv(config.DistServerEnvName) == "" {
-			eRust := fmt.Sprintf(config.RustEnvPattern,
+			that.env.UpdateSub(utils.SUB_RUST, fmt.Sprintf(utils.RustEnv,
 				config.DistServerEnvName,
 				that.Conf.Rust.DistServer,
 				config.UpdateRootEnvName,
-				that.Conf.Rust.UpdateRoot)
-			utils.SetUnixEnv(eRust)
+				that.Conf.Rust.UpdateRoot))
 		}
 	}
 }
@@ -72,7 +76,7 @@ func (that *RustInstaller) Install() {
 	that.SetAccelerationEnv()
 	iPath := that.getInstaller()
 	if runtime.GOOS == utils.Windows {
-		if err := exec.Command("cmd", "/c", iPath).Run(); err != nil {
+		if err := exec.Command("powershell", iPath).Run(); err != nil {
 			fmt.Println("[Execute installer errored] ", err)
 		}
 	} else {

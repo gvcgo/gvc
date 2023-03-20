@@ -141,10 +141,13 @@ func (that *Code) InstallForWin() {
 	if codeDir, _ := os.ReadDir(config.CodeUntarFile); len(codeDir) > 0 {
 		for _, file := range codeDir {
 			if strings.Contains(file.Name(), ".exe") {
-				if err := utils.SetWinEnv("PATH", config.CodeWinCmdBinaryDir); err != nil {
-					fmt.Println("[Set envs failed] ", err)
-					return
-				}
+				// if err := utils.SetWinEnv("PATH", config.CodeWinCmdBinaryDir); err != nil {
+				// 	fmt.Println("[Set envs failed] ", err)
+				// 	return
+				// }
+				that.env.SetEnvForWin(map[string]string{
+					"PATH": config.CodeWinCmdBinaryDir,
+				})
 				// Automatically create shortcut.
 				that.GenerateShortcut()
 				break

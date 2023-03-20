@@ -177,20 +177,28 @@ func (that *JavaVersion) CheckAndInitEnv() {
 		that.env.UpdateSub(utils.SUB_JDK, javaEnv)
 	} else {
 		classPath := filepath.Join(config.DefaultJavaRoot, "lib")
-		binPath := filepath.Join(config.DefaultJavaRoot, "bin")
-		envarList := map[string]string{
+		// binPath := filepath.Join(config.DefaultJavaRoot, "bin")
+		// envarList := map[string]string{
+		// 	"JAVA_HOME":  config.DefaultJavaRoot,
+		// 	"CLASS_PATH": classPath,
+		// }
+		// for key, value := range envarList {
+		// 	utils.SetWinEnv(key, value)
+		// }
+		// ePath := fmt.Sprintf("%s;%s;%s",
+		// 	binPath,
+		// 	filepath.Join(classPath, "tools.jar"),
+		// 	filepath.Join(classPath, "dt.jar"))
+		// utils.SetWinEnv("PATH", ePath)
+		// fmt.Println("set go envs successed!")
+		envList := map[string]string{
 			"JAVA_HOME":  config.DefaultJavaRoot,
-			"CLASS_PATH": classPath,
+			"CLASS_PATH": filepath.Join(config.DefaultJavaRoot, "lib"),
+			"PATH":       filepath.Join(config.DefaultJavaRoot, "bin"),
+			"PATH1":      filepath.Join(classPath, "tools.jar"),
+			"PATH2":      filepath.Join(classPath, "dt.jar"),
 		}
-		for key, value := range envarList {
-			utils.SetWinEnv(key, value)
-		}
-		ePath := fmt.Sprintf("%s;%s;%s",
-			binPath,
-			filepath.Join(classPath, "tools.jar"),
-			filepath.Join(classPath, "dt.jar"))
-		utils.SetWinEnv("PATH", ePath)
-		fmt.Println("set go envs successed!")
+		that.env.SetEnvForWin(envList)
 	}
 }
 
