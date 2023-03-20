@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"runtime"
 	"strings"
+	"time"
 )
 
 /*
@@ -234,14 +235,11 @@ func (that *EnvsHandler) RemoveSubs() {
 	}
 }
 
-func (that *EnvsHandler) DoesEnvExist(subname string, name ...string) bool {
+func (that *EnvsHandler) DoesEnvExist(subname string) bool {
 	if runtime.GOOS != Windows {
 		return strings.Contains(string(that.oldContent), fmt.Sprintf(SUB_BLOCK_START, subname))
 	} else {
-		if len(name) == 0 {
-			panic("[An env name is required]")
-		}
-		return os.Getenv(name[0]) != ""
+		return false
 	}
 }
 
@@ -253,9 +251,22 @@ var (
 	PwSetOtherEnv string = `[Environment]::SetEnvironmentVariable("%s", "%s", "User")`
 )
 
+func (that *EnvsHandler) flushEnvForWin(key string) {
+	cmd := exec.Command(fmt.Sprintf("$env:%s", key))
+	cmd.Env = os.Environ()
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Run()
+}
+
 func (that *EnvsHandler) setOneEnvForWin(key, value string) {
 	var arg string
 	_key := strings.ToLower(key)
+	if strings.HasSuffix(_key, "path") && strings.Contains(os.Getenv("PATH"), value) {
+		fmt.Printf("[%s] Already exists in Path.\n", value)
+		return
+	}
 	if strings.HasPrefix(_key, "path") && !strings.Contains(_key, "_") {
 		arg = fmt.Sprintf(PwSetPathEnv, value)
 	} else {
@@ -268,11 +279,20 @@ func (that *EnvsHandler) setOneEnvForWin(key, value string) {
 	cmd.Stdout = os.Stdout
 	if err := cmd.Run(); err != nil {
 		fmt.Println("[Set env failed]", err, key)
+		return
 	}
+	that.flushEnvForWin(key)
 }
+
+var HintStr string = ` +-++-++-++-++-++-++-+
+|W||a||r||n||i||n||g|
++-++-++-++-++-++-++-+`
 
 func (that *EnvsHandler) SetEnvForWin(envList map[string]string) {
 	for key, value := range envList {
 		that.setOneEnvForWin(key, value)
 	}
+	time.Sleep(time.Second * 3)
+	fmt.Println(HintStr)
+	fmt.Println("[**WARNING**] You have to exit current PowerShell and enter another one to make envs work properly.")
 }

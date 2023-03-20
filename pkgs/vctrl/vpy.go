@@ -111,8 +111,7 @@ func (that *PyVenv) setEnv() {
 	if runtime.GOOS == utils.Windows {
 		envList := map[string]string{
 			config.PyenvRootName: config.PyenvRootPath,
-			"PATH":               that.pyenvPath,
-			"PATH1":              config.PythonBinaryPath,
+			"PATH":               fmt.Sprintf("%s;%s", that.pyenvPath, config.PythonBinaryPath),
 		}
 		that.env.SetEnvForWin(envList)
 	} else {
@@ -161,7 +160,9 @@ func (that *PyVenv) getPyenv(force ...bool) {
 		that.Url = that.Conf.Python.PyenvUnix
 	}
 	if that.Url != "" {
-		that.Url = that.Conf.Github.GetDownUrl(that.Url)
+		if strings.Contains(that.Url, "github.com") {
+			that.Url = that.Conf.Github.GetDownUrl(that.Url)
+		}
 		that.Timeout = 10 * time.Second
 		fPath := filepath.Join(config.PythonToolsPath, "pyenv-master.zip")
 		if flag {
@@ -237,6 +238,7 @@ func (that *PyVenv) downloadCache(version, cUrl string) {
 	that.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644)
 }
 
+// TODO: download https://gitee.com/moqsien/gvc/releases/download/v1/gvc_py_win_needed.zip
 func (that *PyVenv) InstallVersion(version string) {
 	that.getPyenv()
 	that.setTempEnvs()

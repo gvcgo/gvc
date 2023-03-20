@@ -8,14 +8,15 @@ import (
 )
 
 type PyConf struct {
-	WinAmd64    string   `koanf:"win_amd64"`
-	WinArm64    string   `koanf:"win_arm64"`
-	PyenvUnix   string   `koanf:"pyenv_unix"`
-	PyenvWin    string   `koanf:"pyenv_win"`
-	PypiProxies []string `koanf:"pypi_proxies"`
-	PyBuildUrls []string `koanf:"python_build_urls"`
-	PyBuildUrl  string   `koanf:"python_build_url"`
-	path        string
+	WinAmd64       string   `koanf:"win_amd64"`
+	WinArm64       string   `koanf:"win_arm64"`
+	PyenvUnix      string   `koanf:"pyenv_unix"`
+	PyenvWin       string   `koanf:"pyenv_win"`
+	PyenvWinNeeded string   `koanf:"pyenv_win_needed"`
+	PypiProxies    []string `koanf:"pypi_proxies"`
+	PyBuildUrls    []string `koanf:"python_build_urls"`
+	PyBuildUrl     string   `koanf:"python_build_url"`
+	path           string
 }
 
 func NewPyConf() (r *PyConf) {
@@ -37,8 +38,9 @@ func (that *PyConf) setup() {
 func (that *PyConf) Reset() {
 	that.WinAmd64 = "https://gitee.com/moqsien/gvc/releases/download/v1/portable-amd64.zip"
 	that.WinArm64 = "https://gitee.com/moqsien/gvc/releases/download/v1/portable-arm64.zip"
-	that.PyenvWin = "https://github.com/pyenv-win/pyenv-win/archive/master.zip"
-	that.PyenvUnix = "https://github.com/pyenv/pyenv/archive/refs/heads/master.zip"
+	that.PyenvWin = "https://gitee.com/moqsien/gvc/releases/download/v1/pyenv-win.zip"
+	that.PyenvWinNeeded = "https://gitee.com/moqsien/gvc/releases/download/v1/gvc_py_win_needed.zip"
+	that.PyenvUnix = "https://gitee.com/moqsien/gvc/releases/download/v1/pyenv-unix.zip"
 	that.PypiProxies = []string{
 		"https://pypi.tuna.tsinghua.edu.cn/simple/",
 		"https://pypi.mirrors.ustc.edu.cn/simple/",

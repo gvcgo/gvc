@@ -3,6 +3,7 @@ package confs
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/yaml"
@@ -63,7 +64,14 @@ func (that *GVConfig) initiate() {
 	if ok, _ := utils.PathIsExist(that.path); ok {
 		that.Reload()
 	} else {
-		fmt.Println("[Cannot find default config files]")
+		fmt.Println("[Cannot find default config files!]")
+		fmt.Println("Do you want to use the default config files?[yes/N]")
+		var r string
+		fmt.Scan(&r)
+		r = strings.ToLower(r)
+		if r == "yes" || r == "y" {
+			that.Reset()
+		}
 	}
 }
 
