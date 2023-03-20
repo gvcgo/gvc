@@ -49,6 +49,7 @@ type NodeVersion struct {
 	c        *colly.Collector
 	d        *downloader.Downloader
 	dir      string
+	env      *utils.EnvsHandler
 	Versions map[string]*NodePackage
 	vList    []*nV
 	Conf     *config.GVConfig
@@ -62,6 +63,7 @@ func NewNodeVersion() (nv *NodeVersion) {
 		vList:    []*nV{},
 		c:        colly.NewCollector(),
 		d:        &downloader.Downloader{},
+		env:      utils.NewEnvsHandler(),
 	}
 	nv.initeDirs()
 	return
@@ -198,8 +200,8 @@ func (that *NodeVersion) download(version string) string {
 
 func (that *NodeVersion) setEnv(nodeHome string) {
 	if runtime.GOOS != utils.Windows {
-		envar := fmt.Sprintf(config.NodejsEnvPattern, nodeHome)
-		utils.SetUnixEnv(envar)
+		nodeEnv := fmt.Sprintf(utils.NodeEnv, nodeHome)
+		that.env.UpdateSub(utils.SUB_NODE, nodeEnv)
 	} else {
 		utils.SetWinEnv("NODE_HOME", nodeHome)
 		utils.SetWinEnv("Path", nodeHome)

@@ -31,6 +31,7 @@ type Code struct {
 	Packages map[string]*CodePackage
 	Conf     *config.GVConfig
 	*downloader.Downloader
+	env *utils.EnvsHandler
 }
 
 type typeMap map[string]string
@@ -51,6 +52,7 @@ func NewCode() (co *Code) {
 		Downloader: &downloader.Downloader{
 			ManuallyRedirect: true,
 		},
+		env: utils.NewEnvsHandler(),
 	}
 	co.initeDirs()
 	return
@@ -159,9 +161,9 @@ func (that *Code) GenerateShortcut() error {
 	return errors.New("shortcut script not found")
 }
 
-func (that *Code) addEnvForUnix(binaryDir string) {
-	utils.SetUnixEnv(fmt.Sprintf(config.CodeEnvForUnix, binaryDir))
-}
+// func (that *Code) addEnvForUnix(binaryDir string) {
+// 	utils.SetUnixEnv(fmt.Sprintf(config.CodeEnvForUnix, binaryDir))
+// }
 
 func (that *Code) InstallForMac() {
 	that.download()
@@ -179,7 +181,8 @@ func (that *Code) InstallForMac() {
 			}
 		}
 	}
-	that.addEnvForUnix(config.CodeMacCmdBinaryDir)
+	// that.addEnvForUnix(config.CodeMacCmdBinaryDir)
+	that.env.UpdateSub(utils.SUB_CODE, config.CodeMacCmdBinaryDir)
 }
 
 func (that *Code) InstallForLinux() {
@@ -188,7 +191,8 @@ func (that *Code) InstallForLinux() {
 		for _, file := range codeDir {
 			if file.IsDir() {
 				binaryDir := filepath.Join(config.CodeUntarFile, file.Name(), "bin")
-				that.addEnvForUnix(binaryDir)
+				// that.addEnvForUnix(binaryDir)
+				that.env.UpdateSub(utils.SUB_CODE, binaryDir)
 			}
 		}
 	}

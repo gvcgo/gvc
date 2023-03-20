@@ -19,6 +19,7 @@ type NVim struct {
 	Conf      *config.GVConfig
 	checksum  string
 	checktype string
+	env       *utils.EnvsHandler
 }
 
 func NewNVim() (nv *NVim) {
@@ -27,6 +28,7 @@ func NewNVim() (nv *NVim) {
 		Conf:       config.New(),
 		checksum:   "",
 		checktype:  "sha256",
+		env:        utils.NewEnvsHandler(),
 	}
 	nv.setup()
 	return
@@ -105,8 +107,8 @@ func (that *NVim) setenv() {
 		if runtime.GOOS == utils.Windows {
 			utils.SetWinEnv("PATH", that.getBinaryPath())
 		} else {
-			envars := fmt.Sprintf(config.NVimUnixEnv, that.getBinaryPath())
-			utils.SetUnixEnv(envars)
+			nvimEnv := fmt.Sprintf(utils.NVimEnv, that.getBinaryPath())
+			that.env.UpdateSub(utils.SUB_NVIM, nvimEnv)
 		}
 		that.setInitFile()
 	}

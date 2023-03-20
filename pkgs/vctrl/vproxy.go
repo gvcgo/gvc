@@ -71,11 +71,19 @@ func (that *Proxy) verify() {
 	for _, p := range that.ProxyList.Proxies {
 		if d, err := merkur.NewDialerByURI(p.Url); err == nil {
 			c := d.ToHttpClient(10)
-			_, err := c.Get("www.google.com")
+			_, err := c.Get("https://www.google.com")
 			if err == nil {
 				n++
+			} else {
+				fmt.Println(err)
 			}
+		} else {
+			fmt.Println(err)
 		}
 	}
 	fmt.Println(n)
+}
+
+func (that *Proxy) Run() {
+	that.GetProxyList()
 }

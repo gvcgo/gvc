@@ -39,6 +39,7 @@ type JavaVersion struct {
 	c        *colly.Collector
 	d        *downloader.Downloader
 	dir      string
+	env      *utils.EnvsHandler
 	Versions map[string][]*JavaPackage
 	Doc      *goquery.Document
 	Conf     *config.GVConfig
@@ -50,6 +51,7 @@ func NewJavaVersion() (jv *JavaVersion) {
 		Conf:     config.New(),
 		c:        colly.NewCollector(),
 		d:        &downloader.Downloader{},
+		env:      utils.NewEnvsHandler(),
 	}
 	jv.initeDirs()
 	return
@@ -169,24 +171,10 @@ func (that *JavaVersion) download(version string) (r string) {
 	return
 }
 
-func (that *JavaVersion) isJavaEnvsAvailable() (r bool) {
-	var ePath string
-	if runtime.GOOS == utils.Windows {
-		ePath = os.Getenv("Path")
-	} else {
-		ePath = os.Getenv("PATH")
-	}
-	if strings.Contains(ePath, filepath.Join(config.DefaultJavaRoot, "bin")) {
-		r = true
-	}
-	return
-}
-
 func (that *JavaVersion) CheckAndInitEnv() {
 	if runtime.GOOS != utils.Windows {
-		envar := fmt.Sprintf(config.JavaEnvVarPattern,
-			config.DefaultJavaRoot)
-		utils.SetUnixEnv(envar)
+		javaEnv := fmt.Sprintf(utils.JavaEnv, config.DefaultJavaRoot)
+		that.env.UpdateSub(utils.SUB_JDK, javaEnv)
 	} else {
 		classPath := filepath.Join(config.DefaultJavaRoot, "lib")
 		binPath := filepath.Join(config.DefaultJavaRoot, "bin")
@@ -237,7 +225,7 @@ func (that *JavaVersion) UseVersion(version string) {
 		fmt.Println("[Create link failed] ", err)
 		return
 	}
-	if !that.isJavaEnvsAvailable() {
+	if !that.env.DoesEnvExist(utils.SUB_JDK) {
 		that.CheckAndInitEnv()
 	}
 	fmt.Println("Use", version, "successed!")

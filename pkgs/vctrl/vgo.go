@@ -39,6 +39,7 @@ type GoVersion struct {
 	Doc       *goquery.Document
 	Conf      *config.GVConfig
 	ParsedUrl *url.URL
+	env       *utils.EnvsHandler
 }
 
 func NewGoVersion() (gv *GoVersion) {
@@ -46,6 +47,7 @@ func NewGoVersion() (gv *GoVersion) {
 		Versions:   make(map[string][]*GoPackage, 50),
 		Conf:       config.New(),
 		Downloader: &downloader.Downloader{},
+		env:        utils.NewEnvsHandler(),
 	}
 	gv.initeDirs()
 	return
@@ -262,10 +264,17 @@ func (that *GoVersion) checkFile(p *GoPackage, fpath string) (r bool) {
 
 func (that *GoVersion) CheckAndInitEnv() {
 	if runtime.GOOS != utils.Windows {
-		envar := fmt.Sprintf(config.GoUnixEnv,
+		// envar := fmt.Sprintf(config.GoUnixEnv,
+		// 	that.Conf.Go.Proxies[0],
+		// 	fmt.Sprintf("%s:%s:$PATH", "$GOPATH/bin", "$GOROOT/bin"))
+		// utils.SetUnixEnv(envar)
+		goEnv := fmt.Sprintf(utils.GoEnv,
+			config.DefaultGoRoot,
+			config.DefaultGoPath,
+			filepath.Join(config.DefaultGoPath, "bin"),
 			that.Conf.Go.Proxies[0],
 			fmt.Sprintf("%s:%s:$PATH", "$GOPATH/bin", "$GOROOT/bin"))
-		utils.SetUnixEnv(envar)
+		that.env.UpdateSub(utils.SUB_GO, goEnv)
 	} else {
 		envarList := map[string]string{
 			"GOROOT":  config.DefaultGoRoot,
@@ -305,24 +314,24 @@ func (that *GoVersion) UseVersion(version string) {
 		fmt.Println("[Create link failed] ", err)
 		return
 	}
-	if !that.isGoEnvsAvailable() {
+	if !that.env.DoesEnvExist(utils.SUB_GO) {
 		that.CheckAndInitEnv()
 	}
-	fmt.Println("Use", version, "successed!")
+	fmt.Println("Use", version, "succeeded!")
 }
 
-func (that *GoVersion) isGoEnvsAvailable() (r bool) {
-	var ePath string
-	if runtime.GOOS == utils.Windows {
-		ePath = os.Getenv("Path")
-	} else {
-		ePath = os.Getenv("PATH")
-	}
-	if strings.Contains(ePath, filepath.Join(config.DefaultGoRoot, "bin")) {
-		r = true
-	}
-	return
-}
+// func (that *GoVersion) isGoEnvsAvailable() (r bool) {
+// 	var ePath string
+// 	if runtime.GOOS == utils.Windows {
+// 		ePath = os.Getenv("Path")
+// 	} else {
+// 		ePath = os.Getenv("PATH")
+// 	}
+// 	if strings.Contains(ePath, filepath.Join(config.DefaultGoRoot, "bin")) {
+// 		r = true
+// 	}
+// 	return
+// }
 
 func (that *GoVersion) getCurrent() (current string) {
 	vFile := filepath.Join(config.DefaultGoRoot, "VERSION")

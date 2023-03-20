@@ -20,13 +20,14 @@ type PyVenv struct {
 	*downloader.Downloader
 	Conf      *config.GVConfig
 	pyenvPath string
-	// exePath string
+	env       *utils.EnvsHandler
 }
 
 func NewPyVenv() (py *PyVenv) {
 	py = &PyVenv{
 		Conf:       config.New(),
 		Downloader: &downloader.Downloader{},
+		env:        utils.NewEnvsHandler(),
 	}
 	py.initeDirs()
 	return
@@ -115,12 +116,18 @@ func (that *PyVenv) setEnv() {
 		fmt.Println("[Python Binary] ", value)
 		utils.SetWinEnv("Path", value)
 	} else {
-		envars := fmt.Sprintf(config.PythonUnixEnvPattern,
+		// envars := fmt.Sprintf(config.PythonUnixEnvPattern,
+		// 	config.PyenvRootName,
+		// 	config.PyenvRootPath,
+		// 	that.pyenvPath,
+		// 	config.PythonBinaryPath)
+		// utils.SetUnixEnv(envars)
+		pyEnv := fmt.Sprintf(utils.PyEnv,
 			config.PyenvRootName,
 			config.PyenvRootPath,
 			that.pyenvPath,
 			config.PythonBinaryPath)
-		utils.SetUnixEnv(envars)
+		that.env.UpdateSub(utils.SUB_PY, pyEnv)
 	}
 }
 

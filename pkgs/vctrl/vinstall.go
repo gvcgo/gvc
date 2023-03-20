@@ -12,12 +12,6 @@ import (
 	"github.com/moqsien/gvc/pkgs/utils"
 )
 
-var (
-	gPattern string = `# GVC Start
-export PATH="$PATH:%s"
-# GVC End`
-)
-
 func SelfInstall() {
 	if ok, _ := utils.PathIsExist(config.GVCWorkDir); !ok {
 		os.MkdirAll(config.GVCWorkDir, os.ModePerm)
@@ -30,8 +24,7 @@ func SelfInstall() {
 	name := filepath.Base(ePath)
 	if strings.HasSuffix(ePath, "/gvc") || strings.HasSuffix(ePath, "gvc.exe") {
 		if _, err := utils.CopyFile(ePath, filepath.Join(config.GVCWorkDir, name)); err == nil {
-			genvs := fmt.Sprintf(gPattern, config.GVCWorkDir)
-			setEnvForGVC(genvs)
+			setEnvForGVC()
 			if runtime.GOOS == utils.Windows {
 				setShortcut()
 			}
@@ -41,14 +34,15 @@ func SelfInstall() {
 	config.New()
 }
 
-func setEnvForGVC(genvs string) {
-	shellrc := utils.GetShellRcFile()
-	if shellrc != utils.Win {
-		utils.SetUnixEnv(genvs)
+var gvcEnv string = `export  PATH="$PATH:%s"`
+
+func setEnvForGVC() {
+	if runtime.GOOS != utils.Windows {
+		eh := utils.NewEnvsHandler()
+		eh.UpdateSub(utils.SUB_GVC, fmt.Sprintf(gvcEnv, config.GVCWorkDir))
 	} else {
 		utils.SetWinEnv("PATH", config.GVCWorkDir)
 	}
-	fmt.Println("GVC set env successed!")
 }
 
 func setShortcut() {
