@@ -46,6 +46,11 @@ const (
 )
 
 /*
+gvc Envs
+*/
+var GvcEnv string = `export  PATH="$PATH:%s"`
+
+/*
 Go Envs
 */
 var GoEnv string = `export GOROOT="%s"
@@ -212,10 +217,12 @@ func (that *EnvsHandler) RemoveSub(subname string) {
 }
 
 func (that *EnvsHandler) RemoveSubs() {
-	if strings.Contains(string(that.oldContent), GVC_BLOCK_START) {
-		that.replaceBlockContent(GVC_BLOCK_START, GVC_BLOCK_END, "")
+	if runtime.GOOS != Windows {
+		if strings.Contains(string(that.oldContent), GVC_BLOCK_START) {
+			that.replaceBlockContent(GVC_BLOCK_START, GVC_BLOCK_END, "")
+		}
+		that.flushEnvs()
 	}
-	that.flushEnvs()
 }
 
 func (that *EnvsHandler) DoesEnvExist(subname string) bool {

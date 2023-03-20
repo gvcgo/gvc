@@ -25,6 +25,20 @@ func New() *Cmder {
 	return c
 }
 
+func (that *Cmder) uninstall() {
+	command := &cli.Command{
+		Name:    "uninstall",
+		Aliases: []string{"unins", "delete", "del"},
+		Usage:   "[Caution] Delete gvc and softwares installed by gvc!",
+		Action: func(ctx *cli.Context) error {
+			self := vctrl.NewSelf()
+			self.Uninstall()
+			return nil
+		},
+	}
+	that.Commands = append(that.Commands, command)
+}
+
 func (that *Cmder) vhost() {
 	command := &cli.Command{
 		Name:        "host",
@@ -603,6 +617,7 @@ func (that *Cmder) vpython() {
 }
 
 func (that *Cmder) initiate() {
+	that.uninstall()
 	that.vhost()
 	that.vgo()
 	that.vscode()

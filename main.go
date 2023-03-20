@@ -37,7 +37,8 @@ func main() {
 		// v.ShowInstalled()
 		// v.UseVersion("java19")
 	} else if len(os.Args) < 2 {
-		vctrl.SelfInstall()
+		self := vctrl.NewSelf()
+		self.Install()
 	} else {
 		c.Run(os.Args)
 	}
