@@ -562,15 +562,28 @@ func (that *Cmder) vpython() {
 	}
 	command.Subcommands = append(command.Subcommands, vremote)
 
+	var useDefault bool
 	vuse := &cli.Command{
 		Name:    "use",
 		Aliases: []string{"u"},
 		Usage:   "Download and use a version.",
+		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name:        "accelerate",
+				Aliases:     []string{"a", "acc"},
+				Usage:       "Use default version[3.10.0] to accelerte installation.",
+				Destination: &useDefault,
+			},
+		},
 		Action: func(ctx *cli.Context) error {
 			version := ctx.Args().First()
 			if version != "" {
 				nv := vctrl.NewPyVenv()
-				nv.InstallVersion(version)
+				if useDefault {
+					nv.InstallVersion(version, 1)
+				} else {
+					nv.InstallVersion(version)
+				}
 			}
 			return nil
 		},

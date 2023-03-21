@@ -76,7 +76,8 @@ func (that *RustInstaller) Install() {
 	that.SetAccelerationEnv()
 	iPath := that.getInstaller()
 	if runtime.GOOS == utils.Windows {
-		if err := exec.Command("powershell", iPath).Run(); err != nil {
+		if err := exec.Command(iPath).Run(); err != nil {
+			fmt.Println("[Rust installer path] ", iPath)
 			fmt.Println("[Execute installer errored] ", err)
 		}
 	} else {

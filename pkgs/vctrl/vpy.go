@@ -205,6 +205,17 @@ func (that *PyVenv) getExecutablePath() (exePath string) {
 }
 
 func (that *PyVenv) UpdatePyenv() {
+	if runtime.GOOS == utils.Windows {
+		fmt.Println("This would delete the python versions you have installed, still continue?[Y/N]")
+		var r string
+		fmt.Scan(&r)
+		r = strings.ToLower(r)
+		if r != "y" && r != "yes" {
+			fmt.Println("Aborted.")
+			return
+		}
+	}
+	fmt.Println("Update pyenv...")
 	that.getPyenv(true)
 }
 
@@ -245,6 +256,9 @@ func (that *PyVenv) downloadCache(version, cUrl string) {
 }
 
 func (that *PyVenv) getReadlineForUnix() {
+	if runtime.GOOS == utils.Windows {
+		return
+	}
 	rUrls := that.Conf.Python.PyenvReadline
 	if len(rUrls) == 0 {
 		return
@@ -283,7 +297,7 @@ func (that *PyVenv) getInstallNeededForWin(version string) {
 	}
 }
 
-func (that *PyVenv) InstallVersion(version string) {
+func (that *PyVenv) InstallVersion(version string, useDefault ...int) {
 	that.getPyenv()
 	that.setTempEnvs()
 	if !that.isInstalled(version) {
@@ -293,7 +307,9 @@ func (that *PyVenv) InstallVersion(version string) {
 			that.downloadCache(version, cUrl)
 		}
 		that.getReadlineForUnix()
-		that.getInstallNeededForWin(version)
+		if len(useDefault) > 0 {
+			that.getInstallNeededForWin(version)
+		}
 		utils.ExecuteCommand(that.getExecutablePath(), "install", version)
 	}
 	utils.ExecuteCommand(that.getExecutablePath(), "global", version)
