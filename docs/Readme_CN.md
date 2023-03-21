@@ -35,7 +35,7 @@ gvc将要提供的功能或特点：
 ---------
 ### gvc -h
 ```shell
-moqsien@iMac gvc % gvc -h 
+moqsien@iMac gvc % gvc -h
 NAME:
    gvc - gvc <Command> <SubCommand>...
 
@@ -46,16 +46,18 @@ DESCRIPTION:
    A productive tool to manage your development environment.
 
 COMMANDS:
-   host, h, hosts        Manage system hosts file.
-   go, g                 Go version control.
-   vscode, vsc, vs, v    VSCode management.
-   config, conf, cnf, c  GVC config file management.
-   nvim, neovim, nv, n   GVC neovim management.
-   java, jdk, j          GVC jdk management.
-   rust, rustc, ru, r    GVC rust management.
-   nodejs, node, no      Nodejs version control.
-   python, py            Python version management.
-   help, h               Shows a list of commands or help for one command
+   uninstall, unins, delete, del  [Caution] Delete gvc and softwares installed by gvc!
+   show, sho, sh                  Show [gvc] install path.
+   host, h, hosts                 Manage system hosts file.
+   go, g                          Go version control.
+   vscode, vsc, vs, v             VSCode management.
+   config, conf, cnf, c           GVC config file management.
+   nvim, neovim, nv, n            GVC neovim management.
+   java, jdk, j                   GVC jdk management.
+   rust, rustc, ru, r             GVC rust management.
+   nodejs, node, no               Nodejs version control.
+   python, py                     Python version management.
+   help, h                        Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
    --help, -h  show help
