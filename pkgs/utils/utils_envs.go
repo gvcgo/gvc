@@ -297,12 +297,14 @@ var HintStr string = ` +-++-++-++-++-++-++-+
 +-++-++-++-++-++-++-+`
 
 func (that *EnvsHandler) HintsForWin(flag ...int) {
-	fmt.Println(HintStr)
-	if len(flag) > 0 {
-		fmt.Println("[**WARNING**] Make sure you have PowerShell installed.")
-		fmt.Println("[**注意**] Windows用户需要使用PowerShell! 请自行检查系统是否自带或者手动安装PowerShell。")
-	} else {
-		fmt.Println("[**WARNING**] You have to exit current PowerShell and enter another one to make envs work properly.")
-		fmt.Println("[**注意**] Windows用户需要关闭当前PowerShell, 然后重开一个, 环境变量才能生效!否则当前设置过的[Path环境变量会被后面的设置操作覆盖]!!! ")
+	if runtime.GOOS == Windows {
+		fmt.Println(HintStr)
+		if len(flag) > 0 {
+			fmt.Println("[**WARNING**] Make sure you have PowerShell installed.")
+			fmt.Println("[**注意**] Windows用户需要使用PowerShell! 请自行检查系统是否自带或者手动安装PowerShell。")
+		} else {
+			fmt.Println("[**WARNING**] You have to exit current PowerShell and enter another one to make envs work properly.")
+			fmt.Println("[**注意**] Windows用户需要关闭当前PowerShell, 然后重开一个, 环境变量才能生效!否则当前设置过的[Path环境变量会被后面的设置操作覆盖]!!! ")
+		}
 	}
 }

@@ -244,7 +244,23 @@ func (that *PyVenv) downloadCache(version, cUrl string) {
 	that.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644)
 }
 
-func (that *PyVenv) getInstallNeeded(version string) {
+func (that *PyVenv) getReadlineForUnix() {
+	rUrls := that.Conf.Python.PyenvReadline
+	if len(rUrls) == 0 {
+		return
+	}
+	for _, rUrl := range rUrls {
+		that.Url = rUrl
+		that.Timeout = 10 * time.Minute
+		sList := strings.Split(that.Url, "/")
+		fpath := filepath.Join(config.PyenvCacheDir, sList[len(sList)-1])
+		if size := that.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size == 0 {
+			os.Remove(fpath)
+		}
+	}
+}
+
+func (that *PyVenv) getInstallNeededForWin(version string) {
 	if ok, _ := utils.PathIsExist(config.PyenvRootPath); ok && runtime.GOOS == utils.Windows && runtime.GOARCH == utils.X64 {
 		if ok, _ := utils.PathIsExist(config.PyenvCacheDir); !ok {
 			os.MkdirAll(config.PyenvCacheDir, 0666)
@@ -276,7 +292,8 @@ func (that *PyVenv) InstallVersion(version string) {
 			fmt.Println("[**] Download cache file from ", cUrl)
 			that.downloadCache(version, cUrl)
 		}
-		that.getInstallNeeded(version)
+		that.getReadlineForUnix()
+		that.getInstallNeededForWin(version)
 		utils.ExecuteCommand(that.getExecutablePath(), "install", version)
 	}
 	utils.ExecuteCommand(that.getExecutablePath(), "global", version)

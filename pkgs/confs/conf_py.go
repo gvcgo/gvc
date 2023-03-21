@@ -11,6 +11,7 @@ type PyConf struct {
 	WinAmd64       string   `koanf:"win_amd64"`
 	WinArm64       string   `koanf:"win_arm64"`
 	PyenvUnix      string   `koanf:"pyenv_unix"`
+	PyenvReadline  []string `koanf:"pyenv_readline"`
 	PyenvWin       string   `koanf:"pyenv_win"`
 	PyenvWinNeeded string   `koanf:"pyenv_win_needed"`
 	PypiProxies    []string `koanf:"pypi_proxies"`
@@ -41,6 +42,10 @@ func (that *PyConf) Reset() {
 	that.PyenvWin = "https://gitee.com/moqsien/gvc/releases/download/v1/pyenv-win.zip"
 	that.PyenvWinNeeded = "https://gitee.com/moqsien/gvc/releases/download/v1/gvc_py_win_needed.zip"
 	that.PyenvUnix = "https://gitee.com/moqsien/gvc/releases/download/v1/pyenv-unix.zip"
+	that.PyenvReadline = []string{
+		"https://gitee.com/moqsien/gvc/releases/download/v1/readline-8.2.tar.gz",
+		"https://gitee.com/moqsien/gvc/releases/download/v1/readline-8.1.tar.gz",
+	}
 	that.PypiProxies = []string{
 		"https://pypi.tuna.tsinghua.edu.cn/simple/",
 		"https://pypi.mirrors.ustc.edu.cn/simple/",
