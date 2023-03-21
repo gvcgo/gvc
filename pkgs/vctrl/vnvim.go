@@ -77,6 +77,7 @@ func (that *NVim) download() (r string) {
 	}
 	if ok, _ := utils.PathIsExist(config.NVimFileDir); ok && r != "" {
 		dst := config.NVimFileDir
+		utils.ClearDir(dst)
 		if err := archiver.Unarchive(r, dst); err != nil {
 			os.RemoveAll(filepath.Dir(that.getBinaryPath()))
 			os.RemoveAll(r)
