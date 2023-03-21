@@ -243,5 +243,7 @@ OPTIONS:
 
 ### Download & Install
 Download files, unarchive, then double clik or just run with no subcommand or argument, gvc will install itself to default dir.
+
+- [Note] Make sure you have PowerShell installed under windows.
 - [github release](https://github.com/moqsien/gvc/releases)
 - [gitee release](https://gitee.com/moqsien/gvc/releases/tag/v2)
