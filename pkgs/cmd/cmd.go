@@ -39,6 +39,20 @@ func (that *Cmder) uninstall() {
 	that.Commands = append(that.Commands, command)
 }
 
+func (that *Cmder) showinfo() {
+	command := &cli.Command{
+		Name:    "show",
+		Aliases: []string{"sho", "sh"},
+		Usage:   "Show [gvc] install path.",
+		Action: func(ctx *cli.Context) error {
+			self := vctrl.NewSelf()
+			self.ShowInstallPath()
+			return nil
+		},
+	}
+	that.Commands = append(that.Commands, command)
+}
+
 func (that *Cmder) vhost() {
 	command := &cli.Command{
 		Name:        "host",
@@ -618,6 +632,7 @@ func (that *Cmder) vpython() {
 
 func (that *Cmder) initiate() {
 	that.uninstall()
+	that.showinfo()
 	that.vhost()
 	that.vgo()
 	that.vscode()

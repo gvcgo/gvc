@@ -43,7 +43,9 @@ func (that *Self) setShortcut() {
 }
 
 func (that *Self) Install() {
-	that.env.HintsForWin(1)
+	if runtime.GOOS == utils.Windows {
+		that.env.HintsForWin(1)
+	}
 	if ok, _ := utils.PathIsExist(config.GVCWorkDir); !ok {
 		os.MkdirAll(config.GVCWorkDir, os.ModePerm)
 	}
@@ -84,4 +86,11 @@ func (that *Self) Uninstall() {
 	} else {
 		fmt.Println("Uninstall gvc aborted.")
 	}
+}
+
+func (that *Self) ShowInstallPath() {
+	fmt.Println("===================================")
+	fmt.Println("[gvc] is installed @", config.GVCWorkDir)
+	fmt.Println("[gvc] 安装目录: ", config.GVCWorkDir)
+	fmt.Println("===================================")
 }

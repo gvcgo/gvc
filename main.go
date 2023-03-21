@@ -39,6 +39,7 @@ func main() {
 	} else if len(os.Args) < 2 {
 		self := vctrl.NewSelf()
 		self.Install()
+		self.ShowInstallPath()
 	} else {
 		c.Run(os.Args)
 	}
