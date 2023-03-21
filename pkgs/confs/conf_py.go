@@ -40,7 +40,7 @@ func (that *PyConf) Reset() {
 	that.WinAmd64 = "https://gitee.com/moqsien/gvc/releases/download/v1/portable-amd64.zip"
 	that.WinArm64 = "https://gitee.com/moqsien/gvc/releases/download/v1/portable-arm64.zip"
 	that.PyenvWin = "https://gitee.com/moqsien/gvc/releases/download/v1/pyenv-win.zip"
-	that.PyenvWinNeeded = "https://gitee.com/moqsien/gvc/releases/download/v1/gvc_py_win_needed.zip"
+	that.PyenvWinNeeded = "https://gitee.com/moqsien/gvc/releases/download/v1/pyenv_win_needed.zip"
 	that.PyenvUnix = "https://gitee.com/moqsien/gvc/releases/download/v1/pyenv-unix.zip"
 	that.PyenvReadline = []string{
 		"https://gitee.com/moqsien/gvc/releases/download/v1/readline-8.2.tar.gz",

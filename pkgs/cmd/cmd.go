@@ -571,7 +571,7 @@ func (that *Cmder) vpython() {
 			&cli.BoolFlag{
 				Name:        "accelerate",
 				Aliases:     []string{"a", "acc"},
-				Usage:       "Use default version[3.10.0] to accelerte installation.",
+				Usage:       "Use default version[likely 3.11.2] to accelerte installation.",
 				Destination: &useDefault,
 			},
 		},
