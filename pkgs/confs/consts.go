@@ -272,7 +272,7 @@ var (
 	PyenvRootPath          string = GetPyenvRootPath()
 	PyenvRootName          string = "PYENV_ROOT"
 	PyenvVersionsPath      string = filepath.Join(PyenvRootPath, "versions")
-	PyenvCacheDir          string = filepath.Join(PyenvRootPath, "cache")
+	PyenvCacheDir          string = GetPyenvCachePath()
 	PythonBinaryPath       string = filepath.Join(PyenvRootPath, "shims")
 	PyenvMirrorEnvName     string = "PYTHON_BUILD_MIRROR_URL"
 	PyenvMirrorEnabledName string = "PYTHON_BUILD_MIRROR_URL_SKIP_CHECKSUM"
@@ -283,6 +283,15 @@ func GetPyenvRootPath() (r string) {
 		r = filepath.Join(PyenvInstallDir, "pyenv/pyenv-win")
 	} else {
 		r = PythonFilesDir
+	}
+	return
+}
+
+func GetPyenvCachePath() (r string) {
+	if runtime.GOOS == utils.Windows {
+		r = filepath.Join(GetPyenvRootPath(), "install_cache")
+	} else {
+		r = filepath.Join(GetPyenvRootPath(), "cache")
 	}
 	return
 }

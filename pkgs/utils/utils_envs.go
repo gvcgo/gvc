@@ -284,15 +284,25 @@ func (that *EnvsHandler) setOneEnvForWin(key, value string) {
 	that.flushEnvForWin(key)
 }
 
-var HintStr string = ` +-++-++-++-++-++-++-+
-|W||a||r||n||i||n||g|
-+-++-++-++-++-++-++-+`
-
 func (that *EnvsHandler) SetEnvForWin(envList map[string]string) {
 	for key, value := range envList {
 		that.setOneEnvForWin(key, value)
 	}
 	time.Sleep(time.Second * 3)
+	that.HintsForWin()
+}
+
+var HintStr string = ` +-++-++-++-++-++-++-+
+|W||a||r||n||i||n||g|
++-++-++-++-++-++-++-+`
+
+func (that *EnvsHandler) HintsForWin(flag ...int) {
 	fmt.Println(HintStr)
-	fmt.Println("[**WARNING**] You have to exit current PowerShell and enter another one to make envs work properly.")
+	if len(flag) > 0 {
+		fmt.Println("[**WARNING**] Make sure you have PowerShell installed.")
+		fmt.Println("[**注意**] Windows用户需要使用PowerShell! 请自行检查系统是否自带或者手动安装PowerShell。")
+	} else {
+		fmt.Println("[**WARNING**] You have to exit current PowerShell and enter another one to make envs work properly.")
+		fmt.Println("[**注意**] Windows用户需要关闭当前PowerShell, 然后重开一个, 环境变量才能生效! ")
+	}
 }

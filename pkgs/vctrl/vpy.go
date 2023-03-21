@@ -150,7 +150,7 @@ func (that *PyVenv) getPyenv(force ...bool) {
 		flag = force[0]
 	}
 
-	if !flag && that.getExecutable() != "" {
+	if !flag && that.getExecutablePath() != "" {
 		fmt.Println("pyenv already installed.")
 		return
 	}
@@ -192,7 +192,7 @@ func (that *PyVenv) InstallPyenv() {
 	that.getPyenv(true)
 }
 
-func (that *PyVenv) getExecutable() (exePath string) {
+func (that *PyVenv) getExecutablePath() (exePath string) {
 	p := filepath.Join(config.PyenvInstallDir, "pyenv")
 	that.getPyenvPath(p)
 	if that.pyenvPath != "" {
@@ -212,16 +212,22 @@ func (that *PyVenv) setTempEnvs() {
 	os.Setenv(config.PyenvRootName, config.PyenvRootPath)
 	os.Setenv(config.PyenvMirrorEnvName, that.Conf.Python.PyBuildUrl)
 	os.Setenv(config.PyenvMirrorEnabledName, "true")
+	if ok, _ := utils.PathIsExist(config.PythonBinaryPath); ok && runtime.GOOS == utils.Windows {
+		vPath := os.Getenv("PATH")
+		if !strings.Contains(vPath, config.PythonBinaryPath) {
+			os.Setenv("PATH", fmt.Sprintf("%s;%s", vPath, config.PythonBinaryPath))
+		}
+	}
 }
 
 func (that *PyVenv) ListRemoteVersions() {
 	that.getPyenv()
 	that.setTempEnvs()
-	utils.ExecuteCommand(that.getExecutable(), "install", "--list")
+	utils.ExecuteCommand(that.getExecutablePath(), "install", "--list")
 }
 
 func (that *PyVenv) isInstalled(version string) (r bool) {
-	cmd := exec.Command(that.getExecutable(), "versions")
+	cmd := exec.Command(that.getExecutablePath(), "versions")
 	cmd.Env = os.Environ()
 	output, _ := cmd.CombinedOutput()
 	if strings.Contains(string(output), version) {
@@ -238,7 +244,29 @@ func (that *PyVenv) downloadCache(version, cUrl string) {
 	that.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644)
 }
 
-// TODO: download https://gitee.com/moqsien/gvc/releases/download/v1/gvc_py_win_needed.zip
+func (that *PyVenv) getInstallNeeded(version string) {
+	if ok, _ := utils.PathIsExist(config.PyenvRootPath); ok && runtime.GOOS == utils.Windows && runtime.GOARCH == utils.X64 {
+		if ok, _ := utils.PathIsExist(config.PyenvCacheDir); !ok {
+			os.MkdirAll(config.PyenvCacheDir, 0666)
+		}
+		fpath := filepath.Join(config.PyenvCacheDir, "needed.zip")
+		that.Url = that.Conf.Python.PyenvWinNeeded
+		that.Timeout = 6 * time.Minute
+		if size := that.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
+			untarfilePath := filepath.Join(config.PyenvCacheDir, version)
+			if ok, _ := utils.PathIsExist(untarfilePath); !ok {
+				os.MkdirAll(untarfilePath, 0666)
+			}
+			if err := archiver.Unarchive(fpath, untarfilePath); err != nil {
+				utils.ClearDir(untarfilePath)
+				os.Remove(fpath)
+				fmt.Println("[Unarchive failed] ", err)
+				return
+			}
+		}
+	}
+}
+
 func (that *PyVenv) InstallVersion(version string) {
 	that.getPyenv()
 	that.setTempEnvs()
@@ -248,22 +276,24 @@ func (that *PyVenv) InstallVersion(version string) {
 			fmt.Println("[**] Download cache file from ", cUrl)
 			that.downloadCache(version, cUrl)
 		}
-		utils.ExecuteCommand(that.getExecutable(), "install", version)
+		that.getInstallNeeded(version)
+		utils.ExecuteCommand(that.getExecutablePath(), "install", version)
 	}
-	utils.ExecuteCommand(that.getExecutable(), "global", version)
+	utils.ExecuteCommand(that.getExecutablePath(), "global", version)
 	that.setPipAcceleration()
+	that.env.HintsForWin()
 }
 
 func (that *PyVenv) RemoveVersion(version string) {
 	that.getPyenv()
 	that.setTempEnvs()
-	utils.ExecuteCommand(that.getExecutable(), "uninstall", version)
+	utils.ExecuteCommand(that.getExecutablePath(), "uninstall", version)
 }
 
 func (that *PyVenv) ShowInstalled() {
 	that.getPyenv()
 	that.setTempEnvs()
-	utils.ExecuteCommand(that.getExecutable(), "versions")
+	utils.ExecuteCommand(that.getExecutablePath(), "versions")
 }
 
 func (that *PyVenv) ShowVersionPath() {

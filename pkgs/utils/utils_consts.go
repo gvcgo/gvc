@@ -6,6 +6,7 @@ const (
 	Windows string = "windows"
 	MacOS   string = "darwin"
 	Linux   string = "linux"
+	X64     string = "amd64"
 )
 
 var ArchOSs map[string]string = map[string]string{
