@@ -76,7 +76,13 @@ func (that *RustInstaller) Install() {
 	that.SetAccelerationEnv()
 	iPath := that.getInstaller()
 	if runtime.GOOS == utils.Windows {
-		if err := exec.Command(iPath).Run(); err != nil {
+		os.Setenv("PATH", fmt.Sprintf("%s;%s", config.RustFilesDir, os.Getenv("PATH")))
+		c := exec.Command(that.Conf.Rust.FileNameWin)
+		c.Env = os.Environ()
+		c.Stderr = os.Stderr
+		c.Stdin = os.Stdin
+		c.Stdout = os.Stdout
+		if err := c.Run(); err != nil {
 			fmt.Println("[Rust installer path] You can install rust by running rustup-init.exe @ ", iPath)
 			fmt.Printf("请切换到目录@ %s, 然后执行rustup-init.exe即可开始安装。", iPath)
 		}

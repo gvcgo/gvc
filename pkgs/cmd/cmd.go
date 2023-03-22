@@ -570,7 +570,7 @@ func (that *Cmder) vpython() {
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
 				Name:        "accelerate",
-				Aliases:     []string{"a", "acc"},
+				Aliases:     []string{"acc", "a"},
 				Usage:       "Use default version[likely 3.11.2] to accelerte installation.",
 				Destination: &useDefault,
 			},
@@ -580,9 +580,9 @@ func (that *Cmder) vpython() {
 			if version != "" {
 				nv := vctrl.NewPyVenv()
 				if useDefault {
-					nv.InstallVersion(version, 1)
+					nv.InstallVersion(version, true)
 				} else {
-					nv.InstallVersion(version)
+					nv.InstallVersion(version, false)
 				}
 			}
 			return nil

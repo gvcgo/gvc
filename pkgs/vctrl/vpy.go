@@ -297,7 +297,7 @@ func (that *PyVenv) getInstallNeededForWin(version string) {
 	}
 }
 
-func (that *PyVenv) InstallVersion(version string, useDefault ...int) {
+func (that *PyVenv) InstallVersion(version string, useDefault bool) {
 	that.getPyenv()
 	that.setTempEnvs()
 	if !that.isInstalled(version) {
@@ -307,7 +307,7 @@ func (that *PyVenv) InstallVersion(version string, useDefault ...int) {
 			that.downloadCache(version, cUrl)
 		}
 		that.getReadlineForUnix()
-		if len(useDefault) > 0 {
+		if useDefault {
 			that.getInstallNeededForWin(version)
 		}
 		utils.ExecuteCommand(that.getExecutablePath(), "install", version)
