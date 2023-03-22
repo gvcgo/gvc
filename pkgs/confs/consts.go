@@ -261,11 +261,6 @@ export PATH="$NODE_HOME/bin:$PATH"
 Python related
 */
 var (
-	PythonBinPath  string = "/usr/bin/python"
-	Python3BinPath string = "/usr/bin/python3"
-)
-
-var (
 	PythonFilesDir         string = filepath.Join(GVCWorkDir, "py_files")
 	PythonToolsPath        string = filepath.Join(PythonFilesDir, "tools")
 	PyenvInstallDir        string = filepath.Join(PythonToolsPath, "pyenv")
@@ -340,4 +335,15 @@ var (
 	WScript.Echo url`
 	PyenvModifyForwin2   string = `verDef(LV_URL), _`
 	PyenvAfterModifyWin2 string = `url, _`
+)
+
+/*
+Cygwin related
+*/
+var (
+	CygwinFilesDir        string = filepath.Join(GVCWorkDir, "cygwin_files")
+	CygwinRootDir         string = filepath.Join(CygwinFilesDir, "cygwin")
+	CygwinBinaryDir       string = filepath.Join(CygwinRootDir, "bin")
+	CygwinInstallerName   string = "cygwin-installer.exe"
+	CygwinPackageFileName string = "cygwin-packages.yml"
 )

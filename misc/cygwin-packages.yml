@@ -1,0 +1,18 @@
+- packages
+  - git
+  - gfortran
+  - gcc-core
+  - gcc-g++
+  - gcc-fortran
+  - gdb
+  - gdbm
+  - clang
+  - clang-analyzer
+  - clang-doc
+  - bash
+  - bash-completion
+  - bash-completion-cmake
+  - bash-completion-devel
+  - bash-devel
+  - bashdb
+  - openssh

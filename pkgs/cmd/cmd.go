@@ -643,6 +643,41 @@ func (that *Cmder) vpython() {
 	that.Commands = append(that.Commands, command)
 }
 
+func (that *Cmder) vcygwin() {
+	command := &cli.Command{
+		Name:        "cygwin",
+		Aliases:     []string{"cygw", "cyg", "cy"},
+		Usage:       "Cygwin management.",
+		Subcommands: []*cli.Command{},
+	}
+	install := &cli.Command{
+		Name:    "install",
+		Aliases: []string{"ins", "i"},
+		Usage:   "Install Cygwin.",
+		Action: func(ctx *cli.Context) error {
+			v := vctrl.NewCygwin()
+			v.InstallByDefault("")
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, install)
+
+	ipackage := &cli.Command{
+		Name:    "package",
+		Aliases: []string{"pack", "p"},
+		Usage:   "Install packages for Cygwin.",
+		Action: func(ctx *cli.Context) error {
+			if packs := ctx.Args().First(); packs != "" {
+				v := vctrl.NewCygwin()
+				v.InstallByDefault(packs)
+			}
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, ipackage)
+	that.Commands = append(that.Commands, command)
+}
+
 func (that *Cmder) initiate() {
 	that.uninstall()
 	that.showinfo()
@@ -655,4 +690,5 @@ func (that *Cmder) initiate() {
 	that.vrust()
 	that.vnodejs()
 	that.vpython()
+	that.vcygwin()
 }

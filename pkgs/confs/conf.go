@@ -31,6 +31,7 @@ type GVConfig struct {
 	NVim   *NVimConf   `koanf:"nvim"`
 	Proxy  *ProxyConf  `koanf:"proxy"`
 	Github *GithubConf `koanf:"github"`
+	Cygwin *CygwinConf `koanf:"cygwin"`
 	w      *WebdavConf `koanf:"webdav"`
 	k      *koanf.Koanf
 	parser *yaml.YAML
@@ -48,6 +49,7 @@ func New() (r *GVConfig) {
 		Python: NewPyConf(),
 		Proxy:  NewProxyConf(),
 		Github: NewGithubConf(),
+		Cygwin: NewCygwinConf(),
 		w:      NewWebdavConf(),
 		k:      koanf.New("."),
 		parser: yaml.Parser(),
@@ -97,6 +99,8 @@ func (that *GVConfig) Reset() {
 	that.Proxy.Reset()
 	that.Github = NewGithubConf()
 	that.Github.Reset()
+	that.Cygwin = NewCygwinConf()
+	that.Cygwin.Reset()
 	that.Restore()
 }
 
