@@ -17,6 +17,7 @@ At Present, gvc has following features:
 - Automatically installation of the latest rust compiler, env variables setup;
 - Automatically installation of nodejs, version switching and env variables setup;
 - Automatically installation of python, version switching, env variables setup, pip acceleration;
+- Automatically installation of Cygwin, including git, gcc, gfortran, clang, cmake, bash, wget, ect.
 - Automatically installation of vscode and extensions. You can also backup extensions info, user settings and keybindings;
 - Automatically installation of neovim with default init file from gvc. And It was made to work with vscode by default;
 - Hosts file management to accelerate github visit in China；
@@ -27,7 +28,6 @@ At Present, gvc has following features:
 
 Fetures on the way：
 - HomeBrew auto-installation and acceleration for users in China；
-- git.exe auto-installation under Windows；
 - Flutter auto-installation；
 
 ### Download & Install
@@ -63,6 +63,7 @@ COMMANDS:
    rust, rustc, ru, r             GVC rust management.
    nodejs, node, no               Nodejs version control.
    python, py                     Python version management.
+   cygwin, cygw, cyg, cy          Cygwin management.
    help, h                        Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
@@ -243,6 +244,24 @@ COMMANDS:
    remove-version, rm  Remove a version.
    update, up          Install or update pyenv.
    help, h             Shows a list of commands or help for one command
+
+OPTIONS:
+   --help, -h  show help
+```
+
+### gvc cy -h
+```shell
+moqsien@iMac gvc % gvc cy -h
+NAME:
+   gvc cygwin - Cygwin management.
+
+USAGE:
+   gvc cygwin command [command options] [arguments...]
+
+COMMANDS:
+   install, ins, i   Install Cygwin.
+   package, pack, p  Install packages for Cygwin.
+   help, h           Shows a list of commands or help for one command
 
 OPTIONS:
    --help, -h  show help

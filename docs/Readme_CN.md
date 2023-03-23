@@ -18,6 +18,7 @@
 - Rust编译器自动安装和加速；
 - Nodejs自动安装和添加环境变量，多版本轻松切换，安装包加速；
 - Python自动安装，使用国内源解决下载慢问题，编译安装过程可能需要等待一段时间，同时自动配置环境变量和pip加速源；
+- Cygwin自动安装和配置，包括了git, gcc, gfortran, clang, cmake, bash, wget等，解决Windows下c/c++开发以及git问题；
 - vscode自动安装，一键安装插件(需要配置，也可以使用默认配置)，一键备份和同步插件信息、用户设置、快捷键设置到webdav网盘；
 - neovim自动安装和配置，默认与vscode-neovim插件配合，有默认配置可以使用；
 - hosts文件更新，加速github访问，对国内用户友好；
@@ -27,7 +28,6 @@
 - MacOS、Windows、Linux(暂未测试)全平台支持
 
 gvc将要提供的功能或特点：
-- Windows下的git.exe下载；
 - HomeBrew安装和加速；
 - Flutter自动安装；
 
@@ -63,6 +63,7 @@ COMMANDS:
    rust, rustc, ru, r             GVC rust management.
    nodejs, node, no               Nodejs version control.
    python, py                     Python version management.
+   cygwin, cygw, cyg, cy          Cygwin management.
    help, h                        Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
@@ -243,6 +244,24 @@ COMMANDS:
    remove-version, rm  Remove a version.
    update, up          Install or update pyenv.
    help, h             Shows a list of commands or help for one command
+
+OPTIONS:
+   --help, -h  show help
+```
+
+### gvc cy -h
+```shell
+moqsien@iMac gvc % gvc cy -h
+NAME:
+   gvc cygwin - Cygwin management.
+
+USAGE:
+   gvc cygwin command [command options] [arguments...]
+
+COMMANDS:
+   install, ins, i   Install Cygwin.
+   package, pack, p  Install packages for Cygwin.
+   help, h           Shows a list of commands or help for one command
 
 OPTIONS:
    --help, -h  show help
