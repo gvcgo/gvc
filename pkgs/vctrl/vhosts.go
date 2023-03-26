@@ -223,13 +223,12 @@ func (that *Hosts) FormatAndSaveHosts(oldContent []byte) {
 		for url, h := range that.hList {
 			lineList = append(lineList, fmt.Sprintf(LinePattern, h.IP, url, h.AvgRTT))
 		}
-		loc, _ := time.LoadLocation("Asia/Shanghai")
 		if len(oldContent) < 1 {
 			return
 		}
 		newHostStr := fmt.Sprintf("%s\n%s\n%s\n%s",
 			HEAD,
-			fmt.Sprintf(TIME, time.Now().In(loc).Format("2006-01-02 15:04:05")),
+			fmt.Sprintf(TIME, time.Now().Format("2006-01-02")),
 			strings.Join(lineList, "\n"),
 			TAIL)
 		newStr := that.replace(oldContent, newHostStr)
