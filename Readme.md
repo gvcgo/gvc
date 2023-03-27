@@ -3,13 +3,14 @@
 
 ## Something nice about [gvc](https://github.com/moqsien/gvc).
 ---------
-- If only you don't need to work overtime every single day.
-- If only the code you maintained won't become a crap.
-- If only you really enjoy coding.
-- If only you will never be forced to accept silly dev requirements.
-- If only you could build your dev environments easily.
-- If only you could get it work and enjoy studying as a newbie.
-- If only you could work more efficiently without meaningless "involutions"(内卷).
+GVC is a nice tool designed for managing your development environment on multi-platforms and -machines.
+It will help you to create a dev environment for Go, Python, Java, NodeJS or Rust, Cygwin, etc.
+You do never need to worry about env variables or where to dowload files, GVC will do everything for you.
+You can even install VSCode as well as Neovim through GVC.
+Moreover, GVC will sync config files to WebDAV if you have configured one, which will help recreate your dev environment on another PC.
+
+Therefore, If you are planning to get a new PC for development, probably the only thing you need to download GVC!
+
 ### Therefore, gvc was born!
 At Present, gvc has following features:
 - Automatically installation of golang compilers, version switching and env variables setup;
