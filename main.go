@@ -12,7 +12,7 @@ import (
 func main() {
 	c := cmd.New()
 	ePath, _ := os.Executable()
-	if !strings.HasSuffix(ePath, "gvc") && !strings.HasSuffix(ePath, "gvc.exe") {
+	if !strings.HasSuffix(ePath, "gvc") && !strings.HasSuffix(ePath, "gvc.exe") && !strings.HasSuffix(ePath, "g") {
 		c := confs.New()
 		// c.SetupWebdav()
 		c.Reset()

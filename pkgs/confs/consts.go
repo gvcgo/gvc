@@ -139,7 +139,7 @@ var (
 	GVCShortcutCommand = []string{
 		WinShortcutCreatorPath,
 		fmt.Sprintf(`/target:%s`, filepath.Join(GVCWorkDir, "gvc.exe")),
-		fmt.Sprintf(`/shortcut:%s`, filepath.Join(GVCWorkDir, "gvc")),
+		fmt.Sprintf(`/shortcut:%s`, filepath.Join(GVCWorkDir, "g")),
 	}
 )
 

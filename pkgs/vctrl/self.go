@@ -37,8 +37,12 @@ func (that *Self) setEnv() {
 }
 
 func (that *Self) setShortcut() {
-	if ok, _ := utils.PathIsExist(filepath.Join(config.GVCWorkDir, "gvc.exe")); ok {
-		exec.Command("wscript", config.GVCShortcutCommand...)
+	if ok, _ := utils.PathIsExist(filepath.Join(config.GVCWorkDir, "gvc.exe")); ok && runtime.GOOS == utils.Windows {
+		config.SaveWinShortcutCreator()
+		exec.Command("wscript", config.GVCShortcutCommand...).Run()
+	}
+	if ok, _ := utils.PathIsExist(filepath.Join(config.GVCWorkDir, "gvc")); ok && runtime.GOOS != utils.Windows {
+		utils.MkSymLink(filepath.Join(config.GVCWorkDir, "gvc"), filepath.Join(config.GVCWorkDir, "g"))
 	}
 }
 
@@ -58,9 +62,7 @@ func (that *Self) Install() {
 	if strings.HasSuffix(ePath, "/gvc") || strings.HasSuffix(ePath, "gvc.exe") {
 		if _, err := utils.CopyFile(ePath, filepath.Join(config.GVCWorkDir, name)); err == nil {
 			that.setEnv()
-			if runtime.GOOS == utils.Windows {
-				that.setShortcut()
-			}
+			that.setShortcut()
 		}
 	}
 	// init dirs and files
