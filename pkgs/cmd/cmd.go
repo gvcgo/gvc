@@ -224,6 +224,9 @@ func (that *Cmder) vgo() {
 			if orderByUpdate {
 				orderBy = sorts.ByUpdate
 			}
+			if libName == "" {
+				libName = ctx.Args().First()
+			}
 			if libName != "" {
 				gv.SearchLibs(libName, orderBy)
 			}

@@ -382,8 +382,9 @@ func (that *GoVersion) RemoveVersion(version string) {
 // search libraries
 func (that *GoVersion) SearchLibs(name string, sortby int) {
 	that.Url = fmt.Sprintf(that.Conf.Go.SearchUrl, name)
-	c := colly.NewCollector()
+	c := colly.NewCollector(colly.UserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36"))
 	c.OnResponse(func(r *colly.Response) {
+		// fmt.Println("===", string(r.Body))
 		that.Doc, _ = goquery.NewDocumentFromReader(bytes.NewBuffer(r.Body))
 		itemList := make([]sorts.Item, 0)
 		that.Doc.Find(".SearchSnippet").Each(func(i int, s *goquery.Selection) {
@@ -436,5 +437,6 @@ func (that *GoVersion) SearchLibs(name string, sortby int) {
 			}
 		}
 	})
+
 	c.Visit(that.Url)
 }
