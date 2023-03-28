@@ -24,10 +24,11 @@ type ProxyList struct {
 }
 
 type ProxyConf struct {
-	SubUrls []string `koanf:"suburls"`
-	path    string
-	k       *koanf.Koanf
-	parser  *yaml.YAML
+	SubUrls   []string `koanf:"suburls"`
+	VerifyUrl string   `koanf:"verify_url"`
+	path      string
+	k         *koanf.Koanf
+	parser    *yaml.YAML
 }
 
 func NewProxyConf() (r *ProxyConf) {
@@ -62,6 +63,7 @@ func (that *ProxyConf) Reset() {
 		"https://freefq.neocities.org/free.txt",
 		"https://ghproxy.com/https://raw.githubusercontent.com/kxswa/k/k/base64",
 	}
+	that.VerifyUrl = "https://www.google.com"
 }
 
 func (that *ProxyConf) GetSubUrls() []string {
