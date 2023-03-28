@@ -7,6 +7,7 @@ import (
 	"github.com/moqsien/gvc/pkgs/cmd"
 	"github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/vctrl"
+	"github.com/moqsien/gvc/pkgs/vctrl/vproxy"
 )
 
 func main() {
@@ -28,8 +29,8 @@ func main() {
 		// fmt.Println(c.Proxy.GetSubUrls())
 		// v := vctrl.NewProxy()
 		// v.GetProxyList()
-		v := vctrl.NewProxy()
-		v.Run()
+		v := vproxy.NewProxyer()
+		v.GetProxyList(true)
 		// v.UseVersion("v18.14.0")
 		// v.UseVersion("v19.8.0")
 		// v.ShowInstalled()

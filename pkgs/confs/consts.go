@@ -215,7 +215,10 @@ export PATH="%s:$PATH"
 /*
 Proxy related
 */
-var ProxyFilesDir = filepath.Join(GVCWorkDir, "proxy_files")
+var (
+	ProxyFilesDir     = filepath.Join(GVCWorkDir, "proxy_files")
+	ProxyListFilePath = filepath.Join(ProxyFilesDir, "proxy_list.json")
+)
 
 /*
 Java related
