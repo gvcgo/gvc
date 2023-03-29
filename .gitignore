@@ -5,3 +5,7 @@ gvc.exe
 versions/*.zip
 versions/gvc
 versions/gvc.exe
+config.json
+geoip.dat
+geosite.dat
+gvc1

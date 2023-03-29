@@ -30,7 +30,7 @@ func main() {
 		// v := vctrl.NewProxy()
 		// v.GetProxyList()
 		v := vproxy.NewProxyer()
-		v.GetProxyList(true)
+		v.RunXray()
 		// v.UseVersion("v18.14.0")
 		// v.UseVersion("v19.8.0")
 		// v.ShowInstalled()

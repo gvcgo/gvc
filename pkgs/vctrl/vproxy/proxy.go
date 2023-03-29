@@ -15,7 +15,19 @@ import (
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/xtls/xray-core/core"
-	"github.com/xtls/xray-core/infra/conf"
+	xconf "github.com/xtls/xray-core/infra/conf"
+	"github.com/xtls/xray-core/infra/conf/serial"
+	"github.com/xtls/xray-core/main/confloader"
+	_ "github.com/xtls/xray-core/main/confloader/external"
+	_ "github.com/xtls/xray-core/main/distro/all"
+)
+
+type ProxyType string
+
+const (
+	Vmess  ProxyType = "vmess"
+	SS     ProxyType = "ss"
+	Trojan ProxyType = "trojan"
 )
 
 type Proxy struct {
@@ -25,7 +37,8 @@ type Proxy struct {
 
 type ProxyList struct {
 	Proxies []*Proxy `koanf:"proxies"`
-	Date    string   `koanf:"date"`
+	Type    ProxyType
+	Date    string `koanf:"date"`
 	k       *koanf.Koanf
 	parser  *json.JSON
 	path    string
@@ -71,7 +84,7 @@ func (that *ProxyList) Update(proxies []*Proxy) {
 type Proxyer struct {
 	Conf       *config.GVConfig
 	XRay       *core.Instance
-	XRayConfig *conf.Config
+	XRayConfig *xconf.Config
 	ProxyList  *ProxyList
 	c          *colly.Collector
 	filter     map[string]struct{}
@@ -87,6 +100,7 @@ func NewProxyer() (r *Proxyer) {
 			parser:  json.Parser(),
 			path:    config.ProxyListFilePath,
 		},
+		XRayConfig: &xconf.Config{},
 	}
 	return
 }
@@ -110,7 +124,7 @@ func (that *Proxyer) decodeStr(rawStr string) (res string) {
 	return
 }
 
-func (that *Proxyer) parseProxy(body []byte) (result []*Proxy) {
+func (that *Proxyer) parseProxy(body []byte, pType string) (result []*Proxy) {
 	r := string(body)
 	if !strings.Contains(r, "vmess") {
 		r = that.decodeStr(r)
@@ -118,6 +132,10 @@ func (that *Proxyer) parseProxy(body []byte) (result []*Proxy) {
 	if strings.Contains(r, "vmess") {
 		for _, p := range strings.Split(r, "\n") {
 			pUrl := strings.Trim(p, " ")
+			if !strings.HasPrefix(pUrl, "vmess") {
+				fmt.Println(pUrl)
+				continue
+			}
 			if _, ok := that.filter[pUrl]; !ok {
 				that.filter[pUrl] = struct{}{}
 				result = append(result, &Proxy{
@@ -137,11 +155,48 @@ func (that *Proxyer) GetProxyList(force bool) {
 		for _, url := range that.Conf.Proxy.GetSubUrls() {
 			// that.collector.SetRequestTimeout(5 * time.Second)
 			that.c.OnResponse(func(r *colly.Response) {
-				res := that.parseProxy(r.Body)
+				res := that.parseProxy(r.Body, string(Vmess))
 				pList = append(pList, res...)
 			})
 			that.c.Visit(url)
 		}
 		that.ProxyList.Update(pList)
+		that.ProxyList.Type = Vmess
 	}
+	that.ProxyList.Reload()
+}
+
+func (that *Proxyer) LoadXrayConfig() (err error) {
+	// data, _ := os.ReadFile("./config.json")
+	// r := bytes.NewReader(data)
+	r, _ := confloader.LoadConfig("./config.json")
+	c := &xconf.Config{}
+	if err == nil {
+		c, err = serial.DecodeJSONConfig(r)
+	}
+	that.XRayConfig = c
+	return err
+}
+
+func (that *Proxyer) RunXray() {
+	err := that.LoadXrayConfig()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	var c *core.Config
+	c, err = that.XRayConfig.Build()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(len(c.Outbound))
+	server, err := core.New(c)
+	if err != nil {
+		fmt.Println("2222", err)
+		return
+	}
+	fmt.Println("=====")
+	server.Start()
+	defer server.Close()
 }
