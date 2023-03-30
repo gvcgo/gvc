@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"bytes"
 	"crypto/sha1"
 	"crypto/sha256"
 	"encoding/hex"
@@ -296,4 +297,8 @@ func ReplaceFileContent(filePath, old, new string, perm fs.FileMode) {
 			}
 		}
 	}
+}
+
+func ConvertStrToReader(str string) io.Reader {
+	return bytes.NewReader([]byte(str))
 }

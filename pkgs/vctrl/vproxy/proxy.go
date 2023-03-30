@@ -17,7 +17,6 @@ import (
 	"github.com/xtls/xray-core/core"
 	xconf "github.com/xtls/xray-core/infra/conf"
 	"github.com/xtls/xray-core/infra/conf/serial"
-	"github.com/xtls/xray-core/main/confloader"
 	_ "github.com/xtls/xray-core/main/confloader/external"
 	_ "github.com/xtls/xray-core/main/distro/all"
 )
@@ -167,9 +166,7 @@ func (that *Proxyer) GetProxyList(force bool) {
 }
 
 func (that *Proxyer) LoadXrayConfig() (err error) {
-	// data, _ := os.ReadFile("./config.json")
-	// r := bytes.NewReader(data)
-	r, _ := confloader.LoadConfig("./config.json")
+	r := utils.ConvertStrToReader(XrayVmessConfStr)
 	c := &xconf.Config{}
 	if err == nil {
 		c, err = serial.DecodeJSONConfig(r)
