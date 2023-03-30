@@ -32,7 +32,7 @@ func main() {
 		// v.GetProxyList()
 		// v := vproxy.NewProxyer()
 		// v.RunXray()
-		v := vproxy.NewXrayClient()
+		v := vproxy.NewXrayClient(&vproxy.XrayInbound{})
 		fmt.Println(v)
 		// v.UseVersion("v18.14.0")
 		// v.UseVersion("v19.8.0")
