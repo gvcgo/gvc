@@ -1,5 +1,13 @@
 package vproxy
 
+type ProxyType string
+
+const (
+	Vmess  ProxyType = "vmess"
+	SS     ProxyType = "ss"
+	Trojan ProxyType = "trojan"
+)
+
 var XrayVmessConfStr string = `{
     "api": {
         "services": [

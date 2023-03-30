@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"strings"
 
@@ -32,8 +31,8 @@ func main() {
 		// v.GetProxyList()
 		// v := vproxy.NewProxyer()
 		// v.RunXray()
-		v := vproxy.NewXrayClient(&vproxy.XrayInbound{})
-		fmt.Println(v)
+		v := vproxy.NewProxyFetcher()
+		v.GetProxyList(false)
 		// v.UseVersion("v18.14.0")
 		// v.UseVersion("v19.8.0")
 		// v.ShowInstalled()
