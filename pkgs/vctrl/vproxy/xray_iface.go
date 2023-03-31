@@ -5,4 +5,13 @@ type Proxies interface {
 	GetDate() string
 	Reload()
 	Update(any)
+	GetProxyList() []*Proxy
+}
+
+type RawProxy interface {
+	GetUri() string
+}
+
+type Verifier interface {
+	GetProxyChan() ChanRawProxy
 }

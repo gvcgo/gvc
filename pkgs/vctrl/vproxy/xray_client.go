@@ -1,6 +1,9 @@
 package vproxy
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/gogf/gf/encoding/gjson"
 	"github.com/xtls/xray-core/core"
 	xconf "github.com/xtls/xray-core/infra/conf"
@@ -28,11 +31,15 @@ type XrayClient struct {
 	Config         *xconf.Config
 	ConfigVmessStr string
 	IsRunning      bool
+	Verifier       Verifier
 }
 
-func NewXrayVmessClient(xi *XrayInbound) (r *XrayClient) {
+func NewXrayVmessClient(xi *XrayInbound, verifier ...Verifier) (r *XrayClient) {
 	r = &XrayClient{
 		ConfigVmessStr: XrayVmessConfStr,
+	}
+	if len(verifier) > 0 {
+		r.Verifier = verifier[0]
 	}
 	r.formatInbound(xi)
 	return
@@ -60,6 +67,21 @@ func (that *XrayClient) FormatVmessOutbound(xo *XrayVmessOutbound) {
 	that.ConfigVmessStr = j.MustToJsonString()
 }
 
-func (that *XrayClient) ParseVmessUri(rawUri string) {
-
+func (that *XrayClient) RunVerifier(typ ...ProxyType) {
+	ProxyChan := that.Verifier.GetProxyChan()
+	if len(typ) == 0 || typ[0] == Vmess {
+		for {
+			select {
+			case p, ok := <-ProxyChan:
+				if !ok {
+					break
+				}
+				if p != nil {
+					fmt.Println(p.GetUri())
+				}
+			default:
+				time.Sleep(10 * time.Millisecond)
+			}
+		}
+	}
 }

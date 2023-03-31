@@ -14,15 +14,10 @@ import (
 	"github.com/moqsien/gvc/pkgs/utils"
 )
 
-type VmessProxy struct {
-	Uri string `koanf:"uri"`
-	RTT int    `koanf:"rtt"`
-}
-
 type VmessList struct {
-	Proxies []*VmessProxy `koanf:"proxies"`
-	Date    string        `koanf:"date"`
-	Total   int           `koanf:"total"`
+	Proxies []*Proxy `koanf:"proxies"`
+	Date    string   `koanf:"date"`
+	Total   int      `koanf:"total"`
 	k       *koanf.Koanf
 	parser  *yaml.YAML
 	path    string
@@ -30,7 +25,7 @@ type VmessList struct {
 
 func NewVmessList() (r *VmessList) {
 	r = &VmessList{
-		Proxies: make([]*VmessProxy, 0),
+		Proxies: make([]*Proxy, 0),
 		k:       koanf.New("."),
 		parser:  yaml.Parser(),
 		path:    filepath.Join(config.ProxyFilesDir, "proxies-raw-vmess.yml"),
@@ -70,7 +65,7 @@ func (that *VmessList) restore() {
 }
 
 func (that *VmessList) Update(proxies any) {
-	pList, ok := proxies.([]*VmessProxy)
+	pList, ok := proxies.([]*Proxy)
 	if !ok {
 		fmt.Println("Unsupported proxies.")
 		return
@@ -83,4 +78,8 @@ func (that *VmessList) Update(proxies any) {
 	that.Date = that.Today()
 	that.Total = len(that.Proxies)
 	that.restore()
+}
+
+func (that *VmessList) GetProxyList() []*Proxy {
+	return that.Proxies
 }

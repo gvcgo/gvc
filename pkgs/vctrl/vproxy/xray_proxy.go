@@ -8,6 +8,14 @@ import (
 	"github.com/moqsien/gvc/pkgs/utils"
 )
 
+type Proxy struct {
+	Uri string `koanf:"uri"`
+}
+
+func (that *Proxy) GetUri() string {
+	return that.Uri
+}
+
 type ProxyFetcher struct {
 	ProxyList Proxies
 	Type      ProxyType
@@ -35,7 +43,7 @@ func (that *ProxyFetcher) parseProxy(body []byte) any {
 		if !strings.Contains(r, "vmess") {
 			r = utils.DecodeBase64(r)
 		}
-		result := []*VmessProxy{}
+		result := []*Proxy{}
 		if strings.Contains(r, "vmess") {
 			for _, p := range strings.Split(r, "\n") {
 				pUrl := strings.Trim(p, " ")
@@ -45,7 +53,7 @@ func (that *ProxyFetcher) parseProxy(body []byte) any {
 				}
 				if _, ok := that.filter[pUrl]; !ok {
 					that.filter[pUrl] = struct{}{}
-					result = append(result, &VmessProxy{
+					result = append(result, &Proxy{
 						Uri: pUrl,
 					})
 				}
@@ -61,12 +69,12 @@ func (that *ProxyFetcher) GetProxyList(force bool) {
 	if that.Type == Vmess {
 		if that.ProxyList.Today() != that.ProxyList.GetDate() || force {
 			that.filter = map[string]struct{}{}
-			pList := []*VmessProxy{}
+			pList := []*Proxy{}
 			for _, url := range that.Conf.Proxy.GetSubUrls() {
 				// that.collector.SetRequestTimeout(5 * time.Second)
 				that.c.OnResponse(func(r *colly.Response) {
 					res := that.parseProxy(r.Body)
-					result, ok := res.([]*VmessProxy)
+					result, ok := res.([]*Proxy)
 					if ok {
 						pList = append(pList, result...)
 					}
