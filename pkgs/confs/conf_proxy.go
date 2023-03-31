@@ -8,26 +8,20 @@ import (
 
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/yaml"
-	"github.com/knadh/koanf/providers/file"
-	"github.com/knadh/koanf/providers/structs"
 	"github.com/moqsien/gvc/pkgs/utils"
 )
 
-type Proxy struct {
-	Url string `koanf:"url"`
-	RTT int64  `koanf:"rtt"`
-}
-
-type ProxyList struct {
-	Date    string   `koanf:"date"`
-	Proxies []*Proxy `koanf:"proxies"`
+type ProxyCronConfig struct {
+	Hours   int `koanf:"hours"`
+	Minutes int `koanf:"minutes"`
 }
 
 type ProxyConf struct {
-	SubUrls         []string `koanf:"suburls"`
-	VerifyUrl       string   `koanf:"verify_url"`
-	InboundPort     int      `koanf:"inbound_port"`
-	VerifyPortRange []int    `koanf:"verify_port_range"`
+	SubUrls         []string         `koanf:"suburls"`
+	VerifyUrl       string           `koanf:"verify_url"`
+	InboundPort     int              `koanf:"inbound_port"`
+	VerifyPortRange []int            `koanf:"verify_port_range"`
+	Crontab         *ProxyCronConfig `koanf:"crontab"`
 	path            string
 	k               *koanf.Koanf
 	parser          *yaml.YAML
@@ -68,6 +62,10 @@ func (that *ProxyConf) Reset() {
 	that.VerifyUrl = "https://www.google.com"
 	that.InboundPort = 2019
 	that.VerifyPortRange = []int{2020, 2030}
+	that.Crontab = &ProxyCronConfig{
+		Hours:   1,
+		Minutes: 30,
+	}
 }
 
 func (that *ProxyConf) GetSubUrls() []string {
@@ -80,7 +78,7 @@ func (that *ProxyConf) GetSubUrls() []string {
 }
 
 func (that *ProxyConf) GetVerifyPorts() (result []int) {
-	start, end := 2020, 2030
+	start, end := 2020, 2050
 	if len(that.VerifyPortRange) == 1 {
 		start, end = that.VerifyPortRange[0], that.VerifyPortRange[0]
 	} else if len(that.VerifyPortRange) == 2 {
@@ -97,22 +95,6 @@ func (that *ProxyConf) GetVerifyPorts() (result []int) {
 	return
 }
 
-func (that *ProxyConf) LoadProxies() (r *ProxyList) {
-	err := that.k.Load(file.Provider(that.path), that.parser)
-	if err != nil {
-		fmt.Println("[Proxies Load Failed] ", err)
-		return
-	}
-	that.k.UnmarshalWithConf("", r, koanf.UnmarshalConf{Tag: "koanf"})
-	return
-}
-
-func (that *ProxyConf) RestoreProxies(p *ProxyList) {
-	if ok, _ := utils.PathIsExist(that.path); !ok {
-		os.MkdirAll(that.path, os.ModePerm)
-	}
-	that.k.Load(structs.Provider(*p, "koanf"), nil)
-	if b, err := that.k.Marshal(that.parser); err == nil && len(b) > 0 {
-		os.WriteFile(that.path, b, 0666)
-	}
+func (that *ProxyConf) GetCrontabStr() string {
+	return fmt.Sprintf("@every %vh%vm", that.Crontab.Hours, that.Crontab.Minutes)
 }

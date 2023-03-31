@@ -104,6 +104,6 @@ func (that *XrayVerifier) RunVmess(force ...bool) {
 		go client.RunVerifier(Vmess)
 	}
 	go that.receiveResult()
-	c := make(chan struct{})
-	<-c
+	// c := make(chan struct{})
+	// <-c
 }

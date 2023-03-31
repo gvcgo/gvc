@@ -98,6 +98,7 @@ func (that *VmessList) GetProxyList() []*Proxy {
 }
 
 func (that *VmessList) ChooseFastest() *Proxy {
+	that.Reload()
 	if len(that.Proxies) == 0 {
 		return nil
 	}
@@ -111,6 +112,7 @@ func (that *VmessList) ChooseFastest() *Proxy {
 }
 
 func (that *VmessList) ChooseRandom() *Proxy {
+	that.Reload()
 	if len(that.Proxies) == 0 {
 		return nil
 	}
