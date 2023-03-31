@@ -32,7 +32,7 @@ func main() {
 		// v := vproxy.NewProxyer()
 		// v.RunXray()
 		v := vproxy.NewVerifier()
-		v.RunVmess(false)
+		v.RunVmess(true)
 		// v.UseVersion("v18.14.0")
 		// v.UseVersion("v19.8.0")
 		// v.ShowInstalled()

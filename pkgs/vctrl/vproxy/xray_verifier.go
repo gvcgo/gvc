@@ -35,6 +35,10 @@ func (that *XrayVerifier) GetProxyChan() ChanRawProxy {
 	return that.ProxyChan
 }
 
+func (that *XrayVerifier) GetConf() *config.GVConfig {
+	return that.Conf
+}
+
 func (that *XrayVerifier) sendProxy(force bool) {
 	if that.VmessFetcher == nil {
 		that.VmessFetcher = NewProxyFetcher(Vmess)

@@ -1,5 +1,7 @@
 package vproxy
 
+import config "github.com/moqsien/gvc/pkgs/confs"
+
 type Proxies interface {
 	Today() string
 	GetDate() string
@@ -14,4 +16,5 @@ type RawProxy interface {
 
 type Verifier interface {
 	GetProxyChan() ChanRawProxy
+	GetConf() *config.GVConfig
 }
