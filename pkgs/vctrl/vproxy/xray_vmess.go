@@ -2,6 +2,7 @@ package vproxy
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"time"
@@ -17,18 +18,22 @@ import (
 type VmessList struct {
 	Proxies []*Proxy `koanf:"proxies"`
 	Date    string   `koanf:"date"`
-	Total   int      `koanf:"total"`
+	Total   int      `koanf:"count"`
 	k       *koanf.Koanf
 	parser  *yaml.YAML
 	path    string
 }
 
-func NewVmessList() (r *VmessList) {
+func NewVmessList(fileName ...string) (r *VmessList) {
+	if len(fileName) == 0 {
+		fmt.Println(">>>[FileName must be specified]")
+		return
+	}
 	r = &VmessList{
 		Proxies: make([]*Proxy, 0),
 		k:       koanf.New("."),
 		parser:  yaml.Parser(),
-		path:    filepath.Join(config.ProxyFilesDir, "proxies-raw-vmess.yml"),
+		path:    filepath.Join(config.ProxyFilesDir, fileName[0]),
 	}
 	return
 }
@@ -67,8 +72,16 @@ func (that *VmessList) restore() {
 func (that *VmessList) Update(proxies any) {
 	pList, ok := proxies.([]*Proxy)
 	if !ok {
-		fmt.Println("Unsupported proxies.")
-		return
+		if rawProxyList, ok1 := proxies.([]RawProxy); ok1 {
+			for _, p := range rawProxyList {
+				if pxy, ok := p.(*Proxy); ok {
+					pList = append(pList, pxy)
+				}
+			}
+		} else {
+			fmt.Println("Unsupported proxies.")
+			return
+		}
 	}
 	if len(pList) == 0 {
 		fmt.Println("[Proxy List is empty]")
@@ -82,4 +95,25 @@ func (that *VmessList) Update(proxies any) {
 
 func (that *VmessList) GetProxyList() []*Proxy {
 	return that.Proxies
+}
+
+func (that *VmessList) ChooseFastest() *Proxy {
+	if len(that.Proxies) == 0 {
+		return nil
+	}
+	fastest := that.Proxies[0]
+	for _, p := range that.Proxies {
+		if p.RTT < fastest.RTT {
+			fastest = p
+		}
+	}
+	return fastest
+}
+
+func (that *VmessList) ChooseRandom() *Proxy {
+	if len(that.Proxies) == 0 {
+		return nil
+	}
+	r := rand.Intn(len(that.Proxies))
+	return that.Proxies[r]
 }

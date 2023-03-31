@@ -131,7 +131,7 @@ func (that *XrayClient) CloseClient() {
 	}
 }
 
-func (that *XrayClient) VerifyProxy() (ok bool) {
+func (that *XrayClient) VerifyProxy() (ok bool, timeLag int64) {
 	node := &point.Point{
 		Protocols: []*protocol.Protocol{
 			{
@@ -172,7 +172,9 @@ func (that *XrayClient) VerifyProxy() (ok bool) {
 	if vUrl == "" {
 		vUrl = "https://www.google.com"
 	}
+	startTime := time.Now()
 	resp, err := c.Get(vUrl)
+	timeLag = time.Since(startTime).Milliseconds()
 	if err != nil {
 		fmt.Println("[Verify url failed] ", err)
 		return
@@ -180,29 +182,35 @@ func (that *XrayClient) VerifyProxy() (ok bool) {
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(resp.Body)
 	defer resp.Body.Close()
-	return strings.Contains(buf.String(), "</html>")
+	ok = strings.Contains(buf.String(), "</html>")
+	return
 }
 
 func (that *XrayClient) RunVerifier(typ ...ProxyType) {
 	ProxyChan := that.Verifier.GetProxyChan()
 	if len(typ) == 0 || typ[0] == Vmess {
 		that.VerifierIsRunning = true
+	Outter:
 		for {
 			select {
 			case p, ok := <-ProxyChan:
-				if !ok && p == nil {
-					that.VerifierIsRunning = false
-					break
-				}
 				if p != nil {
 					if err := that.StartVmessClient(p); err == nil {
-						if ok := that.VerifyProxy(); ok {
-							fmt.Println(">>>>>>> ", p.GetUri())
+						if ok, timeLag := that.VerifyProxy(); ok {
+							p.SetRTT(timeLag)
+							that.Verifier.GetVmessCollector() <- p
 						}
 						that.CloseClient()
 					} else {
 						fmt.Println("[Start client failed] ", err)
 					}
+				}
+				if !ok {
+					that.VerifierIsRunning = false
+					if !that.Verifier.IsAllClientsRunning() {
+						close(that.Verifier.GetVmessCollector())
+					}
+					break Outter
 				}
 			default:
 				time.Sleep(10 * time.Millisecond)

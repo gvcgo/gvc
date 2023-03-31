@@ -9,20 +9,22 @@ import (
 type ChanRawProxy chan RawProxy
 
 type XrayVerifier struct {
-	VmessFetcher *ProxyFetcher
-	VmessResult  []*XrayVmessOutbound
-	ClientList   []*XrayClient
-	Ports        []int
-	Conf         *config.GVConfig
-	ProxyChan    ChanRawProxy
+	VmessFetcher   *ProxyFetcher
+	VmessResult    *VmessList
+	ClientList     []*XrayClient
+	Ports          []int
+	Conf           *config.GVConfig
+	ProxyChan      ChanRawProxy
+	VmessCollector ChanRawProxy
 }
 
 func NewVerifier() (xv *XrayVerifier) {
 	xv = &XrayVerifier{
-		VmessFetcher: NewProxyFetcher(Vmess),
-		VmessResult:  make([]*XrayVmessOutbound, 0),
-		ClientList:   make([]*XrayClient, 0),
-		Conf:         config.New(),
+		VmessFetcher:   NewProxyFetcher(Vmess),
+		VmessResult:    NewVmessList("proxies-verified-vmess.yml"),
+		ClientList:     make([]*XrayClient, 0),
+		Conf:           config.New(),
+		VmessCollector: make(ChanRawProxy, 100),
 	}
 	xv.Ports = xv.Conf.Proxy.GetVerifyPorts()
 	for _, p := range xv.Ports {
@@ -35,8 +37,40 @@ func (that *XrayVerifier) GetProxyChan() ChanRawProxy {
 	return that.ProxyChan
 }
 
+func (that *XrayVerifier) GetVmessCollector() ChanRawProxy {
+	return that.VmessCollector
+}
+
 func (that *XrayVerifier) GetConf() *config.GVConfig {
 	return that.Conf
+}
+
+func (that *XrayVerifier) IsAllClientsRunning() bool {
+	for _, client := range that.ClientList {
+		if client.VerifierIsRunning {
+			return true
+		}
+	}
+	return false
+}
+
+func (that *XrayVerifier) receiveResult() {
+	res := []RawProxy{}
+OUTTER:
+	for {
+		select {
+		case p, ok := <-that.VmessCollector:
+			if p != nil {
+				res = append(res, p)
+			}
+			if !ok {
+				break OUTTER
+			}
+		default:
+			time.Sleep(time.Millisecond * 10)
+		}
+	}
+	that.VmessResult.Update(res)
 }
 
 func (that *XrayVerifier) sendProxy(force bool) {
@@ -69,6 +103,7 @@ func (that *XrayVerifier) RunVmess(force ...bool) {
 	for _, client := range that.ClientList {
 		go client.RunVerifier(Vmess)
 	}
+	go that.receiveResult()
 	c := make(chan struct{})
 	<-c
 }

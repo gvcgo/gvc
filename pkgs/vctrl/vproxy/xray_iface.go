@@ -12,9 +12,12 @@ type Proxies interface {
 
 type RawProxy interface {
 	GetUri() string
+	SetRTT(rtt int64)
 }
 
 type Verifier interface {
 	GetProxyChan() ChanRawProxy
+	GetVmessCollector() ChanRawProxy
 	GetConf() *config.GVConfig
+	IsAllClientsRunning() bool
 }

@@ -10,10 +10,15 @@ import (
 
 type Proxy struct {
 	Uri string `koanf:"uri"`
+	RTT int64  `koanf:"rtt"`
 }
 
 func (that *Proxy) GetUri() string {
 	return that.Uri
+}
+
+func (that *Proxy) SetRTT(rtt int64) {
+	that.RTT = rtt
 }
 
 type ProxyFetcher struct {
@@ -27,7 +32,7 @@ type ProxyFetcher struct {
 func NewProxyFetcher(typ ...ProxyType) (r *ProxyFetcher) {
 	if len(typ) == 0 || typ[0] == "vmess" {
 		r = &ProxyFetcher{
-			ProxyList: NewVmessList(),
+			ProxyList: NewVmessList("proxies-raw-vmess.yml"),
 			Conf:      config.New(),
 			c:         colly.NewCollector(),
 			filter:    map[string]struct{}{},
