@@ -1,11 +1,11 @@
 package vproxy
 
 import (
-	"encoding/base64"
 	"strings"
 
 	"github.com/gocolly/colly/v2"
 	config "github.com/moqsien/gvc/pkgs/confs"
+	"github.com/moqsien/gvc/pkgs/utils"
 )
 
 type ProxyFetcher struct {
@@ -29,17 +29,11 @@ func NewProxyFetcher(typ ...ProxyType) (r *ProxyFetcher) {
 	return
 }
 
-func (that *ProxyFetcher) decodeStr(rawStr string) (res string) {
-	s, _ := base64.StdEncoding.DecodeString(rawStr)
-	res = string(s)
-	return
-}
-
 func (that *ProxyFetcher) parseProxy(body []byte) any {
 	r := string(body)
 	if that.Type == Vmess {
 		if !strings.Contains(r, "vmess") {
-			r = that.decodeStr(r)
+			r = utils.DecodeBase64(r)
 		}
 		result := []*VmessProxy{}
 		if strings.Contains(r, "vmess") {

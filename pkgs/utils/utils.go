@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/sha1"
 	"crypto/sha256"
+	"encoding/base64"
 	"encoding/hex"
 	"fmt"
 	"hash"
@@ -301,4 +302,10 @@ func ReplaceFileContent(filePath, old, new string, perm fs.FileMode) {
 
 func ConvertStrToReader(str string) io.Reader {
 	return bytes.NewReader([]byte(str))
+}
+
+func DecodeBase64(str string) (res string) {
+	s, _ := base64.StdEncoding.DecodeString(str)
+	res = string(s)
+	return
 }

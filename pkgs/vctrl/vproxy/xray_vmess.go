@@ -22,6 +22,7 @@ type VmessProxy struct {
 type VmessList struct {
 	Proxies []*VmessProxy `koanf:"proxies"`
 	Date    string        `koanf:"date"`
+	Total   int           `koanf:"total"`
 	k       *koanf.Koanf
 	parser  *yaml.YAML
 	path    string
@@ -29,7 +30,7 @@ type VmessList struct {
 
 func NewVmessList() (r *VmessList) {
 	r = &VmessList{
-		Proxies: make([]*VmessProxy, 2000),
+		Proxies: make([]*VmessProxy, 0),
 		k:       koanf.New("."),
 		parser:  yaml.Parser(),
 		path:    filepath.Join(config.ProxyFilesDir, "proxies-raw-vmess.yml"),
@@ -80,5 +81,6 @@ func (that *VmessList) Update(proxies any) {
 	}
 	that.Proxies = pList
 	that.Date = that.Today()
+	that.Total = len(that.Proxies)
 	that.restore()
 }

@@ -24,11 +24,13 @@ type ProxyList struct {
 }
 
 type ProxyConf struct {
-	SubUrls   []string `koanf:"suburls"`
-	VerifyUrl string   `koanf:"verify_url"`
-	path      string
-	k         *koanf.Koanf
-	parser    *yaml.YAML
+	SubUrls         []string `koanf:"suburls"`
+	VerifyUrl       string   `koanf:"verify_url"`
+	InboundPort     int      `koanf:"inbound_port"`
+	VerifyPortRange []int    `koanf:"verify_port_range"`
+	path            string
+	k               *koanf.Koanf
+	parser          *yaml.YAML
 }
 
 func NewProxyConf() (r *ProxyConf) {
@@ -64,6 +66,8 @@ func (that *ProxyConf) Reset() {
 		"https://ghproxy.com/https://raw.githubusercontent.com/kxswa/k/k/base64",
 	}
 	that.VerifyUrl = "https://www.google.com"
+	that.InboundPort = 2019
+	that.VerifyPortRange = []int{2020, 2030}
 }
 
 func (that *ProxyConf) GetSubUrls() []string {
@@ -73,6 +77,24 @@ func (that *ProxyConf) GetSubUrls() []string {
 		}
 	}
 	return that.SubUrls
+}
+
+func (that *ProxyConf) GetVerifyPorts() (result []int) {
+	start, end := 2020, 2030
+	if len(that.VerifyPortRange) == 1 {
+		start, end = that.VerifyPortRange[0], that.VerifyPortRange[0]
+	} else if len(that.VerifyPortRange) == 2 {
+		start, end = func(input []int) (int, int) {
+			if input[0] > input[1] {
+				return input[1], input[0]
+			}
+			return input[0], input[1]
+		}(that.VerifyPortRange)
+	}
+	for i := start; i < end; i++ {
+		result = append(result, i)
+	}
+	return
 }
 
 func (that *ProxyConf) LoadProxies() (r *ProxyList) {
