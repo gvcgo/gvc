@@ -70,7 +70,7 @@ func (that *ProxyConf) Reset() {
 	}
 
 	that.GeoIpUrl = "https://gitee.com/moqsien/gvc/releases/download/v1/geoip.zip"
-	that.SwitchOmegaUrl = "https://gitee.com/moqsien/gvc/releases/download/v1/switchomega.zip"
+	that.SwitchOmegaUrl = "https://gitee.com/moqsien/gvc/releases/download/v1/switch-omega.zip"
 }
 
 func (that *ProxyConf) GetSubUrls() []string {

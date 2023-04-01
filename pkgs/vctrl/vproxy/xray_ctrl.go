@@ -119,6 +119,16 @@ func (that *XrayCtrl) initXrayCtrl() {
 		},
 		SocketName: that.sockName,
 	})
+
+	that.Ktrl.AddKtrlCommand(&goktrl.KCommand{
+		Name: "omega",
+		Help: "Download Switchy-Omega for GoogleChrome. ",
+		Func: func(c *goktrl.Context) {
+			that.DownloadSwithOmega()
+		},
+		KtrlHandler: func(c *goktrl.Context) {},
+		SocketName:  that.sockName,
+	})
 }
 
 func (that *XrayCtrl) writeScript() {
@@ -173,6 +183,30 @@ func (that *XrayCtrl) DownloadGeoIP() {
 				os.RemoveAll(fpath)
 				fmt.Println("[Unarchive failed] ", err)
 				return
+			}
+		}
+	}
+}
+
+func (that *XrayCtrl) DownloadSwithOmega() {
+	that.d.Url = that.Runner.Conf.Proxy.SwitchOmegaUrl
+	if that.d.Url != "" {
+		omegaPath := filepath.Join(config.ProxyFilesDir, "switchy_omega")
+		if ok, _ := utils.PathIsExist(omegaPath); ok {
+			fmt.Println("[Archive Path] ", omegaPath)
+			return
+		}
+		fName := "switchy-omega.zip"
+		fpath := filepath.Join(config.ProxyFilesDir, fName)
+		if size := that.d.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
+			if err := archiver.Unarchive(fpath, omegaPath); err != nil {
+				os.RemoveAll(fpath)
+				os.RemoveAll(omegaPath)
+				fmt.Println("[Unarchive failed] ", err)
+				return
+			} else {
+				fmt.Println("Swithy-Omega Download Succeeded.")
+				fmt.Println("[Archive Path] ", omegaPath)
 			}
 		}
 	}
