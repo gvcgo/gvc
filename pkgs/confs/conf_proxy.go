@@ -22,6 +22,8 @@ type ProxyConf struct {
 	InboundPort     int              `koanf:"inbound_port"`
 	VerifyPortRange []int            `koanf:"verify_port_range"`
 	Crontab         *ProxyCronConfig `koanf:"crontab"`
+	GeoIpUrl        string           `koanf:"geo_ip_url"`
+	SwitchOmegaUrl  string           `koanf:"switch_mega_url"`
 	path            string
 	k               *koanf.Koanf
 	parser          *yaml.YAML
@@ -66,6 +68,8 @@ func (that *ProxyConf) Reset() {
 		Hours:   1,
 		Minutes: 30,
 	}
+	that.GeoIpUrl = "https://gitee.com/moqsien/gvc/releases/download/v1/geoip.zip"
+	that.SwitchOmegaUrl = "https://gitee.com/moqsien/gvc/releases/download/v1/switchomega.zip"
 }
 
 func (that *ProxyConf) GetSubUrls() []string {

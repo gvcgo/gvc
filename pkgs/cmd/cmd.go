@@ -63,13 +63,14 @@ func (that *Cmder) startXray() {
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
 				Name:        "start",
-				Aliases:     []string{"start", "st", "s"},
+				Aliases:     []string{"st", "s"},
 				Usage:       "Start Xray Client.",
 				Destination: &start,
 			},
 		},
 		Action: func(ctx *cli.Context) error {
 			xctrl := vproxy.NewXrayCtrl()
+			xctrl.DownloadGeoIP()
 			if start {
 				xctrl.StartXray()
 			} else {

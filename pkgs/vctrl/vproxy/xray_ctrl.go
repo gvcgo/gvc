@@ -2,13 +2,16 @@ package vproxy
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
 
+	"github.com/mholt/archiver/v3"
 	"github.com/moqsien/goktrl"
 	config "github.com/moqsien/gvc/pkgs/confs"
+	"github.com/moqsien/gvc/pkgs/downloader"
 	"github.com/moqsien/gvc/pkgs/utils"
 )
 
@@ -16,6 +19,7 @@ type XrayCtrl struct {
 	Ktrl     *goktrl.Ktrl
 	Runner   *XrayRunner
 	sockName string
+	d        *downloader.Downloader
 }
 
 func NewXrayCtrl() (xc *XrayCtrl) {
@@ -23,6 +27,7 @@ func NewXrayCtrl() (xc *XrayCtrl) {
 		Ktrl:     goktrl.NewKtrl(),
 		Runner:   NewXrayRunner(),
 		sockName: "gvc_xray",
+		d:        &downloader.Downloader{},
 	}
 	xc.initXrayCtrl()
 	return
@@ -59,9 +64,9 @@ func (that *XrayCtrl) initXrayCtrl() {
 			var cmd *exec.Cmd
 			if runtime.GOOS == utils.Windows {
 				// Start-Process "C:\Program Files\Prometheus.io\prometheus.exe" -WorkingDirectory "C:\Program Files\Prometheus.io" -WindowStyle Hidden
-				cmd = exec.Command("Start-Process", binPath, "xray", "-a", "-WorkingDirectory", config.GVCWorkDir, "-WindowStyle", "Hidden")
+				cmd = exec.Command("Start-Process", binPath, "xray", "-s", "-WorkingDirectory", config.GVCWorkDir, "-WindowStyle", "Hidden")
 			} else {
-				cmd = exec.Command(binPath, "xray", "-a")
+				cmd = exec.Command("nohup", binPath, "xray", "-s", "> /dev/null 2>&1 &")
 			}
 			if cmd != nil {
 				if err := cmd.Run(); err != nil {
@@ -102,7 +107,7 @@ func (that *XrayCtrl) initXrayCtrl() {
 		},
 		KtrlHandler: func(c *goktrl.Context) {
 			that.Runner.FetchVmess()
-			c.Send("Vmess updated.", 200)
+			c.Send("Vmess updating...", 200)
 		},
 		SocketName: that.sockName,
 	})
@@ -128,4 +133,23 @@ func (that *XrayCtrl) StartShell() {
 	fmt.Println("*** Xray Shell Start ***")
 	that.Ktrl.RunShell(that.sockName)
 	fmt.Println("*** Xray Shell End ***")
+}
+
+func (that *XrayCtrl) DownloadGeoIP() {
+	that.d.Url = that.Runner.Conf.Proxy.GeoIpUrl
+	if that.d.Url != "" {
+		geoipPath := filepath.Join(config.GVCWorkDir, "geoip.dat")
+		if ok, _ := utils.PathIsExist(geoipPath); ok {
+			return
+		}
+		fName := "geoip.zip"
+		fpath := filepath.Join(config.GVCWorkDir, fName)
+		if size := that.d.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
+			if err := archiver.Unarchive(fpath, config.GVCWorkDir); err != nil {
+				os.RemoveAll(fpath)
+				fmt.Println("[Unarchive failed] ", err)
+				return
+			}
+		}
+	}
 }
