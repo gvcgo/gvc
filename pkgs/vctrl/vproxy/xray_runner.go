@@ -28,6 +28,7 @@ func NewXrayRunner() (xr *XrayRunner) {
 }
 
 func (that *XrayRunner) Start() {
+	that.Verifier.RunVmess(false)
 	that.Cron.AddFunc(that.Conf.Proxy.GetCrontabStr(), func() {
 		that.Verifier.RunVmess(false)
 	})

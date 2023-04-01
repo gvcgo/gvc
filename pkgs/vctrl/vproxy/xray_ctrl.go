@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/mholt/archiver/v3"
 	"github.com/moqsien/goktrl"
@@ -16,18 +17,22 @@ import (
 )
 
 type XrayCtrl struct {
-	Ktrl     *goktrl.Ktrl
-	Runner   *XrayRunner
-	sockName string
-	d        *downloader.Downloader
+	Ktrl       *goktrl.Ktrl
+	Runner     *XrayRunner
+	sockName   string
+	d          *downloader.Downloader
+	scriptPath string
+	batPath    string
 }
 
 func NewXrayCtrl() (xc *XrayCtrl) {
 	xc = &XrayCtrl{
-		Ktrl:     goktrl.NewKtrl(),
-		Runner:   NewXrayRunner(),
-		sockName: "gvc_xray",
-		d:        &downloader.Downloader{},
+		Ktrl:       goktrl.NewKtrl(),
+		Runner:     NewXrayRunner(),
+		sockName:   "gvc_xray",
+		d:          &downloader.Downloader{},
+		scriptPath: filepath.Join(config.ProxyFilesDir, "run_xray.sh"),
+		batPath:    filepath.Join(config.ProxyFilesDir, "run_xray.bat"),
 	}
 	xc.initXrayCtrl()
 	return
@@ -60,19 +65,22 @@ func (that *XrayCtrl) initXrayCtrl() {
 				fmt.Println("[gvc] is not found.")
 				return
 			}
-			fmt.Println("start xray client...")
+			fmt.Println("Starting Xray Client...")
+			that.writeScript()
 			var cmd *exec.Cmd
 			if runtime.GOOS == utils.Windows {
 				// Start-Process "C:\Program Files\Prometheus.io\prometheus.exe" -WorkingDirectory "C:\Program Files\Prometheus.io" -WindowStyle Hidden
-				cmd = exec.Command("Start-Process", binPath, "xray", "-s", "-WorkingDirectory", config.GVCWorkDir, "-WindowStyle", "Hidden")
+				cmd = exec.Command("powershell", that.batPath)
 			} else {
-				cmd = exec.Command("nohup", binPath, "xray", "-s", "> /dev/null 2>&1 &")
+				cmd = exec.Command("sh", that.scriptPath)
 			}
 			if cmd != nil {
 				if err := cmd.Run(); err != nil {
 					fmt.Println("[Start Xray Client Errored] ", err)
 				}
 			}
+			time.Sleep(10 * time.Second)
+			fmt.Println("Xray Client Started.")
 		},
 		KtrlHandler: func(c *goktrl.Context) {},
 		SocketName:  that.sockName,
@@ -111,6 +119,22 @@ func (that *XrayCtrl) initXrayCtrl() {
 		},
 		SocketName: that.sockName,
 	})
+}
+
+func (that *XrayCtrl) writeScript() {
+	if runtime.GOOS != utils.Windows && that.scriptPath != "" {
+		if ok, _ := utils.PathIsExist(that.scriptPath); !ok {
+			os.WriteFile(that.scriptPath, []byte(config.ProxyXrayShellScript), 0777)
+		}
+		return
+	}
+	if runtime.GOOS == utils.Windows && that.batPath != "" {
+		if ok, _ := utils.PathIsExist(that.batPath); !ok {
+			binPath := filepath.Join(config.GVCWorkDir, "gvc.exe")
+			batContent := fmt.Sprintf(config.ProxyXrayBatScript, binPath, config.GVCWorkDir)
+			os.WriteFile(that.batPath, []byte(batContent), 0777)
+		}
+	}
 }
 
 func (that *XrayCtrl) hints(err error) {

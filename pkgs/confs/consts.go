@@ -220,6 +220,12 @@ var (
 	ProxyListFilePath = filepath.Join(ProxyFilesDir, "proxy_list.json")
 )
 
+var ProxyXrayShellScript = `#!/bin/sh
+export PATH=$PATH:~/.gvc/
+nohup gvc xray -s > /dev/null 2>&1 &`
+
+var ProxyXrayBatScript = `Start-Process "%s" xray -s -WorkingDirectory "%s" -WindowStyle Hidden`
+
 /*
 Java related
 */

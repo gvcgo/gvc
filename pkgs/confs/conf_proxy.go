@@ -68,6 +68,7 @@ func (that *ProxyConf) Reset() {
 		Hours:   1,
 		Minutes: 30,
 	}
+
 	that.GeoIpUrl = "https://gitee.com/moqsien/gvc/releases/download/v1/geoip.zip"
 	that.SwitchOmegaUrl = "https://gitee.com/moqsien/gvc/releases/download/v1/switchomega.zip"
 }
@@ -99,6 +100,11 @@ func (that *ProxyConf) GetVerifyPorts() (result []int) {
 	return
 }
 
-func (that *ProxyConf) GetCrontabStr() string {
-	return fmt.Sprintf("@every %vh%vm", that.Crontab.Hours, that.Crontab.Minutes)
+func (that *ProxyConf) GetCrontabStr() (r string) {
+	if that.Crontab != nil && (that.Crontab.Hours != 0 || that.Crontab.Minutes != 0) {
+		r = fmt.Sprintf("@every %vh%vm", that.Crontab.Hours, that.Crontab.Minutes)
+	} else {
+		r = "@every 2h"
+	}
+	return
 }
