@@ -1,6 +1,7 @@
 package vproxy
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -26,22 +27,43 @@ func NewXrayRunner() (xr *XrayRunner) {
 	return
 }
 
-func (that *XrayRunner) Run(force bool) {
+func (that *XrayRunner) Start() {
 	that.Cron.AddFunc(that.Conf.Proxy.GetCrontabStr(), func() {
-		that.Verifier.RunVmess(force)
+		that.Verifier.RunVmess(false)
 	})
-	p := that.Verifier.VmessResult.ChooseFastest()
+	that.RestartClient()
+
+	<-StopSignal
+	fmt.Println("Exiting xray...")
+	os.Exit(0)
+}
+
+func (that *XrayRunner) Stop() {
+	StopSignal <- struct{}{}
+}
+
+func (that *XrayRunner) RestartClient() {
 	if that.Client != nil {
 		that.Client.CloseClient()
-		time.Sleep(time.Millisecond * 500)
+		time.Sleep(500 * time.Millisecond)
 	}
+	xo := &XrayVmessOutbound{}
+	p := that.Verifier.VmessResult.ChooseFastest()
 	if p != nil {
-		xo := &XrayVmessOutbound{}
 		xo.ParseVmessUri(p.GetUri())
 		that.Client = NewXrayVmessClient(&XrayInbound{Port: that.Conf.Proxy.InboundPort})
 		that.Client.StartVmessClient(that.Verifier.VmessResult.ChooseFastest())
+		fmt.Printf("Xray started @socks5://127.0.0.1:%v", that.Conf.Proxy.InboundPort)
 	}
+}
 
-	<-StopSignal
-	os.Exit(0)
+func (that *XrayRunner) FetchVmess() {
+	that.Verifier.RunVmess(true)
+	for {
+		if !that.Verifier.IsAllClientsRunning() {
+			break
+		} else {
+			time.Sleep(time.Millisecond * 200)
+		}
+	}
 }
