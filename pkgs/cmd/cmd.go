@@ -6,6 +6,7 @@ import (
 	"github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
 	"github.com/moqsien/gvc/pkgs/vctrl"
+	"github.com/moqsien/gvc/pkgs/vctrl/vproxy"
 	"github.com/urfave/cli/v2"
 )
 
@@ -47,6 +48,33 @@ func (that *Cmder) showinfo() {
 		Action: func(ctx *cli.Context) error {
 			self := vctrl.NewSelf()
 			self.ShowInstallPath()
+			return nil
+		},
+	}
+	that.Commands = append(that.Commands, command)
+}
+
+func (that *Cmder) startXray() {
+	var start bool
+	command := &cli.Command{
+		Name:    "xray",
+		Aliases: []string{"ray", "xry", "x"},
+		Usage:   "Start Xray Client.",
+		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name:        "start",
+				Aliases:     []string{"start", "st", "s"},
+				Usage:       "Start Xray Client.",
+				Destination: &start,
+			},
+		},
+		Action: func(ctx *cli.Context) error {
+			xctrl := vproxy.NewXrayCtrl()
+			if start {
+				xctrl.StartXray()
+			} else {
+				xctrl.StartShell()
+			}
 			return nil
 		},
 	}
@@ -694,4 +722,5 @@ func (that *Cmder) initiate() {
 	that.vnodejs()
 	that.vpython()
 	that.vcygwin()
+	that.startXray()
 }
