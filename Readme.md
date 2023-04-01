@@ -21,6 +21,8 @@ At Present, gvc has following features:
 - Automatically installation of Cygwin, including git, gcc, gfortran, clang, cmake, bash, wget, ect.
 - Automatically installation of vscode and extensions. You can also backup extensions info, user settings and keybindings;
 - Automatically installation of neovim with default init file from gvc. And It was made to work with vscode by default;
+- Automatically modification of hosts file for github visit acceleration.
+- Use Xray for free VPN (The Author is not responsible for any illegal use).
 - Hosts file management to accelerate github visit in China；
 - Nearly all downloadings are accelerated for users in China；
 - Highly configurable. You can configure your fast downloading url in gvc-config.yml;
@@ -65,6 +67,7 @@ COMMANDS:
    nodejs, node, no               Nodejs version control.
    python, py                     Python version management.
    cygwin, cygw, cyg, cy          Cygwin management.
+   xray, ray, xry, x              Start Xray Client.
    help, h                        Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
@@ -266,4 +269,18 @@ COMMANDS:
 
 OPTIONS:
    --help, -h  show help
+```
+
+### gvc xray -h
+```shell
+moqsien@iMac gvc % gvc xray -h
+NAME:
+   gvc xray - Start Xray Client.
+
+USAGE:
+   gvc xray [command options] [arguments...]
+
+OPTIONS:
+   --start, --st, -s  Start Xray Client. (default: false)
+   --help, -h         show help
 ```
