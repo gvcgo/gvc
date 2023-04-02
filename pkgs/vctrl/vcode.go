@@ -75,6 +75,7 @@ func (that *Code) getPackages() (r string) {
 	that.Url = that.Conf.Code.DownloadUrl
 	that.Timeout = 30 * time.Second
 	if resp := that.GetUrl(); resp != nil {
+		defer resp.Body.Close()
 		rjson, _ := io.ReadAll(resp.Body)
 		products := gjson.Get(string(rjson), "products")
 		for _, product := range products.Array() {

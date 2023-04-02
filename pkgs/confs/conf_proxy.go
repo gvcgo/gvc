@@ -24,6 +24,7 @@ type ProxyConf struct {
 	Crontab         *ProxyCronConfig `koanf:"crontab"`
 	GeoIpUrl        string           `koanf:"geo_ip_url"`
 	SwitchOmegaUrl  string           `koanf:"switch_mega_url"`
+	GithubDownload  []string         `koanf:"github_download"`
 	path            string
 	k               *koanf.Koanf
 	parser          *yaml.YAML
@@ -71,6 +72,10 @@ func (that *ProxyConf) Reset() {
 
 	that.GeoIpUrl = "https://gitee.com/moqsien/gvc/releases/download/v1/geoip.zip"
 	that.SwitchOmegaUrl = "https://gitee.com/moqsien/gvc/releases/download/v1/switch-omega.zip"
+	that.GithubDownload = []string{
+		"https://ghproxy.com/",
+		"https://d.serctl.com/?dl_start",
+	}
 }
 
 func (that *ProxyConf) GetSubUrls() []string {

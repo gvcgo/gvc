@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
@@ -710,6 +711,22 @@ func (that *Cmder) vcygwin() {
 	that.Commands = append(that.Commands, command)
 }
 
+func (that *Cmder) vgithub() {
+	command := &cli.Command{
+		Name:    "github",
+		Aliases: []string{"gh"},
+		Usage:   "Github download acceleration websites.",
+		Action: func(ctx *cli.Context) error {
+			chosenStr := ctx.Args().First()
+			chosen, _ := strconv.Atoi(chosenStr)
+			vg := vctrl.NewGhDownloader()
+			vg.OpenByBrowser(chosen)
+			return nil
+		},
+	}
+	that.Commands = append(that.Commands, command)
+}
+
 func (that *Cmder) initiate() {
 	that.uninstall()
 	that.showinfo()
@@ -724,4 +741,5 @@ func (that *Cmder) initiate() {
 	that.vpython()
 	that.vcygwin()
 	that.startXray()
+	that.vgithub()
 }

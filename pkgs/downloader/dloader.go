@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/k0kubun/go-ansi"
@@ -17,22 +18,41 @@ type Downloader struct {
 	Url              string
 	Timeout          time.Duration
 	ManuallyRedirect bool
+	PostBody         []byte
+	Headers          map[string]string
 }
 
-func (that *Downloader) GetUrl() (resp *http.Response) {
+func (that *Downloader) setHeaders(req *http.Request) {
+	ua := "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36"
+	if that.Headers == nil || len(that.Headers) == 0 {
+		that.Headers = map[string]string{
+			"User-Agent": ua,
+		}
+	}
+	if req != nil {
+		for key, value := range that.Headers {
+			req.Header.Add(key, value)
+		}
+	}
+}
+
+func (that *Downloader) GetUrl() *http.Response {
 	if that.Url != "" && utils.VerifyUrls(that.Url) {
 		var (
 			r   *http.Response
 			err error
-			req *http.Request
 		)
+		httpReq, err := http.NewRequest(http.MethodGet, that.Url, nil)
+		if err != nil {
+			fmt.Println("[New Request Failed] ", err)
+			return nil
+		}
 
+		that.setHeaders(httpReq)
 		if !that.ManuallyRedirect {
-			r, err = (&http.Client{Timeout: that.Timeout}).Get(that.Url)
+			r, err = http.DefaultClient.Do(httpReq)
 		} else {
-			if req, err = http.NewRequest(http.MethodGet, that.Url, nil); err == nil {
-				r, err = http.DefaultTransport.RoundTrip(req)
-			}
+			r, err = http.DefaultTransport.RoundTrip(httpReq)
 		}
 		if err != nil {
 			fmt.Println("[Request Errored] URL: ", that.Url, ", err: ", err)
@@ -92,4 +112,30 @@ func (that *Downloader) GetFile(name string, flag int, perm fs.FileMode, force .
 	dst = io.MultiWriter(f, bar)
 	size, _ = io.Copy(dst, resp.Body)
 	return
+}
+
+func (that *Downloader) PostUrl() (httpRsp *http.Response) {
+	if that.Url != "" && len(that.PostBody) > 0 {
+
+		reqBody := strings.NewReader(string(that.PostBody))
+		httpReq, err := http.NewRequest(http.MethodPost, that.Url, reqBody)
+		if err != nil {
+			fmt.Println("[New Request Failed] ", err)
+			return nil
+		}
+		that.setHeaders(httpReq)
+		if that.ManuallyRedirect {
+			httpRsp, err = http.DefaultTransport.RoundTrip(httpReq)
+		} else {
+			httpRsp, err = http.DefaultClient.Do(httpReq)
+		}
+		if err != nil {
+			fmt.Println("[Request Failed] ", err)
+			return nil
+		}
+		return httpRsp
+	} else {
+		fmt.Println("[Illegal URL] URL: ", that.Url)
+		return nil
+	}
 }

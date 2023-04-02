@@ -7,7 +7,6 @@ import (
 	"github.com/moqsien/gvc/pkgs/cmd"
 	"github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/vctrl"
-	"github.com/moqsien/gvc/pkgs/vctrl/vproxy"
 )
 
 func main() {
@@ -31,8 +30,8 @@ func main() {
 		// v.GetProxyList()
 		// v := vproxy.NewProxyer()
 		// v.RunXray()
-		v := vproxy.NewVerifier()
-		v.RunVmess(true)
+		v := vctrl.NewGhDownloader()
+		v.Download("https://github.com/moqsien/gvc/releases/download/v0.7.0/windows-arm64.zip")
 		// v.UseVersion("v18.14.0")
 		// v.UseVersion("v19.8.0")
 		// v.ShowInstalled()
