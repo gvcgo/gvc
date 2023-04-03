@@ -24,6 +24,9 @@ GVC是一个全平台、多机器的一键管理多语言开发环境的辅助�
 - Cygwin自动安装和配置，包括了git, gcc, gfortran, clang, cmake, bash, wget等，解决Windows下c/c++开发以及git问题；
 - vscode自动安装，一键安装插件(需要配置，也可以使用默认配置)，一键备份和同步插件信息、用户设置、快捷键设置到webdav网盘；
 - neovim自动安装和配置，默认与vscode-neovim插件配合，有默认配置可以使用；
+- homebrew自动安装和加速；
+- vlang自动安装；
+- github下载加速网站使用默认浏览器打开；
 - hosts文件更新，加速github访问，对国内用户友好；
 - 一键启动Xray代理，免费Vmess VPN，虽然速度不快，但事用于访问Google，Github等进行查资料没问题(本人不提供任何翻墙服务，也不通过这些收取服务费，请自行斟酌是否符合当地法律法规，依法使用)；
 - 所有上述需要下载的地方，如果在国内较慢的，一般都有加速；
@@ -69,6 +72,9 @@ COMMANDS:
    python, py                     Python version management.
    cygwin, cygw, cyg, cy          Cygwin management.
    xray, ray, xry, x              Start Xray Client.
+   github, gh                     Github download acceleration websites.
+   homebrew, brew, hb             Homebrew management.
+   vlang, vl                      Vlang management.
    help, h                        Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
@@ -284,4 +290,52 @@ USAGE:
 OPTIONS:
    --start, --st, -s  Start Xray Client. (default: false)
    --help, -h         show help
+```
+
+### gvc brew -h
+```shell
+moqsien@iMac gvc % gvc brew -h
+NAME:
+   gvc homebrew - Homebrew management.
+
+USAGE:
+   gvc homebrew command [command options] [arguments...]
+
+COMMANDS:
+   install, ins, i     Install Homebrew.
+   setenv, env, se, e  Set env to accelerate Homebrew in China.
+   help, h             Shows a list of commands or help for one command
+
+OPTIONS:
+   --help, -h  show help
+```
+
+### gvc vlang -h
+```shell
+moqsien@iMac gvc % gvc vlang -h
+NAME:
+   gvc vlang - Vlang management.
+
+USAGE:
+   gvc vlang command [command options] [arguments...]
+
+COMMANDS:
+   install, ins, i     Install Vlang.
+   setenv, env, se, e  Set env for Vlang.
+   help, h             Shows a list of commands or help for one command
+
+OPTIONS:
+   --help, -h  show help
+```
+
+```shell
+moqsien@iMac gvc % gvc github -h
+NAME:
+   gvc github - Github download acceleration websites.
+
+USAGE:
+   gvc github [command options] [arguments...]
+
+OPTIONS:
+   --help, -h  show help
 ```

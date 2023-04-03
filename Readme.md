@@ -13,14 +13,16 @@ Therefore, If you are planning to get a new PC for development, probably the onl
 
 ### Therefore, gvc was born!
 At Present, gvc has following features:
-- Automatically installation of golang compilers, version switching and env variables setup;
-- Automatically installation of jdk, version switching and env variables setup;
-- Automatically installation of the latest rust compiler, env variables setup;
-- Automatically installation of nodejs, version switching and env variables setup;
-- Automatically installation of python, version switching, env variables setup, pip acceleration;
+- Automatically installation of Go compilers, version switching and env variables setup;
+- Automatically installation of JDK, version switching and env variables setup;
+- Automatically installation of the latest Rust compiler, env variables setup;
+- Automatically installation of Nodejs, version switching and env variables setup;
+- Automatically installation of Python, version switching, env variables setup, pip acceleration;
 - Automatically installation of Cygwin, including git, gcc, gfortran, clang, cmake, bash, wget, ect.
-- Automatically installation of vscode and extensions. You can also backup extensions info, user settings and keybindings;
-- Automatically installation of neovim with default init file from gvc. And It was made to work with vscode by default;
+- Automatically installation of VSCode and extensions. You can also backup extensions info, user settings and keybindings;
+- Automatically installation of Neovim with default init file from gvc. And It was made to work with vscode by default;
+- Automatically installation of Homebrew for MacOS or Linux.
+- Automatically installation of Vlang.
 - Automatically modification of hosts file for github visit acceleration.
 - Use Xray for free VPN (The Author is not responsible for any illegal use).
 - Hosts file management to accelerate github visit in China；
@@ -68,6 +70,9 @@ COMMANDS:
    python, py                     Python version management.
    cygwin, cygw, cyg, cy          Cygwin management.
    xray, ray, xry, x              Start Xray Client.
+   github, gh                     Github download acceleration websites.
+   homebrew, brew, hb             Homebrew management.
+   vlang, vl                      Vlang management.
    help, h                        Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
@@ -283,4 +288,52 @@ USAGE:
 OPTIONS:
    --start, --st, -s  Start Xray Client. (default: false)
    --help, -h         show help
+```
+
+### gvc brew -h
+```shell
+moqsien@iMac gvc % gvc brew -h
+NAME:
+   gvc homebrew - Homebrew management.
+
+USAGE:
+   gvc homebrew command [command options] [arguments...]
+
+COMMANDS:
+   install, ins, i     Install Homebrew.
+   setenv, env, se, e  Set env to accelerate Homebrew in China.
+   help, h             Shows a list of commands or help for one command
+
+OPTIONS:
+   --help, -h  show help
+```
+
+### gvc vlang -h
+```shell
+moqsien@iMac gvc % gvc vlang -h
+NAME:
+   gvc vlang - Vlang management.
+
+USAGE:
+   gvc vlang command [command options] [arguments...]
+
+COMMANDS:
+   install, ins, i     Install Vlang.
+   setenv, env, se, e  Set env for Vlang.
+   help, h             Shows a list of commands or help for one command
+
+OPTIONS:
+   --help, -h  show help
+```
+
+```shell
+moqsien@iMac gvc % gvc github -h
+NAME:
+   gvc github - Github download acceleration websites.
+
+USAGE:
+   gvc github [command options] [arguments...]
+
+OPTIONS:
+   --help, -h  show help
 ```
