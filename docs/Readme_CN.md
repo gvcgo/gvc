@@ -35,7 +35,6 @@ GVC是一个全平台、多机器的一键管理多语言开发环境的辅助�
 - MacOS、Windows、Linux(暂未测试)全平台支持
 
 gvc将要提供的功能或特点：
-- HomeBrew安装和加速；
 - Flutter自动安装；
 
 ### 下载和安装

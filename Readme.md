@@ -32,7 +32,6 @@ At Present, gvc has following features:
 - Supported Platform: MacOS, Windows, Linux(untested at present);
 
 Fetures on the way：
-- HomeBrew auto-installation and acceleration for users in China；
 - Flutter auto-installation；
 
 ### Download & Install
