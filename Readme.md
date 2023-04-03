@@ -337,3 +337,11 @@ USAGE:
 OPTIONS:
    --help, -h  show help
 ```
+
+## thanks to
+---------
+- [xray-core](https://github.com/XTLS/Xray-core)
+- [pyenv](https://github.com/pyenv/pyenv)
+- [pyenv-win](https://github.com/pyenv-win/pyenv-win)
+- [g](https://github.com/voidint/g)
+- [gvm](https://github.com/andrewkroh/gvm)
