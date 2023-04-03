@@ -498,6 +498,17 @@ func (that *Cmder) vrust() {
 		},
 	}
 	command.Subcommands = append(command.Subcommands, iRust)
+	setEnv := &cli.Command{
+		Name:    "setenv",
+		Aliases: []string{"env", "se", "e"},
+		Usage:   "Set acceleration env for rust.",
+		Action: func(ctx *cli.Context) error {
+			v := vctrl.NewRustInstaller()
+			v.SetAccelerationEnv()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, setEnv)
 	that.Commands = append(that.Commands, command)
 }
 

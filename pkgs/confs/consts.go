@@ -369,3 +369,11 @@ var (
 Homebrew related
 */
 var HomebrewFileDir string = filepath.Join(GVCWorkDir, "homebrew_files")
+
+/*
+Vlang related
+*/
+var (
+	VlangFilesDir string = filepath.Join(GVCWorkDir, "vlang_files")
+	VlangRootDir  string = filepath.Join(VlangFilesDir, "v")
+)

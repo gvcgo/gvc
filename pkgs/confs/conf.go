@@ -33,6 +33,7 @@ type GVConfig struct {
 	Github   *GithubConf   `koanf:"github"`
 	Cygwin   *CygwinConf   `koanf:"cygwin"`
 	Homebrew *HomebrewConf `koanf:"homebrew"`
+	Vlang    *VlangConf    `koanf:"vlang"`
 	w        *WebdavConf   `koanf:"webdav"`
 	k        *koanf.Koanf
 	parser   *yaml.YAML
@@ -52,6 +53,7 @@ func New() (r *GVConfig) {
 		Github:   NewGithubConf(),
 		Cygwin:   NewCygwinConf(),
 		Homebrew: NewHomebrewConf(),
+		Vlang:    NewVlangConf(),
 		w:        NewWebdavConf(),
 		k:        koanf.New("."),
 		parser:   yaml.Parser(),
@@ -105,6 +107,8 @@ func (that *GVConfig) Reset() {
 	that.Cygwin.Reset()
 	that.Homebrew = NewHomebrewConf()
 	that.Homebrew.Reset()
+	that.Vlang = NewVlangConf()
+	that.Vlang.Reset()
 	that.Restore()
 }
 
