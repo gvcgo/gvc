@@ -729,15 +729,34 @@ func (that *Cmder) vgithub() {
 
 func (that *Cmder) vhomebrew() {
 	command := &cli.Command{
-		Name:    "homebrew",
-		Aliases: []string{"brew", "hb"},
-		Usage:   "Install homebrew.",
+		Name:        "homebrew",
+		Aliases:     []string{"brew", "hb"},
+		Usage:       "Homebrew management.",
+		Subcommands: []*cli.Command{},
+	}
+	install := &cli.Command{
+		Name:    "install",
+		Aliases: []string{"ins", "i"},
+		Usage:   "Install Homebrew.",
 		Action: func(ctx *cli.Context) error {
 			hb := vctrl.NewHomebrew()
 			hb.Install()
 			return nil
 		},
 	}
+	command.Subcommands = append(command.Subcommands, install)
+
+	setEnv := &cli.Command{
+		Name:    "setenv",
+		Aliases: []string{"env", "se", "e"},
+		Usage:   "Set env to accelerate Homebrew in China.",
+		Action: func(ctx *cli.Context) error {
+			v := vctrl.NewHomebrew()
+			v.SetEnv()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, setEnv)
 	that.Commands = append(that.Commands, command)
 }
 
