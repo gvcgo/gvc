@@ -727,6 +727,20 @@ func (that *Cmder) vgithub() {
 	that.Commands = append(that.Commands, command)
 }
 
+func (that *Cmder) vhomebrew() {
+	command := &cli.Command{
+		Name:    "homebrew",
+		Aliases: []string{"brew", "hb"},
+		Usage:   "Install homebrew.",
+		Action: func(ctx *cli.Context) error {
+			hb := vctrl.NewHomebrew()
+			hb.Install()
+			return nil
+		},
+	}
+	that.Commands = append(that.Commands, command)
+}
+
 func (that *Cmder) initiate() {
 	that.uninstall()
 	that.showinfo()
@@ -742,4 +756,5 @@ func (that *Cmder) initiate() {
 	that.vcygwin()
 	that.startXray()
 	that.vgithub()
+	that.vhomebrew()
 }

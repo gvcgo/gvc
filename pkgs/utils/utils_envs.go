@@ -97,6 +97,15 @@ VSCode Envs
 */
 var VSCodeEnv string = `export PATH="%s:$PATH"`
 
+/*
+Homebrew Envs
+*/
+var HOMEbrewEnv string = `export HOMEBREW_API_DOMAIN="%s"
+export HOMEBREW_BOTTLE_DOMAIN="%s"
+export HOMEBREW_BREW_GIT_REMOTE="%s"
+export HOMEBREW_CORE_GIT_REMOTE="%s"
+export HOMEBREW_PIP_INDEX_URL="%s"`
+
 type EnvsHandler struct {
 	shellName  string
 	rcFilePath string

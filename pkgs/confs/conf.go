@@ -21,39 +21,41 @@ func init() {
 }
 
 type GVConfig struct {
-	Hosts  *HostsConf  `koanf:"hosts"`
-	Go     *GoConf     `koanf:"go"`
-	Java   *JavaConf   `koanf:"java"`
-	Rust   *RustConf   `koanf:"rust"`
-	Code   *CodeConf   `koanf:"code"`
-	Nodejs *NodejsConf `koanf:"nodejs"`
-	Python *PyConf     `koanf:"python"`
-	NVim   *NVimConf   `koanf:"nvim"`
-	Proxy  *ProxyConf  `koanf:"proxy"`
-	Github *GithubConf `koanf:"github"`
-	Cygwin *CygwinConf `koanf:"cygwin"`
-	w      *WebdavConf `koanf:"webdav"`
-	k      *koanf.Koanf
-	parser *yaml.YAML
-	path   string
+	Hosts    *HostsConf    `koanf:"hosts"`
+	Go       *GoConf       `koanf:"go"`
+	Java     *JavaConf     `koanf:"java"`
+	Rust     *RustConf     `koanf:"rust"`
+	Code     *CodeConf     `koanf:"code"`
+	Nodejs   *NodejsConf   `koanf:"nodejs"`
+	Python   *PyConf       `koanf:"python"`
+	NVim     *NVimConf     `koanf:"nvim"`
+	Proxy    *ProxyConf    `koanf:"proxy"`
+	Github   *GithubConf   `koanf:"github"`
+	Cygwin   *CygwinConf   `koanf:"cygwin"`
+	Homebrew *HomebrewConf `koanf:"homebrew"`
+	w        *WebdavConf   `koanf:"webdav"`
+	k        *koanf.Koanf
+	parser   *yaml.YAML
+	path     string
 }
 
 func New() (r *GVConfig) {
 	r = &GVConfig{
-		Hosts:  NewHostsConf(),
-		Go:     NewGoConf(),
-		Java:   NewJavaConf(),
-		Rust:   NewRustConf(),
-		Code:   NewCodeConf(),
-		Nodejs: NewNodejsConf(),
-		Python: NewPyConf(),
-		Proxy:  NewProxyConf(),
-		Github: NewGithubConf(),
-		Cygwin: NewCygwinConf(),
-		w:      NewWebdavConf(),
-		k:      koanf.New("."),
-		parser: yaml.Parser(),
-		path:   GVConfigPath,
+		Hosts:    NewHostsConf(),
+		Go:       NewGoConf(),
+		Java:     NewJavaConf(),
+		Rust:     NewRustConf(),
+		Code:     NewCodeConf(),
+		Nodejs:   NewNodejsConf(),
+		Python:   NewPyConf(),
+		Proxy:    NewProxyConf(),
+		Github:   NewGithubConf(),
+		Cygwin:   NewCygwinConf(),
+		Homebrew: NewHomebrewConf(),
+		w:        NewWebdavConf(),
+		k:        koanf.New("."),
+		parser:   yaml.Parser(),
+		path:     GVConfigPath,
 	}
 	r.initiate()
 	return
@@ -101,6 +103,8 @@ func (that *GVConfig) Reset() {
 	that.Github.Reset()
 	that.Cygwin = NewCygwinConf()
 	that.Cygwin.Reset()
+	that.Homebrew = NewHomebrewConf()
+	that.Homebrew.Reset()
 	that.Restore()
 }
 

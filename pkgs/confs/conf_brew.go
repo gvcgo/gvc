@@ -8,7 +8,9 @@ import (
 )
 
 type HomebrewConf struct {
-	ShellScriptUrl string `koanf:"shell_script_url"`
+	ShellScriptUrl string            `koanf:"shell_script_url"`
+	TsingHua       map[string]string `koanf:"tsing_hua"`
+	USTC           map[string]string `koanf:"ustc"`
 	path           string
 }
 
@@ -28,6 +30,26 @@ func (that *HomebrewConf) setup() {
 	}
 }
 
+/*
+export HOMEBREW_BREW_GIT_REMOTE="https://mirrors.ustc.edu.cn/brew.git"
+export HOMEBREW_CORE_GIT_REMOTE="https://mirrors.ustc.edu.cn/homebrew-core.git"
+export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.ustc.edu.cn/homebrew-bottles"
+export HOMEBREW_API_DOMAIN="https://mirrors.ustc.edu.cn/homebrew-bottles/api"
+*/
 func (that *HomebrewConf) Reset() {
 	that.ShellScriptUrl = "https://gitee.com/moqsien/gvc/raw/master/homebrew.sh"
+	that.TsingHua = map[string]string{
+		"HOMEBREW_API_DOMAIN":      "https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api",
+		"HOMEBREW_BOTTLE_DOMAIN":   "https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles",
+		"HOMEBREW_BREW_GIT_REMOTE": "https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git",
+		"HOMEBREW_CORE_GIT_REMOTE": "https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git",
+		"HOMEBREW_PIP_INDEX_URL":   "https://pypi.tuna.tsinghua.edu.cn/simple",
+	}
+	that.USTC = map[string]string{
+		"HOMEBREW_API_DOMAIN":      "https://mirrors.ustc.edu.cn/homebrew-bottles/api",
+		"HOMEBREW_BOTTLE_DOMAIN":   "https://mirrors.ustc.edu.cn/homebrew-bottles",
+		"HOMEBREW_BREW_GIT_REMOTE": "https://mirrors.ustc.edu.cn/brew.git",
+		"HOMEBREW_CORE_GIT_REMOTE": "https://mirrors.ustc.edu.cn/homebrew-core.git",
+		"HOMEBREW_PIP_INDEX_URL":   "https://mirrors.ustc.edu.cn/pypi/web/simple",
+	}
 }
