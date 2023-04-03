@@ -28,9 +28,21 @@ func NewVlang() (vl *Vlang) {
 }
 
 func (that *Vlang) download(force bool) string {
-	that.Url = that.Conf.Vlang.VlangGiteeUrls[runtime.GOOS]
+	vUrls := that.Conf.Vlang.VlangGiteeUrls
+	fmt.Println("Choose your URL to download:")
+	fmt.Println("1) Gitee (by default & fast in China);")
+	fmt.Println("2) Github .")
+	var choice string
+	fmt.Scan(&choice)
+	if choice == "2" {
+		vUrls = that.Conf.Vlang.VlangUrls
+	}
+	that.Url = vUrls[runtime.GOOS]
 	if that.Url != "" {
 		fpath := filepath.Join(config.VlangFilesDir, "vlang.zip")
+		if force {
+			os.RemoveAll(fpath)
+		}
 		if ok, _ := utils.PathIsExist(fpath); !ok || force {
 			if size := that.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
 				return fpath
