@@ -364,3 +364,8 @@ var (
 	CygwinInstallerName   string = "cygwin-installer.exe"
 	CygwinPackageFileName string = "cygwin-packages.yml"
 )
+
+/*
+Homebrew related
+*/
+var HomebrewFileDir string = filepath.Join(GVCWorkDir, "homebrew_files")
