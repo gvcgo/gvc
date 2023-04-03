@@ -106,6 +106,11 @@ export HOMEBREW_BREW_GIT_REMOTE="%s"
 export HOMEBREW_CORE_GIT_REMOTE="%s"
 export HOMEBREW_PIP_INDEX_URL="%s"`
 
+/*
+Vlang Envs
+*/
+var VlangEnv string = `export PATH="%s:$PATH"`
+
 type EnvsHandler struct {
 	shellName  string
 	rcFilePath string

@@ -771,6 +771,48 @@ func (that *Cmder) vhomebrew() {
 	that.Commands = append(that.Commands, command)
 }
 
+func (that *Cmder) vlang() {
+	command := &cli.Command{
+		Name:        "vlang",
+		Aliases:     []string{"vl"},
+		Usage:       "Vlang management.",
+		Subcommands: []*cli.Command{},
+	}
+	var force bool
+	install := &cli.Command{
+		Name:    "install",
+		Aliases: []string{"ins", "i"},
+		Usage:   "Install Vlang.",
+		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name:        "force",
+				Aliases:     []string{"f"},
+				Usage:       "Force to replace old version.",
+				Destination: &force,
+			},
+		},
+		Action: func(ctx *cli.Context) error {
+			v := vctrl.NewVlang()
+			v.Install(force)
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, install)
+
+	setEnv := &cli.Command{
+		Name:    "setenv",
+		Aliases: []string{"env", "se", "e"},
+		Usage:   "Set env for Vlang.",
+		Action: func(ctx *cli.Context) error {
+			v := vctrl.NewVlang()
+			v.CheckAndInitEnv()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, setEnv)
+	that.Commands = append(that.Commands, command)
+}
+
 func (that *Cmder) initiate() {
 	that.uninstall()
 	that.showinfo()
@@ -787,4 +829,5 @@ func (that *Cmder) initiate() {
 	that.startXray()
 	that.vgithub()
 	that.vhomebrew()
+	that.vlang()
 }
