@@ -41,7 +41,7 @@ gvc将要提供的功能或特点：
 下载文件，解压，双击或者在命令行运行(不带子任何命令和参数)，即可安装到默认文件夹。
 - [注意] Windows下安装，请确保系统自带或者已安装PowerShell。
 - [github release](https://github.com/moqsien/gvc/releases)
-- [gitee release](https://gitee.com/moqsien/gvc/releases/tag/v2)
+- [gitee release](https://gitee.com/moqsien/gvc_tools/releases)
 
 ## gvc具体功能展示
 ---------
@@ -327,6 +327,7 @@ OPTIONS:
    --help, -h  show help
 ```
 
+### gvc github -h
 ```shell
 moqsien@iMac gvc % gvc github -h
 NAME:

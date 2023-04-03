@@ -39,7 +39,7 @@ Download files, unarchive, then double clik or just run with no subcommand or ar
 
 - [Note] Make sure you have PowerShell installed under windows.
 - [github release](https://github.com/moqsien/gvc/releases)
-- [gitee release](https://gitee.com/moqsien/gvc/releases/tag/v2)
+- [gitee release](https://gitee.com/moqsien/gvc_tools/releases)
 
 ## gvc Help Info
 ---------
@@ -325,6 +325,7 @@ OPTIONS:
    --help, -h  show help
 ```
 
+### gvc github -h
 ```shell
 moqsien@iMac gvc % gvc github -h
 NAME:
