@@ -381,3 +381,13 @@ var (
 	VlangFilesDir string = filepath.Join(GVCWorkDir, "vlang_files")
 	VlangRootDir  string = filepath.Join(VlangFilesDir, "v")
 )
+
+/*
+Flutter related
+*/
+var (
+	FlutterFilesDir      string = filepath.Join(GVCWorkDir, "flutter_files")
+	FlutterRootDir       string = filepath.Join(FlutterFilesDir, "flutter")
+	FlutterTarFilePath   string = filepath.Join(FlutterFilesDir, "downloads")
+	FlutterUntarFilePath string = filepath.Join(FlutterFilesDir, "versions")
+)

@@ -34,6 +34,7 @@ type GVConfig struct {
 	Cygwin   *CygwinConf   `koanf:"cygwin"`
 	Homebrew *HomebrewConf `koanf:"homebrew"`
 	Vlang    *VlangConf    `koanf:"vlang"`
+	Flutter  *FlutterConf  `koanf:"flutter"`
 	w        *WebdavConf   `koanf:"webdav"`
 	k        *koanf.Koanf
 	parser   *yaml.YAML
@@ -54,6 +55,7 @@ func New() (r *GVConfig) {
 		Cygwin:   NewCygwinConf(),
 		Homebrew: NewHomebrewConf(),
 		Vlang:    NewVlangConf(),
+		Flutter:  NewFlutterConf(),
 		w:        NewWebdavConf(),
 		k:        koanf.New("."),
 		parser:   yaml.Parser(),
@@ -109,6 +111,8 @@ func (that *GVConfig) Reset() {
 	that.Homebrew.Reset()
 	that.Vlang = NewVlangConf()
 	that.Vlang.Reset()
+	that.Flutter = NewFlutterConf()
+	that.Flutter.Reset()
 	that.Restore()
 }
 

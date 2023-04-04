@@ -3,7 +3,6 @@ package vctrl
 import (
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -38,8 +37,9 @@ func (that *Self) setEnv() {
 
 func (that *Self) setShortcut() {
 	if ok, _ := utils.PathIsExist(filepath.Join(config.GVCWorkDir, "gvc.exe")); ok && runtime.GOOS == utils.Windows {
-		config.SaveWinShortcutCreator()
-		exec.Command("wscript", config.GVCShortcutCommand...).Run()
+		// config.SaveWinShortcutCreator()
+		// exec.Command("wscript", config.GVCShortcutCommand...).Run()
+		utils.MkSymLink(filepath.Join(config.GVCWorkDir, "gvc.exe"), filepath.Join(config.GVCWorkDir, "g"))
 	}
 	if ok, _ := utils.PathIsExist(filepath.Join(config.GVCWorkDir, "gvc")); ok && runtime.GOOS != utils.Windows {
 		utils.MkSymLink(filepath.Join(config.GVCWorkDir, "gvc"), filepath.Join(config.GVCWorkDir, "g"))
