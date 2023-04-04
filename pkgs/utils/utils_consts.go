@@ -23,6 +23,26 @@ var ArchOSs map[string]string = map[string]string{
 	"freebsd":    "freebsd",
 }
 
+var ArchMap = map[string]string{
+	"x86-64":  "amd64",
+	"x64":     "amd64",
+	"x86":     "386",
+	"i586":    "386",
+	"arm64":   "arm64",
+	"aarch64": "arm64",
+	"arm32":   "arm",
+	"armv6":   "arm",
+	"ppc64le": "ppc64le",
+}
+
+var PlatformMap = map[string]string{
+	"macos":   MacOS,
+	"osx":     MacOS,
+	"linux":   Linux,
+	"windows": Windows,
+	"freebsd": "freebsd",
+}
+
 func MapArchAndOS(ArchOrOS string) (result string) {
 	result, ok := ArchOSs[strings.ToLower(ArchOrOS)]
 	if !ok {

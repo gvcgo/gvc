@@ -309,3 +309,23 @@ func DecodeBase64(str string) (res string) {
 	res = string(s)
 	return
 }
+
+func ParseArch(name string) string {
+	name = strings.ToLower(name)
+	for k, v := range ArchMap {
+		if strings.Contains(name, k) {
+			return v
+		}
+	}
+	return ""
+}
+
+func ParsePlatform(name string) string {
+	name = strings.ToLower(name)
+	for k, v := range PlatformMap {
+		if strings.Contains(name, k) {
+			return v
+		}
+	}
+	return ""
+}

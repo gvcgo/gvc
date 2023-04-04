@@ -9,6 +9,7 @@ import (
 
 type JavaConf struct {
 	CompilerUrl string `koanf:"compiler_url"`
+	JDKUrl      string `koanf:"jdk_url"`
 	path        string
 }
 
@@ -30,4 +31,5 @@ func (that *JavaConf) setup() {
 
 func (that *JavaConf) Reset() {
 	that.CompilerUrl = "https://www.oracle.com/java/technologies/downloads/"
+	that.JDKUrl = "https://www.injdk.cn/"
 }
