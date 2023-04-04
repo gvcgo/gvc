@@ -79,11 +79,15 @@ var (
 )
 
 func GetUserSettingsBackupPath() (r string) {
-	return filepath.Join(GVCBackupDir, fmt.Sprintf("vscode-settings-%s.json", runtime.GOOS))
+	// return filepath.Join(GVCBackupDir, fmt.Sprintf("vscode-settings-%s.json", runtime.GOOS))
+	return "vscode-settings.json"
 }
 
 func GetCodeKeybindingsBackupPath() (r string) {
-	return filepath.Join(GVCBackupDir, fmt.Sprintf("vscode-keybindings-%s.json", runtime.GOOS))
+	if runtime.GOOS == utils.MacOS {
+		return filepath.Join(GVCBackupDir, fmt.Sprintf("vscode-keybindings-%s.json", runtime.GOOS))
+	}
+	return "vscode-keybindings.json"
 }
 
 func GetCodeUserSettingsPath() string {
