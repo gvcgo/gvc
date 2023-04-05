@@ -173,6 +173,41 @@ func (that *JDKVersion) GetVersions() {
 				fileName := strings.ReplaceAll(strings.ToLower(ss.Find("a").Text()), " ", "")
 				p.Arch = utils.ParseArch(fileName)
 				p.OS = utils.ParsePlatform(fileName)
+				if p.Arch == "" || p.OS == "" {
+					return
+				}
+				if suffix := that.GetFileSuffix(fileName); suffix != "" {
+					p.FileName = fmt.Sprintf("%s-%s_%s%s", vName, p.OS, p.Arch, suffix)
+				} else {
+					return
+				}
+				p.Url = strings.ReplaceAll(ss.Find("a").AttrOr("href", ""), " ", "")
+				if p.Url == "" {
+					return
+				}
+				that.Versions[vName] = append(that.Versions[vName], p)
+				fmt.Println(p)
+			})
+		})
+
+		that.Doc.Find("#Kona").Find("div.col-sm-3").Each(func(i int, s *goquery.Selection) {
+			vName := strings.ToLower(s.Find("span").Text())
+			vName = strings.ReplaceAll(vName, "\n", "")
+			vName = strings.ReplaceAll(vName, "\r", "")
+			vName = strings.ReplaceAll(vName, " ", "")
+			vName = strings.ReplaceAll(vName, "(lts)", "-lts")
+			fmt.Println(vName)
+			s.Find("li").Each(func(i int, ss *goquery.Selection) {
+				if !strings.Contains(vName, "jdk8") {
+					return
+				}
+				p := &JDKPackage{}
+				fileName := strings.ReplaceAll(strings.ToLower(ss.Find("a").Text()), " ", "")
+				p.Arch = utils.ParseArch(fileName)
+				p.OS = utils.ParsePlatform(fileName)
+				if p.Arch == "" || p.OS == "" {
+					return
+				}
 				if suffix := that.GetFileSuffix(fileName); suffix != "" {
 					p.FileName = fmt.Sprintf("%s-%s_%s%s", vName, p.OS, p.Arch, suffix)
 				} else {
