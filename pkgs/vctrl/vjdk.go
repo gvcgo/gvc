@@ -4,14 +4,18 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"path/filepath"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly/v2"
+	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/downloader"
 	"github.com/moqsien/gvc/pkgs/utils"
+	"github.com/moqsien/gvc/pkgs/utils/sorts"
 )
 
 var AllowedSuffixes = []string{
@@ -55,12 +59,12 @@ func NewJDKVersion() (jv *JDKVersion) {
 
 func (that *JDKVersion) ChooseResource() {
 	fmt.Println("Choose a JDK download resource: ")
-	fmt.Println("1) From injdk.cn (Faster in china. Default.)")
-	fmt.Println("2) From oracle.com (Only latest versions are available.)")
+	fmt.Println("1) From oracle.com (Only latest versions are available.)")
+	fmt.Println("2) From injdk.cn (Old version are available.)")
 	choice := "1"
 	fmt.Scan(&choice)
 	switch choice {
-	case "2":
+	case "1":
 		that.IsOfficial = true
 	default:
 		that.IsOfficial = false
@@ -69,6 +73,7 @@ func (that *JDKVersion) ChooseResource() {
 
 func (that *JDKVersion) initeDirs() {
 	if ok, _ := utils.PathIsExist(config.DefaultJavaRoot); !ok {
+		os.RemoveAll(config.DefaultJavaRoot)
 		if err := os.MkdirAll(config.DefaultJavaRoot, os.ModePerm); err != nil {
 			fmt.Println("[mkdir Failed] ", err)
 		}
@@ -138,23 +143,25 @@ func (that *JDKVersion) GetVersions() {
 				tSize := s.Find("td").Eq(1).Text()
 				tUrl, _ := s.Find("td").Eq(2).Find("a").Eq(0).Attr("href")
 				tSha, _ := s.Find("td").Eq(2).Find("a").Eq(1).Attr("href")
-				if strings.Contains(tArchive, Platform[runtime.GOARCH]) && strings.Contains(tArchive, "archive") {
-					if !strings.Contains(tUrl, Platform[runtime.GOOS]) {
-						return
-					}
-					p := &JDKPackage{}
-					p.Arch = runtime.GOARCH
-					p.OS = runtime.GOOS
-					p.Size = tSize
-					p.Url = tUrl
-					if suffix := that.GetFileSuffix(p.Url); suffix != "" {
-						p.FileName = fmt.Sprintf("jdk%s-%s_%s%s", vn, p.OS, p.Arch, suffix)
-					} else {
-						return
-					}
-					p.Checksum = that.GetSha(tSha)
-					that.Versions[vn] = append(that.Versions[vn], p)
+				if !strings.Contains(tArchive, "archive") {
+					return
 				}
+				p := &JDKPackage{}
+				p.Arch = utils.ParseArch(tUrl)
+				p.OS = utils.ParsePlatform(tUrl)
+				if p.Arch == "" || p.OS == "" || tUrl == "" {
+					return
+				}
+				p.Size = tSize
+				p.Url = tUrl
+				if suffix := that.GetFileSuffix(p.Url); suffix != "" {
+					p.FileName = fmt.Sprintf("jdk%s-%s_%s%s", vn, p.OS, p.Arch, suffix)
+				} else {
+					return
+				}
+				p.Checksum = that.GetSha(tSha)
+				key := fmt.Sprintf("jdk%s", vn)
+				that.Versions[key] = append(that.Versions[key], p)
 			})
 		})
 	} else {
@@ -164,7 +171,6 @@ func (that *JDKVersion) GetVersions() {
 			vName = strings.ReplaceAll(vName, "\r", "")
 			vName = strings.ReplaceAll(vName, " ", "")
 			vName = strings.ReplaceAll(vName, "(lts)", "-lts")
-			fmt.Println(vName)
 			s.Find("li").Each(func(i int, ss *goquery.Selection) {
 				if strings.Contains(vName, "jdk8") {
 					return
@@ -186,7 +192,6 @@ func (that *JDKVersion) GetVersions() {
 					return
 				}
 				that.Versions[vName] = append(that.Versions[vName], p)
-				fmt.Println(p)
 			})
 		})
 
@@ -196,10 +201,12 @@ func (that *JDKVersion) GetVersions() {
 			vName = strings.ReplaceAll(vName, "\r", "")
 			vName = strings.ReplaceAll(vName, " ", "")
 			vName = strings.ReplaceAll(vName, "(lts)", "-lts")
-			fmt.Println(vName)
 			s.Find("li").Each(func(i int, ss *goquery.Selection) {
 				if !strings.Contains(vName, "jdk8") {
 					return
+				}
+				if !strings.Contains(vName, "lts") {
+					vName = fmt.Sprintf("%s-%s", vName, "lts")
 				}
 				p := &JDKPackage{}
 				fileName := strings.ReplaceAll(strings.ToLower(ss.Find("a").Text()), " ", "")
@@ -218,8 +225,119 @@ func (that *JDKVersion) GetVersions() {
 					return
 				}
 				that.Versions[vName] = append(that.Versions[vName], p)
-				fmt.Println(p)
 			})
 		})
 	}
+}
+
+func (that *JDKVersion) ShowVersions() {
+	that.GetVersions()
+	vList := []string{}
+	for k := range that.Versions {
+		vList = append(vList, k)
+	}
+	vList = sorts.SortJDKVersion(vList)
+	fmt.Println(strings.Join(vList, " "))
+}
+
+func (that *JDKVersion) findVersion(version string) (p *JDKPackage) {
+	var pList []*JDKPackage
+	for k, v := range that.Versions {
+		if strings.Contains(k, version) {
+			pList = v
+			break
+		}
+	}
+	if len(pList) > 0 {
+		for _, p := range pList {
+			if p.Arch == runtime.GOARCH && p.OS == runtime.GOOS {
+				return p
+			}
+		}
+	}
+	return
+}
+
+func (that *JDKVersion) download(version string) (r string) {
+	that.GetVersions()
+
+	if p := that.findVersion(version); p != nil {
+		that.d.Url = p.Url
+		that.d.Timeout = 100 * time.Minute
+		fpath := filepath.Join(config.JavaTarFilesPath, p.FileName)
+		if size := that.d.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
+			if p.Checksum != "" {
+				if ok := utils.CheckFile(fpath, "sha256", p.Checksum); ok {
+					return fpath
+				} else {
+					os.RemoveAll(fpath)
+				}
+			} else {
+				return fpath
+			}
+		} else {
+			os.RemoveAll(fpath)
+		}
+	} else {
+		fmt.Println("Invalid jdk version. ", version)
+	}
+	return
+}
+
+func (that *JDKVersion) CheckAndInitEnv() {
+	if runtime.GOOS != utils.Windows {
+		javaEnv := fmt.Sprintf(utils.JavaEnv, config.DefaultJavaRoot)
+		that.env.UpdateSub(utils.SUB_JDK, javaEnv)
+	} else {
+		classPath := filepath.Join(config.DefaultJavaRoot, "lib")
+		envList := map[string]string{
+			"JAVA_HOME":  config.DefaultJavaRoot,
+			"CLASS_PATH": filepath.Join(config.DefaultJavaRoot, "lib"),
+			"PATH": fmt.Sprintf("%s;%s;%s", filepath.Join(config.DefaultJavaRoot, "bin"),
+				filepath.Join(classPath, "tools.jar"), filepath.Join(classPath, "dt.jar")),
+		}
+		that.env.SetEnvForWin(envList)
+	}
+}
+
+func (that *JDKVersion) findDir(untarfile string) {
+	if rd, err := os.ReadDir(untarfile); err == nil {
+		for _, d := range rd {
+			if d.IsDir() && d.Name() == "bin" {
+				that.dir = untarfile
+			} else if d.IsDir() {
+				that.findDir(filepath.Join(untarfile, d.Name()))
+			}
+		}
+	}
+}
+
+func (that *JDKVersion) UseVersion(version string) {
+	untarfile := filepath.Join(config.JavaUnTarFilesPath, version)
+	if ok, _ := utils.PathIsExist(untarfile); !ok {
+		if tarfile := that.download(version); tarfile != "" {
+			if err := archiver.Unarchive(tarfile, untarfile); err != nil {
+				os.RemoveAll(untarfile)
+				fmt.Println("[Unarchive failed] ", err)
+				return
+			}
+		}
+	}
+	if ok, _ := utils.PathIsExist(config.DefaultJavaRoot); ok {
+		os.RemoveAll(config.DefaultJavaRoot)
+	}
+	that.findDir(untarfile)
+	if that.dir == "" {
+		fmt.Println("[Can not find binaries] ", untarfile)
+		return
+	}
+
+	if err := utils.MkSymLink(that.dir, config.DefaultJavaRoot); err != nil {
+		fmt.Println("[Create link failed] ", err)
+		return
+	}
+	if !that.env.DoesEnvExist(utils.SUB_JDK) {
+		that.CheckAndInitEnv()
+	}
+	fmt.Println("Use", version, "successed!")
 }

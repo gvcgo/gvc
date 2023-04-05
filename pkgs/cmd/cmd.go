@@ -451,14 +451,25 @@ func (that *Cmder) vjava() {
 		Usage:       "GVC jdk management.",
 		Subcommands: []*cli.Command{},
 	}
+
+	var useInjdk bool
 	vuse := &cli.Command{
 		Name:    "use",
 		Aliases: []string{"u"},
 		Usage:   "Download and use jdk.",
+		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name:        "cn",
+				Aliases:     []string{"zh", "z"},
+				Usage:       "Use injdk.cn as resource url.",
+				Destination: &useInjdk,
+			},
+		},
 		Action: func(ctx *cli.Context) error {
 			version := ctx.Args().First()
 			if version != "" {
-				gv := vctrl.NewJavaVersion()
+				gv := vctrl.NewJDKVersion()
+				gv.IsOfficial = !useInjdk
 				gv.UseVersion(version)
 			}
 			return nil
@@ -470,8 +481,17 @@ func (that *Cmder) vjava() {
 		Name:    "show",
 		Aliases: []string{"s"},
 		Usage:   "Show available versions.",
+		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name:        "cn",
+				Aliases:     []string{"zh", "z"},
+				Usage:       "Use injdk.cn as resource url.",
+				Destination: &useInjdk,
+			},
+		},
 		Action: func(ctx *cli.Context) error {
-			gv := vctrl.NewJavaVersion()
+			gv := vctrl.NewJDKVersion()
+			gv.IsOfficial = !useInjdk
 			gv.ShowVersions()
 			return nil
 		},

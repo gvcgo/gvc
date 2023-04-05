@@ -31,7 +31,8 @@ func main() {
 		// v := vproxy.NewProxyer()
 		// v.RunXray()
 		v := vctrl.NewJDKVersion()
-		v.GetVersions()
+		v.IsOfficial = true
+		v.ShowVersions()
 		// v.UseVersion("v18.14.0")
 		// v.UseVersion("v19.8.0")
 		// v.ShowInstalled()
