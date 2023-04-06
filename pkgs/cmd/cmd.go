@@ -870,6 +870,43 @@ func (that *Cmder) vgradle() {
 	that.Commands = append(that.Commands, command)
 }
 
+func (that *Cmder) vmaven() {
+	command := &cli.Command{
+		Name:        "maven",
+		Aliases:     []string{"mav", "ma"},
+		Usage:       "Maven management.",
+		Subcommands: []*cli.Command{},
+	}
+
+	vuse := &cli.Command{
+		Name:    "use",
+		Aliases: []string{"u"},
+		Usage:   "Download and use maven.",
+		Action: func(ctx *cli.Context) error {
+			version := ctx.Args().First()
+			if version != "" {
+				gv := vctrl.NewMavenVersion()
+				gv.UseVersion(version)
+			}
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vuse)
+
+	vshow := &cli.Command{
+		Name:    "show",
+		Aliases: []string{"s"},
+		Usage:   "Show available versions.",
+		Action: func(ctx *cli.Context) error {
+			gv := vctrl.NewMavenVersion()
+			gv.ShowVersions()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vshow)
+	that.Commands = append(that.Commands, command)
+}
+
 func (that *Cmder) initiate() {
 	that.uninstall()
 	that.showinfo()
@@ -880,6 +917,7 @@ func (that *Cmder) initiate() {
 	that.vnvim()
 	that.vjava()
 	that.vgradle()
+	that.vmaven()
 	that.vrust()
 	that.vnodejs()
 	that.vpython()

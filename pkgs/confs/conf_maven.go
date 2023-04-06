@@ -34,6 +34,6 @@ func (that *MavenConf) setup() {
 func (that *MavenConf) Reset() {
 	that.ApacheUrl3 = "https://dlcdn.apache.org/maven/maven-3/"
 	that.ApacheUrl4 = "https://dlcdn.apache.org/maven/maven-4/"
-	that.UrlPattern = "%s/%s/binaries/apache-maven-%s-bin.tar.gz"
-	that.ShaUrlPattern = "%s/%s/binaries/apache-maven-%s-bin.tar.gz.sha512"
+	that.UrlPattern = "%s%s/binaries/apache-maven-%s-bin.tar.gz"
+	that.ShaUrlPattern = "%s%s/binaries/apache-maven-%s-bin.tar.gz.sha512"
 }

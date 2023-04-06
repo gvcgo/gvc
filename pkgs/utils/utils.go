@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/sha1"
 	"crypto/sha256"
+	"crypto/sha512"
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
@@ -227,6 +228,8 @@ func CheckFile(fpath, cType, cSum string) (r bool) {
 		h = sha256.New()
 	case "sha1":
 		h = sha1.New()
+	case "sha512":
+		h = sha512.New()
 	default:
 		fmt.Println("[Crypto] ", cType, " not supported.")
 		return

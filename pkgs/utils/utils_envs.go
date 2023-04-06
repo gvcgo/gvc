@@ -29,6 +29,7 @@ const (
 	SUB_GO      = "go"
 	SUB_JDK     = "jdk"
 	SUB_GRADLE  = "gradle"
+	SUB_MAVEN   = "maven"
 	SUB_PY      = "python"
 	SUB_NODE    = "nodejs"
 	SUB_RUST    = "rust"
@@ -74,6 +75,12 @@ Gradle Envs
 var GradleEnv string = `export GRADLE_HOME="%s"
 export PATH=$GRADLE_HOME/bin:$PATH
 export GRADLE_USER_HOME=%s`
+
+/*
+Maven Envs
+*/
+var MavenEnv string = `export MAVEN_HOME="%s"
+export PATH=$MAVEN_HOME/bin:$PATH`
 
 /*
 Nodejs Envs

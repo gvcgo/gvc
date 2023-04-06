@@ -30,7 +30,7 @@ func main() {
 		// v.GetProxyList()
 		// v := vproxy.NewProxyer()
 		// v.RunXray()
-		v := vctrl.NewGradleVersion()
+		v := vctrl.NewMavenVersion()
 		v.ShowVersions()
 		// v.UseVersion("v18.14.0")
 		// v.UseVersion("v19.8.0")
