@@ -8,8 +8,9 @@ import (
 )
 
 type GradleConf struct {
-	OfficialUrl string `koanf:"official_url"`
-	path        string
+	OfficialUrl      string `koanf:"official_url"`
+	OfficialCheckUrl string `koanf:"official_check_url"`
+	path             string
 }
 
 func NewGradleConf() (r *GradleConf) {
@@ -30,4 +31,5 @@ func (that *GradleConf) setup() {
 
 func (that *GradleConf) Reset() {
 	that.OfficialUrl = "https://gradle.org/releases/"
+	that.OfficialCheckUrl = "https://gradle.org/release-checksums/"
 }
