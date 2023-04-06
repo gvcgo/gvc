@@ -332,3 +332,23 @@ func ParsePlatform(name string) string {
 	}
 	return ""
 }
+
+func RecordVersion(version, dir string) {
+	vf := filepath.Join(dir, "version")
+	if ok, _ := PathIsExist(dir); !ok {
+		return
+	}
+	if ok, _ := PathIsExist(vf); !ok {
+		os.WriteFile(vf, []byte(version), 0644)
+	}
+}
+
+func ReadVersion(dir string) (v string) {
+	vf := filepath.Join(dir, "version")
+	if ok, _ := PathIsExist(vf); !ok {
+		if content, err := os.ReadFile(vf); err == nil {
+			v = string(content)
+		}
+	}
+	return
+}

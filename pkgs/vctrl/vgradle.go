@@ -196,6 +196,7 @@ func (that *GradleVersion) UseVersion(version string) {
 		if !that.env.DoesEnvExist(utils.SUB_GRADLE) {
 			that.CheckAndInitEnv()
 		}
+		utils.RecordVersion(version, dir)
 		fmt.Println("Use", version, "succeeded!")
 	}
 }
