@@ -259,6 +259,15 @@ var (
 )
 
 /*
+Maven related
+*/
+var (
+	MavenRoot          = filepath.Join(JavaFilesDir, "maven")
+	MavenTarFilePath   = JavaTarFilesPath
+	MavenUntarFilePath = JavaUnTarFilesPath
+)
+
+/*
 Rust related
 */
 var (
