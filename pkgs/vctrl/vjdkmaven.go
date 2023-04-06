@@ -11,6 +11,7 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly/v2"
+	"github.com/gookit/color"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/downloader"
@@ -206,5 +207,23 @@ func (that *MavenVersion) GenSettingsFile() {
 			utils.CopyFile(sf, osf)
 		}
 		os.WriteFile(sf, []byte(config.MavenSettings), 0644)
+	}
+}
+
+func (that *MavenVersion) ShowInstalled() {
+	if ok, _ := utils.PathIsExist(config.MavenUntarFilePath); ok {
+		current := utils.ReadVersion(config.MavenRoot)
+		dList, _ := os.ReadDir(config.MavenUntarFilePath)
+		for _, d := range dList {
+			if strings.Contains(d.Name(), "maven-") {
+				version := strings.Split(d.Name(), "-")[1]
+				if current == version {
+					s := fmt.Sprintf("%s <Current>", version)
+					color.Yellow.Println(s)
+					continue
+				}
+				color.Cyan.Println(version)
+			}
+		}
 	}
 }

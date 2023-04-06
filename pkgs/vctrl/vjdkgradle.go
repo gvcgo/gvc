@@ -11,6 +11,7 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly/v2"
+	"github.com/gookit/color"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/downloader"
@@ -227,5 +228,23 @@ func (that *GradleVersion) GenInitFile() {
 			}
 		}
 		os.WriteFile(sf, []byte(config.GradleInitFileContent), 0644)
+	}
+}
+
+func (that *GradleVersion) ShowInstalled() {
+	if ok, _ := utils.PathIsExist(config.GradleUntarFilePath); ok {
+		current := utils.ReadVersion(config.GradleRoot)
+		dList, _ := os.ReadDir(config.GradleUntarFilePath)
+		for _, d := range dList {
+			if strings.Contains(d.Name(), "gradle-") {
+				version := strings.Split(d.Name(), "-")[1]
+				if current == version {
+					s := fmt.Sprintf("%s <Current>", version)
+					color.Yellow.Println(s)
+					continue
+				}
+				color.Cyan.Println(version)
+			}
+		}
 	}
 }

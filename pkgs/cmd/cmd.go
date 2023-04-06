@@ -868,6 +868,18 @@ func (that *Cmder) vgradle() {
 	}
 	command.Subcommands = append(command.Subcommands, vshow)
 
+	vlocal := &cli.Command{
+		Name:    "local",
+		Aliases: []string{"l"},
+		Usage:   "Show installed versions.",
+		Action: func(ctx *cli.Context) error {
+			gv := vctrl.NewGradleVersion()
+			gv.ShowInstalled()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vlocal)
+
 	vset := &cli.Command{
 		Name:    "set",
 		Aliases: []string{"se"},
@@ -916,6 +928,18 @@ func (that *Cmder) vmaven() {
 		},
 	}
 	command.Subcommands = append(command.Subcommands, vshow)
+
+	vlocal := &cli.Command{
+		Name:    "local",
+		Aliases: []string{"l"},
+		Usage:   "Show installed versions.",
+		Action: func(ctx *cli.Context) error {
+			gv := vctrl.NewMavenVersion()
+			gv.ShowInstalled()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vlocal)
 
 	vset := &cli.Command{
 		Name:    "set",
