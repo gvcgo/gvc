@@ -66,7 +66,7 @@ func (that *GradleVersion) initeDirs() {
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.GradleInitFilePath); !ok {
-		if err := os.MkdirAll(config.GVCWebdavConfigPath, os.ModePerm); err != nil {
+		if err := os.MkdirAll(config.GradleInitFilePath, os.ModePerm); err != nil {
 			fmt.Println("[mkdir Failed] ", err)
 		}
 	}
@@ -213,5 +213,18 @@ func (that *GradleVersion) CheckAndInitEnv() {
 			"PATH":             filepath.Join(config.GradleRoot, "bin"),
 		}
 		that.env.SetEnvForWin(envList)
+	}
+}
+
+func (that *GradleVersion) GenInitFile() {
+	sf := filepath.Join(config.GradleInitFilePath, "init.gradle")
+	osf := filepath.Join(config.GradleInitFilePath, "init.gradle.origin")
+	if ok, _ := utils.PathIsExist(config.GradleInitFilePath); ok {
+		if ok1, _ := utils.PathIsExist(osf); !ok1 {
+			if ok2, _ := utils.PathIsExist(sf); ok2 {
+				utils.CopyFile(sf, osf)
+			}
+		}
+		os.WriteFile(sf, []byte(config.GradleInitFileContent), 0644)
 	}
 }

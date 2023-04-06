@@ -867,6 +867,18 @@ func (that *Cmder) vgradle() {
 		},
 	}
 	command.Subcommands = append(command.Subcommands, vshow)
+
+	vset := &cli.Command{
+		Name:    "set",
+		Aliases: []string{"se"},
+		Usage:   "Set aliyun repository.",
+		Action: func(ctx *cli.Context) error {
+			gv := vctrl.NewGradleVersion()
+			gv.GenInitFile()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vset)
 	that.Commands = append(that.Commands, command)
 }
 
@@ -904,6 +916,18 @@ func (that *Cmder) vmaven() {
 		},
 	}
 	command.Subcommands = append(command.Subcommands, vshow)
+
+	vset := &cli.Command{
+		Name:    "set",
+		Aliases: []string{"se"},
+		Usage:   "Set mirrors and local repository path.",
+		Action: func(ctx *cli.Context) error {
+			gv := vctrl.NewMavenVersion()
+			gv.GenSettingsFile()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vset)
 	that.Commands = append(that.Commands, command)
 }
 

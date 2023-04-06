@@ -259,7 +259,7 @@ var (
 	GradleInitFilePath  = filepath.Join(JavaLocalRepoPath, ".gradle")
 )
 
-var GradleInitFile = `allprojects {
+var GradleInitFileContent = `allprojects {
 	group "org.springframework.boot"
  
 	repositories {

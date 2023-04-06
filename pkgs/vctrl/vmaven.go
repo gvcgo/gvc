@@ -196,3 +196,14 @@ func (that *MavenVersion) CheckAndInitEnv() {
 		that.env.SetEnvForWin(envList)
 	}
 }
+
+func (that *MavenVersion) GenSettingsFile() {
+	sf := filepath.Join(config.MavenSettingsFileDir, "settings.xml")
+	osf := filepath.Join(config.MavenSettingsFileDir, "settings.xml.origin")
+	if ok, _ := utils.PathIsExist(config.MavenSettingsFileDir); ok {
+		if ok1, _ := utils.PathIsExist(osf); !ok1 {
+			utils.CopyFile(sf, osf)
+		}
+		os.WriteFile(sf, []byte(config.MavenSettings), 0644)
+	}
+}
