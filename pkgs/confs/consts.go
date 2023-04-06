@@ -256,16 +256,100 @@ var (
 	GradleRoot          = filepath.Join(JavaFilesDir, "gradle")
 	GradleTarFilePath   = JavaTarFilesPath
 	GradleUntarFilePath = JavaUnTarFilesPath
+	GradleInitFilePath  = filepath.Join(JavaLocalRepoPath, ".gradle")
 )
+
+var GradleInitFile = `allprojects {
+	group "org.springframework.boot"
+ 
+	repositories {
+		// 本地仓库
+		mavenLocal()
+		// 阿里公共仓库
+		maven {
+			url 'https://maven.aliyun.com/repository/public/'
+		}
+		// 阿里-谷歌
+		maven {
+			url 'https://maven.aliyun.com/repository/google'
+		}
+		// 阿里-gradle插件
+		maven{
+			url 'https://maven.aliyun.com/repository/gradle-plugin'
+		}
+		// 阿里-spring
+		maven {
+			url 'https://maven.aliyun.com/repository/spring/'
+		}
+		// 阿里-grails
+		maven {
+			url 'https://maven.aliyun.com/repository/grails-core'
+		}
+		// maven仓库
+		mavenCentral()
+	}
+ 
+	configurations.all {
+		resolutionStrategy.cacheChangingModulesFor 0, "minutes"
+	}
+}`
 
 /*
 Maven related
 */
 var (
-	MavenRoot          = filepath.Join(JavaFilesDir, "maven")
-	MavenTarFilePath   = JavaTarFilesPath
-	MavenUntarFilePath = JavaUnTarFilesPath
+	MavenRoot            = filepath.Join(JavaFilesDir, "maven")
+	MavenTarFilePath     = JavaTarFilesPath
+	MavenUntarFilePath   = JavaUnTarFilesPath
+	MavenSettingsFileDir = filepath.Join(MavenRoot, "conf")
 )
+
+var MavenSettingsPattern = `<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 https://maven.apache.org/xsd/settings-1.2.0.xsd">
+  <localRepository>%s</localRepository>
+  <pluginGroups>
+  </pluginGroups>
+
+  <proxies>
+  </proxies>
+
+  <servers>
+  </servers>
+
+  <mirrors>
+    <mirror>
+		<id>nexus-tencentyun</id>
+		<mirrorOf>*</mirrorOf>
+		<name>Nexus tencentyun</name>
+		<url>http://mirrors.cloud.tencent.com/nexus/repository/maven-public/</url>
+    </mirror>
+	<mirror>
+		<id>nju_mirror</id>
+		<mirrorOf>*</mirrorOf>
+		<name>Nexus nju</name>
+		<url>https://repo.nju.edu.cn/repository/maven-public/</url>
+    </mirror>
+	<mirror>
+		<id>aliyunmaven</id>
+		<mirrorOf>*</mirrorOf>
+		<name>Nexus aliyun</name>
+		<url>https://maven.aliyun.com/repository/public</url>
+	</mirror>
+	<mirror>
+		<id>alimaven</id>
+		<mirrorOf>central</mirrorOf>
+		<name>aliyun maven</name>
+		<url>https://maven.aliyun.com/repository/central</url>
+	</mirror>
+  </mirrors>
+
+  <profiles>
+  </profiles>
+</settings>`
+
+var MavenSettings = fmt.Sprintf(MavenSettingsPattern, JavaLocalRepoPath)
 
 /*
 Rust related

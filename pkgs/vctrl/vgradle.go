@@ -65,8 +65,8 @@ func (that *GradleVersion) initeDirs() {
 			fmt.Println("[mkdir Failed] ", err)
 		}
 	}
-	if ok, _ := utils.PathIsExist(config.JavaLocalRepoPath); !ok {
-		if err := os.MkdirAll(config.JavaLocalRepoPath, os.ModePerm); err != nil {
+	if ok, _ := utils.PathIsExist(config.GradleInitFilePath); !ok {
+		if err := os.MkdirAll(config.GVCWebdavConfigPath, os.ModePerm); err != nil {
 			fmt.Println("[mkdir Failed] ", err)
 		}
 	}
