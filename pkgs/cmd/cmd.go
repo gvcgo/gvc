@@ -833,6 +833,43 @@ func (that *Cmder) vlang() {
 	that.Commands = append(that.Commands, command)
 }
 
+func (that *Cmder) vgradle() {
+	command := &cli.Command{
+		Name:        "gradle",
+		Aliases:     []string{"gra", "gr"},
+		Usage:       "Gradle management.",
+		Subcommands: []*cli.Command{},
+	}
+
+	vuse := &cli.Command{
+		Name:    "use",
+		Aliases: []string{"u"},
+		Usage:   "Download and use gradle.",
+		Action: func(ctx *cli.Context) error {
+			version := ctx.Args().First()
+			if version != "" {
+				gv := vctrl.NewGradleVersion()
+				gv.UseVersion(version)
+			}
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vuse)
+
+	vshow := &cli.Command{
+		Name:    "show",
+		Aliases: []string{"s"},
+		Usage:   "Show available versions.",
+		Action: func(ctx *cli.Context) error {
+			gv := vctrl.NewGradleVersion()
+			gv.ShowVersions()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vshow)
+	that.Commands = append(that.Commands, command)
+}
+
 func (that *Cmder) initiate() {
 	that.uninstall()
 	that.showinfo()
@@ -842,6 +879,7 @@ func (that *Cmder) initiate() {
 	that.vconf()
 	that.vnvim()
 	that.vjava()
+	that.vgradle()
 	that.vrust()
 	that.vnodejs()
 	that.vpython()

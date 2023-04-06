@@ -28,6 +28,7 @@ const (
 	SUB_GVC     = "gvc"
 	SUB_GO      = "go"
 	SUB_JDK     = "jdk"
+	SUB_GRADLE  = "gradle"
 	SUB_PY      = "python"
 	SUB_NODE    = "nodejs"
 	SUB_RUST    = "rust"
@@ -66,6 +67,13 @@ Java Envs
 var JavaEnv string = `export JAVA_HOME="%s"
 export CLASS_PATH="$JAVA_HOME/lib"
 export PATH="$JAVA_HOME/bin:$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/dt.jar:$PATH"`
+
+/*
+Gradle Envs
+*/
+var GradleEnv string = `export GRADLE_HOME="%s"
+export PATH=$GRADLE_HOME/bin:$PATH
+export GRADLE_USER_HOME=%s`
 
 /*
 Nodejs Envs

@@ -339,5 +339,5 @@ func (that *JDKVersion) UseVersion(version string) {
 	if !that.env.DoesEnvExist(utils.SUB_JDK) {
 		that.CheckAndInitEnv()
 	}
-	fmt.Println("Use", version, "successed!")
+	fmt.Println("Use", version, "succeeded!")
 }

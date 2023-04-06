@@ -4,10 +4,14 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"path/filepath"
+	"runtime"
 	"strings"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly/v2"
+	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/downloader"
 	"github.com/moqsien/gvc/pkgs/utils"
@@ -28,6 +32,7 @@ type GradleVersion struct {
 	Conf     *config.GVConfig
 	d        *downloader.Downloader
 	c        *colly.Collector
+	env      *utils.EnvsHandler
 }
 
 func NewGradleVersion() (gv *GradleVersion) {
@@ -37,6 +42,7 @@ func NewGradleVersion() (gv *GradleVersion) {
 		Conf:     config.New(),
 		d:        &downloader.Downloader{},
 		c:        colly.NewCollector(),
+		env:      utils.NewEnvsHandler(),
 	}
 	gv.initeDirs()
 	return gv
@@ -56,6 +62,11 @@ func (that *GradleVersion) initeDirs() {
 	}
 	if ok, _ := utils.PathIsExist(config.GradleUntarFilePath); !ok {
 		if err := os.MkdirAll(config.GradleUntarFilePath, os.ModePerm); err != nil {
+			fmt.Println("[mkdir Failed] ", err)
+		}
+	}
+	if ok, _ := utils.PathIsExist(config.JavaLocalRepoPath); !ok {
+		if err := os.MkdirAll(config.JavaLocalRepoPath, os.ModePerm); err != nil {
 			fmt.Println("[mkdir Failed] ", err)
 		}
 	}
@@ -110,6 +121,9 @@ func (that *GradleVersion) shaCode(version string) (code string) {
 }
 
 func (that *GradleVersion) getVersions() {
+	if len(that.Versions) > 0 {
+		return
+	}
 	if that.Doc == nil {
 		that.getDoc()
 	}
@@ -130,13 +144,74 @@ func (that *GradleVersion) getVersions() {
 }
 
 func (that *GradleVersion) ShowVersions() {
-	if len(that.Versions) == 0 {
-		that.getVersions()
-	}
+	that.getVersions()
 	vList := []string{}
 	for k := range that.Versions {
 		vList = append(vList, k)
 	}
 	res := sorts.SortGoVersion(vList)
 	fmt.Println(strings.Join(res, "  "))
+}
+
+func (that *GradleVersion) download(version string) (r string) {
+	that.getVersions()
+	if p, ok := that.Versions[version]; ok {
+		that.d.Url = p.Url
+		that.d.Timeout = 30 * time.Minute
+		fpath := filepath.Join(config.GradleTarFilePath, p.FileName)
+		if size := that.d.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
+			if ok := utils.CheckFile(fpath, "sha256", p.Checksum); ok {
+				return fpath
+			} else {
+				os.RemoveAll(fpath)
+			}
+		} else {
+			os.RemoveAll(fpath)
+		}
+	}
+	return
+}
+
+func (that *GradleVersion) UseVersion(version string) {
+	untarfile := filepath.Join(config.GradleUntarFilePath, fmt.Sprintf("gradle-%s", version))
+	if ok, _ := utils.PathIsExist(untarfile); !ok {
+		if tarfile := that.download(version); tarfile != "" {
+			if err := archiver.Unarchive(tarfile, untarfile); err != nil {
+				os.RemoveAll(untarfile)
+				fmt.Println("[Unarchive failed] ", err)
+				return
+			}
+		}
+	}
+	if ok, _ := utils.PathIsExist(config.GradleRoot); ok {
+		os.RemoveAll(config.GradleRoot)
+	}
+	finder := utils.NewBinaryFinder(untarfile, "bin")
+	dir := finder.String()
+	if dir != "" {
+		if err := utils.MkSymLink(dir, config.GradleRoot); err != nil {
+			fmt.Println("[Create link failed] ", err)
+			return
+		}
+		if !that.env.DoesEnvExist(utils.SUB_GRADLE) {
+			that.CheckAndInitEnv()
+		}
+		fmt.Println("Use", version, "succeeded!")
+	}
+}
+
+func (that *GradleVersion) CheckAndInitEnv() {
+	if runtime.GOOS != utils.Windows {
+		gradleEnv := fmt.Sprintf(utils.GradleEnv,
+			config.GradleRoot,
+			config.JavaLocalRepoPath)
+		that.env.UpdateSub(utils.SUB_GRADLE, gradleEnv)
+	} else {
+		envList := map[string]string{
+			"GRADLE_HOME":      config.GradleRoot,
+			"GRADLE_USER_HOME": config.JavaLocalRepoPath,
+			"PATH":             filepath.Join(config.GradleRoot, "bin"),
+		}
+		that.env.SetEnvForWin(envList)
+	}
 }
