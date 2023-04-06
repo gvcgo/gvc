@@ -248,6 +248,15 @@ export PATH="$JAVA_HOME/bin:$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/dt.jar:$PATH
 # Java Env Ended`
 
 /*
+Gradle related
+*/
+var (
+	GradleRoot          = filepath.Join(JavaFilesDir, "gradle")
+	GradleTarFilePath   = JavaTarFilesPath
+	GradleUntarFilePath = JavaUnTarFilesPath
+)
+
+/*
 Rust related
 */
 var (

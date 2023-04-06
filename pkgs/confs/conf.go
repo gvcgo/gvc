@@ -24,6 +24,7 @@ type GVConfig struct {
 	Hosts    *HostsConf    `koanf:"hosts"`
 	Go       *GoConf       `koanf:"go"`
 	Java     *JavaConf     `koanf:"java"`
+	Gradle   *GradleConf   `koanf:"gradle"`
 	Rust     *RustConf     `koanf:"rust"`
 	Code     *CodeConf     `koanf:"code"`
 	Nodejs   *NodejsConf   `koanf:"nodejs"`
@@ -46,6 +47,7 @@ func New() (r *GVConfig) {
 		Hosts:    NewHostsConf(),
 		Go:       NewGoConf(),
 		Java:     NewJavaConf(),
+		Gradle:   NewGradleConf(),
 		Rust:     NewRustConf(),
 		Code:     NewCodeConf(),
 		Nodejs:   NewNodejsConf(),
@@ -91,6 +93,8 @@ func (that *GVConfig) Reset() {
 	that.Go.Reset()
 	that.Java = NewJavaConf()
 	that.Java.Reset()
+	that.Gradle = NewGradleConf()
+	that.Gradle.Reset()
 	that.Rust = NewRustConf()
 	that.Rust.Reset()
 	that.Code = NewCodeConf()
