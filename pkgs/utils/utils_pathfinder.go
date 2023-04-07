@@ -6,9 +6,10 @@ import (
 )
 
 type DirFinder struct {
-	StartDir      string
-	ParentDirName string
-	path          string
+	StartDir       string
+	ParentDirName  string
+	UniqueFileName string
+	path           string
 }
 
 func NewBinaryFinder(dir ...string) (bf *DirFinder) {
@@ -18,6 +19,9 @@ func NewBinaryFinder(dir ...string) (bf *DirFinder) {
 	}
 	if len(dir) > 1 {
 		bf.ParentDirName = dir[1]
+	}
+	if len(dir) > 2 {
+		bf.UniqueFileName = dir[2]
 	}
 	return
 }
@@ -30,6 +34,10 @@ func (that *DirFinder) SetParentDirName(name string) {
 	that.ParentDirName = name
 }
 
+func (that *DirFinder) SetUniqueFileName(name string) {
+	that.UniqueFileName = name
+}
+
 func (that *DirFinder) String() string {
 	that.getPath(that.StartDir)
 	return that.path
@@ -38,10 +46,18 @@ func (that *DirFinder) String() string {
 func (that *DirFinder) getPath(dir string) {
 	if rd, err := os.ReadDir(dir); err == nil {
 		for _, d := range rd {
-			if d.IsDir() && d.Name() == that.ParentDirName {
-				that.path = dir
-			} else if d.IsDir() {
-				that.getPath(filepath.Join(dir, d.Name()))
+			if that.UniqueFileName != "" {
+				if !d.IsDir() && d.Name() == that.UniqueFileName {
+					that.path = dir
+				} else if d.IsDir() {
+					that.getPath(filepath.Join(dir, d.Name()))
+				}
+			} else {
+				if d.IsDir() && d.Name() == that.ParentDirName {
+					that.path = dir
+				} else if d.IsDir() {
+					that.getPath(filepath.Join(dir, d.Name()))
+				}
 			}
 		}
 	}

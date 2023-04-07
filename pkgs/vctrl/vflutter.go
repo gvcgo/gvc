@@ -203,7 +203,7 @@ func (that *FlutterVersion) UseVersion(version string) {
 	if ok, _ := utils.PathIsExist(config.FlutterRootDir); ok {
 		os.RemoveAll(config.FlutterRootDir)
 	}
-	finder := utils.NewBinaryFinder(untarfile, "bin")
+	finder := utils.NewBinaryFinder(untarfile, "", "version")
 	dir := finder.String()
 	if dir != "" {
 		if err := utils.MkSymLink(dir, config.FlutterRootDir); err != nil {
@@ -216,3 +216,15 @@ func (that *FlutterVersion) UseVersion(version string) {
 		fmt.Println("Use", version, "succeeded!")
 	}
 }
+
+func (that *FlutterVersion) getCurrent() (v string) {
+	return
+}
+
+func (that *FlutterVersion) ShowInstalled() {
+	that.getCurrent()
+}
+
+func (that *FlutterVersion) RemoveVersion(version string) {}
+
+func (that *FlutterVersion) RemoveUnused() {}
