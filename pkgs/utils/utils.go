@@ -345,10 +345,8 @@ func RecordVersion(version, dir string) {
 
 func ReadVersion(dir string) (v string) {
 	vf := filepath.Join(dir, "version")
-	if ok, _ := PathIsExist(vf); !ok {
-		if content, err := os.ReadFile(vf); err == nil {
-			v = string(content)
-		}
+	if content, err := os.ReadFile(vf); err == nil {
+		v = string(content)
 	}
 	return
 }
