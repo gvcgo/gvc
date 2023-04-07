@@ -11,6 +11,7 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly/v2"
+	"github.com/gookit/color"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/downloader"
@@ -340,4 +341,70 @@ func (that *JDKVersion) UseVersion(version string) {
 		that.CheckAndInitEnv()
 	}
 	fmt.Println("Use", version, "succeeded!")
+}
+
+func (that *JDKVersion) getCurrent() (version string) {
+	fpath := filepath.Join(config.DefaultJavaRoot, "release")
+	content, _ := os.ReadFile(fpath)
+	if len(content) == 0 {
+		return
+	}
+	for _, line := range strings.Split(string(content), "\n") {
+		if strings.Contains(line, "JAVA_VERSION=") {
+			version = strings.ReplaceAll(strings.Split(line, "=")[1], `"`, "")
+			version = strings.Split(version, ".")[0]
+			version = fmt.Sprintf("jdk%s", version)
+		}
+	}
+	return
+}
+
+func (that *JDKVersion) ShowInstalled() {
+	current := that.getCurrent()
+	dList, _ := os.ReadDir(config.JavaUnTarFilesPath)
+	for _, d := range dList {
+		if !strings.Contains(d.Name(), "jdk") {
+			continue
+		}
+		if current == d.Name() {
+			s := fmt.Sprintf("%s <Current>", d.Name())
+			color.Yellow.Println(s)
+			continue
+		}
+		color.Cyan.Println(d.Name())
+	}
+}
+
+func (that *JDKVersion) removeTarFile(version string) {
+	fNameStr := fmt.Sprintf("%s-%s_%s", version, runtime.GOOS, runtime.GOARCH)
+	fNameStr1 := fmt.Sprintf("%s-lts-%s_%s", version, runtime.GOOS, runtime.GOARCH)
+	dList, _ := os.ReadDir(config.JavaTarFilesPath)
+	for _, d := range dList {
+		if strings.Contains(d.Name(), fNameStr) || strings.Contains(d.Name(), fNameStr1) {
+			os.RemoveAll(filepath.Join(config.JavaTarFilesPath, d.Name()))
+		}
+	}
+}
+
+func (that *JDKVersion) RemoveVersion(version string) {
+	if !strings.HasPrefix(version, "jdk") {
+		version = fmt.Sprintf("jdk%s", version)
+	}
+	current := that.getCurrent()
+	if version != current {
+		os.RemoveAll(filepath.Join(config.JavaUnTarFilesPath, version))
+		that.removeTarFile(version)
+	}
+}
+
+func (that *JDKVersion) RemoveUnused() {
+	current := that.getCurrent()
+	dList, _ := os.ReadDir(config.JavaUnTarFilesPath)
+	for _, d := range dList {
+		fmt.Println(d.Name())
+		if current != d.Name() && strings.Contains(d.Name(), "jdk") {
+			os.RemoveAll(filepath.Join(config.JavaUnTarFilesPath, d.Name()))
+			that.removeTarFile(d.Name())
+		}
+	}
 }
