@@ -227,3 +227,42 @@ func (that *MavenVersion) ShowInstalled() {
 		}
 	}
 }
+
+func (that *MavenVersion) RemoveTarFile(version string) {
+	fPath := filepath.Join(config.MavenTarFilePath, fmt.Sprintf("maven-%s-bin.tar.gz", version))
+	os.RemoveAll(fPath)
+}
+
+func (that *MavenVersion) RemoveVersion(version string) {
+	if ok, _ := utils.PathIsExist(config.MavenUntarFilePath); ok {
+		current := utils.ReadVersion(config.MavenRoot)
+		dList, _ := os.ReadDir(config.MavenUntarFilePath)
+		for _, d := range dList {
+			if strings.Contains(d.Name(), "maven-") {
+				v := strings.Split(d.Name(), "-")[1]
+				if current != version && v == version {
+					p := filepath.Join(config.MavenUntarFilePath, d.Name())
+					os.RemoveAll(p)
+					that.RemoveTarFile(version)
+				}
+			}
+		}
+	}
+}
+
+func (that *MavenVersion) RemoveUnused() {
+	if ok, _ := utils.PathIsExist(config.MavenUntarFilePath); ok {
+		current := utils.ReadVersion(config.MavenRoot)
+		dList, _ := os.ReadDir(config.MavenUntarFilePath)
+		for _, d := range dList {
+			if strings.Contains(d.Name(), "maven-") {
+				version := strings.Split(d.Name(), "-")[1]
+				if current != version {
+					p := filepath.Join(config.MavenUntarFilePath, d.Name())
+					os.RemoveAll(p)
+					that.RemoveTarFile(version)
+				}
+			}
+		}
+	}
+}

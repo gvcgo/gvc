@@ -114,7 +114,7 @@ func (that *GradleVersion) shaCode(version string) (code string) {
 		that.getSha()
 	}
 	for k, v := range that.sha {
-		if strings.Contains(k, version) {
+		if strings.ReplaceAll(k, "v", "") == version {
 			return v
 		}
 	}
@@ -137,7 +137,7 @@ func (that *GradleVersion) getVersions() {
 			if p.Url == "" || p.Version == "" {
 				return
 			}
-			p.Checksum = that.shaCode(p.Version)
+			p.Checksum = strings.TrimSpace(that.shaCode(p.Version))
 			p.FileName = fmt.Sprintf("gradle-%s.zip", p.Version)
 			that.Versions[p.Version] = p
 		})
@@ -244,6 +244,45 @@ func (that *GradleVersion) ShowInstalled() {
 					continue
 				}
 				color.Cyan.Println(version)
+			}
+		}
+	}
+}
+
+func (that *GradleVersion) RemoveTarFile(version string) {
+	fPath := filepath.Join(config.GradleTarFilePath, fmt.Sprintf("gradle-%s.zip", version))
+	os.RemoveAll(fPath)
+}
+
+func (that *GradleVersion) RemoveVersion(version string) {
+	if ok, _ := utils.PathIsExist(config.GradleUntarFilePath); ok {
+		current := utils.ReadVersion(config.GradleRoot)
+		dList, _ := os.ReadDir(config.GradleUntarFilePath)
+		for _, d := range dList {
+			if strings.Contains(d.Name(), "gradle-") {
+				v := strings.Split(d.Name(), "-")[1]
+				if current != version && v == version {
+					p := filepath.Join(config.GradleUntarFilePath, d.Name())
+					os.RemoveAll(p)
+					that.RemoveTarFile(version)
+				}
+			}
+		}
+	}
+}
+
+func (that *GradleVersion) RemoveUnused() {
+	if ok, _ := utils.PathIsExist(config.GradleUntarFilePath); ok {
+		current := utils.ReadVersion(config.GradleRoot)
+		dList, _ := os.ReadDir(config.GradleUntarFilePath)
+		for _, d := range dList {
+			if strings.Contains(d.Name(), "gradle-") {
+				version := strings.Split(d.Name(), "-")[1]
+				if current != version {
+					p := filepath.Join(config.GradleUntarFilePath, d.Name())
+					os.RemoveAll(p)
+					that.RemoveTarFile(version)
+				}
 			}
 		}
 	}

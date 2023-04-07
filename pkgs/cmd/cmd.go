@@ -891,6 +891,33 @@ func (that *Cmder) vgradle() {
 		},
 	}
 	command.Subcommands = append(command.Subcommands, vset)
+
+	vrm := &cli.Command{
+		Name:    "remove",
+		Aliases: []string{"rm"},
+		Usage:   "Remove an installed version.",
+		Action: func(ctx *cli.Context) error {
+			version := ctx.Args().First()
+			if version != "" {
+				gv := vctrl.NewGradleVersion()
+				gv.RemoveVersion(version)
+			}
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vrm)
+
+	vrmall := &cli.Command{
+		Name:    "remove-unused",
+		Aliases: []string{"rmu", "ru"},
+		Usage:   "Remove unused versions.",
+		Action: func(ctx *cli.Context) error {
+			gv := vctrl.NewGradleVersion()
+			gv.RemoveUnused()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vrmall)
 	that.Commands = append(that.Commands, command)
 }
 
@@ -952,6 +979,33 @@ func (that *Cmder) vmaven() {
 		},
 	}
 	command.Subcommands = append(command.Subcommands, vset)
+
+	vrm := &cli.Command{
+		Name:    "remove",
+		Aliases: []string{"rm"},
+		Usage:   "Remove an installed version.",
+		Action: func(ctx *cli.Context) error {
+			version := ctx.Args().First()
+			if version != "" {
+				gv := vctrl.NewMavenVersion()
+				gv.RemoveVersion(version)
+			}
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vrm)
+
+	vrmall := &cli.Command{
+		Name:    "remove-unused",
+		Aliases: []string{"rmu", "ru"},
+		Usage:   "Remove unused versions.",
+		Action: func(ctx *cli.Context) error {
+			gv := vctrl.NewMavenVersion()
+			gv.RemoveUnused()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vrmall)
 	that.Commands = append(that.Commands, command)
 }
 
