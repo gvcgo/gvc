@@ -64,7 +64,7 @@ GVC是一个全平台、多机器的一键管理多语言开发环境的辅助�
     <td bgcolor="LavenderBlush">gvc vlang help</td>
   </tr>
   <tr>
-    <td><font color="Gree">Gygwin</font></td>
+    <td><font color="Gree">Cygwin</font></td>
     <td><font color="LightBlue">自动安装, 配置环境变量, 国内源加速，自动添加Cygwin支持的软件工具</font></td>
     <td bgcolor="PaleVioletRed">gvc cygwin help; 仅用于Windows; git,bash, clang, gcc等将被默认安装.</td>
   </tr>
