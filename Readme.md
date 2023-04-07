@@ -11,25 +11,95 @@ Moreover, GVC will sync config files to WebDAV if you have configured one, which
 
 Therefore, If you are planning to get a new PC for development, probably the only thing you need to download GVC!
 
-### Therefore, gvc was born!
-At Present, gvc has following features:
-- Automatically installation of Go compilers, version switching and env variables setup;
-- Automatically installation of JDK, version switching and env variables setup;
-- Automatically installation of the latest Rust compiler, env variables setup;
-- Automatically installation of Nodejs, version switching and env variables setup;
-- Automatically installation of Python, version switching, env variables setup, pip acceleration;
-- Automatically installation of Cygwin, including git, gcc, gfortran, clang, cmake, bash, wget, ect.
-- Automatically installation of VSCode and extensions. You can also backup extensions info, user settings and keybindings;
-- Automatically installation of Neovim with default init file from gvc. And It was made to work with vscode by default;
-- Automatically installation of Homebrew for MacOS or Linux.
-- Automatically installation of Vlang.
-- Automatically modification of hosts file for github visit acceleration.
-- Use Xray for free VPN (The Author is not responsible for any illegal use).
-- Hosts file management to accelerate github visit in China；
-- Nearly all downloadings are accelerated for users in China；
-- Highly configurable. You can configure your fast downloading url in gvc-config.yml;
-- Sync config files to webdav if you have setup one;
-- Supported Platform: MacOS, Windows, Linux(untested at present);
+### Features
+<table>
+  <tbody>
+  <tr>
+    <th>Language/Tool</th>
+    <th>Functions</th>
+    <th>Note</th>
+  </tr>
+  <tr>
+    <td><font color="Gree"> Go</font></td>
+    <td><font color="LightBlue">Intall, Uninstall, SwitchVersion, SetEnv, SearchPackage</font></td>
+    <td bgcolor="PaleVioletRed">gvc go help</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">Java</font></td>
+    <td><font color="LightBlue">Install, Uninstall, SwitchVersion, SetEnv</font></td>
+    <td bgcolor="LavenderBlush">gvc java help</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">Maven</font></td>
+    <td><font color="LightBlue">Install, Uninstall, SwitchVersion, SetEnv, SetRepo</font></td>
+    <td bgcolor="PaleVioletRed">gvc maven help</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">Gradle</font></td>
+    <td><font color="LightBlue">Install, Uninstall, SwitchVersion, SetEnv, SetRepo</font></td>
+    <td bgcolor="LavenderBlush">gvc gradle help</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">Python</font></td>
+    <td><font color="LightBlue">Install, Uninstall, SwitchVersion, SetEnv, UpdatePyenv</font></td>
+    <td bgcolor="PaleVioletRed">gvc py help</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">NodeJS</font></td>
+    <td><font color="LightBlue">Install, Uninstall, SwitchVersion, SetEnv</font></td>
+    <td bgcolor="LavenderBlush">gvc node help</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">Rust</font></td>
+    <td><font color="LightBlue">Install, SetEnv</font></td>
+    <td bgcolor="PaleVioletRed">gvc rust help</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">Vlang</font></td>
+    <td><font color="LightBlue">Install, SetEnv</font></td>
+    <td bgcolor="LavenderBlush">gvc vlang help</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">Gygwin</font></td>
+    <td><font color="LightBlue">Install, InstallPackage</font></td>
+    <td bgcolor="PaleVioletRed">gvc cygwin help; Only for Windows; git,bash, clang, gcc, etc.</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">VSCode</font></td>
+    <td><font color="LightBlue">Install, InstallExts,SetEnv, SyncSettingsToWebdav</font></td>
+    <td bgcolor="LavenderBlush">gvc vscode help</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">NeoVim</font></td>
+    <td><font color="LightBlue">Install, SyncInitFileToWebdav</font></td>
+    <td bgcolor="PaleVioletRed">gvc nvim help</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">Homebrew</font></td>
+    <td><font color="LightBlue">Install, SetEnv</font></td>
+    <td bgcolor="LavenderBlush">gvc homebrew help</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">Hosts File</font></td>
+    <td><font color="LightBlue">AutoModifyHostsFile</font></td>
+    <td bgcolor="PaleVioletRed">gvc host help; Need root.</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">GVC Config</font></td>
+    <td><font color="LightBlue">SetWebdavInfo, ResetDefaultConf, SyncSettingsToWebdav</font></td>
+    <td bgcolor="LavenderBlush">gvc config help</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">Xray-Core</font></td>
+    <td><font color="LightBlue">Auto get free Vmess start listen at localhost:2019</font></td>
+    <td bgcolor="PaleVioletRed">HelpInfo: gvc xray help; EnterTheOperationShell: gvc xray</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">Github</font></td>
+    <td><font color="LightBlue">Open github download acceleration website.</font></td>
+    <td bgcolor="LavenderBlush">gvc github 1; gvc github 2</td>
+  </tr>
+</table>
 
 Fetures on the way：
 - Flutter auto-installation；
@@ -45,7 +115,7 @@ Download files, unarchive, then double clik or just run with no subcommand or ar
 ---------
 ### gvc -h
 ```shell
-moqsien@iMac gvc % gvc -h
+moqsien@iMac ~ % gvc help
 NAME:
    gvc - gvc <Command> <SubCommand>...
 
@@ -64,6 +134,8 @@ COMMANDS:
    config, conf, cnf, c           GVC config file management.
    nvim, neovim, nv, n            GVC neovim management.
    java, jdk, j                   GVC jdk management.
+   gradle, gra, gr                Gradle management.
+   maven, mav, ma                 Maven management.
    rust, rustc, ru, r             GVC rust management.
    nodejs, node, no               Nodejs version control.
    python, py                     Python version management.
@@ -333,6 +405,50 @@ NAME:
 
 USAGE:
    gvc github [command options] [arguments...]
+
+OPTIONS:
+   --help, -h  show help
+```
+
+### gvc maven -h
+```shell
+moqsien@iMac ~ % gvc maven -h
+NAME:
+   gvc maven - Maven management.
+
+USAGE:
+   gvc maven command [command options] [arguments...]
+
+COMMANDS:
+   use, u                  Download and use maven.
+   show, s                 Show available versions.
+   local, l                Show installed versions.
+   set, se                 Set mirrors and local repository path.
+   remove, rm              Remove an installed version.
+   remove-unused, rmu, ru  Remove unused versions.
+   help, h                 Shows a list of commands or help for one command
+
+OPTIONS:
+   --help, -h  show help
+```
+
+### gvc gradle -h
+```shell
+moqsien@iMac ~ % gvc gradle -h
+NAME:
+   gvc gradle - Gradle management.
+
+USAGE:
+   gvc gradle command [command options] [arguments...]
+
+COMMANDS:
+   use, u                  Download and use gradle.
+   show, s                 Show available versions.
+   local, l                Show installed versions.
+   set, se                 Set aliyun repository.
+   remove, rm              Remove an installed version.
+   remove-unused, rmu, ru  Remove unused versions.
+   help, h                 Shows a list of commands or help for one command
 
 OPTIONS:
    --help, -h  show help

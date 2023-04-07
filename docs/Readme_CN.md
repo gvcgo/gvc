@@ -16,23 +16,95 @@ GVC是一个全平台、多机器的一键管理多语言开发环境的辅助�
 
 # GVC 是一个跨平台多机器开发环境配置管理工具，让你轻松使用vscode进行多语言开发。
 目前，gvc拥有以下功能或特点：
-- Go编译器自动安装和添加环境变量，多版本轻松切换；
-- Java JDK自动安装和添加环境变量，版本切换(jdk17 or jdk19)；
-- Rust编译器自动安装和加速；
-- Nodejs自动安装和添加环境变量，多版本轻松切换，安装包加速；
-- Python自动安装，使用国内源解决下载慢问题，编译安装过程可能需要等待一段时间，同时自动配置环境变量和pip加速源；
-- Cygwin自动安装和配置，包括了git, gcc, gfortran, clang, cmake, bash, wget等，解决Windows下c/c++开发以及git问题；
-- VSCode自动安装，一键安装插件(需要配置，也可以使用默认配置)，一键备份和同步插件信息、用户设置、快捷键设置到webdav网盘；
-- Neovim自动安装和配置，默认与vscode-neovim插件配合，有默认配置可以使用；
-- Homebrew自动安装和加速；
-- Vlang自动安装；
-- Github下载加速网站使用默认浏览器打开；
-- Hosts文件更新，加速github访问，对国内用户友好；
-- 一键启动Xray代理，免费Vmess VPN，虽然速度不快，但事用于访问Google，Github等进行查资料没问题(本人不提供任何翻墙服务，也不通过这些收取服务费，请自行斟酌是否符合当地法律法规，依法使用)；
-- 所有上述需要下载的地方，如果在国内较慢的，一般都有加速；
-- 下载源可配置，如果你有更快的下载源，可以在gvc-config.yml中配置并注意保存；
-- WebDAV网盘同步配置信息，可以一键将本地的包括gvc-config.yml在内的必要配置同步到网盘，在新机器上只需要使用这些配置就能重新搭建一样的开发环境；
-- MacOS、Windows、Linux(暂未测试)全平台支持
+<table>
+  <tbody>
+  <tr>
+    <th>语言/工具</th>
+    <th>功能</th>
+    <th>备注</th>
+  </tr>
+  <tr>
+    <td><font color="Gree"> Go</font></td>
+    <td><font color="LightBlue">自动安装, 卸载, 版本切换, 配置环境变量, 关键词搜索第三方包</font></td>
+    <td bgcolor="PaleVioletRed">gvc go help</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">Java</font></td>
+    <td><font color="LightBlue">自动安装, 卸载, 版本切换, 配置环境变量</font></td>
+    <td bgcolor="LavenderBlush">gvc java help</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">Maven</font></td>
+    <td><font color="LightBlue">自动安装, 卸载, 版本切换, 配置环境变量, 配置公有仓库国内镜像</font></td>
+    <td bgcolor="PaleVioletRed">gvc maven help</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">Gradle</font></td>
+    <td><font color="LightBlue">自动安装, 卸载, 版本切换, 配置环境变量, 配置公有仓库国内镜像</font></td>
+    <td bgcolor="LavenderBlush">gvc gradle help</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">Python</font></td>
+    <td><font color="LightBlue">自动安装, 卸载, 版本切换, 配置环境变量(含pip加速), 自动更新Pyenv</font></td>
+    <td bgcolor="PaleVioletRed">gvc py help</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">NodeJS</font></td>
+    <td><font color="LightBlue">自动安装, 卸载, 版本切换, 配置环境变量(含npm加速)</font></td>
+    <td bgcolor="LavenderBlush">gvc node help</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">Rust</font></td>
+    <td><font color="LightBlue">自动安装, 配置环境变量(国内加速)</font></td>
+    <td bgcolor="PaleVioletRed">gvc rust help</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">Vlang</font></td>
+    <td><font color="LightBlue">自动安装, 配置环境变量</font></td>
+    <td bgcolor="LavenderBlush">gvc vlang help</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">Gygwin</font></td>
+    <td><font color="LightBlue">自动安装, 配置环境变量, 国内源加速，自动添加Cygwin支持的软件工具</font></td>
+    <td bgcolor="PaleVioletRed">gvc cygwin help; 仅用于Windows; git,bash, clang, gcc等将被默认安装.</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">VSCode</font></td>
+    <td><font color="LightBlue">自动安装, 自动安装插件(如果已配置),配置环境变量, VSCode相关配置同步到Webdav网盘(例如坚果云盘等)</font></td>
+    <td bgcolor="LavenderBlush">gvc vscode help</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">NeoVim</font></td>
+    <td><font color="LightBlue">自动安装, 环境变量配置，init配置文件同步到Webdav网盘</font></td>
+    <td bgcolor="PaleVioletRed">gvc nvim help</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">Homebrew</font></td>
+    <td><font color="LightBlue">自动安装, 配置环境变量(国内加速)</font></td>
+    <td bgcolor="LavenderBlush">gvc homebrew help</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">Hosts File</font></td>
+    <td><font color="LightBlue">自动修改系统Hosts文件，加速github和vscode插件市场访问</font></td>
+    <td bgcolor="PaleVioletRed">gvc host help; 需要root或管理员权限.</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">GVC Config</font></td>
+    <td><font color="LightBlue">配置Webdav信息, 恢复gvc默认配置, 同步配置文件到Webdav网盘</font></td>
+    <td bgcolor="LavenderBlush">gvc config help; gvc自身的配置</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">Xray-Core</font></td>
+    <td><font color="LightBlue">一键开启免费VPN——localhost:2019</font></td>
+    <td bgcolor="PaleVioletRed">帮助信息: gvc xray help; 进入xray操作shell: gvc xray(可以在shell内控制启停等)</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">Github</font></td>
+    <td><font color="LightBlue">使用默认浏览器打开github文件下载国内加速网站.</font></td>
+    <td bgcolor="LavenderBlush">gvc github 1; gvc github 2</td>
+  </tr>
+</table>
+
 
 gvc将要提供的功能或特点：
 - Flutter自动安装；
@@ -47,7 +119,7 @@ gvc将要提供的功能或特点：
 ---------
 ### gvc -h
 ```shell
-moqsien@iMac gvc % gvc -h
+moqsien@iMac ~ % gvc help
 NAME:
    gvc - gvc <Command> <SubCommand>...
 
@@ -66,6 +138,8 @@ COMMANDS:
    config, conf, cnf, c           GVC config file management.
    nvim, neovim, nv, n            GVC neovim management.
    java, jdk, j                   GVC jdk management.
+   gradle, gra, gr                Gradle management.
+   maven, mav, ma                 Maven management.
    rust, rustc, ru, r             GVC rust management.
    nodejs, node, no               Nodejs version control.
    python, py                     Python version management.
@@ -184,7 +258,7 @@ OPTIONS:
 
 ### gvc java -h
 ```shell
-moqsien@iMac gvc % gvc java -h
+moqsien@iMac ~ % gvc java -h
 NAME:
    gvc java - GVC jdk management.
 
@@ -192,9 +266,12 @@ USAGE:
    gvc java command [command options] [arguments...]
 
 COMMANDS:
-   use, u   Download and use jdk.
-   show, s  Show available versions.
-   help, h  Shows a list of commands or help for one command
+   use, u                  Download and use jdk.
+   show, s                 Show available versions.
+   local, l                Show installed versions.
+   remove, rm              Remove an installed version.
+   remove-unused, rmu, ru  Remove unused versions.
+   help, h                 Shows a list of commands or help for one command
 
 OPTIONS:
    --help, -h  show help
@@ -335,6 +412,50 @@ NAME:
 
 USAGE:
    gvc github [command options] [arguments...]
+
+OPTIONS:
+   --help, -h  show help
+```
+
+### gvc maven -h
+```shell
+moqsien@iMac ~ % gvc maven -h
+NAME:
+   gvc maven - Maven management.
+
+USAGE:
+   gvc maven command [command options] [arguments...]
+
+COMMANDS:
+   use, u                  Download and use maven.
+   show, s                 Show available versions.
+   local, l                Show installed versions.
+   set, se                 Set mirrors and local repository path.
+   remove, rm              Remove an installed version.
+   remove-unused, rmu, ru  Remove unused versions.
+   help, h                 Shows a list of commands or help for one command
+
+OPTIONS:
+   --help, -h  show help
+```
+
+### gvc gradle -h
+```shell
+moqsien@iMac ~ % gvc gradle -h
+NAME:
+   gvc gradle - Gradle management.
+
+USAGE:
+   gvc gradle command [command options] [arguments...]
+
+COMMANDS:
+   use, u                  Download and use gradle.
+   show, s                 Show available versions.
+   local, l                Show installed versions.
+   set, se                 Set aliyun repository.
+   remove, rm              Remove an installed version.
+   remove-unused, rmu, ru  Remove unused versions.
+   help, h                 Shows a list of commands or help for one command
 
 OPTIONS:
    --help, -h  show help
