@@ -8,11 +8,12 @@ import (
 )
 
 type FlutterConf struct {
-	FlutterCNUrls map[string]string `koanf:"flutter_cn_urls"`
-	FlutterENUrls map[string]string `koanf:"flutter_en_urls"`
-	TsingHuaUrl   string            `koanf:"tsing_hua_url"`
-	NjuniUrl      string            `koanf:"njuni_url"`
-	path          string
+	WinUrl      string `koanf:"win_url"`
+	LinuxUrl    string `koanf:"linux_url"`
+	MacosUrl    string `koanf:"macos_url"`
+	TsingHuaUrl string `koanf:"tsing_hua_url"`
+	NjuniUrl    string `koanf:"njuni_url"`
+	path        string
 }
 
 func NewFlutterConf() (r *FlutterConf) {
@@ -32,18 +33,9 @@ func (that *FlutterConf) setup() {
 }
 
 func (that *FlutterConf) Reset() {
-	that.FlutterCNUrls = map[string]string{
-		utils.MacOS:   "https://flutter.cn/docs/get-started/install/macos",
-		utils.Linux:   "https://flutter.cn/docs/get-started/install/linux",
-		utils.Windows: "https://flutter.cn/docs/get-started/install/windows",
-	}
-
-	that.FlutterENUrls = map[string]string{
-		utils.MacOS:   "https://docs.flutter.dev/get-started/install/macos",
-		utils.Linux:   "https://docs.flutter.dev/get-started/install/linux",
-		utils.Windows: "https://docs.flutter.dev/get-started/install/windows",
-	}
-
+	that.WinUrl = "https://storage.flutter-io.cn/flutter_infra_release/releases/releases_windows.json"
+	that.LinuxUrl = "https://storage.flutter-io.cn/flutter_infra_release/releases/releases_linux.json"
+	that.MacosUrl = "https://storage.flutter-io.cn/flutter_infra_release/releases/releases_macos.json"
 	that.TsingHuaUrl = "https://mirrors.cnnic.cn/flutter/flutter_infra_release/releases/"
 	that.NjuniUrl = "https://mirrors.nju.edu.cn/flutter/flutter_infra_release/releases/"
 }
