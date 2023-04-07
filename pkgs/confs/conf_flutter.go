@@ -8,12 +8,15 @@ import (
 )
 
 type FlutterConf struct {
-	WinUrl      string `koanf:"win_url"`
-	LinuxUrl    string `koanf:"linux_url"`
-	MacosUrl    string `koanf:"macos_url"`
-	TsingHuaUrl string `koanf:"tsing_hua_url"`
-	NjuniUrl    string `koanf:"njuni_url"`
-	path        string
+	WinUrl         string `koanf:"win_url"`
+	LinuxUrl       string `koanf:"linux_url"`
+	MacosUrl       string `koanf:"macos_url"`
+	TsingHuaUrl    string `koanf:"tsing_hua_url"`
+	NjuniUrl       string `koanf:"njuni_url"`
+	HostedUrl      string `koanf:"hosted_url"`
+	StorageBaseUrl string `koanf:"storage_base_url"`
+	GitUrl         string `koanf:"git_url"`
+	path           string
 }
 
 func NewFlutterConf() (r *FlutterConf) {
@@ -38,4 +41,7 @@ func (that *FlutterConf) Reset() {
 	that.MacosUrl = "https://storage.flutter-io.cn/flutter_infra_release/releases/releases_macos.json"
 	that.TsingHuaUrl = "https://mirrors.cnnic.cn/flutter/flutter_infra_release/releases/"
 	that.NjuniUrl = "https://mirrors.nju.edu.cn/flutter/flutter_infra_release/releases/"
+	that.HostedUrl = "https://pub.flutter-io.cn"
+	that.StorageBaseUrl = "https://storage.flutter-io.cn"
+	that.GitUrl = "https://gitee.com/mirrors/Flutter.git"
 }

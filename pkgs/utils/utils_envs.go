@@ -39,6 +39,7 @@ const (
 	SUB_VLANG   = "vlang"
 	SUB_FLUTTER = "flutter"
 	SUB_LUA     = "lua"
+	SUB_JULIA   = "julia"
 )
 
 /*
@@ -125,6 +126,15 @@ export HOMEBREW_PIP_INDEX_URL="%s"`
 Vlang Envs
 */
 var VlangEnv string = `export PATH="%s:$PATH"`
+
+/*
+Flutter Envs
+*/
+var FlutterEnv string = `export FLUTTER_ROOT="%s"
+export PUB_HOSTED_URL=%s
+export FLUTTER_STORAGE_BASE_URL=%s
+export FLUTTER_GIT_URL=%s
+export PATH="$FLUTTER_ROOT/bin:$PATH"`
 
 type EnvsHandler struct {
 	shellName  string

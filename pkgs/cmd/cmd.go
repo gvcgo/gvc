@@ -1048,6 +1048,94 @@ func (that *Cmder) vmaven() {
 	that.Commands = append(that.Commands, command)
 }
 
+func (that *Cmder) vflutter() {
+	command := &cli.Command{
+		Name:        "flutter",
+		Aliases:     []string{"flu", "fl"},
+		Usage:       "Flutter management.",
+		Subcommands: []*cli.Command{},
+	}
+
+	vuse := &cli.Command{
+		Name:    "use",
+		Aliases: []string{"u"},
+		Usage:   "Download and use flutter.",
+		Action: func(ctx *cli.Context) error {
+			version := ctx.Args().First()
+			if version != "" {
+				gv := vctrl.NewFlutterVersion()
+				gv.UseVersion(version)
+			}
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vuse)
+
+	vshow := &cli.Command{
+		Name:    "show",
+		Aliases: []string{"s"},
+		Usage:   "Show available versions.",
+		Action: func(ctx *cli.Context) error {
+			gv := vctrl.NewFlutterVersion()
+			gv.ShowVersions()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vshow)
+
+	// vlocal := &cli.Command{
+	// 	Name:    "local",
+	// 	Aliases: []string{"l"},
+	// 	Usage:   "Show installed versions.",
+	// 	Action: func(ctx *cli.Context) error {
+	// 		gv := vctrl.NewMavenVersion()
+	// 		gv.ShowInstalled()
+	// 		return nil
+	// 	},
+	// }
+	// command.Subcommands = append(command.Subcommands, vlocal)
+
+	// vset := &cli.Command{
+	// 	Name:    "set",
+	// 	Aliases: []string{"se"},
+	// 	Usage:   "Set mirrors and local repository path.",
+	// 	Action: func(ctx *cli.Context) error {
+	// 		gv := vctrl.NewMavenVersion()
+	// 		gv.GenSettingsFile()
+	// 		return nil
+	// 	},
+	// }
+	// command.Subcommands = append(command.Subcommands, vset)
+
+	// vrm := &cli.Command{
+	// 	Name:    "remove",
+	// 	Aliases: []string{"rm"},
+	// 	Usage:   "Remove an installed version.",
+	// 	Action: func(ctx *cli.Context) error {
+	// 		version := ctx.Args().First()
+	// 		if version != "" {
+	// 			gv := vctrl.NewMavenVersion()
+	// 			gv.RemoveVersion(version)
+	// 		}
+	// 		return nil
+	// 	},
+	// }
+	// command.Subcommands = append(command.Subcommands, vrm)
+
+	// vrmall := &cli.Command{
+	// 	Name:    "remove-unused",
+	// 	Aliases: []string{"rmu", "ru"},
+	// 	Usage:   "Remove unused versions.",
+	// 	Action: func(ctx *cli.Context) error {
+	// 		gv := vctrl.NewMavenVersion()
+	// 		gv.RemoveUnused()
+	// 		return nil
+	// 	},
+	// }
+	// command.Subcommands = append(command.Subcommands, vrmall)
+	that.Commands = append(that.Commands, command)
+}
+
 func (that *Cmder) initiate() {
 	that.uninstall()
 	that.showinfo()
@@ -1067,4 +1155,5 @@ func (that *Cmder) initiate() {
 	that.vgithub()
 	that.vhomebrew()
 	that.vlang()
+	that.vflutter()
 }
