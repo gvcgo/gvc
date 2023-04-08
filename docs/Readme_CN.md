@@ -6,7 +6,7 @@
 <img src="https://maven.apache.org/images/maven-logo-black-on-white.png" width="20%">
 <img src="https://gradle.org/icon/favicon.ico" width="10%">
 <img src="https://www.python.org/static/img/python-logo.png" width="25%">
-<img src="https://nodejs.org/static/images/logo.svg" width="25%">
+<img src="https://nodejs.org/static/images/favicons/favicon.png" width="8%">
 <img src="https://www.rust-lang.org/static/images/rust-logo-blk.svg" width="10%">
 <img src="https://vlang.io/img/v-logo.png" width="10%">
 <img src="https://www.cygwin.com/favicon.ico" width="10%">
