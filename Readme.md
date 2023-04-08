@@ -117,9 +117,6 @@ Therefore, If you are planning to get a new PC for development, probably the onl
   </tr>
 </table>
 
-Fetures on the way：
-- Flutter auto-installation；
-
 ### Download & Install
 Download files, unarchive, then double clik or just run with no subcommand or argument, gvc will install itself to default dir.
 
