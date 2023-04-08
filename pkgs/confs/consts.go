@@ -495,3 +495,13 @@ var (
 	FlutterTarFilePath   string = filepath.Join(FlutterFilesDir, "downloads")
 	FlutterUntarFilePath string = filepath.Join(FlutterFilesDir, "versions")
 )
+
+/*
+Julia related
+*/
+var (
+	JuliaFilesDir      string = filepath.Join(GVCWorkDir, "julia_files")
+	JuliaRootDir       string = filepath.Join(JuliaFilesDir, "julia")
+	JuliaTarFilePath   string = filepath.Join(JuliaFilesDir, "downloads")
+	JuliaUntarFilePath string = filepath.Join(JuliaFilesDir, "versions")
+)

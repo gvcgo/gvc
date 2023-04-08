@@ -37,6 +37,7 @@ type GVConfig struct {
 	Homebrew *HomebrewConf `koanf:"homebrew"`
 	Vlang    *VlangConf    `koanf:"vlang"`
 	Flutter  *FlutterConf  `koanf:"flutter"`
+	Julia    *JuliaConf    `koanf:"julia"`
 	w        *WebdavConf   `koanf:"webdav"`
 	k        *koanf.Koanf
 	parser   *yaml.YAML
@@ -60,6 +61,7 @@ func New() (r *GVConfig) {
 		Homebrew: NewHomebrewConf(),
 		Vlang:    NewVlangConf(),
 		Flutter:  NewFlutterConf(),
+		Julia:    NewJuliaConf(),
 		w:        NewWebdavConf(),
 		k:        koanf.New("."),
 		parser:   yaml.Parser(),
@@ -121,6 +123,8 @@ func (that *GVConfig) Reset() {
 	that.Vlang.Reset()
 	that.Flutter = NewFlutterConf()
 	that.Flutter.Reset()
+	that.Julia = NewJuliaConf()
+	that.Julia.Reset()
 	that.Restore()
 }
 
