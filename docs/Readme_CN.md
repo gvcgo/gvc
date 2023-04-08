@@ -69,6 +69,16 @@ GVC是一个全平台、多机器的一键管理多语言开发环境的辅助�
     <td bgcolor="PaleVioletRed">gvc cygwin help; 仅用于Windows; git,bash, clang, gcc等将被默认安装.</td>
   </tr>
   <tr>
+    <td><font color="Gree">Flutter</font></td>
+    <td><font color="LightBlue">自动安装, 卸载, 切换版本, 配置环境变量(含国内源加速)</font></td>
+    <td bgcolor="LavenderBlush">gvc flutter help</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">Julia</font></td>
+    <td><font color="LightBlue">自动安装, 卸载, 切换版本, 配置环境变量(含国内源加速)</font></td>
+    <td bgcolor="PaleVioletRed">gvc julia help</td>
+  </tr>
+  <tr>
     <td><font color="Gree">VSCode</font></td>
     <td><font color="LightBlue">自动安装, 自动安装插件(如果已配置),配置环境变量, VSCode相关配置同步到Webdav网盘(例如坚果云盘等)</font></td>
     <td bgcolor="LavenderBlush">gvc vscode help</td>

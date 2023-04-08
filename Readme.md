@@ -65,6 +65,16 @@ Therefore, If you are planning to get a new PC for development, probably the onl
     <td bgcolor="PaleVioletRed">gvc cygwin help; Only for Windows; git,bash, clang, gcc, etc.</td>
   </tr>
   <tr>
+    <td><font color="Gree">Flutter</font></td>
+    <td><font color="LightBlue">Install, Uninstall, SwitchVersion, SetEnv</font></td>
+    <td bgcolor="LavenderBlush">gvc flutter help</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">Julia</font></td>
+    <td><font color="LightBlue">Install, Uninstall, SwitchVersion, SetEnv</font></td>
+    <td bgcolor="PaleVioletRed">gvc julia help</td>
+  </tr>
+  <tr>
     <td><font color="Gree">VSCode</font></td>
     <td><font color="LightBlue">Install, InstallExts,SetEnv, SyncSettingsToWebdav</font></td>
     <td bgcolor="LavenderBlush">gvc vscode help</td>
