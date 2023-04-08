@@ -11,6 +11,7 @@ import (
 
 	"github.com/gocolly/colly/v2"
 	"github.com/gogf/gf/encoding/gjson"
+	"github.com/gookit/color"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/downloader"
@@ -28,7 +29,7 @@ type FlutterPackage struct {
 }
 
 type FlutterVersion struct {
-	Versions map[string]*FlutterPackage
+	Versions map[string][]*FlutterPackage
 	Json     *gjson.Json
 	Conf     *config.GVConfig
 	c        *colly.Collector
@@ -39,7 +40,7 @@ type FlutterVersion struct {
 
 func NewFlutterVersion() (fv *FlutterVersion) {
 	fv = &FlutterVersion{
-		Versions: make(map[string]*FlutterPackage, 500),
+		Versions: make(map[string][]*FlutterPackage, 500),
 		Conf:     config.New(),
 		c:        colly.NewCollector(),
 		d:        &downloader.Downloader{},
@@ -110,19 +111,26 @@ func (that *FlutterVersion) GetVersions() {
 			j := gjson.New(release)
 			rChannel := j.GetString("channel")
 			version := j.GetString("version")
-			if rChannel != "stable" || version == "" || strings.Contains(version, "+") {
+			if rChannel != "stable" || version == "" || strings.Contains(version, "hotfix") {
 				continue
 			}
 
 			p := &FlutterPackage{}
 			p.Url = j.GetString("archive")
-			p.OS = runtime.GOOS
 			p.Arch = utils.ParseArch(j.GetString("dart_sdk_arch"))
+			if p.Url == "" || p.Arch == "" {
+				continue
+			}
+			p.OS = runtime.GOOS
 			p.DartVersion = j.GetString("dart_sdk_version")
 			p.Checksum = j.GetString("sha256")
 			p.FileName = fmt.Sprintf("flutter-%s-%s-%s%s",
 				version, p.OS, p.Arch, that.GetFileSuffix(p.Url))
-			that.Versions[version] = p
+			if len(that.Versions[version]) == 0 {
+				that.Versions[version] = []*FlutterPackage{p}
+			} else {
+				that.Versions[version] = append(that.Versions[version], p)
+			}
 		}
 	}
 }
@@ -139,12 +147,21 @@ func (that *FlutterVersion) ShowVersions() {
 	fmt.Println(strings.Join(res, "  "))
 }
 
+func (that *FlutterVersion) findPackage(version string) *FlutterPackage {
+	for _, pk := range that.Versions[version] {
+		if pk.Arch == runtime.GOARCH && pk.OS == runtime.GOOS {
+			return pk
+		}
+	}
+	return nil
+}
+
 func (that *FlutterVersion) download(version string) (r string) {
 	if len(that.Versions) == 0 || that.baseUrl == "" {
 		that.GetVersions()
 	}
 
-	if p := that.Versions[version]; p != nil {
+	if p := that.findPackage(version); p != nil {
 		that.d.Url, _ = url.JoinPath(that.baseUrl, p.Url)
 		if !utils.VerifyUrls(that.d.Url) {
 			return
@@ -165,7 +182,7 @@ func (that *FlutterVersion) download(version string) (r string) {
 			os.RemoveAll(fpath)
 		}
 	} else {
-		fmt.Println("Invalid jdk version. ", version)
+		fmt.Println("Invalid Flutter version. ", version)
 	}
 	return
 }
@@ -217,14 +234,58 @@ func (that *FlutterVersion) UseVersion(version string) {
 	}
 }
 
-func (that *FlutterVersion) getCurrent() (v string) {
-	return
+func (that *FlutterVersion) getCurrent() string {
+	content, _ := os.ReadFile(filepath.Join(config.FlutterRootDir, "version"))
+	return strings.TrimSpace(string(content))
 }
 
 func (that *FlutterVersion) ShowInstalled() {
-	that.getCurrent()
+	current := that.getCurrent()
+	dList, _ := os.ReadDir(config.FlutterUntarFilePath)
+	for _, d := range dList {
+		if d.IsDir() {
+			switch d.Name() {
+			case current:
+				s := fmt.Sprintf("%s <Current>", d.Name())
+				color.Yellow.Println(s)
+			default:
+				color.Cyan.Println(d.Name())
+			}
+		}
+	}
 }
 
-func (that *FlutterVersion) RemoveVersion(version string) {}
+func (that *FlutterVersion) removeTarFile(version string) {
+	fName := fmt.Sprintf("flutter-%s-%s-%s", version, runtime.GOOS, runtime.GOARCH)
+	dList, _ := os.ReadDir(config.FlutterTarFilePath)
+	for _, d := range dList {
+		if !d.IsDir() && strings.Contains(d.Name(), fName) {
+			os.RemoveAll(filepath.Join(config.FlutterTarFilePath, d.Name()))
+		}
+	}
+}
 
-func (that *FlutterVersion) RemoveUnused() {}
+func (that *FlutterVersion) RemoveVersion(version string) {
+	current := that.getCurrent()
+	if version == current {
+		return
+	}
+	dList, _ := os.ReadDir(config.FlutterUntarFilePath)
+	for _, d := range dList {
+		if d.IsDir() && d.Name() == version {
+			os.RemoveAll(filepath.Join(config.FlutterUntarFilePath, d.Name()))
+			that.removeTarFile(version)
+		}
+	}
+}
+
+func (that *FlutterVersion) RemoveUnused() {
+	current := that.getCurrent()
+	dList, _ := os.ReadDir(config.FlutterUntarFilePath)
+	for _, d := range dList {
+		if d.IsDir() && d.Name() != current {
+			os.RemoveAll(filepath.Join(config.FlutterUntarFilePath, d.Name()))
+			that.removeTarFile(d.Name())
+		}
+	}
+}
