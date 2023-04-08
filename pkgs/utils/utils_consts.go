@@ -25,9 +25,11 @@ var ArchOSs map[string]string = map[string]string{
 
 var ArchMap = map[string]string{
 	"x86-64":  "amd64",
+	"x86_64":  "amd64",
 	"x64":     "amd64",
 	"x86":     "386",
 	"i586":    "386",
+	"i686":    "386",
 	"arm64":   "arm64",
 	"aarch64": "arm64",
 	"arm32":   "arm",
@@ -37,6 +39,8 @@ var ArchMap = map[string]string{
 
 var PlatformMap = map[string]string{
 	"macos":   MacOS,
+	"mac":     MacOS,
+	"winnt":   Windows,
 	"osx":     MacOS,
 	"linux":   Linux,
 	"windows": Windows,

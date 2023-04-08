@@ -10,6 +10,8 @@ import (
 type JuliaConf struct {
 	VersionUrl string   `koanf:"version_url"`
 	MirrorUrls []string `koanf:"mirror_urls"`
+	BaseUrl    string   `koanf:"base_url"`
+	PkgServer  string   `koanf:"pkg_server"`
 	path       string
 }
 
@@ -35,4 +37,6 @@ func (that *JuliaConf) Reset() {
 		"https://mirrors.ustc.edu.cn/julia-releases/bin/versions.json",
 		"https://mirrors.nju.edu.cn/julia-releases/bin/versions.json",
 	}
+	that.BaseUrl = "https://mirrors.tuna.tsinghua.edu.cn/julia-releases/bin"
+	that.PkgServer = "https://mirrors.tuna.tsinghua.edu.cn/julia"
 }

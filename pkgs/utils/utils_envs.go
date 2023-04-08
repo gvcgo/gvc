@@ -136,6 +136,13 @@ export FLUTTER_STORAGE_BASE_URL=%s
 export FLUTTER_GIT_URL=%s
 export PATH="$FLUTTER_ROOT/bin:$PATH"`
 
+/*
+Julia Envs
+*/
+var JuliaEnv string = `export JULIA_ROOT="%s"
+export JULIA_PKG_SERVER="%s"
+export PATH="$JULIA_ROOT/bin:$PATH"`
+
 type EnvsHandler struct {
 	shellName  string
 	rcFilePath string
