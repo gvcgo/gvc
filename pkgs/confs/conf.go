@@ -38,6 +38,7 @@ type GVConfig struct {
 	Vlang    *VlangConf    `koanf:"vlang"`
 	Flutter  *FlutterConf  `koanf:"flutter"`
 	Julia    *JuliaConf    `koanf:"julia"`
+	Webdav   *WebdavConf   `koanf:"dav"`
 	w        *WebdavConf   `koanf:"webdav"`
 	k        *koanf.Koanf
 	parser   *yaml.YAML
@@ -62,6 +63,7 @@ func New() (r *GVConfig) {
 		Vlang:    NewVlangConf(),
 		Flutter:  NewFlutterConf(),
 		Julia:    NewJuliaConf(),
+		Webdav:   NewWebdavConf(),
 		w:        NewWebdavConf(),
 		k:        koanf.New("."),
 		parser:   yaml.Parser(),
@@ -72,6 +74,10 @@ func New() (r *GVConfig) {
 }
 
 func (that *GVConfig) initiate() {
+	if ok, _ := utils.PathIsExist(GVCBackupDir); !ok {
+		os.MkdirAll(GVCBackupDir, os.ModePerm)
+	}
+
 	if ok, _ := utils.PathIsExist(that.path); !ok {
 		that.w.Pull()
 	}
@@ -125,6 +131,8 @@ func (that *GVConfig) Reset() {
 	that.Flutter.Reset()
 	that.Julia = NewJuliaConf()
 	that.Julia.Reset()
+	that.Webdav = NewWebdavConf()
+	that.Webdav.Reset()
 	that.Restore()
 }
 
