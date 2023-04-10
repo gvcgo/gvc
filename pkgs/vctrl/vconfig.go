@@ -1,9 +1,19 @@
 package vctrl
 
 import (
+	"fmt"
+	"io"
+	"os"
+	"path/filepath"
+	"runtime"
+	"strings"
+
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/yaml"
+	"github.com/knadh/koanf/providers/file"
+	"github.com/knadh/koanf/providers/structs"
 	config "github.com/moqsien/gvc/pkgs/confs"
+	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/studio-b12/gowebdav"
 )
 
@@ -18,7 +28,7 @@ type WebdavConf struct {
 
 type GVCWebdav struct {
 	DavConf *WebdavConf
-	Conf    *config.GVConfig
+	conf    *config.GVConfig
 	k       *koanf.Koanf
 	parser  *yaml.YAML
 	client  *gowebdav.Client
@@ -26,9 +36,243 @@ type GVCWebdav struct {
 
 func NewGVCWebdav() (gw *GVCWebdav) {
 	gw = &GVCWebdav{
-		Conf:   config.New(),
+		DavConf: &WebdavConf{
+			LocalDir: config.GVCBackupDir,
+		},
+		conf:   config.New(),
 		k:      koanf.New("."),
 		parser: yaml.Parser(),
 	}
+	gw.initeDirs()
 	return
+}
+
+func (that *GVCWebdav) initeDirs() {
+	if ok, _ := utils.PathIsExist(config.GVCBackupDir); config.GVCBackupDir != "" && !ok {
+		if err := os.MkdirAll(config.GVCBackupDir, os.ModePerm); err != nil {
+			fmt.Println("[mkdir Failed] ", config.GVCBackupDir, err)
+		}
+	}
+	that.Reload()
+}
+
+// save webdav configurations to yml file.
+func (that *GVCWebdav) Restore() {
+	that.k.Load(structs.Provider(that.DavConf, "koanf"), nil)
+	if b, err := that.k.Marshal(that.parser); err == nil && len(b) > 0 {
+		os.WriteFile(config.GVCWebdavConfigPath, b, 0666)
+	}
+}
+
+func (that *GVCWebdav) Reload() {
+	if ok, _ := utils.PathIsExist(config.GVCWebdavConfigPath); !ok {
+		fmt.Println("[Warning] It seems that you have not set up your webdav account.")
+		return
+	}
+	err := that.k.Load(file.Provider(config.GVCWebdavConfigPath), that.parser)
+	if err != nil {
+		fmt.Println("[Config Load Failed] ", err)
+		return
+	}
+	that.k.UnmarshalWithConf("", that.DavConf, koanf.UnmarshalConf{Tag: "koanf"})
+	that.getClient(true)
+}
+
+func (that *GVCWebdav) SetAccount() {
+	var (
+		wUrl string
+		name string
+		pass string
+	)
+	fmt.Println("Please enter your webdav host uri,\n[https://dav.jianguoyun.com/dav/]by default: ")
+	fmt.Println("How to get your webdav? Please see https://github.com/moqsien/easynotes/blob/main/usage.md.")
+	fmt.Scanln(&wUrl)
+	fmt.Println("Please enter your webdav username: ")
+	fmt.Scanln(&name)
+	fmt.Println("Please enter your webdav password: ")
+	fmt.Scanln(&pass)
+	wUrl = strings.Trim(wUrl, " ")
+	name = strings.Trim(name, " ")
+	pass = strings.Trim(pass, " ")
+	if utils.VerifyUrls(wUrl) {
+		that.DavConf.Host = wUrl
+	} else if wUrl == "" {
+		defaultUrl := "https://dav.jianguoyun.com/dav/"
+		if that.conf.Webdav.DefaultWebdavHost != "" {
+			defaultUrl = that.conf.Webdav.DefaultWebdavHost
+		}
+		fmt.Println("Use default webdav url: ", defaultUrl)
+		that.DavConf.Host = defaultUrl
+	}
+	if name != "" {
+		that.DavConf.Username = name
+	} else {
+		fmt.Println("[Warning] Your username is empty!")
+	}
+	if pass != "" {
+		that.DavConf.Password = pass
+	} else {
+		fmt.Println("[Warning] Your password is empty!")
+	}
+	if that.conf.Webdav.DefaultWebdavRemoteDir != "" {
+		that.DavConf.RemoteDir = that.conf.Webdav.DefaultWebdavRemoteDir
+	}
+	if that.conf.Webdav.DefaultWebdavLocalDir != "" {
+		that.DavConf.RemoteDir = that.conf.Webdav.DefaultWebdavLocalDir
+	}
+	that.Restore()
+}
+
+func (that *GVCWebdav) getClient(force bool) {
+	if that.DavConf.Host == "" || that.DavConf.Username == "" || that.DavConf.Password == "" {
+		fmt.Println("[Webdav account info missing]")
+		fmt.Println("Please set your webdav account info.")
+		fmt.Println("Do you want to set your webdav account now? [Y/N]")
+		var flag string
+		fmt.Scan(&flag)
+		if strings.HasPrefix(strings.ToLower(flag), "y") {
+			that.SetAccount()
+			that.getClient(force)
+		}
+		return
+	}
+	if that.client == nil || force {
+		that.client = gowebdav.NewClient(that.DavConf.Host,
+			that.DavConf.Username, that.DavConf.Password)
+		if err := that.client.Connect(); err != nil {
+			that.client = nil
+			fmt.Println("[Webdav connecting failed] ", err)
+			fmt.Println("Please check your webdav account info or network.")
+		}
+	}
+}
+
+func (that *GVCWebdav) Pull() {
+	that.getClient(true)
+	if that.client == nil {
+		return
+	}
+	iList, err := that.client.ReadDir(that.DavConf.RemoteDir)
+	if err != nil {
+		if strings.Contains(err.Error(), "404") {
+			if err := that.client.MkdirAll(that.DavConf.RemoteDir, os.ModePerm); err != nil {
+				fmt.Println("Create a new dir for webdav failed! ", err)
+				return
+			}
+		} else {
+			fmt.Println("[Get files from webdav failed] ", err)
+			return
+		}
+	}
+	if len(iList) > 0 {
+		for _, info := range iList {
+			if !info.IsDir() {
+				rPath := utils.JoinUnixFilePath(that.DavConf.RemoteDir, info.Name())
+				b, _ := that.client.Read(rPath)
+				if len(b) == 0 {
+					r, _ := that.client.ReadStream(rPath)
+					file, _ := os.OpenFile(filepath.Join(that.DavConf.LocalDir, info.Name()), os.O_CREATE|os.O_WRONLY, 0666)
+					io.Copy(file, r)
+					return
+				}
+				os.WriteFile(filepath.Join(that.DavConf.LocalDir, info.Name()), b, os.ModePerm)
+			}
+		}
+	}
+}
+
+func (that *GVCWebdav) Push() {
+	that.getClient(true)
+	if that.client == nil {
+		return
+	}
+	_, err := that.client.ReadDir(that.DavConf.RemoteDir)
+	if err != nil {
+		if strings.Contains(err.Error(), "404") {
+			if err := that.client.MkdirAll(that.DavConf.RemoteDir, os.ModePerm); err != nil {
+				fmt.Println("Create a new dir for webdav failed! ", err)
+				return
+			}
+		}
+		fmt.Println(err)
+		return
+	}
+	if iList, _ := os.ReadDir(that.DavConf.LocalDir); len(iList) > 0 {
+		for _, info := range iList {
+			if !info.IsDir() {
+				b, _ := os.ReadFile(filepath.Join(that.DavConf.LocalDir, info.Name()))
+				rPath := utils.JoinUnixFilePath(that.DavConf.RemoteDir, info.Name())
+				that.client.Write(rPath, b, os.ModePerm)
+			}
+		}
+	}
+}
+
+func (that *GVCWebdav) getFilesToSync() (fm config.Filemap) {
+	if len(that.conf.Webdav.FilesToSync) > 0 {
+		fm = that.conf.Webdav.FilesToSync[runtime.GOOS]
+	}
+	return
+}
+
+func (that *GVCWebdav) modifyKeybindings(backupPath string) {
+	switch runtime.GOOS {
+	case utils.MacOS:
+		content, _ := os.ReadFile(backupPath)
+		cStr := string(content)
+		if strings.Contains(cStr, "win+") {
+			cStr = strings.ReplaceAll(cStr, "win+", "cmd+")
+		}
+		if strings.Contains(cStr, "Win+") {
+			cStr = strings.ReplaceAll(cStr, "Win+", "cmd+")
+		}
+		os.WriteFile(backupPath, []byte(cStr), 0666)
+	default:
+		content, _ := os.ReadFile(backupPath)
+		cStr := string(content)
+		if strings.Contains(cStr, "cmd+") {
+			cStr = strings.ReplaceAll(cStr, "cmd+", "Win+")
+		}
+		os.WriteFile(backupPath, []byte(cStr), 0666)
+	}
+}
+
+func (that *GVCWebdav) FetchAndApplySettings() {
+	that.Pull()
+	for backupName, fpath := range that.getFilesToSync() {
+		if fpath == "" {
+			continue
+		}
+		backupPath := filepath.Join(that.DavConf.LocalDir, backupName)
+		if ok, _ := utils.PathIsExist(backupPath); ok {
+			if content, _ := os.ReadFile(backupPath); len(content) == 0 {
+				continue
+			}
+			if backupName == config.CodeKeybindingsBackupFileName {
+				that.modifyKeybindings(backupPath)
+			}
+			utils.CopyFile(backupPath, fpath)
+		}
+	}
+}
+
+func (that *GVCWebdav) gatherVSCodeExtsions() {}
+
+func (that *GVCWebdav) GatherAndPushSettings() {
+	that.gatherVSCodeExtsions()
+	if that.DavConf.LocalDir == "" {
+		that.DavConf.LocalDir = config.GVCBackupDir
+	}
+	if ok, _ := utils.PathIsExist(that.DavConf.LocalDir); !ok {
+		if err := os.MkdirAll(that.DavConf.LocalDir, os.ModePerm); err != nil {
+			fmt.Println("[mkdir Failed] ", that.DavConf.LocalDir, err)
+			return
+		}
+	}
+	for backupName, fpath := range that.getFilesToSync() {
+		if ok, _ := utils.PathIsExist(fpath); ok {
+			utils.CopyFile(fpath, filepath.Join(that.DavConf.LocalDir, backupName))
+		}
+	}
+	that.Push()
 }

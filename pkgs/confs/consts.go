@@ -78,6 +78,11 @@ var (
 	CodeKeybindingsBackupPath  = GetCodeKeybindingsBackupPath()
 )
 
+var (
+	CodeUserSettingsBackupFileName = "vscode-user-settings.json"
+	CodeKeybindingsBackupFileName  = "vscode-keybindings.json"
+)
+
 func GetUserSettingsBackupPath() (r string) {
 	// return filepath.Join(GVCBackupDir, fmt.Sprintf("vscode-settings-%s.json", runtime.GOOS))
 	return "vscode-settings.json"
@@ -187,10 +192,11 @@ export PATH="%s"
 Neovim related.
 */
 var (
-	NVimFileDir        string = filepath.Join(GVCWorkDir, "nvim_files")
-	NVimWinInitPath    string = filepath.Join(utils.GetHomeDir(), `\AppData\Local\nvim\init.vim`)
-	NVimUnixInitPath   string = filepath.Join(utils.GetHomeDir(), ".config/nvim/init.vim")
-	NVimInitBackupPath string = filepath.Join(GVCBackupDir, "nvim-init.vim")
+	NVimFileDir            string = filepath.Join(GVCWorkDir, "nvim_files")
+	NVimWinInitPath        string = filepath.Join(utils.GetHomeDir(), `\AppData\Local\nvim\init.vim`)
+	NVimUnixInitPath       string = filepath.Join(utils.GetHomeDir(), ".config/nvim/init.vim")
+	NVimInitBackupPath     string = filepath.Join(GVCBackupDir, "nvim-init.vim")
+	NVimInitBackupFileName string = "nvim-init.vim"
 )
 
 func GetNVimInitPath() (r string) {

@@ -38,7 +38,7 @@ type GVConfig struct {
 	Vlang    *VlangConf    `koanf:"vlang"`
 	Flutter  *FlutterConf  `koanf:"flutter"`
 	Julia    *JuliaConf    `koanf:"julia"`
-	Webdav   *WebdavConf   `koanf:"dav"`
+	Webdav   *DavConf      `koanf:"dav"`
 	w        *WebdavConf   `koanf:"webdav"`
 	k        *koanf.Koanf
 	parser   *yaml.YAML
@@ -63,7 +63,7 @@ func New() (r *GVConfig) {
 		Vlang:    NewVlangConf(),
 		Flutter:  NewFlutterConf(),
 		Julia:    NewJuliaConf(),
-		Webdav:   NewWebdavConf(),
+		Webdav:   NewDavConf(),
 		w:        NewWebdavConf(),
 		k:        koanf.New("."),
 		parser:   yaml.Parser(),
@@ -95,8 +95,7 @@ func (that *GVConfig) initiate() {
 	}
 }
 
-func (that *GVConfig) Reset() {
-	os.RemoveAll(GVCBackupDir)
+func (that *GVConfig) SetDefault() {
 	that.Hosts = NewHostsConf()
 	that.Hosts.Reset()
 	that.Go = NewGoConf()
@@ -131,8 +130,13 @@ func (that *GVConfig) Reset() {
 	that.Flutter.Reset()
 	that.Julia = NewJuliaConf()
 	that.Julia.Reset()
-	that.Webdav = NewWebdavConf()
+	that.Webdav = NewDavConf()
 	that.Webdav.Reset()
+}
+
+func (that *GVConfig) Reset() {
+	os.RemoveAll(GVCBackupDir)
+	that.SetDefault()
 	that.Restore()
 }
 
