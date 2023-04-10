@@ -3,7 +3,7 @@
 
 ### What's supported?
 
-<style>
+<!-- <style>
    .cropped {
      width: 120px;
      height: 60px;
@@ -28,7 +28,7 @@
      overflow: hidden;
      border: 1px solid black;
    }
-</style>
+</style> -->
 
  <table>
  <tr>

@@ -1,7 +1,7 @@
 ## [En](https://github.com/moqsien/gvc)
 ---------
 
-<style>
+<!-- <style>
    .cropped {
      width: 120px;
      height: 60px;
@@ -26,7 +26,7 @@
      overflow: hidden;
      border: 1px solid black;
    }
-</style>
+</style> -->
 
  <table>
  <tr>
