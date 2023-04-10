@@ -33,18 +33,21 @@ func (that *DavConf) Reset() {
 		utils.Windows: {
 			CodeUserSettingsBackupFileName: CodeUserSettingsFilePathForWin,
 			CodeKeybindingsBackupFileName:  CodeKeybindingsFilePathForWin,
+			CodeExtensionsBackupFileName:   "",
 			NVimInitBackupFileName:         NVimWinInitPath,
 			"chrome-bookmark":              "",
 		},
 		utils.Linux: {
 			CodeUserSettingsBackupFileName: CodeUserSettingsFilePathForLinux,
 			CodeKeybindingsBackupFileName:  CodeKeybindingsFilePathForLinux,
+			CodeExtensionsBackupFileName:   "",
 			NVimInitBackupFileName:         NVimUnixInitPath,
 			"chrome-bookmark":              "",
 		},
 		utils.MacOS: {
 			CodeUserSettingsBackupFileName: CodeUserSettingsFilePathForMac,
 			CodeKeybindingsBackupFileName:  CodeKeybindingsFilePathForMac,
+			CodeExtensionsBackupFileName:   "",
 			NVimInitBackupFileName:         NVimUnixInitPath,
 			"chrome-bookmark":              "",
 		},

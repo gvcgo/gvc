@@ -81,6 +81,7 @@ var (
 var (
 	CodeUserSettingsBackupFileName = "vscode-user-settings.json"
 	CodeKeybindingsBackupFileName  = "vscode-keybindings.json"
+	CodeExtensionsBackupFileName   = "vscode-extensions.yml"
 )
 
 func GetUserSettingsBackupPath() (r string) {
