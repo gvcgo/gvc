@@ -43,10 +43,13 @@ func (that *Cmder) showinfo() {
 	command := &cli.Command{
 		Name:    "show",
 		Aliases: []string{"sho", "sh"},
-		Usage:   "Show [gvc] install path.",
+		Usage:   "Show [gvc] installation path and config file path.",
 		Action: func(ctx *cli.Context) error {
 			self := vctrl.NewSelf()
 			self.ShowInstallPath()
+
+			dav := vctrl.NewGVCWebdav()
+			dav.ShowConfigPath()
 			return nil
 		},
 	}
@@ -58,7 +61,7 @@ func (that *Cmder) startXray() {
 	command := &cli.Command{
 		Name:    "xray",
 		Aliases: []string{"ray", "xry", "x"},
-		Usage:   "Start Xray Client.",
+		Usage:   "Start Xray Shell for free VPN.",
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
 				Name:        "start",
@@ -85,7 +88,7 @@ func (that *Cmder) vhost() {
 	command := &cli.Command{
 		Name:        "host",
 		Aliases:     []string{"h", "hosts"},
-		Usage:       "Manage system hosts file.",
+		Usage:       "Sytem hosts file management(need admistrator or root).",
 		Subcommands: []*cli.Command{},
 	}
 	fetch := &cli.Command{
@@ -131,7 +134,7 @@ func (that *Cmder) vgo() {
 	command := &cli.Command{
 		Name:        "go",
 		Aliases:     []string{"g"},
-		Usage:       "Go version control.",
+		Usage:       "Go version management.",
 		Subcommands: []*cli.Command{},
 	}
 	var showall bool
@@ -270,7 +273,7 @@ func (that *Cmder) vscode() {
 	command := &cli.Command{
 		Name:        "vscode",
 		Aliases:     []string{"vsc", "vs", "v"},
-		Usage:       "VSCode management.",
+		Usage:       "VSCode and extensions installation.",
 		Subcommands: []*cli.Command{},
 	}
 	genvs := &cli.Command{
@@ -340,7 +343,7 @@ func (that *Cmder) vconf() {
 	command := &cli.Command{
 		Name:        "config",
 		Aliases:     []string{"conf", "cnf", "c"},
-		Usage:       "Config file management.",
+		Usage:       "Config file management for gvc.",
 		Subcommands: []*cli.Command{},
 	}
 	dav := &cli.Command{
@@ -379,18 +382,6 @@ func (that *Cmder) vconf() {
 	}
 	command.Subcommands = append(command.Subcommands, push)
 
-	show := &cli.Command{
-		Name:    "show-path",
-		Aliases: []string{"show", "sh", "s"},
-		Usage:   "Show path to the conf files.",
-		Action: func(ctx *cli.Context) error {
-			dav := vctrl.NewGVCWebdav()
-			dav.ShowConfigPath()
-			return nil
-		},
-	}
-	command.Subcommands = append(command.Subcommands, show)
-
 	reset := &cli.Command{
 		Name:    "reset",
 		Aliases: []string{"rs", "r"},
@@ -410,7 +401,7 @@ func (that *Cmder) vnvim() {
 	command := &cli.Command{
 		Name:        "nvim",
 		Aliases:     []string{"neovim", "nv", "n"},
-		Usage:       "GVC neovim management.",
+		Usage:       "Neovim installation.",
 		Subcommands: []*cli.Command{},
 	}
 	nvims := &cli.Command{
@@ -431,7 +422,7 @@ func (that *Cmder) vjava() {
 	command := &cli.Command{
 		Name:        "java",
 		Aliases:     []string{"jdk", "j"},
-		Usage:       "GVC jdk management.",
+		Usage:       "Java jdk version management.",
 		Subcommands: []*cli.Command{},
 	}
 
@@ -461,8 +452,8 @@ func (that *Cmder) vjava() {
 	command.Subcommands = append(command.Subcommands, vuse)
 
 	vshow := &cli.Command{
-		Name:    "show",
-		Aliases: []string{"s"},
+		Name:    "remote",
+		Aliases: []string{"r"},
 		Usage:   "Show available versions.",
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
@@ -526,7 +517,7 @@ func (that *Cmder) vrust() {
 	command := &cli.Command{
 		Name:        "rust",
 		Aliases:     []string{"rustc", "ru", "r"},
-		Usage:       "GVC rust management.",
+		Usage:       "Rust installation.",
 		Subcommands: []*cli.Command{},
 	}
 	iRust := &cli.Command{
@@ -558,7 +549,7 @@ func (that *Cmder) vnodejs() {
 	command := &cli.Command{
 		Name:        "nodejs",
 		Aliases:     []string{"node", "no"},
-		Usage:       "Nodejs version control.",
+		Usage:       "NodeJS version management.",
 		Subcommands: []*cli.Command{},
 	}
 	vremote := &cli.Command{
@@ -733,7 +724,7 @@ func (that *Cmder) vcygwin() {
 	command := &cli.Command{
 		Name:        "cygwin",
 		Aliases:     []string{"cygw", "cyg", "cy"},
-		Usage:       "Cygwin management.",
+		Usage:       "Cygwin installation.",
 		Subcommands: []*cli.Command{},
 	}
 	install := &cli.Command{
@@ -768,7 +759,7 @@ func (that *Cmder) vgithub() {
 	command := &cli.Command{
 		Name:    "github",
 		Aliases: []string{"gh"},
-		Usage:   "Github download acceleration websites.",
+		Usage:   "Open github download acceleration websites.",
 		Action: func(ctx *cli.Context) error {
 			chosenStr := ctx.Args().First()
 			chosen, _ := strconv.Atoi(chosenStr)
@@ -784,7 +775,7 @@ func (that *Cmder) vhomebrew() {
 	command := &cli.Command{
 		Name:        "homebrew",
 		Aliases:     []string{"brew", "hb"},
-		Usage:       "Homebrew management.",
+		Usage:       "Homebrew installation or update.",
 		Subcommands: []*cli.Command{},
 	}
 	install := &cli.Command{
@@ -817,7 +808,7 @@ func (that *Cmder) vlang() {
 	command := &cli.Command{
 		Name:        "vlang",
 		Aliases:     []string{"vl"},
-		Usage:       "Vlang management.",
+		Usage:       "Vlang installation.",
 		Subcommands: []*cli.Command{},
 	}
 	var force bool
@@ -859,7 +850,7 @@ func (that *Cmder) vgradle() {
 	command := &cli.Command{
 		Name:        "gradle",
 		Aliases:     []string{"gra", "gr"},
-		Usage:       "Gradle management.",
+		Usage:       "Gradle version management.",
 		Subcommands: []*cli.Command{},
 	}
 
@@ -879,8 +870,8 @@ func (that *Cmder) vgradle() {
 	command.Subcommands = append(command.Subcommands, vuse)
 
 	vshow := &cli.Command{
-		Name:    "show",
-		Aliases: []string{"s"},
+		Name:    "remote",
+		Aliases: []string{"r"},
 		Usage:   "Show available versions.",
 		Action: func(ctx *cli.Context) error {
 			gv := vctrl.NewGradleVersion()
@@ -947,7 +938,7 @@ func (that *Cmder) vmaven() {
 	command := &cli.Command{
 		Name:        "maven",
 		Aliases:     []string{"mav", "ma"},
-		Usage:       "Maven management.",
+		Usage:       "Maven version management.",
 		Subcommands: []*cli.Command{},
 	}
 
@@ -967,8 +958,8 @@ func (that *Cmder) vmaven() {
 	command.Subcommands = append(command.Subcommands, vuse)
 
 	vshow := &cli.Command{
-		Name:    "show",
-		Aliases: []string{"s"},
+		Name:    "remote",
+		Aliases: []string{"r"},
 		Usage:   "Show available versions.",
 		Action: func(ctx *cli.Context) error {
 			gv := vctrl.NewMavenVersion()
@@ -1055,8 +1046,8 @@ func (that *Cmder) vflutter() {
 	command.Subcommands = append(command.Subcommands, vuse)
 
 	vshow := &cli.Command{
-		Name:    "show",
-		Aliases: []string{"s"},
+		Name:    "remote",
+		Aliases: []string{"r"},
 		Usage:   "Show available versions.",
 		Action: func(ctx *cli.Context) error {
 			gv := vctrl.NewFlutterVersion()
@@ -1131,8 +1122,8 @@ func (that *Cmder) vjulia() {
 	command.Subcommands = append(command.Subcommands, vuse)
 
 	vshow := &cli.Command{
-		Name:    "show",
-		Aliases: []string{"s"},
+		Name:    "remote",
+		Aliases: []string{"r"},
 		Usage:   "Show available versions.",
 		Action: func(ctx *cli.Context) error {
 			gv := vctrl.NewJuliaVersion()
@@ -1184,24 +1175,26 @@ func (that *Cmder) vjulia() {
 }
 
 func (that *Cmder) initiate() {
-	that.uninstall()
-	that.showinfo()
-	that.vhost()
 	that.vgo()
-	that.vscode()
-	that.vconf()
-	that.vnvim()
-	that.vjava()
-	that.vgradle()
-	that.vmaven()
-	that.vrust()
-	that.vnodejs()
 	that.vpython()
-	that.vcygwin()
-	that.startXray()
-	that.vgithub()
-	that.vhomebrew()
-	that.vlang()
+	that.vjava()
+	that.vmaven()
+	that.vgradle()
+	that.vnodejs()
 	that.vflutter()
 	that.vjulia()
+	that.vrust()
+	that.vlang()
+	that.vcygwin()
+
+	that.vscode()
+	that.vnvim()
+	that.startXray()
+	that.vhomebrew()
+	that.vhost()
+	that.vgithub()
+
+	that.vconf()
+	that.showinfo()
+	that.uninstall()
 }
