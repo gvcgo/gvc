@@ -72,6 +72,16 @@ func (that *GVCWebdav) Restore() {
 	}
 }
 
+func (that *GVCWebdav) RestoreDefaultGVConf() {
+	that.conf.SetDefault()
+	that.conf.Restore()
+}
+
+func (that *GVCWebdav) ShowConfigPath() {
+	fmt.Println("GVC Config File Path: ", config.GVConfigPath)
+	fmt.Println("Webdav Config File Path: ", config.GVCWebdavConfigPath)
+}
+
 func (that *GVCWebdav) Reload() {
 	if ok, _ := utils.PathIsExist(config.GVCWebdavConfigPath); !ok {
 		fmt.Println("[Warning] It seems that you have not set up your webdav account.")
@@ -268,6 +278,7 @@ func (that *GVCWebdav) FetchAndApplySettings() {
 
 // install vscode extensions
 func (that *GVCWebdav) InstallVSCodeExts(backupPath string) {
+	that.Pull()
 	if backupPath == "" {
 		backupPath = filepath.Join(that.DavConf.LocalDir, config.CodeExtensionsBackupFileName)
 	}

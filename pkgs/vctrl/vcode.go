@@ -11,7 +11,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gogf/gf/os/genv"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/downloader"
@@ -161,10 +160,6 @@ func (that *Code) GenerateShortcut() error {
 	return errors.New("shortcut script not found")
 }
 
-// func (that *Code) addEnvForUnix(binaryDir string) {
-// 	utils.SetUnixEnv(fmt.Sprintf(config.CodeEnvForUnix, binaryDir))
-// }
-
 func (that *Code) InstallForMac() {
 	that.download()
 	if codeDir, _ := os.ReadDir(config.CodeUntarFile); len(codeDir) > 0 {
@@ -208,77 +203,5 @@ func (that *Code) Install() {
 		}
 	case utils.Linux:
 		that.InstallForLinux()
-	}
-}
-
-func (that *Code) installExtension(extName string) error {
-	cmd := exec.Command("code", "--install-extension", extName)
-	cmd.Env = genv.All()
-	cmd.Stderr = os.Stderr
-	cmd.Stdout = os.Stdout
-	cmd.Stdin = os.Stdin
-	return cmd.Run()
-}
-
-func (that *Code) InstallExts() {
-	for _, extName := range that.Conf.Code.ExtIdentifiers {
-		that.installExtension(extName)
-	}
-}
-
-func (that *Code) SyncInstalledExts() {
-	cmd := exec.Command("code", "--list-extensions")
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		fmt.Printf("cmd.Run() failed with %sn", err)
-		return
-	}
-	iNameList := strings.Split(string(out), "\n")
-	if len(iNameList) > 0 {
-		newList := []string{}
-		fmt.Println("Local installed vscode extensions: ")
-		for _, iName := range iNameList {
-			if strings.Contains(iName, ".") && len(iName) > 3 {
-				newList = append(newList, iName)
-				fmt.Println(iName)
-			}
-		}
-		if len(newList) > 0 {
-			that.Conf.Code.ExtIdentifiers = newList
-		}
-		that.Conf.Restore()
-		that.Conf.Push()
-	}
-}
-
-func (that *Code) GetSettings() {
-	// get vscode settings from remote webdav.
-	if ok, _ := utils.PathIsExist(config.CodeUserSettingsBackupPath); ok {
-		if ok, _ := utils.PathIsExist(filepath.Dir(config.GetCodeUserSettingsPath())); ok {
-			utils.CopyFile(config.CodeUserSettingsBackupPath, config.GetCodeUserSettingsPath())
-		}
-	}
-
-	if ok, _ := utils.PathIsExist(config.CodeKeybindingsBackupPath); ok {
-		if ok, _ := utils.PathIsExist(filepath.Dir(config.GetCodeKeybindingsPath())); ok {
-			utils.CopyFile(config.CodeKeybindingsBackupPath, config.GetCodeKeybindingsPath())
-		}
-	}
-}
-
-func (that *Code) SyncSettings() {
-	// push vscode settings to remote webdav.
-	if ok, _ := utils.PathIsExist(config.GetCodeUserSettingsPath()); ok {
-		if ok, _ := utils.PathIsExist(filepath.Dir(config.CodeUserSettingsBackupPath)); ok {
-			utils.CopyFile(config.GetCodeUserSettingsPath(), config.CodeUserSettingsBackupPath)
-			that.Conf.Push()
-		}
-	}
-
-	if ok, _ := utils.PathIsExist(config.GetCodeKeybindingsPath()); ok {
-		if ok, _ := utils.PathIsExist(filepath.Dir(config.CodeKeybindingsBackupPath)); ok {
-			utils.CopyFile(config.GetCodeKeybindingsPath(), config.CodeKeybindingsBackupPath)
-			that.Conf.Push()
-		}
 	}
 }

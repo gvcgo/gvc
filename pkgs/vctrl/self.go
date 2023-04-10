@@ -80,7 +80,8 @@ func (that *Self) Uninstall() {
 		fmt.Scan(&r)
 		r = strings.TrimSpace(r)
 		if strings.ToLower(r) == "y" || strings.ToLower(r) == "yes" || r == "" {
-			that.Conf.Push()
+			dav := NewGVCWebdav()
+			dav.GatherAndPushSettings()
 		}
 		if ok, _ := utils.PathIsExist(config.GVCWorkDir); ok {
 			os.RemoveAll(config.GVCWorkDir)

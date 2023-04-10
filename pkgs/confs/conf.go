@@ -39,7 +39,6 @@ type GVConfig struct {
 	Flutter  *FlutterConf  `koanf:"flutter"`
 	Julia    *JuliaConf    `koanf:"julia"`
 	Webdav   *DavConf      `koanf:"dav"`
-	w        *WebdavConf   `koanf:"webdav"`
 	k        *koanf.Koanf
 	parser   *yaml.YAML
 	path     string
@@ -64,7 +63,6 @@ func New() (r *GVConfig) {
 		Flutter:  NewFlutterConf(),
 		Julia:    NewJuliaConf(),
 		Webdav:   NewDavConf(),
-		w:        NewWebdavConf(),
 		k:        koanf.New("."),
 		parser:   yaml.Parser(),
 		path:     GVConfigPath,
@@ -79,7 +77,8 @@ func (that *GVConfig) initiate() {
 	}
 
 	if ok, _ := utils.PathIsExist(that.path); !ok {
-		that.w.Pull()
+		that.SetDefault()
+		that.Restore()
 	}
 	if ok, _ := utils.PathIsExist(that.path); ok {
 		that.Reload()
@@ -135,7 +134,7 @@ func (that *GVConfig) SetDefault() {
 }
 
 func (that *GVConfig) Reset() {
-	os.RemoveAll(GVCBackupDir)
+	os.RemoveAll(GVConfigPath)
 	that.SetDefault()
 	that.Restore()
 }
@@ -157,28 +156,4 @@ func (that *GVConfig) Restore() {
 	if b, err := that.k.Marshal(that.parser); err == nil && len(b) > 0 {
 		os.WriteFile(that.path, b, 0666)
 	}
-}
-
-func (that *GVConfig) ShowPath() {
-	fmt.Println("[GVC] config file path: ", that.path)
-}
-
-func (that *GVConfig) Pull() {
-	that.w.Pull()
-}
-
-func (that *GVConfig) Push() {
-	that.w.Push()
-}
-
-func (that *GVConfig) UseDefautFiles() {
-	that.w.GetDefaultFiles()
-}
-
-func (that *GVConfig) SetupWebdav() {
-	that.w.SetConf()
-}
-
-func (that *GVConfig) ShowDavConfigPath() {
-	that.w.ShowDavConfigPath()
 }

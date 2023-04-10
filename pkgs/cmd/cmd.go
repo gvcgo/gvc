@@ -1,10 +1,8 @@
 package cmd
 
 import (
-	"fmt"
 	"strconv"
 
-	"github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
 	"github.com/moqsien/gvc/pkgs/vctrl"
 	"github.com/moqsien/gvc/pkgs/vctrl/vproxy"
@@ -292,48 +290,48 @@ func (that *Cmder) vscode() {
 		Aliases: []string{"ie", "iext"},
 		Usage:   "Automatically install extensions for vscode.",
 		Action: func(ctx *cli.Context) error {
-			gcode := vctrl.NewCode()
-			gcode.InstallExts()
+			gcode := vctrl.NewGVCWebdav()
+			gcode.InstallVSCodeExts("")
 			return nil
 		},
 	}
 	command.Subcommands = append(command.Subcommands, installexts)
 
-	showexts := &cli.Command{
-		Name:    "sync-extensions",
-		Aliases: []string{"se", "sext"},
-		Usage:   "Push local installed vscode extensions info to remote webdav.",
-		Action: func(ctx *cli.Context) error {
-			gcode := vctrl.NewCode()
-			gcode.SyncInstalledExts()
-			return nil
-		},
-	}
-	command.Subcommands = append(command.Subcommands, showexts)
+	// showexts := &cli.Command{
+	// 	Name:    "sync-extensions",
+	// 	Aliases: []string{"se", "sext"},
+	// 	Usage:   "Push local installed vscode extensions info to remote webdav.",
+	// 	Action: func(ctx *cli.Context) error {
+	// 		gcode := vctrl.NewCode()
+	// 		gcode.SyncInstalledExts()
+	// 		return nil
+	// 	},
+	// }
+	// command.Subcommands = append(command.Subcommands, showexts)
 
-	getsettings := &cli.Command{
-		Name:    "get-settings",
-		Aliases: []string{"gs", "gset"},
-		Usage:   "Get vscode settings(keybindings include) info from remote webdav.",
-		Action: func(ctx *cli.Context) error {
-			gcode := vctrl.NewCode()
-			gcode.GetSettings()
-			return nil
-		},
-	}
-	command.Subcommands = append(command.Subcommands, getsettings)
+	// getsettings := &cli.Command{
+	// 	Name:    "get-settings",
+	// 	Aliases: []string{"gs", "gset"},
+	// 	Usage:   "Get vscode settings(keybindings include) info from remote webdav.",
+	// 	Action: func(ctx *cli.Context) error {
+	// 		gcode := vctrl.NewCode()
+	// 		gcode.GetSettings()
+	// 		return nil
+	// 	},
+	// }
+	// command.Subcommands = append(command.Subcommands, getsettings)
 
-	pushsettings := &cli.Command{
-		Name:    "push-settings",
-		Aliases: []string{"ps", "pset"},
-		Usage:   "Push vscode settings(keybindings include) info to remote webdav.",
-		Action: func(ctx *cli.Context) error {
-			gcode := vctrl.NewCode()
-			gcode.SyncSettings()
-			return nil
-		},
-	}
-	command.Subcommands = append(command.Subcommands, pushsettings)
+	// pushsettings := &cli.Command{
+	// 	Name:    "push-settings",
+	// 	Aliases: []string{"ps", "pset"},
+	// 	Usage:   "Push vscode settings(keybindings include) info to remote webdav.",
+	// 	Action: func(ctx *cli.Context) error {
+	// 		gcode := vctrl.NewCode()
+	// 		gcode.SyncSettings()
+	// 		return nil
+	// 	},
+	// }
+	// command.Subcommands = append(command.Subcommands, pushsettings)
 
 	that.Commands = append(that.Commands, command)
 }
@@ -342,16 +340,16 @@ func (that *Cmder) vconf() {
 	command := &cli.Command{
 		Name:        "config",
 		Aliases:     []string{"conf", "cnf", "c"},
-		Usage:       "GVC config file management.",
+		Usage:       "Config file management.",
 		Subcommands: []*cli.Command{},
 	}
 	dav := &cli.Command{
 		Name:    "webdav",
 		Aliases: []string{"dav", "w"},
-		Usage:   "Setup webdav account info to backup local settings for gvc, vscode, neovim etc.",
+		Usage:   "Setup webdav account info.",
 		Action: func(ctx *cli.Context) error {
-			cnf := confs.New()
-			cnf.SetupWebdav()
+			dav := vctrl.NewGVCWebdav()
+			dav.SetAccount()
 			return nil
 		},
 	}
@@ -360,10 +358,10 @@ func (that *Cmder) vconf() {
 	pull := &cli.Command{
 		Name:    "pull",
 		Aliases: []string{"pl"},
-		Usage:   "Pull settings to local backup dir from your remote webdav.",
+		Usage:   "Pull settings from remote webdav and apply them to applications.",
 		Action: func(ctx *cli.Context) error {
-			cnf := confs.New()
-			cnf.Pull()
+			dav := vctrl.NewGVCWebdav()
+			dav.FetchAndApplySettings()
 			return nil
 		},
 	}
@@ -372,25 +370,22 @@ func (that *Cmder) vconf() {
 	push := &cli.Command{
 		Name:    "push",
 		Aliases: []string{"ph"},
-		Usage:   "Push settings from local backup dir to your remote webdav.",
+		Usage:   "Gather settings from applications and sync them to remote webdav.",
 		Action: func(ctx *cli.Context) error {
-			cnf := confs.New()
-			cnf.Push()
+			dav := vctrl.NewGVCWebdav()
+			dav.GatherAndPushSettings()
 			return nil
 		},
 	}
 	command.Subcommands = append(command.Subcommands, push)
 
 	show := &cli.Command{
-		Name:    "show",
-		Aliases: []string{"sh", "s"},
-		Usage:   "Show path to conf files.",
+		Name:    "show-path",
+		Aliases: []string{"show", "sh", "s"},
+		Usage:   "Show path to the conf files.",
 		Action: func(ctx *cli.Context) error {
-			cnf := confs.New()
-			fmt.Println("GVC config file:")
-			cnf.ShowPath()
-			fmt.Println("WebDAV config file:")
-			cnf.ShowDavConfigPath()
+			dav := vctrl.NewGVCWebdav()
+			dav.ShowConfigPath()
 			return nil
 		},
 	}
@@ -399,26 +394,14 @@ func (that *Cmder) vconf() {
 	reset := &cli.Command{
 		Name:    "reset",
 		Aliases: []string{"rs", "r"},
-		Usage:   "Reset config file to default values.",
+		Usage:   "Reset the gvc config file to default values.",
 		Action: func(ctx *cli.Context) error {
-			cnf := confs.New()
-			cnf.Reset()
+			dav := vctrl.NewGVCWebdav()
+			dav.RestoreDefaultGVConf()
 			return nil
 		},
 	}
 	command.Subcommands = append(command.Subcommands, reset)
-
-	downbackfiles := &cli.Command{
-		Name:    "download",
-		Aliases: []string{"dl", "d"},
-		Usage:   "Download example config files from gitee when backup dir is empty.",
-		Action: func(ctx *cli.Context) error {
-			cnf := confs.New()
-			cnf.UseDefautFiles()
-			return nil
-		},
-	}
-	command.Subcommands = append(command.Subcommands, downbackfiles)
 
 	that.Commands = append(that.Commands, command)
 }
