@@ -15,7 +15,7 @@ You do never need to worry about env variables or where to dowload files, GVC wi
 You can even install VSCode as well as Neovim through GVC.
 Moreover, GVC will sync config files to WebDAV if you have configured one, which will help recreate your dev environment on another PC.
 
-Therefore, If you are planning to get a new PC for development, probably the only thing you need to download GVC!
+Therefore, If you are planning to get a new PC for development, probably the only thing you need to download is GVC!
 
 ### Features
 <table>
