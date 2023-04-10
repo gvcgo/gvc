@@ -64,6 +64,11 @@ func (that *GVCWebdav) initeDirs() {
 	that.Reload()
 }
 
+func (that *GVCWebdav) resetKoanf() {
+	that.k = koanf.New(".")
+	that.parser = yaml.Parser()
+}
+
 // save webdav configurations to yml file.
 func (that *GVCWebdav) Restore() {
 	that.k.Load(structs.Provider(that.DavConf, "koanf"), nil)
@@ -293,6 +298,9 @@ func (that *GVCWebdav) InstallVSCodeExts(backupPath string) {
 		fmt.Println("[Can not find extensions backup file] ", backupPath)
 		return
 	}
+	if len(that.vscodeExts.VSCodeExts) == 0 {
+		that.vscodeExts.VSCodeExts = that.conf.Code.ExtIdentifiers
+	}
 	for _, extName := range that.vscodeExts.VSCodeExts {
 		cmd := exec.Command("code", "--install-extension", extName)
 		cmd.Env = genv.All()
@@ -323,19 +331,21 @@ func (that *GVCWebdav) gatherVSCodeExtsions() {
 		}
 		if len(newList) > 0 {
 			that.vscodeExts.VSCodeExts = newList
+			that.resetKoanf()
 			that.k.Load(structs.Provider(that.vscodeExts, "koanf"), nil)
 			if b, err := that.k.Marshal(that.parser); err == nil && len(b) > 0 {
-				os.WriteFile(config.CodeExtensionsBackupFileName, b, 0666)
+				fpath := filepath.Join(that.DavConf.LocalDir, config.CodeExtensionsBackupFileName)
+				os.WriteFile(fpath, b, 0666)
 			}
 		}
 	}
 }
 
 func (that *GVCWebdav) GatherAndPushSettings() {
-	that.gatherVSCodeExtsions()
 	if that.DavConf.LocalDir == "" {
 		that.DavConf.LocalDir = config.GVCBackupDir
 	}
+	that.gatherVSCodeExtsions()
 	if ok, _ := utils.PathIsExist(that.DavConf.LocalDir); !ok {
 		if err := os.MkdirAll(that.DavConf.LocalDir, os.ModePerm); err != nil {
 			fmt.Println("[mkdir Failed] ", that.DavConf.LocalDir, err)

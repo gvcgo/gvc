@@ -300,42 +300,6 @@ func (that *Cmder) vscode() {
 	}
 	command.Subcommands = append(command.Subcommands, installexts)
 
-	// showexts := &cli.Command{
-	// 	Name:    "sync-extensions",
-	// 	Aliases: []string{"se", "sext"},
-	// 	Usage:   "Push local installed vscode extensions info to remote webdav.",
-	// 	Action: func(ctx *cli.Context) error {
-	// 		gcode := vctrl.NewCode()
-	// 		gcode.SyncInstalledExts()
-	// 		return nil
-	// 	},
-	// }
-	// command.Subcommands = append(command.Subcommands, showexts)
-
-	// getsettings := &cli.Command{
-	// 	Name:    "get-settings",
-	// 	Aliases: []string{"gs", "gset"},
-	// 	Usage:   "Get vscode settings(keybindings include) info from remote webdav.",
-	// 	Action: func(ctx *cli.Context) error {
-	// 		gcode := vctrl.NewCode()
-	// 		gcode.GetSettings()
-	// 		return nil
-	// 	},
-	// }
-	// command.Subcommands = append(command.Subcommands, getsettings)
-
-	// pushsettings := &cli.Command{
-	// 	Name:    "push-settings",
-	// 	Aliases: []string{"ps", "pset"},
-	// 	Usage:   "Push vscode settings(keybindings include) info to remote webdav.",
-	// 	Action: func(ctx *cli.Context) error {
-	// 		gcode := vctrl.NewCode()
-	// 		gcode.SyncSettings()
-	// 		return nil
-	// 	},
-	// }
-	// command.Subcommands = append(command.Subcommands, pushsettings)
-
 	that.Commands = append(that.Commands, command)
 }
 
@@ -1026,7 +990,7 @@ func (that *Cmder) vflutter() {
 	command := &cli.Command{
 		Name:        "flutter",
 		Aliases:     []string{"flu", "fl"},
-		Usage:       "Flutter management.",
+		Usage:       "Flutter version management.",
 		Subcommands: []*cli.Command{},
 	}
 
@@ -1102,7 +1066,7 @@ func (that *Cmder) vjulia() {
 	command := &cli.Command{
 		Name:        "julia",
 		Aliases:     []string{"jul", "ju"},
-		Usage:       "Julia management.",
+		Usage:       "Julia version management.",
 		Subcommands: []*cli.Command{},
 	}
 
