@@ -27,7 +27,7 @@
      border: 1px solid black;
    }
 </style> -->
-
+### gvc支持哪些语言或应用？
  <table>
  <tr>
 <td>
