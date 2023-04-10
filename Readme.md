@@ -84,7 +84,11 @@
 </tr>
 <tr>
 <td>
-<img src="https://neovim.io/favicon.ico" width="8%"><img src="https://brew.sh//assets/img/homebrew.svg" class="s">
+<img src="https://brew.sh//assets/img/homebrew.svg" class="s">
+</td>
+
+<td>
+<img src="https://neovim.io/favicon.ico" class="s">
 </td>
 
 <td>

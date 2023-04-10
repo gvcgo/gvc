@@ -82,7 +82,11 @@
 </tr>
 <tr>
 <td>
-<img src="https://neovim.io/favicon.ico" width="8%"><img src="https://brew.sh//assets/img/homebrew.svg" class="s">
+<img src="https://brew.sh//assets/img/homebrew.svg" class="s">
+</td>
+
+<td>
+<img src="https://neovim.io/favicon.ico" class="s">
 </td>
 
 <td>
@@ -254,7 +258,7 @@ GLOBAL OPTIONS:
    --help, -h  show help
 ```
 
-### Subcommands Help Docs (in Zh-CN)
+### 子命令帮助文档 (中文)
 [github docs](https://github.com/moqsien/gvc/tree/main/docs/commands)
 
 [gitee docs](https://gitee.com/moqsien/gvc_tools/tree/main/docs/commands)
