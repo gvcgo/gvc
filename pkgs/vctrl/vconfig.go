@@ -245,24 +245,36 @@ func (that *GVCWebdav) getFilesToSync() (fm config.Filemap) {
 	return
 }
 
+// https://code.visualstudio.com/docs/getstarted/keybindings
 func (that *GVCWebdav) modifyKeybindings(backupPath string) {
+	if ok, _ := utils.PathIsExist(backupPath); !ok {
+		return
+	}
+	content, _ := os.ReadFile(backupPath)
 	switch runtime.GOOS {
 	case utils.MacOS:
-		content, _ := os.ReadFile(backupPath)
-		cStr := string(content)
-		if strings.Contains(cStr, "win+") {
-			cStr = strings.ReplaceAll(cStr, "win+", "cmd+")
-		}
-		if strings.Contains(cStr, "Win+") {
-			cStr = strings.ReplaceAll(cStr, "Win+", "cmd+")
-		}
+		cStr := utils.BatchReplaceAll(string(content), map[string]string{
+			"win+":  "cmd+",
+			"Win+":  "cmd+",
+			"meta+": "cmd+",
+			"Meta+": "cmd+",
+		})
+		os.WriteFile(backupPath, []byte(cStr), 0666)
+	case utils.Windows:
+		cStr := utils.BatchReplaceAll(string(content), map[string]string{
+			"cmd+":  "win+",
+			"Cmd+":  "win+",
+			"meta+": "win+",
+			"Meta+": "win+",
+		})
 		os.WriteFile(backupPath, []byte(cStr), 0666)
 	default:
-		content, _ := os.ReadFile(backupPath)
-		cStr := string(content)
-		if strings.Contains(cStr, "cmd+") {
-			cStr = strings.ReplaceAll(cStr, "cmd+", "Win+")
-		}
+		cStr := utils.BatchReplaceAll(string(content), map[string]string{
+			"cmd+": "meta+",
+			"Cmd+": "meta+",
+			"win+": "meta+",
+			"Win+": "meta+",
+		})
 		os.WriteFile(backupPath, []byte(cStr), 0666)
 	}
 }

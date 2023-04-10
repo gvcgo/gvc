@@ -350,3 +350,11 @@ func ReadVersion(dir string) (v string) {
 	}
 	return
 }
+
+func BatchReplaceAll(str string, oldNew map[string]string) (r string) {
+	r = str
+	for old, new := range oldNew {
+		r = strings.ReplaceAll(r, old, new)
+	}
+	return
+}
