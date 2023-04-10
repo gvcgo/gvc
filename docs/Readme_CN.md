@@ -1,16 +1,96 @@
 ## [En](https://github.com/moqsien/gvc)
 ---------
-### gvc支持哪些语言和工具?
-![gopher](https://golang.google.cn/images/favicon-gopher.png){:"width": "10%"}
+
+<style>
+   .cropped {
+     width: 120px;
+     height: 60px;
+     overflow: hidden;
+     border: 1px solid black;
+   }
+   .go {
+      width: 80px; height: 60px;
+      overflow: hidden;
+      border: 1px solid black;
+   }
+
+   .s {
+      width: 70px; height: 60px;
+      overflow: hidden;
+      border: 1px solid black;
+   }
+
+   .fl {
+     width: 250px;
+     height: 50px;
+     overflow: hidden;
+     border: 1px solid black;
+   }
+</style>
 
  <table>
  <tr>
-<td><img align="left" src="https://golang.google.cn/images/favicon-gopher.png" width="10%"></td><td><img align="left" src="https://www.oracle.com/a/ocom/img/rc30v1-java-se.png" width="20%"></td><td><img align="left" src="https://maven.apache.org/images/maven-logo-black-on-white.png" width="20%"></td>
+<td>
+<img align="left" src="https://golang.google.cn/images/favicon-gopher.png" class="go">
+</td>
+
+<td>
+<img src="https://nodejs.org/static/images/favicons/favicon.png" class="cropped">
+</td>
+
+<td>
+<img align="left" src="https://maven.apache.org/images/maven-logo-black-on-white.png" class="cropped">
+</td>
+
+<td>
+<img src="https://gradle.org/icon/favicon.ico" class="s">
+</td>
+
+<td>
+<img align="left" src="https://www.oracle.com/a/ocom/img/rc30v1-java-se.png" class="cropped">
+</td>
+
+<td>
+<img src="https://www.python.org/static/img/python-logo.png" >
+</td>
+</tr>
+
+<tr>
+<td>
+<img src="https://www.rust-lang.org/static/images/rust-logo-blk.svg" class="s">
+</td>
+
+<td>
+<img src="https://vlang.io/img/v-logo.png" class="s">
+</td>
+
+<td>
+<img src="https://www.cygwin.com/favicon.ico" class="s">
+</td>
+
+<td>
+<img src="https://code.visualstudio.com/favicon.ico" class="go">
+</td>
+
+<td>
+<img src="https://docs.flutter.dev/assets/images/shared/brand/flutter/logo/flutter-lockup.png" class="fl">
+</td>
+
+<td>
+<img src="https://cn.julialang.org/assets/infra/logo_cn.png" class="fl">
+</td>
+</tr>
+<tr>
+<td>
+<img src="https://neovim.io/favicon.ico" width="8%"><img src="https://brew.sh//assets/img/homebrew.svg" class="s">
+</td>
+
+<td>
+<img src="https://github.githubassets.com/favicons/favicon.svg" class="s">
+</td>
 </tr>
 </table>
 
-<p><img src="https://gradle.org/icon/favicon.ico" width="10%"><img src="https://www.python.org/static/img/python-logo.png" width="25%"><img src="https://nodejs.org/static/images/favicons/favicon.png" width="8%"><img src="https://www.rust-lang.org/static/images/rust-logo-blk.svg" width="10%"><img src="https://vlang.io/img/v-logo.png" width="10%"><img src="https://www.cygwin.com/favicon.ico" width="10%"><img src="https://docs.flutter.dev/assets/images/shared/brand/flutter/logo/flutter-lockup.png" width="25%"><img src="https://cn.julialang.org/assets/infra/logo_cn.png" width="18%"><img src="https://code.visualstudio.com/favicon.ico" width="8%"><img src="https://neovim.io/favicon.ico" width="8%"><img src="https://brew.sh//assets/img/homebrew.svg" width="8%"><img src="https://github.githubassets.com/favicons/favicon.svg" width="10%">
-</p>
 
 ---------
 
