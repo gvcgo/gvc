@@ -234,6 +234,13 @@ func (that *GVCWebdav) Push() {
 func (that *GVCWebdav) getFilesToSync() (fm config.Filemap) {
 	if len(that.conf.Webdav.FilesToSync) > 0 {
 		fm = that.conf.Webdav.FilesToSync[runtime.GOOS]
+		for k, v := range fm {
+			if strings.Contains(v, "$home$") {
+				fm[k] = filepath.Join(utils.GetHomeDir(), strings.ReplaceAll(v, "$home$", ""))
+			} else if strings.Contains(v, "$appdata$") {
+				fm[k] = filepath.Join(utils.GetWinAppdataEnv(), strings.ReplaceAll(v, "$appdata$", ""))
+			}
+		}
 	}
 	return
 }

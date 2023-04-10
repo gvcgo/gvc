@@ -31,24 +31,24 @@ func (that *DavConf) Reset() {
 	that.DefaultWebdavHost = "https://dav.jianguoyun.com/dav/"
 	that.FilesToSync = map[string]Filemap{
 		utils.Windows: {
-			CodeUserSettingsBackupFileName: CodeUserSettingsFilePathForWin,
-			CodeKeybindingsBackupFileName:  CodeKeybindingsFilePathForWin,
+			CodeUserSettingsBackupFileName: `$appdata$Code\User\settings.json`,
+			CodeKeybindingsBackupFileName:  `$appdata$Code\User\keybindings.json`,
 			CodeExtensionsBackupFileName:   "",
-			NVimInitBackupFileName:         NVimWinInitPath,
+			NVimInitBackupFileName:         `$home$\AppData\Local\nvim\init.vim`,
 			"chrome-bookmark":              "",
 		},
 		utils.Linux: {
-			CodeUserSettingsBackupFileName: CodeUserSettingsFilePathForLinux,
-			CodeKeybindingsBackupFileName:  CodeKeybindingsFilePathForLinux,
+			CodeUserSettingsBackupFileName: "$home$.config/Code/User/settings.json",
+			CodeKeybindingsBackupFileName:  "$home$.config/Code/User/keybindings.json",
 			CodeExtensionsBackupFileName:   "",
-			NVimInitBackupFileName:         NVimUnixInitPath,
+			NVimInitBackupFileName:         "$home$.config/nvim/init.vim",
 			"chrome-bookmark":              "",
 		},
 		utils.MacOS: {
-			CodeUserSettingsBackupFileName: CodeUserSettingsFilePathForMac,
-			CodeKeybindingsBackupFileName:  CodeKeybindingsFilePathForMac,
+			CodeUserSettingsBackupFileName: "$home$Library/Application Support/Code/User/settings.json",
+			CodeKeybindingsBackupFileName:  "$home$Library/Application Support/Code/User/keybindings.json",
 			CodeExtensionsBackupFileName:   "",
-			NVimInitBackupFileName:         NVimUnixInitPath,
+			NVimInitBackupFileName:         "$home$.config/nvim/init.vim",
 			"chrome-bookmark":              "",
 		},
 	}

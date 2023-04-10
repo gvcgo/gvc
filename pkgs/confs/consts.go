@@ -61,66 +61,28 @@ export PATH="%s:$PATH"
 # VSCode end`
 )
 
-var (
-	CodeUserSettingsFilePathForMac string = filepath.Join(utils.GetHomeDir(),
-		"Library/Application Support/Code/User/settings.json")
-	CodeKeybindingsFilePathForMac string = filepath.Join(utils.GetHomeDir(),
-		"Library/Application Support/Code/User/keybindings.json")
-	CodeUserSettingsFilePathForWin string = filepath.Join(utils.GetWinAppdataEnv(),
-		`Code\User\settings.json`)
-	CodeKeybindingsFilePathForWin string = filepath.Join(utils.GetWinAppdataEnv(),
-		`Code\User\keybindings.json`)
-	CodeUserSettingsFilePathForLinux string = filepath.Join(utils.GetHomeDir(),
-		".config/Code/User/settings.json")
-	CodeKeybindingsFilePathForLinux string = filepath.Join(utils.GetHomeDir(),
-		".config/Code/User/keybindings.json")
-	CodeUserSettingsBackupPath = GetUserSettingsBackupPath()
-	CodeKeybindingsBackupPath  = GetCodeKeybindingsBackupPath()
-)
+// var (
+// 	CodeUserSettingsFilePathForMac string = filepath.Join(utils.GetHomeDir(),
+// 		"Library/Application Support/Code/User/settings.json")
+// 	CodeKeybindingsFilePathForMac string = filepath.Join(utils.GetHomeDir(),
+// 		"Library/Application Support/Code/User/keybindings.json")
+// 	CodeUserSettingsFilePathForWin string = filepath.Join(utils.GetWinAppdataEnv(),
+// 		`Code\User\settings.json`)
+// 	CodeKeybindingsFilePathForWin string = filepath.Join(utils.GetWinAppdataEnv(),
+// 		`Code\User\keybindings.json`)
+// 	CodeUserSettingsFilePathForLinux string = filepath.Join(utils.GetHomeDir(),
+// 		".config/Code/User/settings.json")
+// 	CodeKeybindingsFilePathForLinux string = filepath.Join(utils.GetHomeDir(),
+// 		".config/Code/User/keybindings.json")
+// 	CodeUserSettingsBackupPath = GetUserSettingsBackupPath()
+// 	CodeKeybindingsBackupPath  = GetCodeKeybindingsBackupPath()
+// )
 
 var (
 	CodeUserSettingsBackupFileName = "vscode-user-settings.json"
 	CodeKeybindingsBackupFileName  = "vscode-keybindings.json"
 	CodeExtensionsBackupFileName   = "vscode-extensions.yml"
 )
-
-func GetUserSettingsBackupPath() (r string) {
-	// return filepath.Join(GVCBackupDir, fmt.Sprintf("vscode-settings-%s.json", runtime.GOOS))
-	return "vscode-settings.json"
-}
-
-func GetCodeKeybindingsBackupPath() (r string) {
-	if runtime.GOOS == utils.MacOS {
-		return filepath.Join(GVCBackupDir, fmt.Sprintf("vscode-keybindings-%s.json", runtime.GOOS))
-	}
-	return "vscode-keybindings.json"
-}
-
-func GetCodeUserSettingsPath() string {
-	switch runtime.GOOS {
-	case utils.MacOS:
-		return CodeUserSettingsFilePathForMac
-	case utils.Linux:
-		return CodeUserSettingsFilePathForLinux
-	case utils.Windows:
-		return CodeUserSettingsFilePathForWin
-	default:
-		return ""
-	}
-}
-
-func GetCodeKeybindingsPath() string {
-	switch runtime.GOOS {
-	case utils.MacOS:
-		return CodeKeybindingsFilePathForMac
-	case utils.Linux:
-		return CodeKeybindingsFilePathForLinux
-	case utils.Windows:
-		return CodeKeybindingsFilePathForWin
-	default:
-		return ""
-	}
-}
 
 // shortcut maker for windows.
 var WinShortcutCreator = `set WshShell = WScript.CreateObject("WScript.Shell" )
