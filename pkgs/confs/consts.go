@@ -474,3 +474,11 @@ var (
 	JuliaTarFilePath   string = filepath.Join(JuliaFilesDir, "downloads")
 	JuliaUntarFilePath string = filepath.Join(JuliaFilesDir, "versions")
 )
+
+/*
+Typst related
+*/
+var (
+	TypstFilesDir string = filepath.Join(GVCWorkDir, "typst_files")
+	TypstRootDir  string = filepath.Join(TypstFilesDir, "typst")
+)

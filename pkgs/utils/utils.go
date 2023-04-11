@@ -207,6 +207,9 @@ func GetExt(filename string) (ext string) {
 	if strings.Contains(filename, ".zip") {
 		return ".zip"
 	}
+	if strings.Contains(filename, "tar.xz") {
+		return ".tar.xz"
+	}
 	if strings.Contains(filename, ".") {
 		l := strings.Split(filename, ".")
 		return l[len(l)-1]

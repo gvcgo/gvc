@@ -38,6 +38,7 @@ type GVConfig struct {
 	Vlang    *VlangConf    `koanf:"vlang"`
 	Flutter  *FlutterConf  `koanf:"flutter"`
 	Julia    *JuliaConf    `koanf:"julia"`
+	Typst    *TypstConf    `koanf:"typst"`
 	Webdav   *DavConf      `koanf:"dav"`
 	k        *koanf.Koanf
 	parser   *yaml.YAML
@@ -62,6 +63,7 @@ func New() (r *GVConfig) {
 		Vlang:    NewVlangConf(),
 		Flutter:  NewFlutterConf(),
 		Julia:    NewJuliaConf(),
+		Typst:    NewTypstConf(),
 		Webdav:   NewDavConf(),
 		k:        koanf.New("."),
 		parser:   yaml.Parser(),
@@ -129,6 +131,8 @@ func (that *GVConfig) SetDefault() {
 	that.Flutter.Reset()
 	that.Julia = NewJuliaConf()
 	that.Julia.Reset()
+	that.Typst = NewTypstConf()
+	that.Typst.Reset()
 	that.Webdav = NewDavConf()
 	that.Webdav.Reset()
 }

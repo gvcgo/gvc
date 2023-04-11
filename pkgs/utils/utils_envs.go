@@ -40,6 +40,7 @@ const (
 	SUB_FLUTTER = "flutter"
 	SUB_LUA     = "lua"
 	SUB_JULIA   = "julia"
+	SUB_TYPST   = "typst"
 )
 
 /*
@@ -142,6 +143,11 @@ Julia Envs
 var JuliaEnv string = `export JULIA_ROOT="%s"
 export JULIA_PKG_SERVER="%s"
 export PATH="$JULIA_ROOT/bin:$PATH"`
+
+/*
+Typst Envs
+*/
+var TypstEnv string = `export PATH="%s:$PATH"`
 
 type EnvsHandler struct {
 	shellName  string
