@@ -49,11 +49,11 @@ func (that *XrayRunner) RestartClient() {
 		time.Sleep(500 * time.Millisecond)
 	}
 	xo := &XrayVmessOutbound{}
-	p := that.Verifier.VmessResult.ChooseFastest()
+	p := that.Verifier.VmessResult.ChooseRandom()
 	if p != nil {
 		xo.ParseVmessUri(p.GetUri())
 		that.Client = NewXrayVmessClient(&XrayInbound{Port: that.Conf.Proxy.InboundPort})
-		that.Client.StartVmessClient(that.Verifier.VmessResult.ChooseFastest())
+		that.Client.StartVmessClient(that.Verifier.VmessResult.ChooseRandom())
 		fmt.Printf("Xray started @socks5://127.0.0.1:%v", that.Conf.Proxy.InboundPort)
 	}
 }
