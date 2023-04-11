@@ -259,9 +259,9 @@ GLOBAL OPTIONS:
 ```
 
 ### 子命令帮助文档 (中文)
-[github docs](https://github.com/moqsien/gvc/tree/main/docs/commands)
+[github docs](https://github.com/moqsien/gvc/blob/main/docs/commands/command_list_github.md)
 
-[gitee docs](https://gitee.com/moqsien/gvc_tools/tree/main/docs/commands)
+[gitee docs](https://gitee.com/moqsien/gvc_tools/blob/main/docs/commands/command_list_gitee.md)
 
 ## 感谢
 ---------
