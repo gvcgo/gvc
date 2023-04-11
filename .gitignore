@@ -9,3 +9,4 @@ config.json
 geoip.dat
 geosite.dat
 gvc1
+versions/*
