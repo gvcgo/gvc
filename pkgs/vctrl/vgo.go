@@ -263,21 +263,30 @@ func (that *GoVersion) checkFile(p *GoPackage, fpath string) (r bool) {
 }
 
 func (that *GoVersion) CheckAndInitEnv() {
+	// if GOPROXY has already been set, then use the current one.
+	gp := os.Getenv("GOPROXY")
+	if gp == "" {
+		gp = that.Conf.Go.Proxies[0]
+	}
+	gpath := os.Getenv("GOPATH")
+	if gpath == "" {
+		gpath = config.DefaultGoPath
+	}
 	if runtime.GOOS != utils.Windows {
 		goEnv := fmt.Sprintf(utils.GoEnv,
 			config.DefaultGoRoot,
-			config.DefaultGoPath,
-			filepath.Join(config.DefaultGoPath, "bin"),
-			that.Conf.Go.Proxies[0],
+			gpath,
+			filepath.Join(gpath, "bin"),
+			gp,
 			fmt.Sprintf("%s:%s:$PATH", "$GOPATH/bin", "$GOROOT/bin"))
 		that.env.UpdateSub(utils.SUB_GO, goEnv)
 	} else {
 		envarList := map[string]string{
 			"GOROOT":  config.DefaultGoRoot,
-			"GOPATH":  config.DefaultGoPath,
-			"GOBIN":   filepath.Join(config.DefaultGoPath, "bin"),
-			"GOPROXY": that.Conf.Go.Proxies[0],
-			"PATH": fmt.Sprintf("%s;%s", filepath.Join(config.DefaultGoPath, "bin"),
+			"GOPATH":  gpath,
+			"GOBIN":   filepath.Join(gpath, "bin"),
+			"GOPROXY": gp,
+			"PATH": fmt.Sprintf("%s;%s", filepath.Join(gpath, "bin"),
 				filepath.Join(config.DefaultGoRoot, "bin")),
 		}
 		that.env.SetEnvForWin(envarList)

@@ -20,7 +20,7 @@ mv $name $version
 
 win_arm="./versions/windows-arm64"
 if [ ! -d $win_arm ];then
-  mkdir -p ./versions/windows-arm64
+  mkdir -p $win_arm
 fi
 export GOOS="windows"
 export GOARCH="arm64"
