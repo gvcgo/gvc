@@ -1169,7 +1169,7 @@ func (that *Cmder) vtypst() {
 	setEnv := &cli.Command{
 		Name:    "setenv",
 		Aliases: []string{"env", "se", "e"},
-		Usage:   "Set env for Vlang.",
+		Usage:   "Set env for Typst.",
 		Action: func(ctx *cli.Context) error {
 			v := vctrl.NewTypstVersion()
 			v.CheckAndInitEnv()
