@@ -156,7 +156,10 @@ func (that *XrayClient) VerifyProxy() (ok bool, timeLag int64) {
 		fmt.Println("[Dialer error] ", err)
 		return
 	}
-
+	t := that.Verifier.GetConf().Proxy.MaxRTT
+	if t == 0 {
+		t = 5
+	}
 	c := http.Client{
 		Transport: &http.Transport{
 			DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
@@ -166,7 +169,7 @@ func (that *XrayClient) VerifyProxy() (ok bool, timeLag int64) {
 				}
 				add.WithContext(ctx)
 				return pro.Conn(add)
-			}}, Timeout: 5 * time.Second,
+			}}, Timeout: time.Duration(t) * time.Second,
 	}
 	vUrl := that.Verifier.GetConf().Proxy.VerifyUrl
 	if vUrl == "" {

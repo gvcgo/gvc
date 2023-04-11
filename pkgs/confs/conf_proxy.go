@@ -25,6 +25,7 @@ type ProxyConf struct {
 	GeoIpUrl        string           `koanf:"geo_ip_url"`
 	SwitchOmegaUrl  string           `koanf:"switch_mega_url"`
 	GithubDownload  []string         `koanf:"github_download"`
+	MaxRTT          int              `koanf:"max_rtt"`
 	path            string
 	k               *koanf.Koanf
 	parser          *yaml.YAML
@@ -64,7 +65,7 @@ func (that *ProxyConf) Reset() {
 	}
 	that.VerifyUrl = "https://www.google.com"
 	that.InboundPort = 2019
-	that.VerifyPortRange = []int{2020, 2030}
+	that.VerifyPortRange = []int{2020, 2100}
 	that.Crontab = &ProxyCronConfig{
 		Hours:   1,
 		Minutes: 30,
@@ -76,6 +77,7 @@ func (that *ProxyConf) Reset() {
 		"https://ghproxy.com/",
 		"https://d.serctl.com/?dl_start",
 	}
+	that.MaxRTT = 3
 }
 
 func (that *ProxyConf) GetSubUrls() []string {
