@@ -75,13 +75,13 @@ func (that *Typst) Install(force bool) {
 		os.RemoveAll(config.TypstRootDir)
 	}
 	if err := archiver.Unarchive(zipFilePath, config.TypstFilesDir); err != nil {
-		os.RemoveAll(config.VlangRootDir)
+		os.RemoveAll(config.TypstRootDir)
 		os.RemoveAll(zipFilePath)
 		fmt.Println("[Unarchive failed] ", err)
 		return
 	}
 	that.renameDir()
-	if ok, _ := utils.PathIsExist(config.VlangRootDir); ok {
+	if ok, _ := utils.PathIsExist(config.TypstRootDir); ok {
 		that.CheckAndInitEnv()
 	} else {
 		fmt.Println("Install typst failed!")
