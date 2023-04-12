@@ -197,7 +197,15 @@ var ProxyXrayShellScript = `#!/bin/sh
 export PATH=$PATH:~/.gvc/
 nohup gvc xray -s > /dev/null 2>&1 &`
 
+var ProxyXrayKeepRunningScript = `
+#!/bin/sh
+export PATH=$PATH:~/.gvc/
+nohup gvc xray -k > /dev/null 2>&1 &`
+
+// // Start-Process "C:\Program Files\Prometheus.io\prometheus.exe" -WorkingDirectory "C:\Program Files\Prometheus.io" -WindowStyle Hidden
 var ProxyXrayBatScript = `Start-Process "%s" xray -s -WorkingDirectory "%s" -WindowStyle Hidden`
+
+var ProxyXrayKeepRunningBat = `Start-Process "%s" xray -k -WorkingDirectory "%s" -WindowStyle Hidden`
 
 /*
 Java related

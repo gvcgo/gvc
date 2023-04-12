@@ -57,7 +57,10 @@ func (that *Cmder) showinfo() {
 }
 
 func (that *Cmder) startXray() {
-	var start bool
+	var (
+		start bool
+		keep  bool
+	)
 	command := &cli.Command{
 		Name:    "xray",
 		Aliases: []string{"ray", "xry", "x"},
@@ -69,12 +72,20 @@ func (that *Cmder) startXray() {
 				Usage:       "Start Xray Client.",
 				Destination: &start,
 			},
+			&cli.BoolFlag{
+				Name:        "keep",
+				Aliases:     []string{"kp", "k"},
+				Usage:       "Keep running by verifications.",
+				Destination: &keep,
+			},
 		},
 		Action: func(ctx *cli.Context) error {
 			xctrl := vproxy.NewXrayCtrl()
 			xctrl.DownloadGeoIP()
 			if start {
 				xctrl.StartXray()
+			} else if keep {
+				xctrl.KeepRunning()
 			} else {
 				xctrl.StartShell()
 			}

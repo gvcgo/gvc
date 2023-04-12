@@ -38,14 +38,22 @@ type XrayVmessOutbound struct {
 	Raw      string `json:"raw"`
 }
 
+type VO struct {
+	Add  string `json:"add"`
+	Port string `json:"port"`
+	Id   string `json:"id"`
+	Net  string `json:"net"`
+	Path string `json:"path"`
+}
+
 func (that *XrayVmessOutbound) ParseVmessUri(rawUri string) {
 	if strings.HasPrefix(rawUri, "vmess://") {
 		jsonStr := utils.DecodeBase64(strings.ReplaceAll(rawUri, "vmess://", ""))
 		j := gjson.New(jsonStr)
 		that.Security = j.GetString("tls")
-		if that.Security != "" {
-			return
-		}
+		// if that.Security != "" {
+		// 	that.Security = "tls"
+		// }
 		that.Address = j.GetString("add")
 		that.Port = j.GetInt("port")
 		that.UserId = j.GetString("id")

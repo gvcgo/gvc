@@ -1,13 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
 	"github.com/moqsien/gvc/pkgs/cmd"
 	"github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/vctrl"
-	"github.com/moqsien/gvc/pkgs/vctrl/vchat"
+	"github.com/shirou/gopsutil/v3/process"
 )
 
 func main() {
@@ -33,11 +34,27 @@ func main() {
 		// v.RunXray()
 		_ = vctrl.NewTypstVersion()
 
-		cc := vchat.NewChatGpt()
-		cc.SetAppKey("")
-		cc.SetProxyPort(2019)
+		// cc := vchat.NewChatGpt()
+		// cc.SetAppKey("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")
+		// cc.SetProxyPort(2019)
 
-		cc.Chat("用go写一个桶排序")
+		// cc.Chat("用go写一个桶排序")
+		// v, _ := mem.VirtualMemory()
+		pp, _ := process.Pids()
+		for _, p := range pp {
+			// fmt.Println(p)
+			proc := process.Process{Pid: p}
+			name, _ := proc.Cmdline()
+			// name := strings.Join(names, " ")
+			if strings.Contains(name, "xray") {
+				fmt.Println(name)
+			}
+		}
+		// almost every return value is a struct
+		// fmt.Printf("Total: %v, Free:%v, UsedPercent:%f%%\n", v.Total, v.Free, v.UsedPercent)
+
+		// convert to JSON. String() is also implemented
+		// fmt.Println(v)
 		// v.UseVersion("v18.14.0")
 		// v.UseVersion("v19.8.0")
 		// v.ShowInstalled()
