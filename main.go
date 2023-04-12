@@ -7,6 +7,7 @@ import (
 	"github.com/moqsien/gvc/pkgs/cmd"
 	"github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/vctrl"
+	"github.com/moqsien/gvc/pkgs/vctrl/vchat"
 )
 
 func main() {
@@ -30,8 +31,11 @@ func main() {
 		// v.GetProxyList()
 		// v := vproxy.NewProxyer()
 		// v.RunXray()
-		v := vctrl.NewTypstVersion()
-		v.Install(false)
+		_ = vctrl.NewTypstVersion()
+
+		cc := vchat.NewChatGpt()
+
+		cc.Chat("用go写一个桶排序")
 		// v.UseVersion("v18.14.0")
 		// v.UseVersion("v19.8.0")
 		// v.ShowInstalled()

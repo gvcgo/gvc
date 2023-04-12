@@ -1,18 +1,17 @@
 package confs
 
 type ChatgptConf struct {
-	AppKey       string `koanf:"app_key"`
-	HywwwLoveUrl string `koanf:"hywww_love_url"`
+	AppKey         string `koanf:"app_key"`
+	LocalProxyPort int    `koanf:"local_proxy_port"`
+	ProxyTimeout   int    `koanf:"proxy_timeout"`
 }
 
 func NewGptConf() (r *ChatgptConf) {
-	r = &ChatgptConf{
-		AppKey: "",
-	}
+	r = &ChatgptConf{}
 	return
 }
 
 func (that *ChatgptConf) Reset() {
-	that.AppKey = ""
-	that.HywwwLoveUrl = "https://chat.hywwwlove.top/v1.0/chat/?code=%s"
+	that.LocalProxyPort = 2019
+	that.ProxyTimeout = 120
 }
