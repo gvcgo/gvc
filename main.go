@@ -35,7 +35,7 @@ func main() {
 		_ = vctrl.NewTypstVersion()
 
 		// cc := vchat.NewChatGpt()
-		// cc.SetAppKey("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")
+		// cc.SetAppKey("")
 		// cc.SetProxyPort(2019)
 
 		// cc.Chat("用go写一个桶排序")

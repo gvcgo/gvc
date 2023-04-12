@@ -14,6 +14,7 @@ import (
 	"github.com/schollz/progressbar/v3"
 )
 
+// TODO: use colly as default downloader.
 type Downloader struct {
 	Url              string
 	Timeout          time.Duration
