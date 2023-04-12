@@ -34,6 +34,8 @@ func main() {
 		_ = vctrl.NewTypstVersion()
 
 		cc := vchat.NewChatGpt()
+		cc.SetAppKey("")
+		cc.SetProxyPort(2019)
 
 		cc.Chat("用go写一个桶排序")
 		// v.UseVersion("v18.14.0")
