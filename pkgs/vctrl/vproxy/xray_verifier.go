@@ -45,6 +45,11 @@ func (that *XrayVerifier) GetConf() *config.GVConfig {
 	return that.Conf
 }
 
+func (that *XrayVerifier) GetVmessVerifiedList() *VmessList {
+	that.VmessResult.Reload()
+	return that.VmessResult
+}
+
 func (that *XrayVerifier) IsAllClientsRunning() bool {
 	for _, client := range that.ClientList {
 		if client.VerifierIsRunning {
@@ -77,6 +82,7 @@ func (that *XrayVerifier) sendProxy(force bool) {
 	if that.VmessFetcher == nil {
 		that.VmessFetcher = NewProxyFetcher(Vmess)
 	}
+	// wether force to fetch a new proxy list
 	that.VmessFetcher.GetProxyList(force)
 	p := that.VmessFetcher.ProxyList.GetProxyList()
 	if len(p) > 0 {

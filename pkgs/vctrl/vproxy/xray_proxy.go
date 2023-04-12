@@ -72,6 +72,7 @@ func (that *ProxyFetcher) parseProxy(body []byte) any {
 func (that *ProxyFetcher) GetProxyList(force bool) {
 	that.ProxyList.Reload()
 	if that.Type == Vmess {
+		// force to fetch new proxy list
 		if that.ProxyList.Today() != that.ProxyList.GetDate() || force {
 			that.filter = map[string]struct{}{}
 			pList := []*Proxy{}

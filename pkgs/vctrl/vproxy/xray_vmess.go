@@ -46,6 +46,16 @@ func (that *VmessList) GetDate() string {
 	return that.Date
 }
 
+func (that *VmessList) CheckFilePath() (ok bool) {
+	if ok, _ = utils.PathIsExist(that.path); !ok {
+		fmt.Println("gvc[xray-core] is not ready, please check later.")
+		fmt.Println("You can keep checking file existence: ", that.path)
+	} else {
+		fmt.Println("Find verified vmess list file: ", that.path)
+	}
+	return
+}
+
 func (that *VmessList) Reload() {
 	if ok, _ := utils.PathIsExist(that.path); !ok {
 		fmt.Println("ProxyList file does not exist.")
@@ -118,4 +128,11 @@ func (that *VmessList) ChooseRandom() *Proxy {
 	}
 	r := rand.Intn(len(that.Proxies))
 	return that.Proxies[r]
+}
+
+func (that *VmessList) ChooseByIndex(idx int) *Proxy {
+	if idx < 0 || idx >= len(that.Proxies) {
+		return that.ChooseRandom()
+	}
+	return that.Proxies[idx]
 }

@@ -40,6 +40,16 @@ func NewXrayCtrl() (xc *XrayCtrl) {
 
 func (that *XrayCtrl) initXrayCtrl() {
 	that.Ktrl.AddKtrlCommand(&goktrl.KCommand{
+		Name: "show",
+		Help: "Show available proxy list. ",
+		Func: func(c *goktrl.Context) {
+			that.Runner.ShowVmessVerifiedList()
+		},
+		KtrlHandler: func(c *goktrl.Context) {},
+		SocketName:  that.sockName,
+	})
+
+	that.Ktrl.AddKtrlCommand(&goktrl.KCommand{
 		Name: "restart",
 		Help: "restart xray client.",
 		Func: func(c *goktrl.Context) {
@@ -49,9 +59,10 @@ func (that *XrayCtrl) initXrayCtrl() {
 				fmt.Println(string(result))
 			}
 		},
+		ArgsDescription: "choose a specified proxy by index.",
 		KtrlHandler: func(c *goktrl.Context) {
-			that.Runner.RestartClient()
-			c.Send("Xray client restarted.", 200)
+			pStr := that.Runner.RestartClient(c.Args[1:]...)
+			c.Send(fmt.Sprintf("Xray client restarted @ proxy: %s", pStr), 200)
 		},
 		SocketName: that.sockName,
 	})
