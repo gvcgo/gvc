@@ -1,13 +1,14 @@
 ## gvc xray -h
 ```shell
 NAME:
-   g xray - Start Xray Shell for free VPN.
+   gvc xray - Start Xray Shell for free VPN.
 
 USAGE:
-   g xray [command options] [arguments...]
+   gvc xray [command options] [arguments...]
 
 OPTIONS:
    --start, --st, -s  Start Xray Client. (default: false)
+   --keep, --kp, -k   Keep running by verifications. (default: false)
    --help, -h         show help
 ```
 
@@ -19,6 +20,7 @@ OPTIONS:
 >>> help
 
 Commands:
+  add          Add vmesses to fixed list. # 添加固定的vmess，如果你有自己的vmess服务器
   clear        clear the screen
   exit         exit the program
   help         display help
@@ -28,6 +30,16 @@ Commands:
   start        Start an Xray Client. # 当当前系统中还没有启动任何xray-core进程时，启动xray-core进程
   stop         Stop an Xray Client. # 结束当前系统中正在后台运行xray-core进程
   vmess        Fetch proxies from vmess sources.  # 刷新免费vpn列表
+```
+
+```shell
+>>> restart help
+
+restart xray client.
+ options:
+  -enable; alias:-{e}; description: Enable fixed vmess list or not.
+ args:
+  choose a specified proxy by index.
 ```
 
 - 开启gvc实现的xray-core的交互式shell工具，在shell工具内可以控制xray-core的启、停以及强制刷新免费vpn列表等；
