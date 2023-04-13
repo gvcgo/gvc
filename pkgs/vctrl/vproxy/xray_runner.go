@@ -55,7 +55,7 @@ func (that *XrayRunner) RestartClient(enableFixed bool, idx ...string) (pStr str
 		index, _ = strconv.Atoi(idx[0])
 	}
 	vmessList := that.Verifier.VmessResult
-	if enableFixed && len(that.Verifier.VmessFixed.GetProxyList()) > 0 {
+	if len(vmessList.GetProxyList()) == 0 || (enableFixed && len(that.Verifier.VmessFixed.GetProxyList()) > 0) {
 		vmessList = that.Verifier.VmessFixed
 	}
 	vmessList.CheckFilePath()
