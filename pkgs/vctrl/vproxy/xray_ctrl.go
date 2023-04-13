@@ -121,10 +121,13 @@ func (that *XrayCtrl) initXrayCtrl() {
 		},
 		SocketName: that.sockName,
 	})
-
+	type restartOpts struct {
+		Enable bool `alias:"e" descr:"Enable fixed vmess list or not."`
+	}
 	that.Ktrl.AddKtrlCommand(&goktrl.KCommand{
 		Name: "restart",
 		Help: "restart xray client.",
+		Opts: &restartOpts{},
 		Func: func(c *goktrl.Context) {
 			result, err := c.GetResult()
 			that.hints(err)
@@ -134,10 +137,25 @@ func (that *XrayCtrl) initXrayCtrl() {
 		},
 		ArgsDescription: "choose a specified proxy by index.",
 		KtrlHandler: func(c *goktrl.Context) {
-			pStr := that.Runner.RestartClient(c.Args...)
+			opts := c.Options.(*restartOpts)
+			pStr := that.Runner.RestartClient(opts.Enable, c.Args...)
 			c.Send(fmt.Sprintf("Xray client restarted @ proxy: %s | %s", pStr, strings.Join(c.Args, ",")), 200)
 		},
 		SocketName: that.sockName,
+	})
+
+	that.Ktrl.AddKtrlCommand(&goktrl.KCommand{
+		Name:            "add",
+		Help:            "Add vmesses to fixed list. ",
+		ArgsRequired:    true,
+		ArgsDescription: "legal vmess uris.",
+		Func: func(c *goktrl.Context) {
+			for _, vm := range c.Args {
+				that.Runner.Verifier.SetVmessForFixed(vm)
+			}
+		},
+		KtrlHandler: func(c *goktrl.Context) {},
+		SocketName:  that.sockName,
 	})
 
 	that.Ktrl.AddKtrlCommand(&goktrl.KCommand{
@@ -161,7 +179,10 @@ func (that *XrayCtrl) initXrayCtrl() {
 		Name: "show",
 		Help: "Show available proxy list. ",
 		Func: func(c *goktrl.Context) {
+			fmt.Println("Free VPNs: ")
 			that.Runner.ShowVmessVerifiedList()
+			fmt.Println("Fixed VPNs: ")
+			that.Runner.ShowVmessFixedList()
 		},
 		KtrlHandler: func(c *goktrl.Context) {},
 		SocketName:  that.sockName,

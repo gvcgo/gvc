@@ -1,6 +1,7 @@
 package vproxy
 
 import (
+	"strings"
 	"time"
 
 	config "github.com/moqsien/gvc/pkgs/confs"
@@ -11,6 +12,7 @@ type ChanRawProxy chan RawProxy
 type XrayVerifier struct {
 	VmessFetcher   *ProxyFetcher
 	VmessResult    *VmessList
+	VmessFixed     *VmessList
 	ClientList     []*XrayClient
 	Ports          []int
 	Conf           *config.GVConfig
@@ -22,6 +24,7 @@ func NewVerifier() (xv *XrayVerifier) {
 	xv = &XrayVerifier{
 		VmessFetcher:   NewProxyFetcher(Vmess),
 		VmessResult:    NewVmessList("proxies-verified-vmess.yml"),
+		VmessFixed:     NewVmessList("proxies-fixed-vmess.yml"),
 		ClientList:     make([]*XrayClient, 0),
 		Conf:           config.New(),
 		VmessCollector: make(ChanRawProxy, 100),
@@ -48,6 +51,11 @@ func (that *XrayVerifier) GetConf() *config.GVConfig {
 func (that *XrayVerifier) GetVmessVerifiedList() *VmessList {
 	that.VmessResult.Reload()
 	return that.VmessResult
+}
+
+func (that *XrayVerifier) GetVmessFixedList() *VmessList {
+	that.VmessFixed.Reload()
+	return that.VmessFixed
 }
 
 func (that *XrayVerifier) IsAllClientsRunning() bool {
@@ -110,6 +118,14 @@ func (that *XrayVerifier) RunVmess(force ...bool) {
 		go client.RunVerifier(Vmess)
 	}
 	go that.receiveResult()
-	// c := make(chan struct{})
-	// <-c
+}
+
+func (that *XrayVerifier) SetVmessForFixed(p string) {
+	if !strings.HasPrefix(p, "vmess") {
+		return
+	}
+	pxy := &Proxy{
+		Uri: strings.TrimSpace(p),
+	}
+	that.VmessFixed.Add(pxy)
 }

@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/gookit/color"
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/file"
@@ -58,7 +59,7 @@ func (that *VmessList) CheckFilePath() (ok bool) {
 
 func (that *VmessList) Reload() {
 	if ok, _ := utils.PathIsExist(that.path); !ok {
-		fmt.Println("ProxyList file does not exist.")
+		fmt.Println("ProxyList file does not exist: ", that.path)
 		return
 	}
 	err := that.k.Load(file.Provider(that.path), that.parser)
@@ -103,7 +104,40 @@ func (that *VmessList) Update(proxies any) {
 	that.restore()
 }
 
+func (that *VmessList) Add(pxy *Proxy) {
+	that.Reload()
+	flag := false
+	for _, p := range that.Proxies {
+		if p.Uri == pxy.Uri {
+			flag = true
+			break
+		}
+	}
+	if !flag {
+		that.Date = that.Today()
+		that.Proxies = append(that.Proxies, pxy)
+		that.Total = len(that.Proxies)
+		that.restore()
+	}
+}
+
+func (that *VmessList) ShowProxyList() {
+	that.Reload()
+
+	color.Red.Println(that.Date)
+	color.Yellow.Println(fmt.Sprintf("Total: %d", that.Total))
+	for idx, p := range that.Proxies {
+		rawUrl := p.GetUri()
+		xo := &XrayVmessOutbound{}
+		xo.ParseVmessUri(rawUrl)
+		if xo.Address != "" {
+			color.Cyan.Println(fmt.Sprintf("%d. %s:%d?path=%s (rtt: %dms)", idx, xo.Address, xo.Port, xo.Path, p.RTT))
+		}
+	}
+}
+
 func (that *VmessList) GetProxyList() []*Proxy {
+	that.Reload()
 	return that.Proxies
 }
 
