@@ -157,6 +157,11 @@ Therefore, If you are planning to get a new PC for development, probably the onl
     <td bgcolor="LavenderBlush">gvc vlang help</td>
   </tr>
   <tr>
+    <td><font color="Gree">Typst</font></td>
+    <td><font color="LightBlue">Install, SetEnv</font></td>
+    <td bgcolor="LavenderBlush">gvc typst help</td>
+  </tr>
+  <tr>
     <td><font color="Gree">Cygwin</font></td>
     <td><font color="LightBlue">Install, InstallPackage</font></td>
     <td bgcolor="PaleVioletRed">gvc cygwin help; Only for Windows; git,bash, clang, gcc, etc.</td>
