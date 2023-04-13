@@ -10,6 +10,7 @@
 - [flutter](https://github.com/moqsien/gvc/blob/main/docs/commands/flutter.md)
 - [julia](https://github.com/moqsien/gvc/blob/main/docs/commands/julia.md)
 - [vlang](https://github.com/moqsien/gvc/blob/main/docs/commands/vlang.md)
+- [typst](https://github.com/moqsien/gvc/blob/main/docs/commands/typst.md)
 - [cygwin](https://github.com/moqsien/gvc/blob/main/docs/commands/cygwin.md)
 - [homebrew](https://github.com/moqsien/gvc/blob/main/docs/commands/homebrew.md)
 - [vscode](https://github.com/moqsien/gvc/blob/main/docs/commands/vscode.md)

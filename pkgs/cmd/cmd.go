@@ -1198,10 +1198,10 @@ func (that *Cmder) initiate() {
 	that.vmaven()
 	that.vgradle()
 	that.vnodejs()
-	that.vtypst()
 	that.vflutter()
 	that.vjulia()
 	that.vrust()
+	that.vtypst()
 	that.vlang()
 	that.vcygwin()
 

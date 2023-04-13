@@ -238,6 +238,7 @@ COMMANDS:
    flutter, flu, fl               Flutter version management.
    julia, jul, ju                 Julia version management.
    rust, rustc, ru, r             Rust installation.
+   typst, ty                      Typst installation.
    vlang, vl                      Vlang installation.
    cygwin, cygw, cyg, cy          Cygwin installation.
    vscode, vsc, vs, v             VSCode and extensions installation.

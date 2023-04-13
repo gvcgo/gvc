@@ -10,6 +10,7 @@
 - [flutter](https://gitee.com/moqsien/gvc_tools/blob/main/docs/commands/flutter.md)
 - [julia](https://gitee.com/moqsien/gvc_tools/blob/main/docs/commands/julia.md)
 - [vlang](https://gitee.com/moqsien/gvc_tools/blob/main/docs/commands/vlang.md)
+- [typst](https://gitee.com/moqsien/gvc_tools/blob/main/docs/commands/typst.md)
 - [cygwin](https://gitee.com/moqsien/gvc_tools/blob/main/docs/commands/cygwin.md)
 - [homebrew](https://gitee.com/moqsien/gvc_tools/blob/main/docs/commands/homebrew.md)
 - [vscode](https://gitee.com/moqsien/gvc_tools/blob/main/docs/commands/vscode.md)
