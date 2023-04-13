@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gocolly/colly/v2"
+	"github.com/gin-gonic/gin"
 	"github.com/mholt/archiver/v3"
 	"github.com/moqsien/goktrl"
 	config "github.com/moqsien/gvc/pkgs/confs"
@@ -44,34 +44,30 @@ func NewXrayCtrl() (xc *XrayCtrl) {
 	return
 }
 
-// TODO: change this to unix socket
+func (that *XrayCtrl) getConf() *config.GVConfig {
+	return that.Runner.Conf
+}
+
 func (that *XrayCtrl) runPingServer() {
-	p := that.Runner.Conf.Proxy.PingPort
-	if p == 0 {
-		return
+	cnf := that.getConf()
+	if cnf.Proxy.XrayPingSock != "" {
+		s := utils.NewUServer(cnf.Proxy.XrayPingSock)
+		s.AddHandler("/ping", func(c *gin.Context) {
+			c.String(http.StatusOK, "pong")
+		})
+		s.Start()
 	}
-	pingSever := &http.Server{
-		Addr:         fmt.Sprintf("localhost:%d", p),
-		ReadTimeout:  2 * time.Second,
-		WriteTimeout: 2 * time.Second,
-	}
-	mux := http.NewServeMux()
-	mux.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(string("pong")))
-	})
-	pingSever.Handler = mux
-	pingSever.ListenAndServe()
 }
 
 func (that *XrayCtrl) IsXrayRunning() bool {
-	var content []byte
-	co := colly.NewCollector()
-	co.SetRequestTimeout(10 * time.Second)
-	co.OnResponse(func(r *colly.Response) {
-		content = r.Body
-	})
-	co.Visit(fmt.Sprintf("http://localhost:%d/ping", that.Runner.Conf.Proxy.PingPort))
-	return strings.Contains(string(content), "pong")
+	cnf := that.getConf()
+	c := utils.NewUClient(cnf.Proxy.XrayPingSock)
+	if result, err := c.GetResp("/ping", map[string]string{}); err == nil {
+		return strings.Contains(result, "pong")
+	} else {
+		fmt.Println("[Error detail] ", err)
+	}
+	return false
 }
 
 func (that *XrayCtrl) runByScript(batPath, scriptPath string) {
@@ -116,6 +112,7 @@ func (that *XrayCtrl) initXrayCtrl() {
 			that.hints(err)
 			if len(result) > 0 {
 				fmt.Println(string(result))
+				that.sendQuitSignal()
 			}
 		},
 		KtrlHandler: func(c *goktrl.Context) {
@@ -137,7 +134,7 @@ func (that *XrayCtrl) initXrayCtrl() {
 		},
 		ArgsDescription: "choose a specified proxy by index.",
 		KtrlHandler: func(c *goktrl.Context) {
-			pStr := that.Runner.RestartClient(c.Args[1:]...)
+			pStr := that.Runner.RestartClient(c.Args...)
 			c.Send(fmt.Sprintf("Xray client restarted @ proxy: %s | %s", pStr, strings.Join(c.Args, ",")), 200)
 		},
 		SocketName: that.sockName,
@@ -289,16 +286,45 @@ func (that *XrayCtrl) DownloadSwithOmega() {
 	}
 }
 
+func (that *XrayCtrl) keepRunningQuitSignal() {
+	cnf := that.getConf()
+	if cnf.Proxy.XrayKeeperSock != "" {
+		s := utils.NewUServer(cnf.Proxy.XrayKeeperSock)
+		s.AddHandler("/quit", func(c *gin.Context) {
+			go func() {
+				StopSignal <- struct{}{}
+			}()
+			c.String(http.StatusOK, "OK")
+		})
+		s.Start()
+	}
+}
+
+func (that *XrayCtrl) sendQuitSignal() {
+	cnf := that.getConf()
+	c := utils.NewUClient(cnf.Proxy.XrayKeeperSock)
+	if result, err := c.GetResp("/quit", map[string]string{}); err == nil {
+		if strings.Contains(result, "OK") {
+			fmt.Println("gvc [xray keeper] is stopped.")
+			return
+		}
+	}
+	fmt.Println("Nothing happened, please try again.")
+}
+
 func (that *XrayCtrl) KeepRunning() {
 	if that.IsXrayRunning() {
 		fmt.Println("[gvc xray client] is already running")
 		return
 	}
-
-	for {
-		if !that.IsXrayRunning() {
-			that.runByScript(that.batPath, that.scriptPath)
+	go that.keepRunningQuitSignal()
+	go func() {
+		for {
+			if !that.IsXrayRunning() {
+				that.runByScript(that.batPath, that.scriptPath)
+			}
+			time.Sleep(time.Second * 60)
 		}
-		time.Sleep(time.Second * 120)
-	}
+	}()
+	<-StopSignal
 }

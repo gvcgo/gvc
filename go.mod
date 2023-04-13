@@ -6,6 +6,7 @@ require (
 	github.com/Asutorufa/yuhaiin v0.3.1-rc.6
 	github.com/PuerkitoBio/goquery v1.8.1
 	github.com/aquasecurity/table v1.8.0
+	github.com/gin-gonic/gin v1.9.0
 	github.com/gocolly/colly/v2 v2.1.0
 	github.com/gogf/gf v1.16.9
 	github.com/gookit/color v1.5.2
@@ -13,6 +14,7 @@ require (
 	github.com/knadh/koanf v1.5.0
 	github.com/mholt/archiver/v3 v3.5.1
 	github.com/moqsien/goktrl v1.3.6
+	github.com/moqsien/processes v1.0.3
 	github.com/panjf2000/ants/v2 v2.7.1
 	github.com/prometheus-community/pro-bing v0.1.0
 	github.com/robfig/cron/v3 v3.0.1
@@ -47,7 +49,6 @@ require (
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/ghodss/yaml v1.0.1-0.20220118164431-d8423dcdf344 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
-	github.com/gin-gonic/gin v1.9.0 // indirect
 	github.com/go-logr/logr v1.2.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
@@ -85,7 +86,6 @@ require (
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
-	github.com/moqsien/processes v1.0.3 // indirect
 	github.com/nwaples/rardecode v1.1.0 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/onsi/ginkgo/v2 v2.9.0 // indirect

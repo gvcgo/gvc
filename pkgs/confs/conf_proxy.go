@@ -26,7 +26,8 @@ type ProxyConf struct {
 	SwitchOmegaUrl  string           `koanf:"switch_mega_url"`
 	GithubDownload  []string         `koanf:"github_download"`
 	MaxRTT          int              `koanf:"max_rtt"`
-	PingPort        int              `koanf:"ping_port"`
+	XrayPingSock    string           `koanf:"xray_ping_sock"`
+	XrayKeeperSock  string           `koanf:"xray_keeper_sock"`
 	path            string
 	k               *koanf.Koanf
 	parser          *yaml.YAML
@@ -79,7 +80,8 @@ func (that *ProxyConf) Reset() {
 		"https://d.serctl.com/?dl_start",
 	}
 	that.MaxRTT = 3
-	that.PingPort = 4156
+	that.XrayPingSock = "xray_ping"
+	that.XrayKeeperSock = "xray_keeper"
 }
 
 func (that *ProxyConf) GetSubUrls() []string {
