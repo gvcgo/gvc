@@ -494,8 +494,9 @@ var (
 /*
 Chatgpt related
 */
-var (
-	ChatgptFilesDir             string = GVCBackupDir
-	ChatgptConversationFilePath string = filepath.Join(ChatgptFilesDir, "chatgpt_conversation.json")
-	ChatgptConfigFilePath       string = filepath.Join(ChatgptFilesDir, "chatgpt_config.yml")
+var ChatgptFilesDir string = GVCBackupDir
+
+const (
+	ChatgptConversationFileName string = "chatgpt_conversation.json"
+	ChatgptConfigFileName       string = "chatgpt_config.yml"
 )

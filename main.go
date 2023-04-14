@@ -33,11 +33,11 @@ func main() {
 		// v.RunXray()
 		_ = vctrl.NewTypstVersion()
 
-		cc := vchat.NewChatGpt()
-		cc.SetAppKey("")
-		cc.SetProxyPort(2019)
-
-		cc.Chat("用go写一个桶排序")
+		cc := vchat.NewChatGptConf()
+		// cc.Reset()
+		// cc.Restore()
+		// cc.ShowConfigOpts()
+		cc.SetConfField("api_key", "")
 		// fmt.Printf("Total: %v, Free:%v, UsedPercent:%f%%\n", v.Total, v.Free, v.UsedPercent)
 
 		// convert to JSON. String() is also implemented
