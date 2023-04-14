@@ -64,6 +64,7 @@ func (that *ChatGPTConf) setup() {
 func (that *ChatGPTConf) Reset() {
 	that.Endpoint = "https://api.openai.com/v1"
 	that.APIKey = ""
+	that.APIType = openai.APITypeOpenAI
 	that.Prompts = map[string]string{
 		"default":    "You are ChatGPT, a large language model trained by OpenAI. Answer as concisely as possible.",
 		"translator": "I want you to act as an English translator, spelling corrector and improver. I will speak to you in any language and you will detect the language, translate it and answer in the corrected and improved version of my text, in English. I want you to replace my simplified A0-level words and sentences with more beautiful and elegant, upper level English words and sentences. The translation should be natural, easy to understand, and concise. Keep the meaning same, but make them more literary. I want you to only reply the correction, the improvements and nothing else, do not write explanations.",
