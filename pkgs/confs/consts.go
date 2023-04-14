@@ -490,3 +490,12 @@ var (
 	TypstFilesDir string = filepath.Join(GVCWorkDir, "typst_files")
 	TypstRootDir  string = filepath.Join(TypstFilesDir, "typst")
 )
+
+/*
+Chatgpt related
+*/
+var (
+	ChatgptFilesDir             string = GVCBackupDir
+	ChatgptConversationFilePath string = filepath.Join(ChatgptFilesDir, "chatgpt_conversation.json")
+	ChatgptConfigFilePath       string = filepath.Join(ChatgptFilesDir, "chatgpt_config.yml")
+)
