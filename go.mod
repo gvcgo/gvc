@@ -18,6 +18,7 @@ require (
 	github.com/moqsien/goktrl v1.3.6
 	github.com/moqsien/processes v1.0.3
 	github.com/panjf2000/ants/v2 v2.7.1
+	github.com/pkoukk/tiktoken-go v0.1.0
 	github.com/prometheus-community/pro-bing v0.1.0
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/sashabaranov/go-openai v1.7.0
@@ -44,6 +45,7 @@ require (
 	github.com/containerd/console v1.0.3 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/dgryski/go-metro v0.0.0-20211217172704-adc40b04c140 // indirect
+	github.com/dlclark/regexp2 v1.8.1 // indirect
 	github.com/dsnet/compress v0.0.2-0.20210315054119-f66993602bf5 // indirect
 	github.com/fatih/color v1.15.0 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
