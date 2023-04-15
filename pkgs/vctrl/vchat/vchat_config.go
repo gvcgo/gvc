@@ -1,12 +1,20 @@
 package vchat
 
 import (
+	"context"
 	"fmt"
+	"net"
+	"net/http"
 	"os"
 	"path/filepath"
 	"reflect"
 	"strings"
+	"time"
 
+	"github.com/Asutorufa/yuhaiin/pkg/net/interfaces/proxy"
+	"github.com/Asutorufa/yuhaiin/pkg/node/register"
+	"github.com/Asutorufa/yuhaiin/pkg/protos/node/point"
+	"github.com/Asutorufa/yuhaiin/pkg/protos/node/protocol"
 	"github.com/gogf/gf/util/gconv"
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/yaml"
@@ -37,6 +45,7 @@ type ChatGPTConf struct {
 	Conversation *ConversationConf `koanf:"conversation"`
 	ProxyType    string            `koanf:"proxy_type"`
 	ProxyPort    int               `koanf:"proxy_port"`
+	ProxyTimeout int               `koanf:"proxy_timeout"`
 	k            *koanf.Koanf
 	parser       *yaml.YAML
 	path         string
@@ -177,4 +186,60 @@ func (that *ChatGPTConf) SetConfField(kName, value string) {
 		fmt.Println("Unsupported type!")
 	}
 	that.Restore()
+}
+
+func (that *ChatGPTConf) GetHttpClient() *http.Client {
+	that.Reload()
+	if that.ProxyType != "socks5" {
+		fmt.Println("[Only support socks5] ", that.ProxyType)
+	}
+	if that.ProxyPort != 0 {
+		node := &point.Point{
+			Protocols: []*protocol.Protocol{
+				{
+					Protocol: &protocol.Protocol_Simple{
+						Simple: &protocol.Simple{
+							Host:             "127.0.0.1",
+							Port:             int32(that.ProxyPort),
+							PacketConnDirect: true,
+						},
+					},
+				},
+				{
+					Protocol: &protocol.Protocol_Socks5{
+						Socks5: &protocol.Socks5{},
+					},
+				},
+			},
+		}
+		pro, err := register.Dialer(node)
+		if err != nil {
+			fmt.Println("[Dialer error] ", err)
+			return nil
+		}
+		if that.ProxyTimeout == 0 {
+			that.ProxyTimeout = 300
+		}
+		r := &http.Client{
+			Transport: &http.Transport{
+				DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
+					add, err := proxy.ParseAddress(proxy.PaseNetwork(network), addr)
+					if err != nil {
+						return nil, fmt.Errorf("parse address failed: %w", err)
+					}
+					add.WithContext(ctx)
+					return pro.Conn(add)
+				}}, Timeout: time.Duration(that.ProxyTimeout) * time.Second,
+		}
+		return r
+	}
+	return nil
+}
+
+func (that *ChatGPTConf) SearchPrompt(key string) string {
+	prompt := that.Prompts[key]
+	if prompt == "" {
+		return key
+	}
+	return prompt
 }
