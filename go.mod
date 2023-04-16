@@ -8,6 +8,7 @@ require (
 	github.com/aquasecurity/table v1.8.0
 	github.com/avast/retry-go v3.0.0+incompatible
 	github.com/charmbracelet/bubbletea v0.23.2
+	github.com/charmbracelet/lipgloss v0.7.1
 	github.com/gin-gonic/gin v1.9.0
 	github.com/gocolly/colly/v2 v2.1.0
 	github.com/gogf/gf v1.16.9
@@ -38,7 +39,7 @@ require (
 	github.com/antchfx/htmlquery v1.3.0 // indirect
 	github.com/antchfx/xmlquery v1.3.15 // indirect
 	github.com/antchfx/xpath v1.2.4 // indirect
-	github.com/aymanbagabas/go-osc52 v1.2.1 // indirect
+	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/bytedance/sonic v1.8.6 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
 	github.com/clbanning/mxj v1.8.5-0.20200714211355-ff02cfb8ea28 // indirect
@@ -94,7 +95,7 @@ require (
 	github.com/muesli/ansi v0.0.0-20211018074035-2e021307bc4b // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
 	github.com/muesli/reflow v0.3.0 // indirect
-	github.com/muesli/termenv v0.14.0 // indirect
+	github.com/muesli/termenv v0.15.1 // indirect
 	github.com/nwaples/rardecode v1.1.0 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/onsi/ginkgo/v2 v2.9.0 // indirect
