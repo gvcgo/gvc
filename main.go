@@ -7,7 +7,6 @@ import (
 	"github.com/moqsien/gvc/pkgs/cmd"
 	"github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/vctrl"
-	"github.com/moqsien/gvc/pkgs/vctrl/vchat"
 )
 
 func main() {
@@ -33,11 +32,11 @@ func main() {
 		// v.RunXray()
 		_ = vctrl.NewTypstVersion()
 
-		cc := vchat.NewChatGptConf()
+		// cc := vchat.NewChatGptConf()
 		// cc.Reset()
 		// cc.Restore()
 		// cc.ShowConfigOpts()
-		cc.SetConfField("api_key", "")
+		// cc.SetConfField("api_key", "")
 		// fmt.Printf("Total: %v, Free:%v, UsedPercent:%f%%\n", v.Total, v.Free, v.UsedPercent)
 
 		// convert to JSON. String() is also implemented

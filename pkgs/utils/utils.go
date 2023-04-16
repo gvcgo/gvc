@@ -18,6 +18,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"unicode"
 
 	"github.com/gogf/gf/os/genv"
 )
@@ -360,4 +361,20 @@ func BatchReplaceAll(str string, oldNew map[string]string) (r string) {
 		r = strings.ReplaceAll(r, old, new)
 	}
 	return
+}
+
+func ContainsCJK(s string) bool {
+	for _, r := range s {
+		if unicode.In(r, unicode.Han, unicode.Hangul, unicode.Hiragana, unicode.Katakana) {
+			return true
+		}
+	}
+	return false
+}
+
+func EnsureTrailingNewline(s string) string {
+	if !strings.HasSuffix(s, "\n") {
+		return s + "\n"
+	}
+	return s
 }
