@@ -30,6 +30,25 @@ type Option struct {
 	Value reflect.Value
 	Type  string
 	Field string
+	KName string
+}
+
+func (that *Option) String() string {
+	value := that.Value.FieldByName(that.Field)
+	var r any
+	switch that.Type {
+	case "string":
+		return value.String()
+	case "bool":
+		r = value.Bool()
+	case "int":
+		r = value.Int()
+	case "float32", "float64", "float":
+		r = value.Float()
+	default:
+		return ""
+	}
+	return gconv.String(r)
 }
 
 type ConversationConf struct {
@@ -141,16 +160,22 @@ func (that *ChatGPTConf) GetOptions() {
 								Value: conVal,
 								Type:  conType.Field(j).Type.Kind().String(),
 								Field: conType.Field(j).Name,
+								KName: ckoanfTag,
 							}
 						}
 					}
 				}
 			default:
 				if koanfTag != "" {
+					typ := valType.Field(i).Type.Kind().String()
+					if typ == "map" {
+						return
+					}
 					that.OptList[koanfTag] = &Option{
 						Value: cVal,
-						Type:  valType.Field(i).Type.Kind().String(),
+						Type:  typ,
 						Field: valType.Field(i).Name,
+						KName: koanfTag,
 					}
 				}
 			}
