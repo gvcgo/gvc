@@ -1,26 +1,52 @@
 package vtui
 
-import tea "github.com/charmbracelet/bubbletea"
+import (
+	"github.com/charmbracelet/bubbles/key"
+	tea "github.com/charmbracelet/bubbletea"
+)
+
+const (
+	Help string = "help"
+	Quit string = "quit"
+)
 
 type ShortcutKey struct {
-	Key  string
-	Help string
-	Func func() error
+	Name string
+	Key  key.Binding
+	Func func(tea.Msg) error
 	Cmd  tea.Cmd
 }
 
 type KeyList []*ShortcutKey
 
+func (that *KeyList) ShortHelp() (r []key.Binding) {
+	for _, k := range *that {
+		if k.Name == Help || k.Name == Quit {
+			r = append(r, k.Key)
+		}
+	}
+	return
+}
+
+func (that *KeyList) FullHelp() (r [][]key.Binding) {
+	kList := []key.Binding{}
+	for _, k := range *that {
+		kList = append(kList, k.Key)
+	}
+	r = append(r, kList)
+	return
+}
+
 func (that *KeyList) UpdateByKeys(msg tea.Msg) tea.Cmd {
 	var cmds []tea.Cmd
 	if m, ok := msg.(tea.KeyMsg); ok {
-		for _, key := range *that {
-			if m.String() == key.Key {
-				if key.Func != nil {
-					key.Func()
+		for _, k := range *that {
+			if key.Matches(m, k.Key) {
+				if k.Func != nil {
+					k.Func(msg)
 				}
-				if key.Cmd != nil {
-					cmds = append(cmds, key.Cmd)
+				if k.Cmd != nil {
+					cmds = append(cmds, k.Cmd)
 				}
 			}
 		}
@@ -33,7 +59,7 @@ func (that *KeyList) UpdateByKeys(msg tea.Msg) tea.Cmd {
 }
 
 type Message struct {
-	Func func() error
+	Func func(tea.Msg) error
 	Cmd  tea.Cmd
 }
 
@@ -46,7 +72,7 @@ func (that *MessageList) UpdateByMessage(msg tea.Msg) tea.Cmd {
 			cmds = append(cmds, m.Cmd)
 		}
 		if m.Func != nil {
-			m.Func()
+			m.Func(msg)
 		}
 	}
 	if len(cmds) > 0 {

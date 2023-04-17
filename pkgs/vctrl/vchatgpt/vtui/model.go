@@ -3,6 +3,7 @@ package vtui
 import (
 	"strings"
 
+	"github.com/charmbracelet/bubbles/help"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -12,6 +13,11 @@ type IView interface {
 	Keys() KeyList
 	Msgs() MessageList
 	IsEnabled() bool
+	SetModel(IModel)
+}
+
+type IModel interface {
+	GetKeys() help.KeyMap
 }
 
 type Model struct {
@@ -30,6 +36,10 @@ func NewModel() (m *Model) {
 	return
 }
 
+func (that *Model) GetKeys() help.KeyMap {
+	return &that.Keys
+}
+
 func (that *Model) SetInit(f func() tea.Cmd) {
 	that.initFunc = f
 }
@@ -44,9 +54,12 @@ func (that *Model) RegisterView(v IView) {
 	if that.Msgs == nil {
 		that.Msgs = make(MessageList, 0)
 	}
-	that.Keys = append(that.Keys, v.Keys()...)
-	that.Msgs = append(that.Msgs, v.Msgs()...)
-	that.Views[v.Name()] = v
+	if v != nil {
+		that.Keys = append(that.Keys, v.Keys()...)
+		that.Msgs = append(that.Msgs, v.Msgs()...)
+		that.Views[v.Name()] = v
+		v.SetModel(that)
+	}
 }
 
 func (that *Model) Init() tea.Cmd {
