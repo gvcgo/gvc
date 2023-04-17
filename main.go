@@ -7,6 +7,7 @@ import (
 	"github.com/moqsien/gvc/pkgs/cmd"
 	"github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/vctrl"
+	"github.com/moqsien/gvc/pkgs/vctrl/vchatgpt"
 )
 
 func main() {
@@ -30,7 +31,8 @@ func main() {
 		// v.GetProxyList()
 		// v := vproxy.NewProxyer()
 		// v.RunXray()
-
+		r := vchatgpt.NewRunner()
+		r.Run()
 		// cc := vchat.NewChatGptConf()
 		// cc.Reset()
 		// cc.Restore()
