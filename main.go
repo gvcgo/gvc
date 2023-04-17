@@ -30,7 +30,6 @@ func main() {
 		// v.GetProxyList()
 		// v := vproxy.NewProxyer()
 		// v.RunXray()
-		_ = vctrl.NewTypstVersion()
 
 		// cc := vchat.NewChatGptConf()
 		// cc.Reset()

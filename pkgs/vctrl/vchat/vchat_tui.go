@@ -20,8 +20,6 @@ import (
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/muesli/reflow/wordwrap"
 	"github.com/muesli/reflow/wrap"
-
-	"github.com/j178/chatgpt/tokenizer"
 )
 
 type (
@@ -377,7 +375,7 @@ func (m model) RenderFooter() string {
 	if m.conversations.Curr().Len() > 0 || len(question) > 0 {
 		tokens := m.conversations.Curr().GetContextTokens()
 		if len(question) > 0 {
-			tokens += tokenizer.CountTokens(m.conversations.Curr().Config.Model, question) + 5
+			tokens += CountTokens(m.conversations.Curr().Config.Model, question) + 5
 		}
 		columns = append(columns, fmt.Sprintf("%s %d", TokenIcon, tokens))
 	}
