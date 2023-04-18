@@ -378,3 +378,12 @@ func EnsureTrailingNewline(s string) string {
 	}
 	return s
 }
+
+func FindMaxLengthOfStringList(sl []string) (max int) {
+	for _, s := range sl {
+		if len(s) > max {
+			max = len(s)
+		}
+	}
+	return
+}

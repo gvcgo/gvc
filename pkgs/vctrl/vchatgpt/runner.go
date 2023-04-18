@@ -22,6 +22,7 @@ func NewRunner() (r *Runner) {
 
 func (that *Runner) Run() {
 	that.M.RegisterView(views.NewDefaultView())
+	that.M.RegisterView(views.NewConfView())
 	p := tea.NewProgram(that.M)
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("Alas, there's been an error: %v", err)

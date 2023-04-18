@@ -29,15 +29,18 @@ func (that *DefaultView) Keys() vtui.KeyList {
 	kl = append(kl, &vtui.ShortcutKey{
 		Name: that.ViewName,
 		Key:  key.NewBinding(key.WithKeys("esc", "ctrl+c"), key.WithHelp("esc", "Quit tui."), key.WithHelp("ctrl+c", "Quit tui.")),
-		Cmd:  tea.Quit,
+		Func: func(km tea.KeyMsg) (tea.Cmd, error) {
+			return tea.Quit, nil
+		},
 	})
 	kl = append(kl, &vtui.ShortcutKey{
 		Name: that.ViewName,
 		Key:  key.NewBinding(key.WithKeys("ctrl+h"), key.WithHelp("ctrl+h", "Show/hide help info.")),
-		Func: func(m tea.Msg, sk *vtui.ShortcutKey) error {
+		Func: func(m tea.KeyMsg) (tea.Cmd, error) {
 			that.help.ShowAll = !that.help.ShowAll
 			that.Enabled = true
-			return nil
+			that.Model.DisableOthers(that.Name())
+			return nil, nil
 		},
 	})
 	return kl

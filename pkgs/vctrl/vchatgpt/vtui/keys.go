@@ -9,18 +9,12 @@ const (
 	Default string = "default"
 )
 
+type KeyFunc func(tea.KeyMsg) (tea.Cmd, error)
+
 type ShortcutKey struct {
 	Name string
 	Key  key.Binding
-	Func func(tea.Msg, *ShortcutKey) error
-	Cmd  tea.Cmd
-}
-
-func (that *ShortcutKey) Execute(msg tea.Msg) (err error) {
-	if that.Func != nil {
-		err = that.Func(msg, that)
-	}
-	return
+	Func KeyFunc
 }
 
 type KeyList []*ShortcutKey
@@ -49,10 +43,8 @@ func (that *KeyList) UpdateByKeys(msg tea.Msg) tea.Cmd {
 		for _, k := range *that {
 			if key.Matches(m, k.Key) {
 				if k.Func != nil {
-					k.Execute(msg)
-				}
-				if k.Cmd != nil {
-					cmds = append(cmds, k.Cmd)
+					cmd, _ := k.Func(m)
+					cmds = append(cmds, cmd)
 				}
 			}
 		}

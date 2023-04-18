@@ -7,24 +7,30 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
+type CmdHandler func(tea.Msg) tea.Cmd
+
 type IView interface {
 	Name() string
 	View() string
 	Keys() KeyList
 	Msgs() MessageList
+	ExtraCmdHandlers() []CmdHandler
 	IsEnabled() bool
+	Disable()
 	SetModel(IModel)
 }
 
 type IModel interface {
 	GetKeys() help.KeyMap
+	DisableOthers(string)
 }
 
 type Model struct {
-	Views    map[string]IView
-	Keys     KeyList
-	Msgs     MessageList
-	initFunc func() tea.Cmd
+	Views            map[string]IView
+	Keys             KeyList
+	Msgs             MessageList
+	ExtraCmdHandlers []CmdHandler
+	initFunc         func() tea.Cmd
 }
 
 func NewModel() (m *Model) {
@@ -38,6 +44,15 @@ func NewModel() (m *Model) {
 
 func (that *Model) GetKeys() help.KeyMap {
 	return &that.Keys
+}
+
+func (that *Model) DisableOthers(name string) {
+	for _, v := range that.Views {
+		if v.Name() == name {
+			continue
+		}
+		v.Disable()
+	}
 }
 
 func (that *Model) SetInit(f func() tea.Cmd) {
@@ -59,6 +74,7 @@ func (that *Model) RegisterView(v IView) {
 		that.Msgs = append(that.Msgs, v.Msgs()...)
 		that.Views[v.Name()] = v
 		v.SetModel(that)
+		that.ExtraCmdHandlers = v.ExtraCmdHandlers()
 	}
 }
 
@@ -77,6 +93,10 @@ func (that *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 	cmd = that.Msgs.UpdateByMessage(msg)
 	if cmd != nil {
+		cmds = append(cmds, cmd)
+	}
+	for _, f := range that.ExtraCmdHandlers {
+		cmd = f(msg)
 		cmds = append(cmds, cmd)
 	}
 	return that, tea.Batch(cmds...)

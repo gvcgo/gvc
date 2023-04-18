@@ -34,7 +34,7 @@ type Option struct {
 }
 
 func (that *Option) String() string {
-	value := that.Value.FieldByName(that.Field)
+	value := that.Value.Elem().FieldByName(that.Field)
 	var r any
 	switch that.Type {
 	case "string":
@@ -67,12 +67,13 @@ type ChatGPTConf struct {
 	APIVersion   string            `koanf:"api_version"`
 	Engine       string            `koanf:"engine"`
 	OrgID        string            `koanf:"org_id"`
-	Prompts      map[string]string `koanf:"prompts"`
-	Conversation *ConversationConf `koanf:"conversation"`
 	ProxyType    string            `koanf:"proxy_type"`
 	ProxyUri     string            `koanf:"proxy_uri"`
 	ProxyTimeout int               `koanf:"proxy_timeout"`
+	Conversation *ConversationConf `koanf:"conversation"`
+	Prompts      map[string]string `koanf:"prompts"`
 	OptList      map[string]*Option
+	OptOrder     []string
 	k            *koanf.Koanf
 	parser       *yaml.YAML
 	path         string
@@ -139,22 +140,23 @@ func (that *ChatGPTConf) Reload() {
 }
 
 func (that *ChatGPTConf) GetOptions() {
+	that.Reload()
+	that.OptOrder = []string{}
 	cVal := reflect.ValueOf(that)
 	valType := cVal.Type().Elem()
 	for i := 0; i < valType.NumField(); i++ {
-		name := valType.Field(i).Name
 		tag := valType.Field(i).Tag
 		koanfTag := tag.Get("koanf")
-
 		if koanfTag != "" {
-			switch name {
-			case "Conversation":
+			switch koanfTag {
+			case "conversation":
 				if that.Conversation != nil {
 					conVal := reflect.ValueOf(that.Conversation)
 					conType := conVal.Type().Elem()
 					for j := 0; j < conType.NumField(); j++ {
 						ctag := conType.Field(j).Tag
 						ckoanfTag := ctag.Get("koanf")
+						that.OptOrder = append(that.OptOrder, ckoanfTag)
 						if ckoanfTag != "" {
 							that.OptList[ckoanfTag] = &Option{
 								Value: conVal,
@@ -168,14 +170,14 @@ func (that *ChatGPTConf) GetOptions() {
 			default:
 				if koanfTag != "" {
 					typ := valType.Field(i).Type.Kind().String()
-					if typ == "map" {
-						return
-					}
-					that.OptList[koanfTag] = &Option{
-						Value: cVal,
-						Type:  typ,
-						Field: valType.Field(i).Name,
-						KName: koanfTag,
+					if !strings.Contains(typ, "map") {
+						that.OptOrder = append(that.OptOrder, koanfTag)
+						that.OptList[koanfTag] = &Option{
+							Value: cVal,
+							Type:  typ,
+							Field: valType.Field(i).Name,
+							KName: koanfTag,
+						}
 					}
 				}
 			}

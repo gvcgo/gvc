@@ -20,6 +20,14 @@ func (that *ViewBase) IsEnabled() bool {
 	return that.Enabled
 }
 
+func (that *ViewBase) Disable() {
+	that.Enabled = false
+}
+
+func (that *ViewBase) ExtraCmdHandlers() []vtui.CmdHandler {
+	return []vtui.CmdHandler{}
+}
+
 func NewBase(name string) *ViewBase {
 	return &ViewBase{
 		ViewName: name,
