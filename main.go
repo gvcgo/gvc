@@ -39,6 +39,7 @@ func main() {
 		// fmt.Println(*co)
 		r := vchatgpt.NewRunner()
 		r.Run()
+
 		// cc := vchat.NewChatGptConf()
 		// cc.Reset()
 		// cc.Restore()
