@@ -7,7 +7,10 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-type CmdHandler func(tea.Msg) tea.Cmd
+type (
+	CmdHandler  func(tea.Msg) tea.Cmd
+	InitHandler func() tea.Cmd
+)
 
 type IView interface {
 	Name() string
@@ -32,7 +35,7 @@ type Model struct {
 	Keys             KeyList
 	Msgs             MessageList
 	ExtraCmdHandlers []CmdHandler
-	initFunc         func() tea.Cmd
+	InitList         []InitHandler
 }
 
 func NewModel() (m *Model) {
@@ -65,8 +68,8 @@ func (that *Model) EnableDefault() {
 	}
 }
 
-func (that *Model) SetInit(f func() tea.Cmd) {
-	that.initFunc = f
+func (that *Model) AddInit(f func() tea.Cmd) {
+	that.InitList = append(that.InitList, f)
 }
 
 func (that *Model) RegisterView(v IView) {
@@ -89,10 +92,11 @@ func (that *Model) RegisterView(v IView) {
 }
 
 func (that *Model) Init() tea.Cmd {
-	if that.initFunc != nil {
-		return that.initFunc()
+	var cmds []tea.Cmd
+	for _, f := range that.InitList {
+		cmds = append(cmds, f())
 	}
-	return nil
+	return tea.Batch(cmds...)
 }
 
 func (that *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {

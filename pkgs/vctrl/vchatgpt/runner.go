@@ -21,7 +21,7 @@ func NewRunner() (r *Runner) {
 }
 
 func (that *Runner) Run() {
-	that.M.SetInit(views.DefaultInit)
+	that.M.AddInit(views.DefaultInit)
 	that.M.RegisterView(views.NewDefaultView())
 	that.M.RegisterView(views.NewConfView())
 	p := tea.NewProgram(that.M)

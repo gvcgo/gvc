@@ -5,6 +5,13 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
+type (
+	ErrMsg         error
+	DeltaAnswerMsg string
+	AnswerMsg      string
+	SaveMsg        struct{}
+)
+
 const (
 	Default string = "default"
 )
