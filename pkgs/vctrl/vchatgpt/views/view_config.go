@@ -40,11 +40,11 @@ func NewConfView() (cv *ChatgptConfView) {
 		Conf:     chatgpt.NewChatGptConf(),
 	}
 	cv.Conf.GetOptions()
-	cv.inputs = make([]textinput.Model, len(cv.Conf.OptList))
+	cv.inputs = make([]textinput.Model, len(cv.Conf.GetOptOrder()))
 	idx := 0
-	maxLength := utils.FindMaxLengthOfStringList(cv.Conf.OptOrder)
-	for _, kname := range cv.Conf.OptOrder {
-		opt := cv.Conf.OptList[kname]
+	maxLength := utils.FindMaxLengthOfStringList(cv.Conf.GetOptOrder())
+	for _, kname := range cv.Conf.GetOptOrder() {
+		opt := cv.Conf.GetOptList()[kname]
 		t := textinput.New()
 		t.CursorStyle = CursorStyle
 		t.CharLimit = 100
@@ -141,6 +141,24 @@ func (that *ChatgptConfView) Keys() vtui.KeyList {
 			}
 
 			return tea.Batch(cmds...), nil
+		},
+	})
+	kl = append(kl, &vtui.ShortcutKey{
+		Name: that.ViewName,
+		Key:  key.NewBinding(key.WithKeys("ctrl+s"), key.WithHelp("ctrl+s", "Submit chatgpt_config.")),
+		Func: func(km tea.KeyMsg) (tea.Cmd, error) {
+			if that.focusIndex != len(that.inputs) {
+				return nil, nil
+			}
+			for _, ipt := range that.inputs {
+				kname := ipt.Placeholder
+				value := ipt.Value()
+				that.Conf.SetConfField(kname, value)
+			}
+			that.Conf.Restore()
+			that.Enabled = false
+			that.Model.EnableDefault()
+			return DefaultCmd, nil
 		},
 	})
 	return kl

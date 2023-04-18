@@ -56,16 +56,11 @@ func (that *KeyList) UpdateByKeys(msg tea.Msg) tea.Cmd {
 	return nil
 }
 
-type Message struct {
-	Func func(tea.Msg, *Message) error
-	Cmd  tea.Cmd
-}
+type MsgFunc func(msg tea.Msg) (tea.Cmd, error)
 
-func (that *Message) Execute(msg tea.Msg) (err error) {
-	if that.Func != nil {
-		return that.Func(msg, that)
-	}
-	return
+type Message struct {
+	Name string
+	Func MsgFunc
 }
 
 type MessageList []*Message
@@ -74,10 +69,8 @@ func (that *MessageList) UpdateByMessage(msg tea.Msg) tea.Cmd {
 	var cmds []tea.Cmd
 	if m, ok := msg.(*Message); ok && m != nil {
 		if m.Func != nil {
-			m.Execute(msg)
-		}
-		if m.Cmd != nil {
-			cmds = append(cmds, m.Cmd)
+			cmd, _ := m.Func(msg)
+			cmds = append(cmds, cmd)
 		}
 	}
 	if len(cmds) > 0 {

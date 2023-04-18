@@ -10,6 +10,10 @@ import (
 
 type DefaultMsg struct{}
 
+var DefaultCmd tea.Cmd = func() tea.Msg {
+	return vtui.Message{Name: vtui.Default}
+}
+
 type DefaultView struct {
 	*ViewBase
 	help     help.Model
@@ -47,7 +51,19 @@ func (that *DefaultView) Keys() vtui.KeyList {
 }
 
 func (that *DefaultView) Msgs() vtui.MessageList {
-	return vtui.MessageList{}
+	ml := vtui.MessageList{}
+	ml = append(ml, &vtui.Message{
+		Name: that.ViewName,
+		Func: func(m1 tea.Msg) (tea.Cmd, error) {
+			if m, ok := m1.(*vtui.Message); ok && m.Name == that.ViewName {
+				that.Enabled = true
+				that.help.ShowAll = false
+				return tea.ClearScreen, nil
+			}
+			return nil, nil
+		},
+	})
+	return ml
 }
 
 func (that *DefaultView) View() string {

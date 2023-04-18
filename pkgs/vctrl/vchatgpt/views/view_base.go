@@ -24,6 +24,10 @@ func (that *ViewBase) Disable() {
 	that.Enabled = false
 }
 
+func (that *ViewBase) Enable() {
+	that.Enabled = true
+}
+
 func (that *ViewBase) ExtraCmdHandlers() []vtui.CmdHandler {
 	return []vtui.CmdHandler{}
 }

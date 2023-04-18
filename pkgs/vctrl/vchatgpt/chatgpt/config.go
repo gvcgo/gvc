@@ -63,7 +63,7 @@ type ConversationConf struct {
 type ChatGPTConf struct {
 	Endpoint     string            `koanf:"endpoint"`
 	APIKey       string            `koanf:"api_key"`
-	APIType      openai.APIType    `koanf:"api_type"`
+	APIType      string            `koanf:"api_type"`
 	APIVersion   string            `koanf:"api_version"`
 	Engine       string            `koanf:"engine"`
 	OrgID        string            `koanf:"org_id"`
@@ -72,8 +72,8 @@ type ChatGPTConf struct {
 	ProxyTimeout int               `koanf:"proxy_timeout"`
 	Conversation *ConversationConf `koanf:"conversation"`
 	Prompts      map[string]string `koanf:"prompts"`
-	OptList      map[string]*Option
-	OptOrder     []string
+	optList      map[string]*Option
+	optOrder     []string
 	k            *koanf.Koanf
 	parser       *yaml.YAML
 	path         string
@@ -85,10 +85,18 @@ func NewChatGptConf() (cc *ChatGPTConf) {
 		k:            koanf.New("."),
 		parser:       yaml.Parser(),
 		path:         filepath.Join(config.ChatgptFilesDir, config.ChatgptConfigFileName),
-		OptList:      map[string]*Option{},
+		optList:      map[string]*Option{},
 	}
 	cc.setup()
 	return
+}
+
+func (that *ChatGPTConf) GetOptList() (optList map[string]*Option) {
+	return that.optList
+}
+
+func (that *ChatGPTConf) GetOptOrder() []string {
+	return that.optOrder
 }
 
 func (that *ChatGPTConf) setup() {
@@ -102,7 +110,7 @@ func (that *ChatGPTConf) setup() {
 func (that *ChatGPTConf) Reset() {
 	that.Endpoint = "https://api.openai.com/v1"
 	that.APIKey = ""
-	that.APIType = openai.APITypeOpenAI
+	that.APIType = string(openai.APITypeOpenAI)
 	that.Prompts = map[string]string{
 		"default":    "You are ChatGPT, a large language model trained by OpenAI. Answer as concisely as possible.",
 		"translator": "I want you to act as an English translator, spelling corrector and improver. I will speak to you in any language and you will detect the language, translate it and answer in the corrected and improved version of my text, in English. I want you to replace my simplified A0-level words and sentences with more beautiful and elegant, upper level English words and sentences. The translation should be natural, easy to understand, and concise. Keep the meaning same, but make them more literary. I want you to only reply the correction, the improvements and nothing else, do not write explanations.",
@@ -141,7 +149,7 @@ func (that *ChatGPTConf) Reload() {
 
 func (that *ChatGPTConf) GetOptions() {
 	that.Reload()
-	that.OptOrder = []string{}
+	that.optOrder = []string{}
 	cVal := reflect.ValueOf(that)
 	valType := cVal.Type().Elem()
 	for i := 0; i < valType.NumField(); i++ {
@@ -156,9 +164,9 @@ func (that *ChatGPTConf) GetOptions() {
 					for j := 0; j < conType.NumField(); j++ {
 						ctag := conType.Field(j).Tag
 						ckoanfTag := ctag.Get("koanf")
-						that.OptOrder = append(that.OptOrder, ckoanfTag)
+						that.optOrder = append(that.optOrder, ckoanfTag)
 						if ckoanfTag != "" {
-							that.OptList[ckoanfTag] = &Option{
+							that.optList[ckoanfTag] = &Option{
 								Value: conVal,
 								Type:  conType.Field(j).Type.Kind().String(),
 								Field: conType.Field(j).Name,
@@ -171,8 +179,8 @@ func (that *ChatGPTConf) GetOptions() {
 				if koanfTag != "" {
 					typ := valType.Field(i).Type.Kind().String()
 					if !strings.Contains(typ, "map") {
-						that.OptOrder = append(that.OptOrder, koanfTag)
-						that.OptList[koanfTag] = &Option{
+						that.optOrder = append(that.optOrder, koanfTag)
+						that.optList[koanfTag] = &Option{
 							Value: cVal,
 							Type:  typ,
 							Field: valType.Field(i).Name,
@@ -186,11 +194,11 @@ func (that *ChatGPTConf) GetOptions() {
 }
 
 func (that *ChatGPTConf) ShowOpts() []string {
-	if len(that.OptList) == 0 {
+	if len(that.optList) == 0 {
 		that.GetOptions()
 	}
 	r := []string{}
-	for k := range that.OptList {
+	for k := range that.optList {
 		r = append(r, k)
 	}
 	return r
@@ -198,12 +206,12 @@ func (that *ChatGPTConf) ShowOpts() []string {
 
 func (that *ChatGPTConf) SetConfField(kName, value string) {
 	that.Reload()
-	if len(that.OptList) == 0 {
+	if len(that.optList) == 0 {
 		that.GetOptions()
 	}
 	kName = strings.ReplaceAll(kName, " ", "")
 	value = strings.ReplaceAll(value, " ", "")
-	f, ok := that.OptList[kName]
+	f, ok := that.optList[kName]
 	if !ok {
 		return
 	}

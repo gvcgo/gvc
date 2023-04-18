@@ -17,12 +17,14 @@ type IView interface {
 	ExtraCmdHandlers() []CmdHandler
 	IsEnabled() bool
 	Disable()
+	Enable()
 	SetModel(IModel)
 }
 
 type IModel interface {
 	GetKeys() help.KeyMap
 	DisableOthers(string)
+	EnableDefault()
 }
 
 type Model struct {
@@ -52,6 +54,14 @@ func (that *Model) DisableOthers(name string) {
 			continue
 		}
 		v.Disable()
+	}
+}
+
+func (that *Model) EnableDefault() {
+	for _, v := range that.Views {
+		if v.Name() == Default {
+			v.Enable()
+		}
 	}
 }
 
