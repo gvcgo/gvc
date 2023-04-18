@@ -41,11 +41,21 @@ func NewConfView() (cv *ChatgptConfView) {
 	}
 	cv.Conf.GetOptions()
 	cv.inputs = make([]textinput.Model, len(cv.Conf.GetOptOrder()))
+	cv.updateInput(true)
+	return
+}
+
+func (that *ChatgptConfView) updateInput(create bool) {
 	idx := 0
-	maxLength := utils.FindMaxLengthOfStringList(cv.Conf.GetOptOrder())
-	for _, kname := range cv.Conf.GetOptOrder() {
-		opt := cv.Conf.GetOptList()[kname]
-		t := textinput.New()
+	maxLength := utils.FindMaxLengthOfStringList(that.Conf.GetOptOrder())
+	for _, kname := range that.Conf.GetOptOrder() {
+		opt := that.Conf.GetOptList()[kname]
+		var t textinput.Model
+		if create {
+			t = textinput.New()
+		} else {
+			t = that.inputs[idx]
+		}
 		t.CursorStyle = CursorStyle
 		t.CharLimit = 100
 		t.Placeholder = opt.KName
@@ -58,10 +68,9 @@ func NewConfView() (cv *ChatgptConfView) {
 			t.TextStyle = FocusedStyle
 		default:
 		}
-		cv.inputs[idx] = t
+		that.inputs[idx] = t
 		idx++
 	}
-	return
 }
 
 func (that *ChatgptConfView) inputHandler(msg tea.Msg) tea.Cmd {
@@ -89,13 +98,14 @@ func (that *ChatgptConfView) Keys() vtui.KeyList {
 		Key:  key.NewBinding(key.WithKeys("ctrl+y"), key.WithHelp("ctrl+y", "Show chatgpt_config.")),
 		Func: func(km tea.KeyMsg) (tea.Cmd, error) {
 			that.Enabled = true
+			that.Conf.Reload()
 			that.Model.DisableOthers(that.Name())
 			return nil, nil
 		},
 	})
 	kl = append(kl, &vtui.ShortcutKey{
 		Name: that.ViewName,
-		Key:  key.NewBinding(key.WithKeys("ctrl+r"), key.WithHelp("ctrl+r", "Change cursor mode of [chatgpt_config].")),
+		Key:  key.NewBinding(key.WithKeys("ctrl+t"), key.WithHelp("ctrl+t", "Change cursor mode of [chatgpt_config].")),
 		Func: func(m tea.KeyMsg) (tea.Cmd, error) {
 			that.cursorMode++
 			if that.cursorMode > cursor.CursorHide {
@@ -161,6 +171,20 @@ func (that *ChatgptConfView) Keys() vtui.KeyList {
 			return DefaultCmd, nil
 		},
 	})
+	kl = append(kl, &vtui.ShortcutKey{
+		Name: that.ViewName,
+		Key:  key.NewBinding(key.WithKeys("ctrl+r"), key.WithHelp("ctrl+r", "Reset chatgpt_config.")),
+		Func: func(km tea.KeyMsg) (tea.Cmd, error) {
+			that.Conf.Reset()
+			that.Conf.Restore()
+			that.Enabled = true
+			that.updateInput(false)
+			// that.Model.DisableOthers(that.ViewName)
+			that.Model.EnableDefault()
+			return DefaultCmd, nil
+			// return nil, nil
+		},
+	})
 	return kl
 }
 
@@ -185,6 +209,6 @@ func (that *ChatgptConfView) View() string {
 	fmt.Fprintf(&b, "\n\n%s\n\n", *button)
 	b.WriteString(HelpStyle.Render("cursor mode is "))
 	b.WriteString(CursorModeHelpStyle.Render(that.cursorMode.String()))
-	b.WriteString(HelpStyle.Render(" (ctrl+r to change style)"))
+	b.WriteString(HelpStyle.Render(" (ctrl+t to change style)"))
 	return b.String()
 }
