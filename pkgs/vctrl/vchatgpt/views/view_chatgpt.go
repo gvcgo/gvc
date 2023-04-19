@@ -1,6 +1,9 @@
 package views
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/textarea"
@@ -13,29 +16,27 @@ import (
 )
 
 var textareaKeys = textarea.KeyMap{
-	CharacterForward:        key.NewBinding(key.WithKeys("right", "ctrl+f")),
-	CharacterBackward:       key.NewBinding(key.WithKeys("left", "ctrl+b")),
-	WordForward:             key.NewBinding(key.WithKeys("alt+right", "alt+f")),
-	WordBackward:            key.NewBinding(key.WithKeys("alt+left", "alt+b")),
-	LineNext:                key.NewBinding(key.WithKeys("down")),
-	LinePrevious:            key.NewBinding(key.WithKeys("up")),
-	DeleteWordBackward:      key.NewBinding(key.WithKeys("alt+backspace", "ctrl+w")),
-	DeleteWordForward:       key.NewBinding(key.WithKeys("alt+delete", "alt+d")),
-	DeleteAfterCursor:       key.NewBinding(key.WithKeys("ctrl+k")),
-	DeleteBeforeCursor:      key.NewBinding(key.WithKeys("ctrl+u")),
-	InsertNewline:           key.NewBinding(key.WithKeys("ctrl+d"), key.WithHelp("ctrl+d", "insert new line")),
-	DeleteCharacterBackward: key.NewBinding(key.WithKeys("backspace")),
-	DeleteCharacterForward:  key.NewBinding(key.WithKeys("delete")),
-	LineStart:               key.NewBinding(key.WithKeys("home", "ctrl+a")),
-	LineEnd:                 key.NewBinding(key.WithKeys("end", "ctrl+e")),
-	Paste:                   key.NewBinding(key.WithKeys("ctrl+v", "alt+v"), key.WithHelp("ctrl+v", "paste")),
-	InputBegin:              key.NewBinding(key.WithKeys("alt+<", "ctrl+home")),
-	InputEnd:                key.NewBinding(key.WithKeys("alt+>", "ctrl+end")),
-
-	CapitalizeWordForward: key.NewBinding(key.WithKeys("alt+c")),
-	LowercaseWordForward:  key.NewBinding(key.WithKeys("alt+l")),
-	UppercaseWordForward:  key.NewBinding(key.WithKeys("alt+u")),
-
+	CharacterForward:           key.NewBinding(key.WithKeys("right", "ctrl+f")),
+	CharacterBackward:          key.NewBinding(key.WithKeys("left", "ctrl+b")),
+	WordForward:                key.NewBinding(key.WithKeys("alt+right", "alt+f")),
+	WordBackward:               key.NewBinding(key.WithKeys("alt+left", "alt+b")),
+	LineNext:                   key.NewBinding(key.WithKeys("down")),
+	LinePrevious:               key.NewBinding(key.WithKeys("up")),
+	DeleteWordBackward:         key.NewBinding(key.WithKeys("alt+backspace", "ctrl+w")),
+	DeleteWordForward:          key.NewBinding(key.WithKeys("alt+delete", "alt+d")),
+	DeleteAfterCursor:          key.NewBinding(key.WithKeys("ctrl+k")),
+	DeleteBeforeCursor:         key.NewBinding(key.WithKeys("ctrl+u")),
+	InsertNewline:              key.NewBinding(key.WithKeys("ctrl+d"), key.WithHelp("ctrl+d", "insert new line")),
+	DeleteCharacterBackward:    key.NewBinding(key.WithKeys("backspace")),
+	DeleteCharacterForward:     key.NewBinding(key.WithKeys("delete")),
+	LineStart:                  key.NewBinding(key.WithKeys("home", "ctrl+a")),
+	LineEnd:                    key.NewBinding(key.WithKeys("end", "ctrl+e")),
+	Paste:                      key.NewBinding(key.WithKeys("ctrl+v", "alt+v"), key.WithHelp("ctrl+v", "paste")),
+	InputBegin:                 key.NewBinding(key.WithKeys("alt+<", "ctrl+home")),
+	InputEnd:                   key.NewBinding(key.WithKeys("alt+>", "ctrl+end")),
+	CapitalizeWordForward:      key.NewBinding(key.WithKeys("alt+c")),
+	LowercaseWordForward:       key.NewBinding(key.WithKeys("alt+l")),
+	UppercaseWordForward:       key.NewBinding(key.WithKeys("alt+u")),
 	TransposeCharacterBackward: key.NewBinding(key.WithDisabled()),
 }
 
@@ -120,15 +121,36 @@ func NewChatgptView() (cv *ChatgptView) {
 		Chatgpt:     chatgpt.NewVChat(conf),
 	}
 	cv.historyIdx = cv.ConvManager.Curr().Len()
-
-	// shortcut keys
 	cv.viewport.KeyMap = viewportKeys
 	cv.textarea.KeyMap = textareaKeys
 	return
 }
 
+func (that *ChatgptView) handleWindowSize(msg tea.Msg) (cmd tea.Cmd) {
+	if message, ok := msg.(tea.WindowSizeMsg); ok {
+		that.width = message.Width
+		that.height = message.Height
+		that.viewport.Width = message.Width
+		// that.viewport.Height = message.Height - that.textarea.Height() - lipgloss.Height(that.RenderFooter())
+		that.textarea.SetWidth(message.Width)
+		// that.viewport.SetContent(that.RenderConversation(that.viewport.Width))
+		that.viewport.GotoBottom()
+	}
+	return
+}
+
+func (that *ChatgptView) handleSpinnerTick(msg tea.Msg) (cmd tea.Cmd) {
+	if message, ok := msg.(spinner.TickMsg); ok && that.spinning {
+		that.spinner, cmd = that.spinner.Update(message)
+	}
+	return
+}
+
 func (that *ChatgptView) ExtraCmdHandlers() []vtui.CmdHandler {
-	return []vtui.CmdHandler{}
+	return []vtui.CmdHandler{
+		that.handleWindowSize,
+		that.handleSpinnerTick,
+	}
 }
 
 func (that *ChatgptView) Keys() vtui.KeyList {
@@ -143,4 +165,68 @@ func (that *ChatgptView) Msgs() vtui.MessageList {
 
 func (that *ChatgptView) View() string {
 	return ""
+}
+
+var (
+	SenderStyle = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("5"))
+	BotStyle    = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("6"))
+	ErrorStyle  = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("1"))
+	FooterStyle = lipgloss.NewStyle().
+			Height(1).
+			BorderTop(true).
+			BorderStyle(lipgloss.NormalBorder()).
+			BorderForeground(lipgloss.Color("8")).
+			Faint(true)
+)
+
+func (that *ChatgptView) RenderFooter() string {
+	if that.err != nil {
+		return FooterStyle.Render(ErrorStyle.Render(fmt.Sprintf("error: %v", that.err)))
+	}
+
+	var columns []string
+	if that.spinning {
+		columns = append(columns, that.spinner.View())
+	} else {
+		columns = append(columns, that.spinner.Spinner.Frames[0])
+	}
+
+	if that.ConvManager.Len() > 0 {
+		columns = append(columns,
+			fmt.Sprintf("%s %d/%d", vtui.ConversationIcon,
+				that.ConvManager.Idx+1,
+				that.ConvManager.Len()))
+	}
+
+	question := that.textarea.Value()
+	if that.ConvManager.Curr().Len() > 0 || len(question) > 0 {
+		tokens := that.ConvManager.Curr().GetContextTokens()
+		if len(question) > 0 {
+			tokens += chatgpt.CountTokens(that.ConvManager.Curr().Config.Model, question) + 5
+		}
+		columns = append(columns, fmt.Sprintf("%s %d", vtui.TokenIcon, tokens))
+	}
+
+	columns = append(columns, fmt.Sprintf("%s ctrl+h", vtui.HelpIcon))
+
+	prompt := that.ConvManager.Curr().Config.Prompt
+	prompt = fmt.Sprintf("%s %s", vtui.PromptIcon, prompt)
+	columns = append(columns, prompt)
+
+	totalWidth := lipgloss.Width(strings.Join(columns, ""))
+	padding := (that.width - totalWidth) / (len(columns) - 1)
+	if padding < 0 {
+		padding = 2
+	}
+
+	if totalWidth+(len(columns)-1)*padding > that.width {
+		remainingSpace := that.width - (lipgloss.Width(
+			strings.Join(columns[:len(columns)-1], ""),
+		) + (len(columns)-2)*padding + 3)
+		columns[len(columns)-1] = columns[len(columns)-1][:remainingSpace] + "..."
+	}
+
+	footer := strings.Join(columns, strings.Repeat(" ", padding))
+	footer = FooterStyle.Render(footer)
+	return footer
 }
