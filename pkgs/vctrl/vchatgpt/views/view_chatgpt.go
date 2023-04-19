@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/atotto/clipboard"
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/textarea"
@@ -187,11 +188,33 @@ func (that *ChatgptView) ExtraCmdHandlers() []vtui.CmdHandler {
 	}
 }
 
+func (that *ChatgptView) AdditionalKeys() {
+	if that.Model != nil {
+		that.Model.RegisterKeys(that.viewport.KeyMap, "chatgpt_viewport")
+		that.Model.RegisterKeys(that.textarea.KeyMap, "chatgpt_textarea")
+	}
+}
+
 func (that *ChatgptView) Keys() vtui.KeyList {
 	kl := vtui.KeyList{}
 	kl = append(kl, &vtui.ShortcutKey{
 		Name: that.ViewName,
-		Key:  key.NewBinding(key.WithKeys("ctrl+enter"), key.WithHelp("ctrl+enter", "submit a message.")),
+		Key: key.NewBinding(
+			key.WithKeys("ctrl+w"),
+			key.WithHelp("ctrl+w", "show chatgpt tui."),
+		),
+		Func: func(km tea.KeyMsg) (tea.Cmd, error) {
+			that.Enable()
+			that.Model.DisableOthers(that.ViewName)
+			return nil, nil
+		},
+	})
+	kl = append(kl, &vtui.ShortcutKey{
+		Name: that.ViewName,
+		Key: key.NewBinding(
+			key.WithKeys("enter"),
+			key.WithHelp("enter", "submit a message."),
+		),
 		Func: func(km tea.KeyMsg) (tea.Cmd, error) {
 			if that.Chatgpt.Answering {
 				return nil, nil
@@ -221,10 +244,168 @@ func (that *ChatgptView) Keys() vtui.KeyList {
 			return tea.Batch(cmds...), nil
 		},
 	})
-	// kl = append(kl, &vtui.ShortcutKey{
-	// 	Name: that.ViewName,
-	// 	Key:  key.NewBinding(),
-	// })
+	kl = append(kl, &vtui.ShortcutKey{
+		Name: that.ViewName,
+		Key: key.NewBinding(
+			key.WithKeys("ctrl+m"),
+			key.WithHelp("ctrl+m", "Create new conversation."),
+		),
+		Func: func(km tea.KeyMsg) (tea.Cmd, error) {
+			if that.Chatgpt.Answering {
+				return nil, nil
+			}
+			that.err = nil
+			// TODO change config when creating new conversation
+			that.ConvManager.New(that.ConvManager.Conf.Conversation)
+			that.renderViewport()
+			that.historyIdx = 0
+			return nil, nil
+		},
+	})
+	kl = append(kl, &vtui.ShortcutKey{
+		Name: that.ViewName,
+		Key: key.NewBinding(
+			key.WithKeys("ctrl+x"),
+			key.WithHelp("ctrl+x", "forget context"),
+		),
+		Func: func(km tea.KeyMsg) (tea.Cmd, error) {
+			if that.Chatgpt.Answering {
+				return nil, nil
+			}
+			that.err = nil
+			that.ConvManager.Curr().ForgetContext()
+			that.renderViewport()
+			return nil, nil
+		},
+	})
+	kl = append(kl, &vtui.ShortcutKey{
+		Name: that.ViewName,
+		Key: key.NewBinding(
+			key.WithKeys("alt+r"),
+			key.WithHelp("alt+r", "remove current conversation"),
+		),
+		Func: func(km tea.KeyMsg) (tea.Cmd, error) {
+			if that.Chatgpt.Answering {
+				return nil, nil
+			}
+			that.err = nil
+			that.ConvManager.RemoveCurr()
+			that.renderViewport()
+			that.historyIdx = that.ConvManager.Curr().Len()
+			return nil, nil
+		},
+	})
+	kl = append(kl, &vtui.ShortcutKey{
+		Name: that.ViewName,
+		Key: key.NewBinding(
+			key.WithKeys("ctrl+left"),
+			key.WithHelp("ctrl+left", "previous conversation"),
+		),
+		Func: func(km tea.KeyMsg) (tea.Cmd, error) {
+			if that.Chatgpt.Answering {
+				return nil, nil
+			}
+			that.err = nil
+			that.ConvManager.Prev()
+			that.renderViewport()
+			that.historyIdx = that.ConvManager.Curr().Len()
+			return nil, nil
+		},
+	})
+	kl = append(kl, &vtui.ShortcutKey{
+		Name: that.ViewName,
+		Key: key.NewBinding(
+			key.WithKeys("ctrl+right"),
+			key.WithHelp("ctrl+right", "next conversation"),
+		),
+		Func: func(km tea.KeyMsg) (tea.Cmd, error) {
+			if that.Chatgpt.Answering {
+				return nil, nil
+			}
+			that.err = nil
+			that.ConvManager.Next()
+			that.renderViewport()
+			that.historyIdx = that.ConvManager.Curr().Len()
+			return nil, nil
+		},
+	})
+	kl = append(kl, &vtui.ShortcutKey{
+		Name: that.ViewName,
+		Key: key.NewBinding(
+			key.WithKeys("ctrl+j"),
+			key.WithHelp("ctrl+j", "multiline mode"),
+		),
+		Func: func(km tea.KeyMsg) (tea.Cmd, error) {
+			// if that.inputMode == InputModelSingleLine {
+			// 	UseMultiLineInputMode(&m)
+			// 	m.textarea.ShowLineNumbers = true
+			// 	m.textarea.SetHeight(2)
+			// 	m.viewport.Height = m.height - m.textarea.Height() - lipgloss.Height(m.RenderFooter())
+			// } else {
+			// 	UseSingleLineInputMode(&m)
+			// 	m.textarea.ShowLineNumbers = false
+			// 	m.textarea.SetHeight(1)
+			// 	m.viewport.Height = m.height - m.textarea.Height() - lipgloss.Height(m.RenderFooter())
+			// }
+			// that.viewport.SetContent(that.RenderConversation(that.viewport.Width))
+			return nil, nil
+		},
+	})
+	kl = append(kl, &vtui.ShortcutKey{
+		Name: that.ViewName,
+		Key: key.NewBinding(
+			key.WithKeys("ctrl+y"),
+			key.WithHelp("ctrl+y", "copy last answer"),
+		),
+		Func: func(km tea.KeyMsg) (tea.Cmd, error) {
+			if that.Chatgpt.Answering || that.ConvManager.Curr().LastAnswer() == "" {
+				return nil, nil
+			}
+			_ = clipboard.WriteAll(that.ConvManager.Curr().LastAnswer())
+			return nil, nil
+		},
+	})
+	kl = append(kl, &vtui.ShortcutKey{
+		Name: that.ViewName,
+		Key: key.NewBinding(
+			key.WithKeys("ctrl+n"),
+			key.WithHelp("ctrl+n", "next question"),
+		),
+		Func: func(km tea.KeyMsg) (tea.Cmd, error) {
+			if that.Chatgpt.Answering {
+				return nil, nil
+			}
+			idx := that.historyIdx + 1
+			if idx >= that.ConvManager.Curr().Len() {
+				that.historyIdx = that.ConvManager.Curr().Len()
+				that.textarea.SetValue("")
+			} else {
+				that.textarea.SetValue(that.ConvManager.Curr().GetQuestion(idx))
+				that.historyIdx = idx
+			}
+			return nil, nil
+		},
+	})
+	kl = append(kl, &vtui.ShortcutKey{
+		Name: that.ViewName,
+		Key: key.NewBinding(
+			key.WithKeys("ctrl+p"),
+			key.WithHelp("ctrl+p", "previous question"),
+		),
+		Func: func(km tea.KeyMsg) (tea.Cmd, error) {
+			if that.Chatgpt.Answering {
+				return nil, nil
+			}
+			idx := that.historyIdx - 1
+			if idx < 0 {
+				idx = 0
+			}
+			q := that.ConvManager.Curr().GetQuestion(idx)
+			that.textarea.SetValue(q)
+			that.historyIdx = idx
+			return nil, nil
+		},
+	})
 	return kl
 }
 
@@ -278,15 +459,18 @@ func (that *ChatgptView) Msgs() vtui.MessageList {
 }
 
 func (that *ChatgptView) View() string {
-	if that.width == 0 || that.height == 0 {
-		return "Initializing..."
+	if that.Enabled {
+		if that.width == 0 || that.height == 0 {
+			return "Initializing..."
+		}
+		return lipgloss.JoinVertical(
+			lipgloss.Left,
+			that.viewport.View(),
+			that.textarea.View(),
+			that.RenderFooter(),
+		)
 	}
-	return lipgloss.JoinVertical(
-		lipgloss.Left,
-		that.viewport.View(),
-		that.textarea.View(),
-		that.RenderFooter(),
-	)
+	return ""
 }
 
 func (that *ChatgptView) renderViewport() {

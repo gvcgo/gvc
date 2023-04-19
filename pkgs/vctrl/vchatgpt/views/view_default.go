@@ -23,7 +23,8 @@ var DefaultInit = func() tea.Cmd {
 
 type DefaultView struct {
 	*ViewBase
-	help help.Model
+	help              help.Model
+	addKeysRegistered bool
 }
 
 func NewDefaultView() (dv *DefaultView) {
@@ -51,6 +52,13 @@ func (that *DefaultView) Keys() vtui.KeyList {
 		Func: func(m tea.KeyMsg) (tea.Cmd, error) {
 			that.help.ShowAll = !that.help.ShowAll
 			that.Enabled = true
+			if that.Model != nil && !that.addKeysRegistered {
+				vList := that.Model.GetViews()
+				for _, v := range vList {
+					v.AdditionalKeys()
+				}
+				that.addKeysRegistered = true
+			}
 			that.Model.DisableOthers(that.Name())
 			return nil, nil
 		},

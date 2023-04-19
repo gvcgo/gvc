@@ -95,7 +95,7 @@ func (that *ChatgptConfView) Keys() vtui.KeyList {
 	kl := vtui.KeyList{}
 	kl = append(kl, &vtui.ShortcutKey{
 		Name: that.ViewName,
-		Key:  key.NewBinding(key.WithKeys("ctrl+y"), key.WithHelp("ctrl+y", "Show chatgpt_config.")),
+		Key:  key.NewBinding(key.WithKeys("ctrl+o"), key.WithHelp("ctrl+o", "Show chatgpt_config.")),
 		Func: func(km tea.KeyMsg) (tea.Cmd, error) {
 			that.Enabled = true
 			that.Conf.Reload()

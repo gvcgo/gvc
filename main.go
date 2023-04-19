@@ -37,9 +37,23 @@ func main() {
 		// co.GetOptions()
 		// co.SetConfField("api_key", "xxx")
 		// fmt.Println(*co)
+
 		r := vchatgpt.NewRunner()
 		r.Run()
 
+		// type Test struct {
+		// 	TestKey key.Binding
+		// }
+		// t := Test{
+		// 	TestKey: key.NewBinding(key.WithKeys("ctrl+i"), key.WithHelp("ctrl+i", "test")),
+		// }
+		// val := reflect.ValueOf(t)
+		// for i := 0; i < val.NumField(); i++ {
+		// 	fmt.Println(val.Field(i).Type().Name())
+		// 	k := val.FieldByName(val.Type().Field(i).Name).Interface()
+		// 	n, ok := k.(key.Binding)
+		// 	fmt.Println(ok, n)
+		// }
 		// cc := vchat.NewChatGptConf()
 		// cc.Reset()
 		// cc.Restore()

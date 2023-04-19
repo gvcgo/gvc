@@ -22,8 +22,10 @@ func NewRunner() (r *Runner) {
 
 func (that *Runner) Run() {
 	that.M.AddInit(views.DefaultInit)
+	that.M.AddInit(views.ChatgptInit)
 	that.M.RegisterView(views.NewDefaultView())
 	that.M.RegisterView(views.NewConfView())
+	that.M.RegisterView(views.NewChatgptView())
 	p := tea.NewProgram(that.M)
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("Alas, there's been an error: %v", err)

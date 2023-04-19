@@ -41,6 +41,13 @@ func (that *KeyList) FullHelp() (r [][]key.Binding) {
 		kList = append(kList, k.Key)
 	}
 	r = append(r, kList)
+	// kMap := map[string][]key.Binding{}
+	// for _, k := range *that {
+	// 	kMap[k.Name] = append(kMap[k.Name], k.Key)
+	// }
+	// for _, v := range kMap {
+	// 	r = append(r, v)
+	// }
 	return
 }
 

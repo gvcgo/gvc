@@ -1,9 +1,11 @@
 package vtui
 
 import (
+	"reflect"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/help"
+	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -21,6 +23,7 @@ type IView interface {
 	IsEnabled() bool
 	Disable()
 	Enable()
+	AdditionalKeys()
 	SetModel(IModel)
 }
 
@@ -28,6 +31,8 @@ type IModel interface {
 	GetKeys() help.KeyMap
 	DisableOthers(string)
 	EnableDefault()
+	RegisterKeys(any, string)
+	GetViews() map[string]IView
 }
 
 type Model struct {
@@ -49,6 +54,10 @@ func NewModel() (m *Model) {
 
 func (that *Model) GetKeys() help.KeyMap {
 	return &that.Keys
+}
+
+func (that *Model) GetViews() map[string]IView {
+	return that.Views
 }
 
 func (that *Model) DisableOthers(name string) {
@@ -88,6 +97,25 @@ func (that *Model) RegisterView(v IView) {
 		that.Views[v.Name()] = v
 		v.SetModel(that)
 		that.ExtraCmdHandlers = v.ExtraCmdHandlers()
+	}
+}
+
+func (that *Model) RegisterKeys(keyMap any, name string) {
+	val := reflect.ValueOf(keyMap)
+	conType := val.Type()
+	if val.Type().Kind() == reflect.Ptr {
+		conType = val.Type().Elem()
+		val = val.Elem()
+	}
+	for i := 0; i < val.NumField(); i++ {
+		name := conType.Field(i).Name
+		k := val.FieldByName(name).Interface()
+		if key, ok := k.(key.Binding); ok {
+			that.Keys = append(that.Keys, &ShortcutKey{
+				Name: name,
+				Key:  key,
+			})
+		}
 	}
 }
 
