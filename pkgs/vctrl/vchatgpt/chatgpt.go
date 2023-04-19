@@ -1,4 +1,4 @@
-package vchat
+package vchatgpt
 
 import (
 	"context"
