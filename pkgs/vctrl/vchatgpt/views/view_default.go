@@ -8,10 +8,13 @@ import (
 	"github.com/moqsien/gvc/pkgs/vctrl/vchatgpt/vtui"
 )
 
-type DefaultMsg struct{}
+var DefaultMsg vtui.MsgType = "default"
 
 var DefaultCmd tea.Cmd = func() tea.Msg {
-	return vtui.Message{Name: vtui.Default}
+	return vtui.Message{
+		Name: vtui.Default,
+		Type: DefaultMsg,
+	}
 }
 
 var DefaultInit = func() tea.Cmd {
@@ -29,6 +32,7 @@ func NewDefaultView() (dv *DefaultView) {
 		help:     help.New(),
 	}
 	dv.Enabled = true
+	dv.ViewName = string(DefaultMsg)
 	return
 }
 
@@ -58,11 +62,12 @@ func (that *DefaultView) Msgs() vtui.MessageList {
 	ml := vtui.MessageList{}
 	ml = append(ml, &vtui.Message{
 		Name: that.ViewName,
-		Func: func(m1 tea.Msg) (tea.Cmd, error) {
-			if m, ok := m1.(*vtui.Message); ok && m.Name == that.ViewName {
+		Func: func(m1 *vtui.Message) (tea.Cmd, error) {
+			switch m1.Type {
+			case DefaultMsg:
 				that.Enabled = true
 				that.help.ShowAll = false
-				return nil, nil
+			default:
 			}
 			return nil, nil
 		},

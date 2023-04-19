@@ -63,11 +63,29 @@ func (that *KeyList) UpdateByKeys(msg tea.Msg) tea.Cmd {
 	return nil
 }
 
-type MsgFunc func(msg tea.Msg) (tea.Cmd, error)
+type MsgType string
+
+type MsgFunc func(msg *Message) (tea.Cmd, error)
 
 type Message struct {
-	Name string
-	Func MsgFunc
+	Name    string
+	Type    MsgType
+	Content any
+	Func    MsgFunc
+}
+
+func NewMessage(name string, typ MsgType, content any) *Message {
+	return &Message{
+		Name:    name,
+		Type:    typ,
+		Content: content,
+	}
+}
+
+func WrapMessage(msg *Message) tea.Cmd {
+	return func() tea.Msg {
+		return msg
+	}
 }
 
 type MessageList []*Message
@@ -76,7 +94,7 @@ func (that *MessageList) UpdateByMessage(msg tea.Msg) tea.Cmd {
 	var cmds []tea.Cmd
 	if m, ok := msg.(*Message); ok && m != nil {
 		if m.Func != nil {
-			cmd, _ := m.Func(msg)
+			cmd, _ := m.Func(m)
 			cmds = append(cmds, cmd)
 		}
 	}

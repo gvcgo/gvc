@@ -12,6 +12,8 @@ import (
 	openai "github.com/sashabaranov/go-openai"
 )
 
+const VChatName string = "vchatgpt"
+
 type VChat struct {
 	Conf      *ChatGPTConf
 	Client    *openai.Client
@@ -90,18 +92,24 @@ func (that *VChat) Ask(conf *ConversationConf, question string, out io.Writer) e
 	return nil
 }
 
-func (that *VChat) Send(conf *ConversationConf, messages []openai.ChatCompletionMessage) (r tea.Cmd) {
+var (
+	DeltaAnswerMsg vtui.MsgType = "chatgpt_deltaanswer"
+	AnswerMsg      vtui.MsgType = "chatgpt_answer"
+	SaveMsg        vtui.MsgType = "chatgpt_save"
+	ErrorMsg       vtui.MsgType = "chatgpt_error"
+)
+
+func (that *VChat) Query(conf *ConversationConf, mList []openai.ChatCompletionMessage) (r tea.Cmd) {
 	that.Answering = true
 	r = func() (msg tea.Msg) {
 		executor := func() error {
 			req := openai.ChatCompletionRequest{
 				Model:       conf.Model,
-				Messages:    messages,
+				Messages:    mList,
 				MaxTokens:   conf.MaxTokens,
 				Temperature: conf.Temperature,
 				N:           1,
 			}
-
 			if conf.Stream {
 				stream, err := that.Client.CreateChatCompletionStream(context.Background(), req)
 				that.Stream = stream
@@ -113,36 +121,90 @@ func (that *VChat) Send(conf *ConversationConf, messages []openai.ChatCompletion
 					return err
 				}
 				content := resp.Choices[0].Delta.Content
-				msg = vtui.DeltaAnswerMsg(content)
+				msg = vtui.NewMessage(VChatName, DeltaAnswerMsg, content)
 			} else {
 				resp, err := that.Client.CreateChatCompletion(context.Background(), req)
 				if err != nil {
 					return vtui.ErrMsg(err)
 				}
 				content := resp.Choices[0].Message.Content
-				msg = vtui.AnswerMsg(content)
+				msg = vtui.NewMessage(VChatName, AnswerMsg, content)
 			}
 			return nil
 		}
-
 		if err := retry.Do(executor, retry.Attempts(3), retry.LastErrorOnly(true)); err != nil {
-			return vtui.ErrMsg(err)
+			msg = vtui.NewMessage(VChatName, ErrorMsg, err)
 		}
 		return
 	}
 	return
 }
 
-func (that *VChat) Receive() tea.Cmd {
-	return func() tea.Msg {
-		resp, err := that.Stream.Recv()
-		if err != nil {
-			return vtui.ErrMsg(err)
+// func (that *VChat) Send(conf *ConversationConf, messages []openai.ChatCompletionMessage) (r tea.Cmd) {
+// 	that.Answering = true
+// 	r = func() (msg tea.Msg) {
+// 		executor := func() error {
+// 			req := openai.ChatCompletionRequest{
+// 				Model:       conf.Model,
+// 				Messages:    messages,
+// 				MaxTokens:   conf.MaxTokens,
+// 				Temperature: conf.Temperature,
+// 				N:           1,
+// 			}
+
+// 			if conf.Stream {
+// 				stream, err := that.Client.CreateChatCompletionStream(context.Background(), req)
+// 				that.Stream = stream
+// 				if err != nil {
+// 					return vtui.ErrMsg(err)
+// 				}
+// 				resp, err := stream.Recv()
+// 				if err != nil {
+// 					return err
+// 				}
+// 				content := resp.Choices[0].Delta.Content
+// 				msg = vtui.DeltaAnswerMsg(content)
+// 			} else {
+// 				resp, err := that.Client.CreateChatCompletion(context.Background(), req)
+// 				if err != nil {
+// 					return vtui.ErrMsg(err)
+// 				}
+// 				content := resp.Choices[0].Message.Content
+// 				msg = vtui.AnswerMsg(content)
+// 			}
+// 			return nil
+// 		}
+
+// 		if err := retry.Do(executor, retry.Attempts(3), retry.LastErrorOnly(true)); err != nil {
+// 			return vtui.ErrMsg(err)
+// 		}
+// 		return
+// 	}
+// 	return
+// }
+
+func (that *VChat) Recv() (r tea.Cmd) {
+	r = func() (msg tea.Msg) {
+		if resp, err := that.Stream.Recv(); err != nil {
+			msg = vtui.NewMessage(VChatName, ErrorMsg, err)
+		} else {
+			msg = vtui.NewMessage(VChatName, DeltaAnswerMsg, resp.Choices[0].Delta.Content)
 		}
-		content := resp.Choices[0].Delta.Content
-		return vtui.DeltaAnswerMsg(content)
+		return
 	}
+	return
 }
+
+// func (that *VChat) Receive() tea.Cmd {
+// 	return func() tea.Msg {
+// 		resp, err := that.Stream.Recv()
+// 		if err != nil {
+// 			return vtui.ErrMsg(err)
+// 		}
+// 		content := resp.Choices[0].Delta.Content
+// 		return vtui.DeltaAnswerMsg(content)
+// 	}
+// }
 
 func (that *VChat) Done() {
 	if that.Stream != nil {

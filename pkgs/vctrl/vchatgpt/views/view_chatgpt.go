@@ -1,8 +1,11 @@
 package views
 
 import (
+	"errors"
 	"fmt"
+	"io"
 	"strings"
+	"time"
 
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/spinner"
@@ -76,6 +79,16 @@ const (
 	InputModelMultiLine
 )
 
+func savePeriodically() tea.Cmd {
+	return tea.Tick(15*time.Second, func(time.Time) tea.Msg {
+		return vtui.NewMessage(
+			chatgpt.VChatName,
+			chatgpt.SaveMsg,
+			struct{}{},
+		)
+	})
+}
+
 type ChatgptView struct {
 	*ViewBase
 	Conf        *chatgpt.ChatGPTConf
@@ -86,11 +99,11 @@ type ChatgptView struct {
 	textarea    textarea.Model
 	rd          *glamour.TermRenderer
 	spinning    bool
-	inputMode   InputMode
-	err         error
-	historyIdx  int
-	width       int
-	height      int
+	// inputMode   InputMode
+	err        error
+	historyIdx int
+	width      int
+	height     int
 }
 
 func NewChatgptView() (cv *ChatgptView) {
@@ -126,7 +139,24 @@ func NewChatgptView() (cv *ChatgptView) {
 	cv.historyIdx = cv.ConvManager.Curr().Len()
 	cv.viewport.KeyMap = viewportKeys
 	cv.textarea.KeyMap = textareaKeys
+
+	cv.ViewBase = NewBase("chatgpt_view")
 	return
+}
+
+/*
+textarea and viewport
+*/
+func (that *ChatgptView) handlePanels(msg tea.Msg) tea.Cmd {
+	var (
+		cmd  tea.Cmd
+		cmds []tea.Cmd
+	)
+	that.textarea, cmd = that.textarea.Update(msg)
+	cmds = append(cmds, cmd)
+	that.viewport, cmd = that.viewport.Update(msg)
+	cmds = append(cmds, cmd)
+	return tea.Batch(cmds...)
 }
 
 func (that *ChatgptView) handleWindowSize(msg tea.Msg) (cmd tea.Cmd) {
@@ -151,6 +181,7 @@ func (that *ChatgptView) handleSpinnerTick(msg tea.Msg) (cmd tea.Cmd) {
 
 func (that *ChatgptView) ExtraCmdHandlers() []vtui.CmdHandler {
 	return []vtui.CmdHandler{
+		that.handlePanels,
 		that.handleWindowSize,
 		that.handleSpinnerTick,
 	}
@@ -158,11 +189,91 @@ func (that *ChatgptView) ExtraCmdHandlers() []vtui.CmdHandler {
 
 func (that *ChatgptView) Keys() vtui.KeyList {
 	kl := vtui.KeyList{}
+	kl = append(kl, &vtui.ShortcutKey{
+		Name: that.ViewName,
+		Key:  key.NewBinding(key.WithKeys("ctrl+enter"), key.WithHelp("ctrl+enter", "submit a message.")),
+		Func: func(km tea.KeyMsg) (tea.Cmd, error) {
+			if that.Chatgpt.Answering {
+				return nil, nil
+			}
+			input := strings.TrimSpace(that.textarea.Value())
+			if input == "" {
+				return nil, nil
+			}
+			that.ConvManager.Curr().AddQuestion(input)
+			var cmds []tea.Cmd
+			cmds = append(
+				cmds,
+				that.Chatgpt.Query(that.ConvManager.Curr().Config, that.ConvManager.Curr().GetContextMessages()),
+			)
+			// Start answer spinner
+			that.spinning = true
+			cmds = append(
+				cmds, func() tea.Msg {
+					return that.spinner.Tick()
+				},
+			)
+			that.renderViewport()
+			that.textarea.Reset()
+			that.textarea.Blur()
+			that.textarea.Placeholder = ""
+			that.historyIdx = that.ConvManager.Curr().Len()
+			return tea.Batch(cmds...), nil
+		},
+	})
+	// kl = append(kl, &vtui.ShortcutKey{
+	// 	Name: that.ViewName,
+	// 	Key:  key.NewBinding(),
+	// })
 	return kl
 }
 
 func (that *ChatgptView) Msgs() vtui.MessageList {
 	ml := vtui.MessageList{}
+	ml = append(ml, &vtui.Message{
+		Name: chatgpt.VChatName,
+		Func: func(msg *vtui.Message) (tea.Cmd, error) {
+			if msg.Name == chatgpt.VChatName {
+				switch msg.Type {
+				case chatgpt.DeltaAnswerMsg:
+					if c, ok := msg.Content.(string); ok {
+						that.ConvManager.Curr().UpdatePending(c, false)
+						that.err = nil
+						that.renderViewport()
+						return that.Chatgpt.Recv(), nil
+					}
+				case chatgpt.AnswerMsg:
+					if c, ok := msg.Content.(string); ok {
+						that.ConvManager.Curr().UpdatePending(c, true)
+						that.spinning = false
+						that.Chatgpt.Done()
+						that.renderViewport()
+						that.renderTextarea()
+					}
+				case chatgpt.SaveMsg:
+					_ = that.ConvManager.Dump()
+					return savePeriodically(), nil
+				case chatgpt.ErrorMsg:
+					if err, ok := msg.Content.(error); ok {
+						if err == io.EOF {
+							if that.ConvManager.Curr().PendingAnswer() == "" {
+								that.err = errors.New("unexpected EOF, please try again")
+							}
+						} else {
+							that.err = err
+						}
+						that.spinning = false
+						that.ConvManager.Curr().UpdatePending("", true)
+						that.Chatgpt.Done()
+						that.renderViewport()
+						that.renderTextarea()
+					}
+				default:
+				}
+			}
+			return nil, nil
+		},
+	})
 	return ml
 }
 
@@ -176,6 +287,16 @@ func (that *ChatgptView) View() string {
 		that.textarea.View(),
 		that.RenderFooter(),
 	)
+}
+
+func (that *ChatgptView) renderViewport() {
+	that.viewport.SetContent(that.RenderConversation(that.viewport.Width))
+	that.viewport.GotoBottom()
+}
+
+func (that *ChatgptView) renderTextarea() {
+	that.textarea.Placeholder = "Send a message..."
+	that.textarea.Focus()
 }
 
 var (
