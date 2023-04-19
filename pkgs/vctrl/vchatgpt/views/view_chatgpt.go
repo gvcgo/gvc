@@ -11,8 +11,11 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/glamour"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/vctrl/vchatgpt/chatgpt"
 	"github.com/moqsien/gvc/pkgs/vctrl/vchatgpt/vtui"
+	"github.com/muesli/reflow/wordwrap"
+	"github.com/muesli/reflow/wrap"
 )
 
 var textareaKeys = textarea.KeyMap{
@@ -164,7 +167,15 @@ func (that *ChatgptView) Msgs() vtui.MessageList {
 }
 
 func (that *ChatgptView) View() string {
-	return ""
+	if that.width == 0 || that.height == 0 {
+		return "Initializing..."
+	}
+	return lipgloss.JoinVertical(
+		lipgloss.Left,
+		that.viewport.View(),
+		that.textarea.View(),
+		that.RenderFooter(),
+	)
 }
 
 var (
@@ -229,4 +240,54 @@ func (that *ChatgptView) RenderFooter() string {
 	footer := strings.Join(columns, strings.Repeat(" ", padding))
 	footer = FooterStyle.Render(footer)
 	return footer
+}
+
+func (that *ChatgptView) RenderConversation(maxWidth int) string {
+	builder := &strings.Builder{}
+	current := that.ConvManager.Curr()
+	if current == nil {
+		return ""
+	}
+	for _, m := range current.Forgotten {
+		that.renderYou(m.Question, maxWidth, builder)
+		that.renderChatgpt(m.Answer, maxWidth, builder)
+	}
+	if len(current.Forgotten) > 0 {
+		builder.WriteString(lipgloss.NewStyle().PaddingLeft(5).Faint(true).Render("----- New Session -----"))
+		builder.WriteString("\n")
+	}
+	for _, q := range current.Context {
+		that.renderYou(q.Question, maxWidth, builder)
+		that.renderChatgpt(q.Answer, maxWidth, builder)
+	}
+	if current.Pending != nil {
+		that.renderYou(current.Pending.Question, maxWidth, builder)
+		that.renderChatgpt(current.Pending.Answer, maxWidth, builder)
+	}
+	return builder.String()
+}
+
+func (that *ChatgptView) renderYou(content string, maxWidth int, builder *strings.Builder) {
+	builder.WriteString(SenderStyle.Render("You: "))
+	if utils.ContainsCJK(content) {
+		content = wrap.String(content, maxWidth-5)
+	} else {
+		content = wordwrap.String(content, maxWidth-5)
+	}
+	content, _ = that.rd.Render(content)
+	builder.WriteString(utils.EnsureTrailingNewline(content))
+}
+
+func (that *ChatgptView) renderChatgpt(content string, maxWidth int, builder *strings.Builder) {
+	if content == "" {
+		return
+	}
+	builder.WriteString(BotStyle.Render("ChatGPT: "))
+	if utils.ContainsCJK(content) {
+		content = wrap.String(content, maxWidth-5)
+	} else {
+		content = wordwrap.String(content, maxWidth-5)
+	}
+	content, _ = that.rd.Render(content)
+	builder.WriteString(utils.EnsureTrailingNewline(content))
 }
