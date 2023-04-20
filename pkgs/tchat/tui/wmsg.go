@@ -37,8 +37,7 @@ func (that *WMsg) Name() string {
 func (that *WMsg) GetWindow() *winman.WindowBase {
 	msgBox := winman.NewWindow()
 	message := tview.NewTextView().SetText(that.text).SetTextAlign(tview.AlignCenter)
-	buttonBar := tview.NewFlex().
-		SetDirection(tview.FlexColumn)
+	buttonBar := tview.NewFlex().SetDirection(tview.FlexColumn)
 
 	content := tview.NewFlex().
 		SetDirection(tview.FlexRow).

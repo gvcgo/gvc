@@ -52,23 +52,32 @@ func (that *TUI) Setup() {
 		})
 	that.Register(msgBox)
 
+	confWindow := NewConfWindow()
+	that.Register(confWindow)
+
 	mainWindow := NewMainWindow()
 	that.Register(mainWindow)
 }
 
-func (that *TUI) Quit() {
-	mainWindow := that.windowList["main"]
-	if that.Manager.WindowCount() == mainWindow.Index {
-		if msgbox, ok := that.windowList["quit"]; ok {
-			w := msgbox.Window
-			w.Show()
-			that.Manager.Center(w)
-			that.SetFocus(w)
+func (that *TUI) SearchWindow(name string) *winman.WindowBase {
+	if wind, ok := that.windowList[name]; ok {
+		return wind.Window
+	}
+	return nil
+}
 
+func (that *TUI) Quit(name string) {
+	if msgbox, ok := that.windowList["quit"]; ok && name == "main" {
+		w := msgbox.Window
+		w.Show()
+		that.Manager.Center(w)
+		that.SetFocus(w)
+
+	} else {
+		if w := that.SearchWindow(name); w != nil {
+			w.Hide()
+			that.SetFocus(that.Manager)
 		}
-	} else if mainWindow != nil {
-		that.Manager.RemoveWindow(mainWindow.Window)
-		that.SetFocus(that.Manager)
 	}
 }
 

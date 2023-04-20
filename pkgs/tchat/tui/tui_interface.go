@@ -6,8 +6,9 @@ import (
 )
 
 type ITui interface {
-	SetFocus(p tview.Primitive)
-	Quit()
+	SetFocus(tview.Primitive)
+	Quit(string)
+	SearchWindow(string) *winman.WindowBase
 }
 
 type IWindow interface {

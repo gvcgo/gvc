@@ -6,17 +6,21 @@ import (
 )
 
 type WMain struct {
-	name    string
-	tui     ITui
-	Input   *tview.InputField
-	Message *tview.TextArea
+	name     string
+	tui      ITui
+	Input    *tview.InputField
+	Message  *tview.TextArea
+	TreeNode *tview.TreeNode
+	TreeView *tview.TreeView
 }
 
 func NewMainWindow() *WMain {
 	return &WMain{
-		name:    "main",
-		Input:   tview.NewInputField(),
-		Message: tview.NewTextArea(),
+		name:     "main",
+		Input:    tview.NewInputField(),
+		Message:  tview.NewTextArea(),
+		TreeNode: tview.NewTreeNode("+ New Chat"),
+		TreeView: tview.NewTreeView(),
 	}
 }
 
@@ -33,9 +37,21 @@ func (that *WMain) GetWindow() *winman.WindowBase {
 	that.Input.SetBorder(true)
 	that.Message.SetBorder(true)
 
+	form := tview.NewForm()
+	form.AddButton("config", func() {
+		if confWin := that.tui.SearchWindow("config"); confWin != nil {
+			confWin.Show()
+			that.tui.SetFocus(confWin)
+		}
+	})
+
 	rightFlex := tview.NewFlex().SetDirection(tview.FlexRow)
 	rightFlex.AddItem(that.Message, 0, 8, false)
 	rightFlex.AddItem(that.Input, 0, 1, false)
+	rightFlex.AddItem(form, 0, 1, false)
+
+	mainFlex.AddItem(that.TreeView, 0, 3, false)
+	mainFlex.AddItem(rightFlex, 0, 7, false)
 
 	window := winman.NewWindow()
 	window.SetRoot(mainFlex).
@@ -49,7 +65,7 @@ func (that *WMain) GetWindow() *winman.WindowBase {
 	window.AddButton(&winman.Button{
 		Symbol:    'X',
 		Alignment: winman.ButtonLeft,
-		OnClick:   that.tui.Quit,
+		OnClick:   that.quit,
 	})
 
 	var maxMinButton *winman.Button
@@ -66,7 +82,12 @@ func (that *WMain) GetWindow() *winman.WindowBase {
 			}
 		},
 	}
+
 	window.AddButton(maxMinButton)
 	window.Show()
 	return window
+}
+
+func (that *WMain) quit() {
+	that.tui.Quit(that.name)
 }
