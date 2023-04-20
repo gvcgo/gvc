@@ -12,6 +12,7 @@ require (
 	github.com/charmbracelet/bubbletea v0.23.2
 	github.com/charmbracelet/glamour v0.6.0
 	github.com/charmbracelet/lipgloss v0.7.1
+	github.com/epiclabs-io/winman v0.0.0-20220901164457-3d8c4b3ae090
 	github.com/gin-gonic/gin v1.9.0
 	github.com/gocolly/colly/v2 v2.1.0
 	github.com/gogf/gf v1.16.9
@@ -25,6 +26,7 @@ require (
 	github.com/panjf2000/ants/v2 v2.7.1
 	github.com/pkoukk/tiktoken-go v0.1.1-0.20230410080739-eb45b82397d3
 	github.com/prometheus-community/pro-bing v0.1.0
+	github.com/rivo/tview v0.0.0-20230406072732-e22ce9588bb4
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/sashabaranov/go-openai v1.7.0
 	github.com/schollz/progressbar/v3 v3.13.0
@@ -59,6 +61,8 @@ require (
 	github.com/flynn-archive/go-shlex v0.0.0-20150515145356-3f9db97f8568 // indirect
 	github.com/francoispqt/gojay v1.2.13 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
+	github.com/gdamore/encoding v1.0.0 // indirect
+	github.com/gdamore/tcell/v2 v2.6.0 // indirect
 	github.com/ghodss/yaml v1.0.1-0.20220118164431-d8423dcdf344 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-logr/logr v1.2.4 // indirect

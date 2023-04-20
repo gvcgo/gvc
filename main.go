@@ -6,8 +6,8 @@ import (
 
 	"github.com/moqsien/gvc/pkgs/cmd"
 	"github.com/moqsien/gvc/pkgs/confs"
+	"github.com/moqsien/gvc/pkgs/tchat/tui"
 	"github.com/moqsien/gvc/pkgs/vctrl"
-	"github.com/moqsien/gvc/pkgs/vctrl/vchatgpt"
 )
 
 func main() {
@@ -38,8 +38,12 @@ func main() {
 		// co.SetConfField("api_key", "xxx")
 		// fmt.Println(*co)
 
-		r := vchatgpt.NewRunner()
-		r.Run()
+		// r := vchatgpt.NewRunner()
+		// r.Run()
+
+		// ui.Window()
+		m := tui.NewTui()
+		m.Run()
 
 		// type Test struct {
 		// 	TestKey key.Binding
