@@ -1,6 +1,8 @@
 package tui
 
 import (
+	"fmt"
+
 	"github.com/epiclabs-io/winman"
 	"github.com/moqsien/gvc/pkgs/tchat/gpt"
 	"github.com/rivo/tview"
@@ -35,10 +37,21 @@ func (that *WConf) GetWindow() *winman.WindowBase {
 		SetModal(false)
 	fields := that.Conf.GetOptOrder()
 	optList := that.Conf.GetOptList()
+	vList := map[string]string{}
 	for _, optName := range fields {
-		form.AddInputField(optName, optList[optName].String(), 100, nil, nil)
+		form.AddInputField(optName, optList[optName].String(), 100, nil, func(text string) {
+			vList[optName] = text
+		})
 	}
-	form.AddButton("save", func() {}).AddButton("cancel", func() {})
+	fmt.Println(vList)
+	form.AddButton("save", func() {
+		for fName, value := range vList {
+			fmt.Println(fName, value)
+			that.Conf.SetConfField(fName, value)
+			that.Conf.Restore()
+			that.tui.Quit(that.name)
+		}
+	})
 
 	window.SetBorder(true).SetTitle("config").SetTitleAlign(tview.AlignCenter)
 	window.SetRect(8, 4, 100, 50)
