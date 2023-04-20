@@ -33,27 +33,15 @@ func (that *WConf) GetWindow() *winman.WindowBase {
 		SetResizable(true).
 		SetDraggable(true).
 		SetModal(false)
+	fields := that.Conf.GetOptOrder()
+	optList := that.Conf.GetOptList()
+	for _, optName := range fields {
+		form.AddInputField(optName, optList[optName].String(), 100, nil, nil)
+	}
+	form.AddButton("save", func() {}).AddButton("cancel", func() {})
 
-	form.AddDropDown("Title", []string{"Mr.", "Ms.", "Mrs.", "Dr.", "Prof."}, 0, nil).
-		AddInputField("First name", "", 20, nil, nil).
-		AddPasswordField("Password", "", 10, '*', nil).
-		AddCheckbox("Draggable", window.IsDraggable(), func(checked bool) {
-			window.SetDraggable(checked)
-		}).
-		AddCheckbox("Resizable", window.IsResizable(), func(checked bool) {
-			window.SetResizable(checked)
-		}).
-		AddCheckbox("Modal", window.Modal, func(checked bool) {
-			window.SetModal(checked)
-		}).
-		AddCheckbox("Border", window.Draggable, func(checked bool) {
-			window.SetBorder(checked)
-		}).
-		AddInputField("Z-Index", "", 20, func(text string, char rune) bool {
-			return char >= '0' && char <= '9'
-		}, nil)
 	window.SetBorder(true).SetTitle("config").SetTitleAlign(tview.AlignCenter)
-	window.SetRect(8, 4, 50, 30)
+	window.SetRect(8, 4, 100, 50)
 	window.AddButton(&winman.Button{
 		Symbol:    'X',
 		Alignment: winman.ButtonLeft,

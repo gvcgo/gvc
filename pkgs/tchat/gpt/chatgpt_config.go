@@ -92,11 +92,27 @@ func NewChatGptConf() (cc *ChatGPTConf) {
 }
 
 func (that *ChatGPTConf) GetOptList() (optList map[string]*Option) {
+	if len(that.optList) == 0 {
+		that.GetOptions()
+	}
 	return that.optList
 }
 
 func (that *ChatGPTConf) GetOptOrder() []string {
+	if len(that.optOrder) == 0 {
+		that.GetOptions()
+	}
 	return that.optOrder
+}
+
+func (that *ChatGPTConf) GetOptByName(name string) string {
+	if len(that.optList) == 0 {
+		that.GetOptions()
+	}
+	if opt, ok := that.optList[name]; ok {
+		return opt.String()
+	}
+	return ""
 }
 
 func (that *ChatGPTConf) setup() {
