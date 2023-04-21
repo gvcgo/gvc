@@ -18,6 +18,7 @@ require (
 	github.com/panjf2000/ants/v2 v2.7.1
 	github.com/prometheus-community/pro-bing v0.1.0
 	github.com/robfig/cron/v3 v3.0.1
+	github.com/sashabaranov/go-openai v1.9.0
 	github.com/schollz/progressbar/v3 v3.13.0
 	github.com/studio-b12/gowebdav v0.0.0-20230203202212-3282f94193f2
 	github.com/tidwall/gjson v1.14.4
