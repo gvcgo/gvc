@@ -129,8 +129,8 @@ func (that *ChatBot) Send(conf *ConvsationConf, msgs []openai.ChatCompletionMess
 		for {
 			resp, err := stream.Recv()
 			if err != nil {
+				close(collector)
 				if err == io.EOF {
-					close(collector)
 					return nil
 				}
 				return err

@@ -64,6 +64,9 @@ func (that *ProxyConf) Reset() {
 		"https://raw.githubusercontent.com/vveg26/get_proxy/main/dist/v2ray.config.txt",
 		"https://freefq.neocities.org/free.txt",
 		"https://ghproxy.com/https://raw.githubusercontent.com/kxswa/k/k/base64",
+		"https://raw.githubusercontent.com/aiboboxx/v2rayfree/main/v2",
+		"https://raw.githubusercontent.com/ermaozi/get_subscribe/main/subscribe/v2ray.txt",
+		"https://gitlab.com/api/v4/projects/36060645/repository/files/data%2Fv2ray%2FtvNUi5rjr.txt/raw?ref=main&private_token=glpat-iC4t7zq8nsV2xKYseBfU",
 	}
 	that.VerifyUrl = "https://www.google.com"
 	that.InboundPort = 2019
