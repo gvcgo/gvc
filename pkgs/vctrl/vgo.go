@@ -299,12 +299,15 @@ func (that *GoVersion) CheckAndInitEnv() {
 func (that *GoVersion) UseVersion(version string) {
 	untarfile := filepath.Join(config.GoUnTarFilesPath, version)
 	if ok, _ := utils.PathIsExist(untarfile); !ok {
-		if tarfile := that.download(version); tarfile != "" {
-			if err := archiver.Unarchive(tarfile, untarfile); err != nil {
-				os.RemoveAll(untarfile)
-				fmt.Println("[Unarchive failed] ", err)
-				return
-			}
+		tarfile := that.download(version)
+		if tarfile == "" {
+			// not exist or download failed or check failed
+			return
+		}
+		if err := archiver.Unarchive(tarfile, untarfile); err != nil {
+			os.RemoveAll(untarfile)
+			fmt.Println("[Unarchive failed] ", err)
+			return
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.DefaultGoRoot); ok {
