@@ -4,6 +4,8 @@ import (
 	"strings"
 
 	"github.com/gocolly/colly/v2"
+	"github.com/gogf/gf/encoding/gjson"
+	futils "github.com/moqsien/free/pkgs/utils"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
 )
@@ -88,6 +90,30 @@ func (that *ProxyFetcher) GetProxyList(force bool) {
 				that.c.Visit(url)
 			}
 			that.ProxyList.Update(pList)
+		}
+	}
+	that.ProxyList.Reload()
+}
+
+func (that *ProxyFetcher) GetProxies(force bool) {
+	that.ProxyList.Reload()
+	if that.Type == Vmess {
+		if that.ProxyList.Today() != that.ProxyList.GetDate() || force {
+			that.c.OnResponse(func(r *colly.Response) {
+				jsonStr, _ := futils.DefaultCrypt.AesDecrypt(r.Body)
+				j := gjson.New(jsonStr)
+				rawList := j.GetArray("vmess.list")
+				vList := []*Proxy{}
+				for _, v := range rawList {
+					if vmessUri, ok := v.(string); ok {
+						vList = append(vList, &Proxy{
+							Uri: vmessUri,
+						})
+					}
+				}
+				that.ProxyList.Update(vList)
+			})
+			that.c.Visit("https://gitee.com/moqsien/test/raw/master/conf.txt")
 		}
 	}
 	that.ProxyList.Reload()

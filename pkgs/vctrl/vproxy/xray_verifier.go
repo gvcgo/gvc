@@ -91,7 +91,7 @@ func (that *XrayVerifier) sendProxy(force bool) {
 		that.VmessFetcher = NewProxyFetcher(Vmess)
 	}
 	// wether force to fetch a new proxy list
-	that.VmessFetcher.GetProxyList(force)
+	that.VmessFetcher.GetProxies(force)
 	p := that.VmessFetcher.ProxyList.GetProxyList()
 	if len(p) > 0 {
 		i := 0
