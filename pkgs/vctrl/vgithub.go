@@ -67,7 +67,7 @@ func (that *GhDownloader) Download(zipUrl string) {
 }
 
 func (that *GhDownloader) OpenByBrowser(chosen int) {
-	urlList := that.Conf.Proxy.GithubDownload
+	urlList := that.Conf.Github.AccelUrls
 	if len(urlList) == 0 {
 		fmt.Println("No github download acceleration available.")
 		return

@@ -28,7 +28,7 @@ type GVConfig struct {
 	Nodejs   *NodejsConf   `koanf:"nodejs"`
 	Python   *PyConf       `koanf:"python"`
 	NVim     *NVimConf     `koanf:"nvim"`
-	Proxy    *ProxyConf    `koanf:"proxy"`
+	Xtray    *XtrayConf    `koanf:"xtray"`
 	Github   *GithubConf   `koanf:"github"`
 	Cygwin   *CygwinConf   `koanf:"cygwin"`
 	Homebrew *HomebrewConf `koanf:"homebrew"`
@@ -40,8 +40,6 @@ type GVConfig struct {
 	Webdav   *DavConf      `koanf:"dav"`
 	path     string
 	koanfer  *xutils.Koanfer
-	// k        *koanf.Koanf
-	// parser   *yaml.YAML
 }
 
 func New() (r *GVConfig) {
@@ -55,7 +53,7 @@ func New() (r *GVConfig) {
 		Code:     NewCodeConf(),
 		Nodejs:   NewNodejsConf(),
 		Python:   NewPyConf(),
-		Proxy:    NewProxyConf(),
+		Xtray:    NewXtrayConf(),
 		Github:   NewGithubConf(),
 		Cygwin:   NewCygwinConf(),
 		Homebrew: NewHomebrewConf(),
@@ -67,8 +65,6 @@ func New() (r *GVConfig) {
 		Webdav:   NewDavConf(),
 		path:     GVConfigPath,
 		koanfer:  xutils.NewKoanfer(GVConfigPath),
-		// k:        koanf.New("."),
-		// parser:   yaml.Parser(),
 	}
 	r.initiate()
 	return
@@ -114,8 +110,8 @@ func (that *GVConfig) SetDefault() {
 	that.Python.Reset()
 	that.NVim = NewNVimConf()
 	that.NVim.Reset()
-	that.Proxy = NewProxyConf()
-	that.Proxy.Reset()
+	that.Xtray = NewXtrayConf()
+	that.Xtray.Reset()
 	that.Github = NewGithubConf()
 	that.Github.Reset()
 	that.Cygwin = NewCygwinConf()

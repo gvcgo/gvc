@@ -5,7 +5,6 @@ import (
 
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
 	"github.com/moqsien/gvc/pkgs/vctrl"
-	"github.com/moqsien/gvc/pkgs/vctrl/vproxy"
 	"github.com/urfave/cli/v2"
 )
 
@@ -50,45 +49,6 @@ func (that *Cmder) showinfo() {
 
 			dav := vctrl.NewGVCWebdav()
 			dav.ShowConfigPath()
-			return nil
-		},
-	}
-	that.Commands = append(that.Commands, command)
-}
-
-func (that *Cmder) startXray() {
-	var (
-		start bool
-		keep  bool
-	)
-	command := &cli.Command{
-		Name:    "xray",
-		Aliases: []string{"ray", "xry", "x"},
-		Usage:   "Start Xray Shell for free VPN.",
-		Flags: []cli.Flag{
-			&cli.BoolFlag{
-				Name:        "start",
-				Aliases:     []string{"st", "s"},
-				Usage:       "Start Xray Client.",
-				Destination: &start,
-			},
-			&cli.BoolFlag{
-				Name:        "keep",
-				Aliases:     []string{"kp", "k"},
-				Usage:       "Keep running by verifications.",
-				Destination: &keep,
-			},
-		},
-		Action: func(ctx *cli.Context) error {
-			xctrl := vproxy.NewXrayCtrl()
-			xctrl.DownloadGeoIP()
-			if start {
-				xctrl.StartXray()
-			} else if keep {
-				xctrl.KeepRunning()
-			} else {
-				xctrl.StartShell()
-			}
 			return nil
 		},
 	}
@@ -1191,6 +1151,44 @@ func (that *Cmder) vtypst() {
 	that.Commands = append(that.Commands, command)
 }
 
+func (that *Cmder) vxtray() {
+	commands := &cli.Command{
+		Name:    "xtray-shell",
+		Aliases: []string{"xshell", "xs", "x"},
+		Usage:   "Start an xtray shell.",
+		Action: func(ctx *cli.Context) error {
+			xe := vctrl.NewXtrayExa()
+			xe.Runner.CtrlShell()
+			return nil
+		},
+	}
+	that.Commands = append(that.Commands, commands)
+
+	commandr := &cli.Command{
+		Name:    vctrl.XtrayStarterCmd,
+		Aliases: []string{"xrunner", "xr"},
+		Usage:   "Start an xtray client.",
+		Action: func(ctx *cli.Context) error {
+			xe := vctrl.NewXtrayExa()
+			xe.Runner.Start()
+			return nil
+		},
+	}
+	that.Commands = append(that.Commands, commandr)
+
+	commandk := &cli.Command{
+		Name:    vctrl.XtrayKeeperCmd,
+		Aliases: []string{"xkeeper", "xk"},
+		Usage:   "Start an xtray keeper.",
+		Action: func(ctx *cli.Context) error {
+			xe := vctrl.NewXtrayExa()
+			xe.Keeper.Run()
+			return nil
+		},
+	}
+	that.Commands = append(that.Commands, commandk)
+}
+
 func (that *Cmder) initiate() {
 	that.vgo()
 	that.vpython()
@@ -1207,7 +1205,7 @@ func (that *Cmder) initiate() {
 
 	that.vscode()
 	that.vnvim()
-	that.startXray()
+	that.vxtray()
 	that.vhomebrew()
 	that.vhost()
 	that.vgithub()

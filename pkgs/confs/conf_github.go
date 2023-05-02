@@ -7,7 +7,8 @@ import (
 )
 
 type GithubConf struct {
-	DownProxy string `koanf:"down_proxy"`
+	DownProxy string   `koanf:"down_proxy"`
+	AccelUrls []string `koanf:"acceleration_urls"`
 }
 
 func NewGithubConf() (ghc *GithubConf) {
@@ -19,6 +20,10 @@ func NewGithubConf() (ghc *GithubConf) {
 
 func (that *GithubConf) Reset() {
 	that.DownProxy = "https://ghproxy.com/"
+	that.AccelUrls = []string{
+		"https://ghproxy.com/",
+		"https://d.serctl.com/?dl_start",
+	}
 }
 
 func (that *GithubConf) testDownProxy() (r bool) {
