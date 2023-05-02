@@ -24,6 +24,7 @@ import (
 
 type GoPackage struct {
 	Url       string
+	AliUrl    string
 	FileName  string
 	Kind      string
 	OS        string
@@ -98,12 +99,23 @@ func (that *GoVersion) findPackages(table *goquery.Selection) (pkgs []*GoPackage
 	table.Find("tr").Not(".first").Each(func(j int, tr *goquery.Selection) {
 		td := tr.Find("td")
 		href := td.Eq(0).Find("a").AttrOr("href", "")
+		aliUrl := href
 		if strings.HasPrefix(href, "/") { // relative paths
 			href = fmt.Sprintf("%s://%s%s", that.ParsedUrl.Scheme, that.ParsedUrl.Host, href)
+			fnameList := strings.Split(aliUrl, "/")
+			fname := fnameList[len(fnameList)-1]
+			if strings.Contains(fname, ".") {
+				aliUrl = fmt.Sprintf("%s%s", that.Conf.Go.AliRepoUrl, fname)
+			} else {
+				aliUrl = ""
+			}
+		} else {
+			aliUrl = ""
 		}
 		pkgs = append(pkgs, &GoPackage{
 			FileName:  td.Eq(0).Find("a").Text(),
 			Url:       href,
+			AliUrl:    aliUrl,
 			Kind:      strings.ToLower(td.Eq(1).Text()),
 			OS:        utils.MapArchAndOS(td.Eq(2).Text()),
 			Arch:      utils.MapArchAndOS(td.Eq(3).Text()),
@@ -243,7 +255,10 @@ func (that *GoVersion) download(version string) (r string) {
 	if p != nil {
 		fName := fmt.Sprintf("go-%s-%s.%s%s", version, p.OS, p.Arch, utils.GetExt(p.FileName))
 		fpath := filepath.Join(config.GoTarFilesPath, fName)
-		that.Url = p.Url
+		that.Url = p.AliUrl
+		if that.Url == "" {
+			that.Url = p.Url
+		}
 		that.Timeout = 180 * time.Second
 		if size := that.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
 			if ok := that.checkFile(p, fpath); ok {
@@ -305,6 +320,10 @@ func (that *GoVersion) UseVersion(version string) {
 				fmt.Println("[Unarchive failed] ", err)
 				return
 			}
+		} else {
+			// version does not exist.
+			os.RemoveAll(untarfile)
+			return
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.DefaultGoRoot); ok {
