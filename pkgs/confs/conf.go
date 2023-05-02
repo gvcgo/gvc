@@ -5,8 +5,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/knadh/koanf"
-	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/moqsien/gvc/pkgs/utils"
 	xutils "github.com/moqsien/xtray/pkgs/utils"
 )
@@ -40,10 +38,10 @@ type GVConfig struct {
 	Typst    *TypstConf    `koanf:"typst"`
 	Chatgpt  *ChatgptConf  `koanf:"chatgpt"`
 	Webdav   *DavConf      `koanf:"dav"`
-	k        *koanf.Koanf
-	parser   *yaml.YAML
 	path     string
 	koanfer  *xutils.Koanfer
+	// k        *koanf.Koanf
+	// parser   *yaml.YAML
 }
 
 func New() (r *GVConfig) {
@@ -67,10 +65,10 @@ func New() (r *GVConfig) {
 		Typst:    NewTypstConf(),
 		Chatgpt:  NewGptConf(),
 		Webdav:   NewDavConf(),
-		k:        koanf.New("."),
-		parser:   yaml.Parser(),
 		path:     GVConfigPath,
 		koanfer:  xutils.NewKoanfer(GVConfigPath),
+		// k:        koanf.New("."),
+		// parser:   yaml.Parser(),
 	}
 	r.initiate()
 	return
