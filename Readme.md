@@ -203,8 +203,8 @@ Therefore, If you are planning to get a new PC for development, probably the onl
   </tr>
   <tr>
     <td><font color="Gree">Xray-Core</font></td>
-    <td><font color="LightBlue">Auto get free Vmess start listen at localhost:2019</font></td>
-    <td bgcolor="PaleVioletRed">HelpInfo: gvc xray help; EnterTheOperationShell: gvc xray</td>
+    <td><font color="LightBlue">Auto get free Vmess/Vless/Trojan/Shadowsocks start listen at localhost:2019</font></td>
+    <td bgcolor="PaleVioletRed">HelpInfo: gvc xray help; EnterTheOperationShell: gvc x</td>
   </tr>
   <tr>
     <td><font color="Gree">Github</font></td>
@@ -273,3 +273,5 @@ GLOBAL OPTIONS:
 - [pyenv-win](https://github.com/pyenv-win/pyenv-win)
 - [g](https://github.com/voidint/g)
 - [gvm](https://github.com/andrewkroh/gvm)
+- [xtray](https://github.com/moqsien/xtray)
+- [free](https://github.com/moqsien/free)

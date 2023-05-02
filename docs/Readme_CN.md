@@ -276,3 +276,5 @@ GLOBAL OPTIONS:
 - [pyenv-win](https://github.com/pyenv-win/pyenv-win)
 - [g](https://github.com/voidint/g)
 - [gvm](https://github.com/andrewkroh/gvm)
+- [xtray](https://github.com/moqsien/xtray)
+- [free](https://github.com/moqsien/free)
