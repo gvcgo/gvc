@@ -190,7 +190,7 @@ func (that *XrayCtrl) initXrayCtrl() {
 
 	that.Ktrl.AddKtrlCommand(&goktrl.KCommand{
 		Name: "status",
-		Help: "Show available proxy list. ",
+		Help: "Show running status. ",
 		Func: func(c *goktrl.Context) {
 			if that.IsXrayRunning() {
 				fmt.Println("[gvc] xray client is running.")

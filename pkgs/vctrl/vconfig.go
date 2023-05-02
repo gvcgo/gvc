@@ -16,6 +16,7 @@ import (
 	"github.com/knadh/koanf/providers/structs"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
+	xutils "github.com/moqsien/xtray/pkgs/utils"
 	"github.com/studio-b12/gowebdav"
 )
 
@@ -36,9 +37,10 @@ type GVCWebdav struct {
 	DavConf    *WebdavConf
 	conf       *config.GVConfig
 	vscodeExts *VSCodeExtIds
+	client     *gowebdav.Client
+	koanfer    *xutils.Koanfer
 	k          *koanf.Koanf
 	parser     *yaml.YAML
-	client     *gowebdav.Client
 }
 
 func NewGVCWebdav() (gw *GVCWebdav) {
@@ -48,6 +50,7 @@ func NewGVCWebdav() (gw *GVCWebdav) {
 		},
 		conf:       config.New(),
 		vscodeExts: &VSCodeExtIds{},
+		koanfer:    xutils.NewKoanfer(config.GVCWebdavConfigPath),
 		k:          koanf.New("."),
 		parser:     yaml.Parser(),
 	}
@@ -69,12 +72,9 @@ func (that *GVCWebdav) resetKoanf() {
 	that.parser = yaml.Parser()
 }
 
-// save webdav configurations to yml file.
+// save webdav configurations to json file.
 func (that *GVCWebdav) Restore() {
-	that.k.Load(structs.Provider(that.DavConf, "koanf"), nil)
-	if b, err := that.k.Marshal(that.parser); err == nil && len(b) > 0 {
-		os.WriteFile(config.GVCWebdavConfigPath, b, 0666)
-	}
+	that.koanfer.Save(that.DavConf)
 }
 
 func (that *GVCWebdav) RestoreDefaultGVConf() {
@@ -92,12 +92,7 @@ func (that *GVCWebdav) Reload() {
 		fmt.Println("[Warning] It seems that you have not set up your webdav account.")
 		return
 	}
-	err := that.k.Load(file.Provider(config.GVCWebdavConfigPath), that.parser)
-	if err != nil {
-		fmt.Println("[Config Load Failed] ", err)
-		return
-	}
-	that.k.UnmarshalWithConf("", that.DavConf, koanf.UnmarshalConf{Tag: "koanf"})
+	that.koanfer.Load(that.DavConf)
 	that.getClient(true)
 }
 
@@ -141,7 +136,7 @@ func (that *GVCWebdav) SetAccount() {
 		that.DavConf.RemoteDir = that.conf.Webdav.DefaultWebdavRemoteDir
 	}
 	if that.conf.Webdav.DefaultWebdavLocalDir != "" {
-		that.DavConf.RemoteDir = that.conf.Webdav.DefaultWebdavLocalDir
+		that.DavConf.LocalDir = that.conf.Webdav.DefaultWebdavLocalDir
 	}
 	that.Restore()
 }

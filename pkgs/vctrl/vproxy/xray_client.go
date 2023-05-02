@@ -38,14 +38,6 @@ type XrayVmessOutbound struct {
 	Raw      string `json:"raw"`
 }
 
-type VO struct {
-	Add  string `json:"add"`
-	Port string `json:"port"`
-	Id   string `json:"id"`
-	Net  string `json:"net"`
-	Path string `json:"path"`
-}
-
 func (that *XrayVmessOutbound) ParseVmessUri(rawUri string) {
 	if strings.HasPrefix(rawUri, "vmess://") {
 		jsonStr := utils.DecodeBase64(strings.ReplaceAll(rawUri, "vmess://", ""))
@@ -175,8 +167,7 @@ func (that *XrayClient) VerifyProxy() (ok bool, timeLag int64) {
 				if err != nil {
 					return nil, fmt.Errorf("parse address failed: %w", err)
 				}
-				add.WithContext(ctx)
-				return pro.Conn(add)
+				return pro.Conn(ctx, add)
 			}}, Timeout: time.Duration(t) * time.Second,
 	}
 	vUrl := that.Verifier.GetConf().Proxy.VerifyUrl

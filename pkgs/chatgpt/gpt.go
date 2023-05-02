@@ -76,8 +76,7 @@ func (that *ChatBot) getSocks5Client(host string, port int32, timeout int) (h *h
 					if err != nil {
 						return nil, fmt.Errorf("parse address failed: %w", err)
 					}
-					add.WithContext(ctx)
-					return proxy_result.Conn(add)
+					return proxy_result.Conn(ctx, add)
 				}},
 			Timeout: time.Second * time.Duration(timeout),
 		}

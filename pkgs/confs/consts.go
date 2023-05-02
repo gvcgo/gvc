@@ -18,9 +18,9 @@ const (
 
 var (
 	GVCWorkDir          = filepath.Join(utils.GetHomeDir(), ".gvc")
-	GVCWebdavConfigPath = filepath.Join(GVCWorkDir, "webdav.yml")
+	GVCWebdavConfigPath = filepath.Join(GVCWorkDir, "webdav.json")
 	GVCBackupDir        = filepath.Join(GVCWorkDir, "backup")
-	GVConfigPath        = filepath.Join(GVCBackupDir, "gvc-config.yml")
+	GVConfigPath        = filepath.Join(GVCBackupDir, "gvc-config.json")
 )
 
 /*

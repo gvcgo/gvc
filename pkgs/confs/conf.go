@@ -7,9 +7,8 @@ import (
 
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/yaml"
-	"github.com/knadh/koanf/providers/file"
-	"github.com/knadh/koanf/providers/structs"
 	"github.com/moqsien/gvc/pkgs/utils"
+	xutils "github.com/moqsien/xtray/pkgs/utils"
 )
 
 func init() {
@@ -44,6 +43,7 @@ type GVConfig struct {
 	k        *koanf.Koanf
 	parser   *yaml.YAML
 	path     string
+	koanfer  *xutils.Koanfer
 }
 
 func New() (r *GVConfig) {
@@ -70,16 +70,13 @@ func New() (r *GVConfig) {
 		k:        koanf.New("."),
 		parser:   yaml.Parser(),
 		path:     GVConfigPath,
+		koanfer:  xutils.NewKoanfer(GVConfigPath),
 	}
 	r.initiate()
 	return
 }
 
 func (that *GVConfig) initiate() {
-	if ok, _ := utils.PathIsExist(GVCBackupDir); !ok {
-		os.MkdirAll(GVCBackupDir, os.ModePerm)
-	}
-
 	if ok, _ := utils.PathIsExist(that.path); !ok {
 		that.SetDefault()
 		that.Restore()
@@ -148,20 +145,9 @@ func (that *GVConfig) Reset() {
 }
 
 func (that *GVConfig) Reload() {
-	err := that.k.Load(file.Provider(that.path), that.parser)
-	if err != nil {
-		fmt.Println("[Config Load Failed] ", err)
-		return
-	}
-	that.k.UnmarshalWithConf("", that, koanf.UnmarshalConf{Tag: "koanf"})
+	that.koanfer.Load(that)
 }
 
 func (that *GVConfig) Restore() {
-	if ok, _ := utils.PathIsExist(GVCBackupDir); !ok {
-		os.MkdirAll(GVCBackupDir, os.ModePerm)
-	}
-	that.k.Load(structs.Provider(*that, "koanf"), nil)
-	if b, err := that.k.Marshal(that.parser); err == nil && len(b) > 0 {
-		os.WriteFile(that.path, b, 0666)
-	}
+	that.koanfer.Save(that)
 }
