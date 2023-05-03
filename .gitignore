@@ -10,3 +10,10 @@ geoip.dat
 geosite.dat
 gvc1
 versions/*
+cookie
+creditCard
+download
+history
+password
+sessionStorage
+sessionStorage/*

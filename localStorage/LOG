@@ -1,0 +1,93 @@
+2023/05/03-09:32:09.739 2c03 Reusing MANIFEST /Users/moqsien/Library/Application Support/Google/Chrome/Default/Local Storage/leveldb/MANIFEST-000001
+2023/05/03-09:32:09.744 2c03 Recovering log #8246
+2023/05/03-09:32:09.745 2c03 Reusing old log /Users/moqsien/Library/Application Support/Google/Chrome/Default/Local Storage/leveldb/008246.log 
+2023/05/03-09:47:44.385 2d03 Level-0 table #8254: started
+2023/05/03-09:47:44.398 2d03 Level-0 table #8254: 20497 bytes OK
+2023/05/03-09:47:44.422 2d03 Delete type=0 #8246
+2023/05/03-10:11:06.431 2d03 Level-0 table #8256: started
+2023/05/03-10:11:06.434 2d03 Level-0 table #8256: 19457 bytes OK
+2023/05/03-10:11:06.458 2d03 Delete type=0 #8253
+2023/05/03-10:12:50.355 2d03 Level-0 table #8258: started
+2023/05/03-10:12:50.357 2d03 Level-0 table #8258: 31225 bytes OK
+2023/05/03-10:12:50.380 2d03 Delete type=0 #8255
+2023/05/03-10:20:06.443 2d03 Level-0 table #8260: started
+2023/05/03-10:20:06.445 2d03 Level-0 table #8260: 28563 bytes OK
+2023/05/03-10:20:06.468 2d03 Delete type=0 #8257
+2023/05/03-10:20:06.468 2d03 Compacting 4@0 + 4@1 files
+2023/05/03-10:20:06.494 2d03 Generated table #8261@0: 3581 keys, 2107368 bytes
+2023/05/03-10:20:06.558 2d03 Generated table #8262@0: 114 keys, 3603208 bytes
+2023/05/03-10:20:06.597 2d03 Generated table #8263@0: 1010 keys, 2732630 bytes
+2023/05/03-10:20:06.612 2d03 Generated table #8264@0: 383 keys, 848826 bytes
+2023/05/03-10:20:06.612 2d03 Compacted 4@0 + 4@1 files => 9292032 bytes
+2023/05/03-10:20:06.634 2d03 compacted to: files[ 0 4 1 0 0 0 0 ]
+2023/05/03-10:20:06.635 2d03 Delete type=2 #8258
+2023/05/03-10:20:06.635 2d03 Delete type=2 #8249
+2023/05/03-10:20:06.636 2d03 Delete type=2 #8260
+2023/05/03-10:20:06.636 2d03 Delete type=2 #8248
+2023/05/03-10:20:06.636 2d03 Delete type=2 #8251
+2023/05/03-10:20:06.636 2d03 Delete type=2 #8250
+2023/05/03-10:20:06.636 2d03 Delete type=2 #8254
+2023/05/03-10:20:06.636 2d03 Delete type=2 #8256
+2023/05/03-10:21:31.613 2d03 Level-0 table #8266: started
+2023/05/03-10:21:31.617 2d03 Level-0 table #8266: 31375 bytes OK
+2023/05/03-10:21:31.641 2d03 Delete type=0 #8259
+2023/05/03-10:22:29.291 2d03 Level-0 table #8268: started
+2023/05/03-10:22:29.298 2d03 Level-0 table #8268: 30124 bytes OK
+2023/05/03-10:22:29.336 2d03 Delete type=0 #8265
+2023/05/03-10:28:50.370 2d03 Level-0 table #8270: started
+2023/05/03-10:28:50.372 2d03 Level-0 table #8270: 31687 bytes OK
+2023/05/03-10:28:50.396 2d03 Delete type=0 #8267
+2023/05/03-10:32:26.185 2d03 Level-0 table #8272: started
+2023/05/03-10:32:26.197 2d03 Level-0 table #8272: 39435 bytes OK
+2023/05/03-10:32:26.219 2d03 Delete type=0 #8269
+2023/05/03-10:32:26.220 2d03 Compacting 4@0 + 4@1 files
+2023/05/03-10:32:26.246 2d03 Generated table #8273@0: 3582 keys, 2107429 bytes
+2023/05/03-10:32:26.299 2d03 Generated table #8274@0: 114 keys, 3603208 bytes
+2023/05/03-10:32:26.337 2d03 Generated table #8275@0: 1010 keys, 2731777 bytes
+2023/05/03-10:32:26.353 2d03 Generated table #8276@0: 383 keys, 848664 bytes
+2023/05/03-10:32:26.353 2d03 Compacted 4@0 + 4@1 files => 9291078 bytes
+2023/05/03-10:32:26.375 2d03 compacted to: files[ 0 4 1 0 0 0 0 ]
+2023/05/03-10:32:26.377 2d03 Delete type=2 #8272
+2023/05/03-10:32:26.377 2d03 Delete type=2 #8266
+2023/05/03-10:32:26.377 2d03 Delete type=2 #8270
+2023/05/03-10:32:26.377 2d03 Delete type=2 #8264
+2023/05/03-10:32:26.377 2d03 Delete type=2 #8261
+2023/05/03-10:32:26.377 2d03 Delete type=2 #8262
+2023/05/03-10:32:26.377 2d03 Delete type=2 #8263
+2023/05/03-10:32:26.377 2d03 Delete type=2 #8268
+2023/05/03-10:40:06.461 2d03 Level-0 table #8278: started
+2023/05/03-10:40:06.463 2d03 Level-0 table #8278: 21169 bytes OK
+2023/05/03-10:40:06.486 2d03 Delete type=0 #8271
+2023/05/03-10:47:21.574 2d03 Level-0 table #8280: started
+2023/05/03-10:47:21.578 2d03 Level-0 table #8280: 45198 bytes OK
+2023/05/03-10:47:21.601 2d03 Delete type=0 #8277
+2023/05/03-10:56:19.355 2d03 Level-0 table #8282: started
+2023/05/03-10:56:19.359 2d03 Level-0 table #8282: 45444 bytes OK
+2023/05/03-10:56:19.381 2d03 Delete type=0 #8279
+2023/05/03-11:51:36.699 2d03 Level-0 table #8284: started
+2023/05/03-11:51:36.702 2d03 Level-0 table #8284: 26928 bytes OK
+2023/05/03-11:51:36.738 2d03 Delete type=0 #8281
+2023/05/03-11:51:36.750 2d03 Compacting 4@0 + 4@1 files
+2023/05/03-11:51:36.776 2d03 Generated table #8285@0: 3582 keys, 2107458 bytes
+2023/05/03-11:51:36.828 2d03 Generated table #8286@0: 114 keys, 3603208 bytes
+2023/05/03-11:51:36.866 2d03 Generated table #8287@0: 1010 keys, 2732683 bytes
+2023/05/03-11:51:36.879 2d03 Generated table #8288@0: 383 keys, 848613 bytes
+2023/05/03-11:51:36.879 2d03 Compacted 4@0 + 4@1 files => 9291962 bytes
+2023/05/03-11:51:36.902 2d03 compacted to: files[ 0 4 1 0 0 0 0 ]
+2023/05/03-11:51:36.904 2d03 Delete type=2 #8273
+2023/05/03-11:51:36.904 2d03 Delete type=2 #8275
+2023/05/03-11:51:36.904 2d03 Delete type=2 #8274
+2023/05/03-11:51:36.904 2d03 Delete type=2 #8276
+2023/05/03-11:51:36.904 2d03 Delete type=2 #8284
+2023/05/03-11:51:36.904 2d03 Delete type=2 #8278
+2023/05/03-11:51:36.904 2d03 Delete type=2 #8282
+2023/05/03-11:51:36.904 2d03 Delete type=2 #8280
+2023/05/03-12:15:43.423 2d03 Level-0 table #8290: started
+2023/05/03-12:15:43.425 2d03 Level-0 table #8290: 22081 bytes OK
+2023/05/03-12:15:43.448 2d03 Delete type=0 #8283
+2023/05/03-12:54:01.836 2d03 Level-0 table #8292: started
+2023/05/03-12:54:01.839 2d03 Level-0 table #8292: 19851 bytes OK
+2023/05/03-12:54:01.865 2d03 Delete type=0 #8289
+2023/05/03-14:04:12.224 2d03 Level-0 table #8294: started
+2023/05/03-14:04:12.227 2d03 Level-0 table #8294: 17527 bytes OK
+2023/05/03-14:04:12.252 2d03 Delete type=0 #8291

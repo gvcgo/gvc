@@ -4,7 +4,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/moqsien/gvc/pkgs/chatgpt"
 	"github.com/moqsien/gvc/pkgs/cmd"
 	"github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/vctrl"
@@ -24,7 +23,8 @@ func main() {
 		// ui.Window()
 		// m := tui.NewTui()
 		// m.Run()
-		chatgpt.Run()
+		// chatgpt.Run()
+		vctrl.Test()
 
 	} else if len(os.Args) < 2 {
 		self := vctrl.NewSelf()
