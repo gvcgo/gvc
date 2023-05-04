@@ -15,3 +15,8 @@ creditCard
 download
 history
 password
+*.log
+*.ldb
+LOG
+LOG.old
+MANIFEST-*
