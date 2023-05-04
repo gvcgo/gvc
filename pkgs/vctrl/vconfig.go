@@ -231,6 +231,7 @@ func (that *GVCWebdav) Pull() {
 				if that.AESCrypt != nil && len(b) > 0 && (strings.Contains(info.Name(), "password") || strings.Contains(info.Name(), "credit")) {
 					b, _ = that.AESCrypt.AesDecrypt(b)
 				}
+				fmt.Println(info.Name())
 				if len(b) == 0 {
 					r, _ := that.client.ReadStream(rPath)
 					fpath := filepath.Join(that.DavConf.LocalDir, info.Name())
@@ -239,7 +240,7 @@ func (that *GVCWebdav) Pull() {
 					file.Close()
 					// decrypt private info.
 					that.decryptFile(fpath)
-					return
+					continue
 				}
 				os.WriteFile(filepath.Join(that.DavConf.LocalDir, info.Name()), b, os.ModePerm)
 			}

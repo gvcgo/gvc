@@ -1189,6 +1189,74 @@ func (that *Cmder) vxtray() {
 	that.Commands = append(that.Commands, commandk)
 }
 
+func (that *Cmder) vbrowser() {
+	command := &cli.Command{
+		Name:        "browser",
+		Aliases:     []string{"br"},
+		Usage:       "Browser data management.",
+		Subcommands: []*cli.Command{},
+	}
+
+	vshow := &cli.Command{
+		Name:    "show-info",
+		Aliases: []string{"show", "sh"},
+		Usage:   "Show supported browsers and data restore dir.",
+		Action: func(ctx *cli.Context) error {
+			b := vctrl.NewBrowser()
+			b.ShowSupportedBrowser()
+			b.ShowBackupPath()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vshow)
+
+	vpush := &cli.Command{
+		Name:      "push",
+		Aliases:   []string{"psh", "pu"},
+		Usage:     "Push browser Bookmarks/Password/ExtensionInfo to webdav.",
+		ArgsUsage: "gvc browser push xxx",
+		Action: func(ctx *cli.Context) error {
+			browserName := ctx.Args().First()
+			if browserName != "" {
+				b := vctrl.NewBrowser()
+				b.Save(browserName, true)
+			}
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vpush)
+
+	vsave := &cli.Command{
+		Name:      "save",
+		Aliases:   []string{"sa", "s"},
+		Usage:     "Save browser Bookmarks/Password/ExtensionInfo to local dir.",
+		ArgsUsage: "gvc browser save xxx",
+		Action: func(ctx *cli.Context) error {
+			browserName := ctx.Args().First()
+			if browserName != "" {
+				b := vctrl.NewBrowser()
+				b.Save(browserName, false)
+			}
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vsave)
+
+	vpull := &cli.Command{
+		Name:    "pull",
+		Aliases: []string{"pul", "pl"},
+		Usage:   "Pull browser data from webdav to local dir.",
+		Action: func(ctx *cli.Context) error {
+			b := vctrl.NewBrowser()
+			b.PullData()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vpull)
+
+	that.Commands = append(that.Commands, command)
+}
+
 func (that *Cmder) initiate() {
 	that.vgo()
 	that.vpython()
@@ -1206,6 +1274,7 @@ func (that *Cmder) initiate() {
 	that.vscode()
 	that.vnvim()
 	that.vxtray()
+	that.vbrowser()
 	that.vhomebrew()
 	that.vhost()
 	that.vgithub()

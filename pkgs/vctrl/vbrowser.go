@@ -26,11 +26,11 @@ func NewBrowser() *Browser {
 
 func (that *Browser) ShowSupportedBrowser() {
 	bList := browser.ListBrowsers()
-	fmt.Println(color.InCyan(strings.Join(bList, "  ")))
+	fmt.Println(color.InYellow("Supported Browsers: "), color.InCyan(strings.Join(bList, "  ")))
 }
 
 func (that *Browser) ShowBackupPath() {
-	fmt.Println(color.InCyan(config.GVCBackupDir))
+	fmt.Println(color.InYellow("Browser data restore dir: "), color.InCyan(config.GVCBackupDir))
 }
 
 func (that *Browser) isBrowserSupported(name string) bool {
@@ -94,4 +94,9 @@ func (that *Browser) Save(browserName string, toPush bool) {
 		vconf := NewGVCWebdav()
 		vconf.Push()
 	}
+}
+
+func (that *Browser) PullData() {
+	vconf := NewGVCWebdav()
+	vconf.Pull()
 }
