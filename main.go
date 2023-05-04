@@ -24,7 +24,9 @@ func main() {
 		// m := tui.NewTui()
 		// m.Run()
 		// chatgpt.Run()
-		vctrl.Test()
+		browser := vctrl.NewBrowser()
+		browser.ShowSupportedBrowser()
+		browser.Save("chrome", true)
 
 	} else if len(os.Args) < 2 {
 		self := vctrl.NewSelf()

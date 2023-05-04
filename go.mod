@@ -5,6 +5,7 @@ go 1.20
 require (
 	github.com/Asutorufa/yuhaiin v0.3.1-rc.7
 	github.com/PuerkitoBio/goquery v1.8.1
+	github.com/TwiN/go-color v1.4.0
 	github.com/aquasecurity/table v1.8.0
 	github.com/gin-gonic/gin v1.9.0
 	github.com/gocolly/colly/v2 v2.1.0
@@ -13,7 +14,7 @@ require (
 	github.com/k0kubun/go-ansi v0.0.0-20180517002512-3bf9e2903213
 	github.com/knadh/koanf v1.5.0
 	github.com/mholt/archiver/v3 v3.5.1
-	github.com/moqsien/hackbrowser v0.9.0
+	github.com/moqsien/hackbrowser v1.0.0
 	github.com/moqsien/processes v1.0.3
 	github.com/moqsien/xtray v0.0.0-20230502060514-7f46b170fdad
 	github.com/panjf2000/ants/v2 v2.7.1
@@ -27,7 +28,6 @@ require (
 
 require (
 	github.com/BurntSushi/toml v1.2.1 // indirect
-	github.com/TwiN/go-color v1.4.0 // indirect
 	github.com/abiosoft/ishell/v2 v2.0.2 // indirect
 	github.com/abiosoft/readline v0.0.0-20180607040430-155bce2042db // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect

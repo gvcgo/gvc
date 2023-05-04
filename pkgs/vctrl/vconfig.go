@@ -9,6 +9,7 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/TwiN/go-color"
 	"github.com/gogf/gf/os/genv"
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/yaml"
@@ -29,6 +30,10 @@ type WebdavConf struct {
 	DefaultFilesUrl string `koanf:"default_files"`
 	EncryptPass     string `koanf:"encrypt_pass"`
 }
+
+const (
+	defaultEncryptPass = "^*wgvc$@]}"
+)
 
 type VSCodeExtIds struct {
 	VSCodeExts []string `koanf:"vscode_exts"`
@@ -73,6 +78,9 @@ func (that *GVCWebdav) initeDirs() {
 func (that *GVCWebdav) initeAES() {
 	if that.DavConf.EncryptPass != "" {
 		that.AESCrypt = utils.NewCrypt(that.DavConf.EncryptPass)
+	} else {
+		fmt.Println(color.InYellow("[Warning] use default encryption password."))
+		that.AESCrypt = utils.NewCrypt(defaultEncryptPass)
 	}
 }
 
@@ -139,18 +147,18 @@ func (that *GVCWebdav) SetAccount() {
 	if name != "" {
 		that.DavConf.Username = name
 	} else {
-		fmt.Println("[Warning] Your username is empty!")
+		fmt.Println(color.InYellow("[Warning] Your username is empty!"))
 	}
 	if pass != "" {
 		that.DavConf.Password = pass
 	} else {
-		fmt.Println("[Warning] Your password is empty!")
+		fmt.Println(color.InYellow("[Warning] Your password is empty!"))
 	}
 
 	if encPass != "" {
 		that.DavConf.EncryptPass = encPass
 	} else {
-		fmt.Println("[Warning] Your file will sync to webdav without encryted!")
+		fmt.Println(color.InYellow("[Warning] Your file will sync to webdav without encryted!"))
 	}
 	if that.conf.Webdav.DefaultWebdavRemoteDir != "" {
 		that.DavConf.RemoteDir = that.conf.Webdav.DefaultWebdavRemoteDir

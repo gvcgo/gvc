@@ -399,10 +399,8 @@ github.com/moqsien/free v0.0.0-20230424044316-6c5663359ea3 h1:lqZQrbkTkrOuq7udd0
 github.com/moqsien/free v0.0.0-20230424044316-6c5663359ea3/go.mod h1:3gCkgVKa/CTeWPPUta02ZJ8kbM0SL/k31KLziVb5buE=
 github.com/moqsien/goktrl v1.3.6 h1:PHU8icqEvDLo1EmvFwBeRp2Uy73rlAT6aJ7G9HYBUlE=
 github.com/moqsien/goktrl v1.3.6/go.mod h1:vtYPnSuyWeOGl7HSQ08SX8b8m/NdiVv9icf9gQhT07A=
-github.com/moqsien/hackbrowser v0.8.0 h1:/8DdJpYgbDk5L8TSMF4+omEbpCHkhtOhJdkRxajHVpg=
-github.com/moqsien/hackbrowser v0.8.0/go.mod h1:q4050/R/xtnPjH7KqmLhSKdwyZYuaq+748G+2WsZk0U=
-github.com/moqsien/hackbrowser v0.9.0 h1:6RDV3Lcj2wz7dVTf291mT2SxrHeQEOHZ6NhtRfI2Oww=
-github.com/moqsien/hackbrowser v0.9.0/go.mod h1:q4050/R/xtnPjH7KqmLhSKdwyZYuaq+748G+2WsZk0U=
+github.com/moqsien/hackbrowser v1.0.0 h1:27LbhkqgooNebO3D29ziCsCJ0iaDWRf3o/5VgxpZqSo=
+github.com/moqsien/hackbrowser v1.0.0/go.mod h1:q4050/R/xtnPjH7KqmLhSKdwyZYuaq+748G+2WsZk0U=
 github.com/moqsien/processes v1.0.3 h1:bV8vi4JZnwlhsxguyVAtUUv+zq4yvMSZIfjrsFGfmPE=
 github.com/moqsien/processes v1.0.3/go.mod h1:+jsV7YfT+24Ea7Ks8UXW4x8jcbqX7exKej/o5zlPEm0=
 github.com/moqsien/xtray v0.0.0-20230502060514-7f46b170fdad h1:I+G5vv3Mbd531oRKKw6HcE72hcLoCphMUrOZ47vDDmM=
