@@ -211,6 +211,11 @@ GVC是一个全平台、多机器的一键管理多语言开发环境的辅助�
     <td bgcolor="PaleVioletRed">帮助信息: gvc xray help; 进入xray操作shell: gvc xray(可以在shell内控制启停等)</td>
   </tr>
   <tr>
+    <td><font color="Gree">Browser</font></td>
+    <td><font color="LightBlue">一键自动备份浏览器数据到webdav网盘，包括书签(html格式)、密码(json格式，可以自动加密内容之后上传，安全有保障)、插件信息；支持Chromium系列浏览器和Firefox浏览器等</font></td>
+    <td bgcolor="PaleVioletRed">帮助信息: gvc browser help</td>
+  </tr>
+  <tr>
     <td><font color="Gree">Github</font></td>
     <td><font color="LightBlue">使用默认浏览器打开github文件下载国内加速网站.</font></td>
     <td bgcolor="LavenderBlush">gvc github 1; gvc github 2</td>
@@ -251,7 +256,10 @@ COMMANDS:
    cygwin, cygw, cyg, cy          Cygwin installation.
    vscode, vsc, vs, v             VSCode and extensions installation.
    nvim, neovim, nv, n            Neovim installation.
-   xray, ray, xry, x              Start Xray Shell for free VPN.
+   xtray-shell, xshell, xs, x     Start an xtray shell.
+   xtray-runner, xrunner, xr      Start an xtray client. # 供xtray-shell使用，用户无需关心
+   xtray-keeper, xkeeper, xk      Start an xtray keeper.  # 供xtray-shell使用，用户无需关心
+   browser, br                    Browser data management.
    homebrew, brew, hb             Homebrew installation or update.
    host, h, hosts                 Sytem hosts file management(need admistrator or root).
    github, gh                     Open github download acceleration websites.

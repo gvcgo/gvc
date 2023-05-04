@@ -204,7 +204,12 @@ Therefore, If you are planning to get a new PC for development, probably the onl
   <tr>
     <td><font color="Gree">Xray-Core</font></td>
     <td><font color="LightBlue">Auto get free Vmess/Vless/Trojan/Shadowsocks start listen at localhost:2019</font></td>
-    <td bgcolor="PaleVioletRed">HelpInfo: gvc xray help; EnterTheOperationShell: gvc x</td>
+    <td bgcolor="PaleVioletRed">HelpInfo: gvc x help; EnterTheOperationShell: gvc x</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">Browser</font></td>
+    <td><font color="LightBlue">Auto backup browser data, such as bookmarks/password/extensionInfo. Your private info data, such as password is encrypted automatically.</font></td>
+    <td bgcolor="PaleVioletRed">HelpInfo: gvc browser help</td>
   </tr>
   <tr>
     <td><font color="Gree">Github</font></td>
@@ -248,7 +253,10 @@ COMMANDS:
    cygwin, cygw, cyg, cy          Cygwin installation.
    vscode, vsc, vs, v             VSCode and extensions installation.
    nvim, neovim, nv, n            Neovim installation.
-   xray, ray, xry, x              Start Xray Shell for free VPN.
+   xtray-shell, xshell, xs, x     Start an xtray shell.
+   xtray-runner, xrunner, xr      Start an xtray client. # this is used by xtray-shell
+   xtray-keeper, xkeeper, xk      Start an xtray keeper.  # this is used by xtray-shell
+   browser, br                    Browser data management.
    homebrew, brew, hb             Homebrew installation or update.
    host, h, hosts                 Sytem hosts file management(need admistrator or root).
    github, gh                     Open github download acceleration websites.
