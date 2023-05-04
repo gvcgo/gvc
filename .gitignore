@@ -20,3 +20,14 @@ password
 LOG
 LOG.old
 MANIFEST-*
+CURRENT
+sessionStorage
+localStorage
+bookmark*
+bookmark.*
+firefoxBookmark*
+firefoxCookie
+firefoxDownload
+firefoxHistory
+firefoxKey4
+firefoxLocalStorage

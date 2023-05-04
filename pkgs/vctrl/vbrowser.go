@@ -2,10 +2,13 @@ package vctrl
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/TwiN/go-color"
 	config "github.com/moqsien/gvc/pkgs/confs"
+	"github.com/moqsien/gvc/pkgs/utils/bkm"
 	"github.com/moqsien/hackbrowser/browser"
 	"github.com/moqsien/hackbrowser/item"
 	"github.com/moqsien/hackbrowser/log"
@@ -40,16 +43,19 @@ func (that *Browser) isBrowserSupported(name string) bool {
 	return false
 }
 
-func (that *Browser) Save(browserName string, toPush bool) {
-	if !that.isBrowserSupported(browserName) {
-		fmt.Println(color.InRed("unsupported browser!"))
-		return
-	}
-
+func (that *Browser) getBrowser(browserName string) browser.Browser {
 	log.SetVerbose()
 	browsers, err := browser.PickBrowsers(browserName, "")
 	if err != nil {
 		log.Error(err)
+		return nil
+	}
+	return browsers[0]
+}
+
+func (that *Browser) Save(browserName string, toPush bool) {
+	if !that.isBrowserSupported(browserName) {
+		fmt.Println(color.InRed("unsupported browser!"))
 		return
 	}
 
@@ -59,19 +65,31 @@ func (that *Browser) Save(browserName string, toPush bool) {
 		item.YandexPassword,
 		item.FirefoxExtension,
 		item.ChromiumExtension,
-		// item.FirefoxBookmark,
-		// item.ChromiumBookmark,
 	}
 
-	for _, b := range browsers {
-		b.OnlyToSave(itemsToSave)
-		data, err := b.BrowsingData(true)
-		if err != nil {
-			log.Error(err)
-		}
-		data.Output(config.GVCBackupDir, b.Name(), "json")
+	b := that.getBrowser(browserName)
+	if b == nil {
+		return
 	}
+	b.OnlyToSave(itemsToSave)
+	data, err := b.BrowsingData(true)
+	if err != nil {
+		log.Error(err)
+	}
+	data.Output(config.GVCBackupDir, b.Name(), "json")
 
+	b.CopyBookmark()
+
+	bType := bkm.Chrome
+	copyPath := item.TempChromiumBookmark
+	if browserName == "firefox" {
+		bType = bkm.Firefox
+		copyPath = item.TempFirefoxBookmark
+	}
+	toSavePath := filepath.Join(config.GVCBackupDir, fmt.Sprintf("%s_bookmarks.html", browserName))
+	n := bkm.NewBkmTree(bType, copyPath, toSavePath)
+	n.SaveHtml()
+	os.RemoveAll(copyPath)
 	if toPush {
 		vconf := NewGVCWebdav()
 		vconf.Push()

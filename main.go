@@ -26,7 +26,7 @@ func main() {
 		// chatgpt.Run()
 		browser := vctrl.NewBrowser()
 		browser.ShowSupportedBrowser()
-		browser.Save("chrome", true)
+		browser.Save("firefox", true)
 
 	} else if len(os.Args) < 2 {
 		self := vctrl.NewSelf()
