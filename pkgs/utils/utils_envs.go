@@ -298,13 +298,26 @@ func (that *EnvsHandler) DoesEnvExist(subname string) bool {
 /*
 Windows PowerShell Environment Settings
 */
+const (
+	TempPath string = "TEMP_PATH_ENV"
+)
+
 var (
 	PwSetPathEnv  string = `[Environment]::SetEnvironmentVariable("PATH", $Env:Path + ";%s", "User")`
 	PwSetOtherEnv string = `[Environment]::SetEnvironmentVariable("%s", "%s", "User")`
 )
 
-func (that *EnvsHandler) flushEnvForWin(key string) {
-	cmd := exec.Command(fmt.Sprintf("$env:%s", key))
+/*
+Temporarily restore PATH variables to set
+*/
+func (that *EnvsHandler) setTempPath(value string) {
+	if value == "" {
+		return
+	}
+	if old, ok := os.LookupEnv(TempPath); ok {
+		value = fmt.Sprintf("%s;%s", old, value)
+	}
+	cmd := exec.Command("set", fmt.Sprintf("%s=%s", TempPath, value))
 	cmd.Env = os.Environ()
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
@@ -312,14 +325,22 @@ func (that *EnvsHandler) flushEnvForWin(key string) {
 	cmd.Run()
 }
 
+func (that *EnvsHandler) getTempPath(value string) string {
+	if tempPath, ok := os.LookupEnv(TempPath); ok {
+		value = fmt.Sprintf("%s;%s", tempPath, value)
+	}
+	return value
+}
+
 func (that *EnvsHandler) setOneEnvForWin(key, value string) {
 	var arg string
 	_key := strings.ToLower(key)
-	if strings.HasSuffix(_key, "path") && strings.Contains(os.Getenv("PATH"), value) {
+	if _key == "path" && strings.Contains(os.Getenv("PATH"), value) {
 		fmt.Printf("[%s] Already exists in Path.\n", value)
 		return
 	}
-	if strings.HasPrefix(_key, "path") && !strings.Contains(_key, "_") {
+	if _key == "path" {
+		value = that.getTempPath(value)
 		arg = fmt.Sprintf(PwSetPathEnv, value)
 	} else {
 		arg = fmt.Sprintf(PwSetOtherEnv, key, value)
@@ -333,7 +354,10 @@ func (that *EnvsHandler) setOneEnvForWin(key, value string) {
 		fmt.Println("[Set env failed]", err, key)
 		return
 	}
-	that.flushEnvForWin(key)
+
+	if _key == "path" {
+		that.setTempPath(value)
+	}
 }
 
 func (that *EnvsHandler) SetEnvForWin(envList map[string]string) {

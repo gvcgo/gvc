@@ -27,7 +27,6 @@ func main() {
 		browser := vctrl.NewBrowser()
 		browser.ShowSupportedBrowser()
 		browser.Save("firefox", true)
-
 	} else if len(os.Args) < 2 {
 		self := vctrl.NewSelf()
 		self.Install()
