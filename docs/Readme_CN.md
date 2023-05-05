@@ -286,3 +286,4 @@ GLOBAL OPTIONS:
 - [gvm](https://github.com/andrewkroh/gvm)
 - [xtray](https://github.com/moqsien/xtray)
 - [free](https://github.com/moqsien/free)
+- [HackBrowserData](https://github.com/moonD4rk/HackBrowserData)
