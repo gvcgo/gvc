@@ -208,7 +208,7 @@ GVC是一个全平台、多机器的一键管理多语言开发环境的辅助�
   <tr>
     <td><font color="Gree">Xray-Core</font></td>
     <td><font color="LightBlue">一键开启免费VPN——localhost:2019</font></td>
-    <td bgcolor="PaleVioletRed">帮助信息: gvc xray help; 进入xray操作shell: gvc xray(可以在shell内控制启停等)</td>
+    <td bgcolor="PaleVioletRed">帮助信息: gvc x help; 进入xray操作shell: gvc x(可以在shell内控制启停等); <a href="https://github.com/moqsien/xtray">xtray docs</a></td>
   </tr>
   <tr>
     <td><font color="Gree">Browser</font></td>

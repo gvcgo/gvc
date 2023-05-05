@@ -204,7 +204,7 @@ Therefore, If you are planning to get a new PC for development, probably the onl
   <tr>
     <td><font color="Gree">Xray-Core</font></td>
     <td><font color="LightBlue">Auto get free Vmess/Vless/Trojan/Shadowsocks start listen at localhost:2019</font></td>
-    <td bgcolor="PaleVioletRed">HelpInfo: gvc x help; EnterTheOperationShell: gvc x</td>
+    <td bgcolor="PaleVioletRed">HelpInfo: gvc x help; EnterTheOperationShell: gvc x; <a href="https://github.com/moqsien/xtray">xtray docs</a></td>
   </tr>
   <tr>
     <td><font color="Gree">Browser</font></td>
