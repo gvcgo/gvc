@@ -343,6 +343,16 @@ export %s=%s
 # Rust env end`
 
 /*
+C/C++ related
+*/
+var (
+	CppFilesDir    = filepath.Join(GVCWorkDir, "cpp_files")
+	Msys2Dir       = filepath.Join(CppFilesDir, "msys2")
+	VCpkgDir       = filepath.Join(CppFilesDir, "vcpkg")
+	CppDownloadDir = filepath.Join(CppFilesDir, "download")
+)
+
+/*
 Nodejs related
 */
 var (

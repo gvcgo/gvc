@@ -47,9 +47,9 @@ func (that *Self) setShortcut() {
 }
 
 func (that *Self) Install() {
-	if runtime.GOOS == utils.Windows {
-		that.env.HintsForWin(1)
-	}
+	// if runtime.GOOS == utils.Windows {
+	// 	that.env.HintsForWin(1)
+	// }
 	if ok, _ := utils.PathIsExist(config.GVCWorkDir); !ok {
 		os.MkdirAll(config.GVCWorkDir, os.ModePerm)
 	}

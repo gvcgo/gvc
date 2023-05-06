@@ -314,7 +314,7 @@ func (that *PyVenv) InstallVersion(version string, useDefault bool) {
 	}
 	utils.ExecuteCommand(that.getExecutablePath(), "global", version)
 	that.setPipAcceleration()
-	that.env.HintsForWin()
+	// that.env.HintsForWin()
 }
 
 func (that *PyVenv) RemoveVersion(version string) {

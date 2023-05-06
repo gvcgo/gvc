@@ -31,6 +31,7 @@ type GVConfig struct {
 	Xtray    *XtrayConf    `koanf:"xtray"`
 	Github   *GithubConf   `koanf:"github"`
 	Cygwin   *CygwinConf   `koanf:"cygwin"`
+	Cpp      *CppConf      `koanf:"cpp"`
 	Homebrew *HomebrewConf `koanf:"homebrew"`
 	Vlang    *VlangConf    `koanf:"vlang"`
 	Flutter  *FlutterConf  `koanf:"flutter"`
@@ -56,6 +57,7 @@ func New() (r *GVConfig) {
 		Xtray:    NewXtrayConf(),
 		Github:   NewGithubConf(),
 		Cygwin:   NewCygwinConf(),
+		Cpp:      NewCppConf(),
 		Homebrew: NewHomebrewConf(),
 		Vlang:    NewVlangConf(),
 		Flutter:  NewFlutterConf(),
@@ -115,6 +117,8 @@ func (that *GVConfig) SetDefault() {
 	that.Github = NewGithubConf()
 	that.Github.Reset()
 	that.Cygwin = NewCygwinConf()
+	that.Cpp = NewCppConf()
+	that.Cpp.Reset()
 	that.Cygwin.Reset()
 	that.Homebrew = NewHomebrewConf()
 	that.Homebrew.Reset()
