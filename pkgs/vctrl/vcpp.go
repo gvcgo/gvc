@@ -19,8 +19,12 @@ import (
 
 var (
 	Msys2InstallerName string = "msys2_installer.exe"
-	// "msys2_installer.exe in --confirm-command --accept-messages --root C:/msys64"
-	Msys2InstallCmd string = fmt.Sprintf("%s in --confirm-command --accept-messages --root", Msys2InstallerName)
+	// .\msys2-x86_64-latest.exe in --confirm-command --accept-messages --root C:/msys64
+	Msys2Args []string = []string{
+		"in",
+		"--confirm-command",
+		"--accept-messages",
+	}
 )
 
 type CppManager struct {
@@ -102,6 +106,15 @@ func (that *CppManager) getInstaller() (fPath string) {
 	return
 }
 
+func (that *CppManager) writeScript() (scriptPath string) {
+	fPath := filepath.Join(config.CppDownloadDir, "execute_installer.bat")
+	if ok, _ := utils.PathIsExist(fPath); !ok {
+		content := fmt.Sprintf(`%s in --confirm-command --accept-messages --root %s`, Msys2InstallerName, config.Msys2Dir)
+		os.WriteFile(fPath, []byte(content), 0777)
+	}
+	return fPath
+}
+
 func (that *CppManager) InstallMsys2() {
 	if runtime.GOOS != utils.Windows {
 		return
@@ -109,7 +122,8 @@ func (that *CppManager) InstallMsys2() {
 	fPath := that.getInstaller()
 	if ok, _ := utils.PathIsExist(fPath); ok {
 		os.Setenv("PATH", fmt.Sprintf("%s;%s", config.CppDownloadDir, os.Getenv("PATH")))
-		c := exec.Command(fmt.Sprintf("%s %s", Msys2InstallCmd, config.CppDownloadDir))
+		batPath := that.writeScript()
+		c := exec.Command(batPath)
 		c.Env = os.Environ()
 		c.Stderr = os.Stderr
 		c.Stdin = os.Stdin
@@ -121,11 +135,28 @@ func (that *CppManager) InstallMsys2() {
 		binPath := filepath.Join(config.Msys2Dir, "usr", "bin")
 		if ok, _ := utils.PathIsExist(binPath); ok {
 			winEnv := map[string]string{
-				"PATH": fmt.Sprintf("%s:%s", binPath, config.CppDownloadDir),
+				"PATH": binPath,
 			}
-			if !strings.Contains(os.Getenv("PATH"), binPath) {
-				that.env.SetEnvForWin(winEnv)
+			that.env.SetEnvForWin(winEnv)
+			winEnv = map[string]string{
+				"PATH": config.CppDownloadDir,
 			}
+			that.env.SetEnvForWin(winEnv)
+		}
+	}
+}
+
+func (that *CppManager) UninstallMsys2() {
+	uninstallExe := filepath.Join(config.Msys2Dir, "uninstall.exe")
+	if ok, _ := utils.PathIsExist(uninstallExe); ok {
+		c := exec.Command(uninstallExe, "--purge")
+		c.Env = os.Environ()
+		c.Stderr = os.Stderr
+		c.Stdin = os.Stdin
+		c.Stdout = os.Stdout
+		if err := c.Run(); err != nil {
+			fmt.Println("Execute uninstall.exe Failed: ", err)
+			return
 		}
 	}
 }

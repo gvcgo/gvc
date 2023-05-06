@@ -1275,6 +1275,18 @@ func (that *Cmder) vcpp() {
 	}
 	command.Subcommands = append(command.Subcommands, iMsys2)
 
+	uMsys2 := &cli.Command{
+		Name:    "uninstall-msys2",
+		Aliases: []string{"unim", "um", "remove", "rm"},
+		Usage:   "Uninstall msys2.",
+		Action: func(ctx *cli.Context) error {
+			v := vctrl.NewCppManager()
+			v.UninstallMsys2()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, uMsys2)
+
 	that.Commands = append(that.Commands, command)
 }
 
