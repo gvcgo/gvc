@@ -28,7 +28,7 @@ func main() {
 		// browser.ShowSupportedBrowser()
 		// browser.Save("firefox", true)
 		cpp := vctrl.NewCppManager()
-		cpp.Run()
+		cpp.InstallMsys2()
 	} else if len(os.Args) < 2 {
 		self := vctrl.NewSelf()
 		self.Install()

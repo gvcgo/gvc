@@ -107,7 +107,7 @@ func (that *CppManager) getInstaller() (fPath string) {
 	return
 }
 
-func (that *CppManager) Run() {
+func (that *CppManager) InstallMsys2() {
 	if runtime.GOOS != utils.Windows {
 		return
 	}
@@ -123,6 +123,15 @@ func (that *CppManager) Run() {
 		if err := c.Run(); err != nil {
 			fmt.Println("Execute Msys2Installer Failed: ", err)
 			return
+		}
+		binPath := filepath.Join(config.Msys2Dir, "usr", "bin")
+		if ok, _ := utils.PathIsExist(binPath); ok {
+			winEnv := map[string]string{
+				"PATH": fmt.Sprintf("%s:%s", binPath, config.CppDownloadDir),
+			}
+			if !strings.Contains(os.Getenv("PATH"), binPath) {
+				that.env.SetEnvForWin(winEnv)
+			}
 		}
 	}
 }

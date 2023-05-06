@@ -1257,6 +1257,27 @@ func (that *Cmder) vbrowser() {
 	that.Commands = append(that.Commands, command)
 }
 
+func (that *Cmder) vcpp() {
+	command := &cli.Command{
+		Name:        "cpp",
+		Usage:       "C/C++ management.",
+		Subcommands: []*cli.Command{},
+	}
+	iMsys2 := &cli.Command{
+		Name:    "install-msys2",
+		Aliases: []string{"insm", "im"},
+		Usage:   "Install the latest msys2.",
+		Action: func(ctx *cli.Context) error {
+			v := vctrl.NewCppManager()
+			v.InstallMsys2()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, iMsys2)
+
+	that.Commands = append(that.Commands, command)
+}
+
 func (that *Cmder) initiate() {
 	that.vgo()
 	that.vpython()
@@ -1267,6 +1288,7 @@ func (that *Cmder) initiate() {
 	that.vflutter()
 	that.vjulia()
 	that.vrust()
+	that.vcpp()
 	that.vtypst()
 	that.vlang()
 	that.vcygwin()
