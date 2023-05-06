@@ -20,12 +20,7 @@ import (
 var (
 	Msys2InstallerName string = "msys2_installer.exe"
 	// "msys2_installer.exe in --confirm-command --accept-messages --root C:/msys64"
-	Msys2InstallArgs []string = []string{
-		"in",
-		"--confirm-command",
-		" --accept-messages",
-		"--root",
-	}
+	Msys2InstallCmd string = fmt.Sprintf("%s in --confirm-command --accept-messages --root", Msys2InstallerName)
 )
 
 type CppManager struct {
@@ -114,8 +109,7 @@ func (that *CppManager) InstallMsys2() {
 	fPath := that.getInstaller()
 	if ok, _ := utils.PathIsExist(fPath); ok {
 		os.Setenv("PATH", fmt.Sprintf("%s;%s", config.CppDownloadDir, os.Getenv("PATH")))
-		mArgs := append(Msys2InstallArgs, config.Msys2Dir)
-		c := exec.Command(Msys2InstallerName, mArgs...)
+		c := exec.Command(fmt.Sprintf("%s %s", Msys2InstallCmd, config.CppDownloadDir))
 		c.Env = os.Environ()
 		c.Stderr = os.Stderr
 		c.Stdin = os.Stdin
