@@ -8,10 +8,12 @@ import (
 )
 
 type CppConf struct {
-	MsysInstallerUrl string            `koanf:"msys_installer_url"`
-	MsysMirrorUrls   map[string]string `koanf:"msys_mirror_urls"`
-	VCpkgUrl         string            `koanf:"vcpkg_url"`
-	path             string
+	MsysInstallerUrl   string            `koanf:"msys_installer_url"`
+	MsysMirrorUrls     map[string]string `koanf:"msys_mirror_urls"`
+	CygwinInstallerUrl string            `koanf:"installer_url"`
+	CygwinMirrorUrls   []string          `koanf:"mirror_url"`
+	VCpkgUrl           string            `koanf:"vcpkg_url"`
+	path               string
 }
 
 func NewCppConf() (r *CppConf) {
@@ -40,6 +42,13 @@ func (that *CppConf) Reset() {
 		"mirrorlist.mingw32": "https://mirrors.tuna.tsinghua.edu.cn/msys2/mingw/i686/",
 		"mirrorlist.clang32": "https://mirrors.tuna.tsinghua.edu.cn/msys2/mingw/clang32/",
 		"mirrorlist.ucrt64":  "https://mirrors.tuna.tsinghua.edu.cn/msys2/mingw/ucrt64/",
+	}
+	that.CygwinInstallerUrl = "https://gitee.com/moqsien/gvc/releases/download/v1/cygwin-installer.exe"
+	that.CygwinMirrorUrls = []string{
+		"https://mirrors.ustc.edu.cn/cygwin/",
+		"https://mirrors.zju.edu.cn/cygwin/",
+		"https://mirrors.tuna.tsinghua.edu.cn/cygwin/",
+		"https://mirrors.aliyun.com/cygwin/",
 	}
 	that.VCpkgUrl = "https://github.com/microsoft/vcpkg/archive/refs/heads/master.zip"
 }

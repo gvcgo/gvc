@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly/v2"
@@ -18,7 +19,8 @@ import (
 )
 
 var (
-	Msys2InstallerName string = "msys2_installer.exe"
+	CygwinInstallerName string = "cygwin-installer.exe"
+	Msys2InstallerName  string = "msys2_installer.exe"
 	// .\msys2-x86_64-latest.exe in --confirm-command --accept-messages --root C:/msys64
 	Msys2Args []string = []string{
 		"in",
@@ -67,6 +69,11 @@ func (that *CppManager) initDirs() {
 			fmt.Println("[mkdir Failed] ", err)
 		}
 	}
+	if ok, _ := utils.PathIsExist(config.CygwinRootDir); !ok {
+		if err := os.MkdirAll(config.CygwinRootDir, os.ModePerm); err != nil {
+			fmt.Println("[mkdir Failed] ", err)
+		}
+	}
 }
 
 func (that *CppManager) getDoc() {
@@ -80,7 +87,7 @@ func (that *CppManager) getDoc() {
 	that.c.Visit(mUrl)
 }
 
-func (that *CppManager) getInstaller() (fPath string) {
+func (that *CppManager) getMsys2Installer() (fPath string) {
 	if that.Doc == nil {
 		that.getDoc()
 	}
@@ -119,7 +126,7 @@ func (that *CppManager) InstallMsys2() {
 	if runtime.GOOS != utils.Windows {
 		return
 	}
-	fPath := that.getInstaller()
+	fPath := that.getMsys2Installer()
 	if ok, _ := utils.PathIsExist(fPath); ok {
 		os.Setenv("PATH", fmt.Sprintf("%s;%s", config.CppDownloadDir, os.Getenv("PATH")))
 		batPath := that.writeScript()
@@ -158,5 +165,60 @@ func (that *CppManager) UninstallMsys2() {
 			fmt.Println("Execute uninstall.exe Failed: ", err)
 			return
 		}
+	}
+}
+
+func (that *CppManager) getCygwinInstaller() (fPath string) {
+	fPath = filepath.Join(config.CppDownloadDir, CygwinInstallerName)
+	if ok, _ := utils.PathIsExist(fPath); !ok {
+		that.Url = that.Conf.Cpp.CygwinInstallerUrl
+		if that.Url != "" {
+			that.Timeout = 10 * time.Minute
+			if size := that.GetFile(fPath, os.O_CREATE|os.O_WRONLY, 0777); size == 0 {
+				fmt.Println("[Download Cygwin installer failed!]")
+				os.RemoveAll(fPath)
+			} else {
+				if runtime.GOOS == utils.Windows {
+					that.env.SetEnvForWin(map[string]string{
+						"PATH": config.CppDownloadDir,
+					})
+				}
+			}
+		}
+	}
+	return
+}
+
+func (that *CppManager) InstallCygwin(packInfo string) {
+	installerPath := that.getCygwinInstaller()
+	if packInfo == "" {
+		packInfo = "git,bash,wget,gcc,gdb,clang,openssh,bashdb,gdbm,gcc-fortran,clang-analyzer,clang-doc,bash-completion,bash-devel,bash-completion-cmake"
+	}
+
+	fmt.Println("[Install Packages] ", packInfo)
+
+	if ok, _ := utils.PathIsExist(installerPath); ok && runtime.GOOS == utils.Windows {
+		ePath := os.Getenv("PATH")
+		if !strings.Contains(ePath, config.CppDownloadDir) {
+			ePath = fmt.Sprintf("%s;%s", config.CppDownloadDir, ePath)
+			os.Setenv("PATH", ePath)
+		}
+		cmd := exec.Command(CygwinInstallerName, "-q", "-f", "-N", "-O", "-s",
+			that.Conf.Cpp.CygwinMirrorUrls[0], "-R", config.CygwinRootDir,
+			"-P", packInfo)
+		cmd.Env = os.Environ()
+		cmd.Stderr = os.Stderr
+		cmd.Stdin = os.Stdin
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	}
+
+	if ok, _ := utils.PathIsExist(config.CygwinBinaryDir); !ok {
+		that.env.SetEnvForWin(map[string]string{
+			"PATH": config.CygwinBinaryDir,
+		})
+		that.env.SetEnvForWin(map[string]string{
+			"PATH": config.CygwinRootDir,
+		})
 	}
 }

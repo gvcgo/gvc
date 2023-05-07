@@ -343,16 +343,6 @@ export %s=%s
 # Rust env end`
 
 /*
-C/C++ related
-*/
-var (
-	CppFilesDir    = filepath.Join(GVCWorkDir, "cpp_files")
-	Msys2Dir       = filepath.Join(CppFilesDir, "msys2")
-	VCpkgDir       = filepath.Join(CppFilesDir, "vcpkg")
-	CppDownloadDir = filepath.Join(CppFilesDir, "download")
-)
-
-/*
 Nodejs related
 */
 var (
@@ -450,14 +440,15 @@ var (
 )
 
 /*
-Cygwin related
+C/C++ related
 */
 var (
-	CygwinFilesDir        string = filepath.Join(GVCWorkDir, "cygwin_files")
-	CygwinRootDir         string = filepath.Join(CygwinFilesDir, "cygwin")
-	CygwinBinaryDir       string = filepath.Join(CygwinRootDir, "bin")
-	CygwinInstallerName   string = "cygwin-installer.exe"
-	CygwinPackageFileName string = "cygwin-packages.yml"
+	CppFilesDir            = filepath.Join(GVCWorkDir, "cpp_files")
+	Msys2Dir               = filepath.Join(CppFilesDir, "msys2")
+	CygwinRootDir   string = filepath.Join(CppFilesDir, "cygwin")
+	CygwinBinaryDir string = filepath.Join(CygwinRootDir, "bin")
+	VCpkgDir               = filepath.Join(CppFilesDir, "vcpkg")
+	CppDownloadDir         = filepath.Join(CppFilesDir, "download")
 )
 
 /*

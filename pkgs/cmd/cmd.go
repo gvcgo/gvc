@@ -655,41 +655,6 @@ func (that *Cmder) vpython() {
 	that.Commands = append(that.Commands, command)
 }
 
-func (that *Cmder) vcygwin() {
-	command := &cli.Command{
-		Name:        "cygwin",
-		Aliases:     []string{"cygw", "cyg", "cy"},
-		Usage:       "Cygwin installation.",
-		Subcommands: []*cli.Command{},
-	}
-	install := &cli.Command{
-		Name:    "install",
-		Aliases: []string{"ins", "i"},
-		Usage:   "Install Cygwin.",
-		Action: func(ctx *cli.Context) error {
-			v := vctrl.NewCygwin()
-			v.InstallByDefault("")
-			return nil
-		},
-	}
-	command.Subcommands = append(command.Subcommands, install)
-
-	ipackage := &cli.Command{
-		Name:    "package",
-		Aliases: []string{"pack", "p"},
-		Usage:   "Install packages for Cygwin.",
-		Action: func(ctx *cli.Context) error {
-			if packs := ctx.Args().First(); packs != "" {
-				v := vctrl.NewCygwin()
-				v.InstallByDefault(packs)
-			}
-			return nil
-		},
-	}
-	command.Subcommands = append(command.Subcommands, ipackage)
-	that.Commands = append(that.Commands, command)
-}
-
 func (that *Cmder) vgithub() {
 	command := &cli.Command{
 		Name:    "github",
@@ -1287,6 +1252,18 @@ func (that *Cmder) vcpp() {
 	}
 	command.Subcommands = append(command.Subcommands, uMsys2)
 
+	iCygwin := &cli.Command{
+		Name:    "install-cygwin",
+		Aliases: []string{"insc", "ic"},
+		Usage:   "Install Cygwin.",
+		Action: func(ctx *cli.Context) error {
+			v := vctrl.NewCppManager()
+			v.InstallCygwin("")
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, iCygwin)
+
 	that.Commands = append(that.Commands, command)
 }
 
@@ -1303,7 +1280,6 @@ func (that *Cmder) initiate() {
 	that.vcpp()
 	that.vtypst()
 	that.vlang()
-	that.vcygwin()
 
 	that.vscode()
 	that.vnvim()

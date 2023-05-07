@@ -30,7 +30,6 @@ type GVConfig struct {
 	NVim     *NVimConf     `koanf:"nvim"`
 	Xtray    *XtrayConf    `koanf:"xtray"`
 	Github   *GithubConf   `koanf:"github"`
-	Cygwin   *CygwinConf   `koanf:"cygwin"`
 	Cpp      *CppConf      `koanf:"cpp"`
 	Homebrew *HomebrewConf `koanf:"homebrew"`
 	Vlang    *VlangConf    `koanf:"vlang"`
@@ -56,7 +55,6 @@ func New() (r *GVConfig) {
 		Python:   NewPyConf(),
 		Xtray:    NewXtrayConf(),
 		Github:   NewGithubConf(),
-		Cygwin:   NewCygwinConf(),
 		Cpp:      NewCppConf(),
 		Homebrew: NewHomebrewConf(),
 		Vlang:    NewVlangConf(),
@@ -116,10 +114,8 @@ func (that *GVConfig) SetDefault() {
 	that.Xtray.Reset()
 	that.Github = NewGithubConf()
 	that.Github.Reset()
-	that.Cygwin = NewCygwinConf()
 	that.Cpp = NewCppConf()
 	that.Cpp.Reset()
-	that.Cygwin.Reset()
 	that.Homebrew = NewHomebrewConf()
 	that.Homebrew.Reset()
 	that.Vlang = NewVlangConf()
