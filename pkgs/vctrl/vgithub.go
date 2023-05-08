@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/downloader"
+	downloader "github.com/moqsien/gvc/pkgs/fetcher"
 	"github.com/moqsien/gvc/pkgs/utils"
 )
 

@@ -14,7 +14,7 @@ import (
 	"time"
 
 	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/downloader"
+	downloader "github.com/moqsien/gvc/pkgs/fetcher"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/panjf2000/ants/v2"
 	ping "github.com/prometheus-community/pro-bing"
