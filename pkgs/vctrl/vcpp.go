@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/TwiN/go-color"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	downloader "github.com/moqsien/gvc/pkgs/fetcher"
@@ -266,7 +267,47 @@ func (that *CppManager) writeCompileScript(buildPath, srcPath string) (cmd, fPat
 	return
 }
 
+func (that *CppManager) checkVcpkgCompilationEnv() (hasCompiler, hasCmake bool) {
+	if ok, _ := utils.PathIsExist("/usr/bin/g++"); ok {
+		hasCompiler = true
+	}
+	if ok, _ := utils.PathIsExist("/usr/local/bin/g++"); ok {
+		hasCompiler = true
+	}
+	if ok, _ := utils.PathIsExist(filepath.Join(config.Msys2Dir, "usr", "bin", "g++.exe")); ok {
+		hasCompiler = true
+	}
+	if ok, _ := utils.PathIsExist(filepath.Join(config.CygwinBinaryDir, "g++.exe")); ok {
+		hasCompiler = true
+	}
+
+	if ok, _ := utils.PathIsExist("/usr/bin/cmake"); ok {
+		hasCmake = true
+	}
+	if ok, _ := utils.PathIsExist("/usr/local/bin/cmake"); ok {
+		hasCmake = true
+	}
+
+	if ok, _ := utils.PathIsExist(filepath.Join(config.Msys2Dir, "usr", "bin", "cmake.exe")); ok {
+		hasCmake = true
+	}
+	if ok, _ := utils.PathIsExist(filepath.Join(config.CygwinBinaryDir, "cmake.exe")); ok {
+		hasCmake = true
+	}
+	if !hasCompiler {
+		fmt.Println(color.InYellow("Please install g++ compiler."))
+	}
+	if !hasCmake {
+		fmt.Println(color.InYellow("Please install cmake."))
+	}
+	return
+}
+
 func (that *CppManager) InstallVCPkg() {
+	hasCompiler, hasCmake := that.checkVcpkgCompilationEnv()
+	if !(hasCompiler && hasCmake) {
+		return
+	}
 	fPath := that.getVCPkg()
 	if ok, _ := utils.PathIsExist(fPath); ok {
 		if err := archiver.Unarchive(fPath, config.CppDownloadDir); err != nil {
