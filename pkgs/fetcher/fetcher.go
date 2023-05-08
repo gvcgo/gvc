@@ -244,3 +244,18 @@ func (that *Downloader) PostUrl() (httpRsp *http.Response) {
 		return nil
 	}
 }
+
+func (that *Downloader) PostWithColly() (resp []byte) {
+	c := colly.NewCollector()
+	if that.Proxy == "" {
+		c.SetProxy(that.Proxy)
+	}
+	if that.Timeout != 0 {
+		c.SetRequestTimeout(that.Timeout)
+	}
+	c.OnResponse(func(r *colly.Response) {
+		resp = r.Body
+	})
+	c.PostRaw(that.Url, that.PostBody)
+	return
+}
