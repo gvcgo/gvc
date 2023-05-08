@@ -18,6 +18,7 @@ import (
 	"github.com/Asutorufa/yuhaiin/pkg/node/register"
 	"github.com/Asutorufa/yuhaiin/pkg/protos/node/point"
 	"github.com/Asutorufa/yuhaiin/pkg/protos/node/protocol"
+	"github.com/gocolly/colly/v2"
 	"github.com/k0kubun/go-ansi"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/schollz/progressbar/v3"
@@ -142,6 +143,21 @@ func (that *Downloader) GetUrl() *http.Response {
 		fmt.Println("[Illegal URL] URL: ", that.Url)
 		return nil
 	}
+}
+
+func (that *Downloader) GetWithColly() (resp []byte) {
+	c := colly.NewCollector()
+	if that.Proxy == "" {
+		c.SetProxy(that.Proxy)
+	}
+	if that.Timeout != 0 {
+		c.SetRequestTimeout(that.Timeout)
+	}
+	c.OnResponse(func(r *colly.Response) {
+		resp = r.Body
+	})
+	c.Visit(that.Url)
+	return
 }
 
 func (that *Downloader) parseFilename(fPath string) (fName string) {
