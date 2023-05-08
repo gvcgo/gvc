@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/gocolly/colly/v2"
 	"github.com/gookit/color"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
@@ -31,7 +30,6 @@ type MavenVersion struct {
 	Doc      *goquery.Document
 	Conf     *config.GVConfig
 	d        *downloader.Downloader
-	c        *colly.Collector
 	env      *utils.EnvsHandler
 }
 
@@ -81,12 +79,9 @@ func (that *MavenVersion) getVs(vn string) {
 	if !utils.VerifyUrls(mUrl) {
 		return
 	}
-	that.c = colly.NewCollector()
 	that.Doc = nil
-	that.c.OnResponse(func(r *colly.Response) {
-		that.Doc, _ = goquery.NewDocumentFromReader(bytes.NewBuffer(r.Body))
-	})
-	that.c.Visit(mUrl)
+	that.d.Url = mUrl
+	that.Doc, _ = goquery.NewDocumentFromReader(bytes.NewBuffer(that.d.GetWithColly()))
 	if that.Doc != nil {
 		that.Doc.Find("a").Each(func(i int, s *goquery.Selection) {
 			link := s.AttrOr("href", "")
@@ -116,11 +111,8 @@ func (that *MavenVersion) getVersions() {
 
 func (that *MavenVersion) getSha(p *MavenPackage) (shaCode string) {
 	if utils.VerifyUrls(p.ChecksumUrl) {
-		that.c = colly.NewCollector()
-		that.c.OnResponse(func(r *colly.Response) {
-			shaCode = string(r.Body)
-		})
-		that.c.Visit(p.ChecksumUrl)
+		that.d.Url = p.ChecksumUrl
+		shaCode = string(that.d.GetWithColly())
 	}
 	return
 }

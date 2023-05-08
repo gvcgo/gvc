@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/gocolly/colly/v2"
 	"github.com/gookit/color"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
@@ -32,7 +31,6 @@ type GradleVersion struct {
 	Doc      *goquery.Document
 	Conf     *config.GVConfig
 	d        *downloader.Downloader
-	c        *colly.Collector
 	env      *utils.EnvsHandler
 }
 
@@ -42,7 +40,6 @@ func NewGradleVersion() (gv *GradleVersion) {
 		sha:      make(map[string]string, 100),
 		Conf:     config.New(),
 		d:        &downloader.Downloader{},
-		c:        colly.NewCollector(),
 		env:      utils.NewEnvsHandler(),
 	}
 	gv.initeDirs()
@@ -78,23 +75,18 @@ func (that *GradleVersion) getDoc() {
 	if !utils.VerifyUrls(gUrl) {
 		return
 	}
-	that.c.OnResponse(func(r *colly.Response) {
-		that.Doc, _ = goquery.NewDocumentFromReader(bytes.NewReader(r.Body))
-	})
-	that.c.Visit(gUrl)
+	that.d.Url = gUrl
+	that.Doc, _ = goquery.NewDocumentFromReader(bytes.NewReader(that.d.GetWithColly()))
 }
 
 func (that *GradleVersion) getSha() {
-	that.c = colly.NewCollector()
 	cUrl := that.Conf.Gradle.OfficialCheckUrl
 	if !utils.VerifyUrls(cUrl) {
 		return
 	}
 	that.Doc = nil
-	that.c.OnResponse(func(r *colly.Response) {
-		that.Doc, _ = goquery.NewDocumentFromReader(bytes.NewReader(r.Body))
-	})
-	that.c.Visit(cUrl)
+	that.d.Url = cUrl
+	that.Doc, _ = goquery.NewDocumentFromReader(bytes.NewReader(that.d.GetWithColly()))
 	if that.Doc != nil {
 		that.Doc.Find("h3.u-text-with-icon").Each(func(i int, s *goquery.Selection) {
 			version := s.Find("a").AttrOr("id", "")

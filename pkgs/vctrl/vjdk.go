@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/gocolly/colly/v2"
 	"github.com/gookit/color"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
@@ -40,7 +39,6 @@ type JDKVersion struct {
 	Versions   map[string][]*JDKPackage
 	Doc        *goquery.Document
 	Conf       *config.GVConfig
-	c          *colly.Collector
 	d          *downloader.Downloader
 	dir        string
 	env        *utils.EnvsHandler
@@ -50,7 +48,6 @@ func NewJDKVersion() (jv *JDKVersion) {
 	jv = &JDKVersion{
 		Versions: make(map[string][]*JDKPackage, 100),
 		Conf:     config.New(),
-		c:        colly.NewCollector(),
 		d:        &downloader.Downloader{},
 		env:      utils.NewEnvsHandler(),
 	}
@@ -99,20 +96,15 @@ func (that *JDKVersion) getDoc() {
 	if !utils.VerifyUrls(jUrl) {
 		return
 	}
-	that.c.OnResponse(func(r *colly.Response) {
-		// fmt.Println(string(r.Body))
-		that.Doc, _ = goquery.NewDocumentFromReader(bytes.NewBuffer(r.Body))
-	})
-	that.c.Visit(jUrl)
+	that.d.Url = jUrl
+	resp := that.d.GetWithColly()
+	that.Doc, _ = goquery.NewDocumentFromReader(bytes.NewBuffer(resp))
 }
 
 func (that *JDKVersion) GetSha(sUrl string) (res string) {
 	if that.IsOfficial {
-		c := colly.NewCollector()
-		c.OnResponse(func(r *colly.Response) {
-			res = string(r.Body)
-		})
-		c.Visit(sUrl)
+		that.d.Url = sUrl
+		res = string(that.d.GetWithColly())
 	}
 	return
 }

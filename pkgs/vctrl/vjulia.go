@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gocolly/colly/v2"
 	"github.com/gogf/gf/encoding/gjson"
 	"github.com/gookit/color"
 	"github.com/mholt/archiver/v3"
@@ -31,7 +30,6 @@ type JuliaVersion struct {
 	Versions map[string][]*JuliaPackage
 	Json     *gjson.Json
 	Conf     *config.GVConfig
-	c        *colly.Collector
 	d        *downloader.Downloader
 	env      *utils.EnvsHandler
 }
@@ -40,7 +38,6 @@ func NewJuliaVersion() (jv *JuliaVersion) {
 	jv = &JuliaVersion{
 		Versions: make(map[string][]*JuliaPackage, 500),
 		Conf:     config.New(),
-		c:        colly.NewCollector(),
 		d:        &downloader.Downloader{},
 		env:      utils.NewEnvsHandler(),
 	}
@@ -68,14 +65,11 @@ func (that *JuliaVersion) initeDirs() {
 }
 
 func (that *JuliaVersion) getJson() {
-	jUrl := that.Conf.Julia.VersionUrl
-	if !utils.VerifyUrls(jUrl) {
+	that.d.Url = that.Conf.Julia.VersionUrl
+	if !utils.VerifyUrls(that.d.Url) {
 		return
 	}
-	that.c.OnResponse(func(r *colly.Response) {
-		that.Json = gjson.New(r.Body)
-	})
-	that.c.Visit(jUrl)
+	that.Json = gjson.New(that.d.GetWithColly())
 }
 
 func (that *JuliaVersion) GetVersions() {

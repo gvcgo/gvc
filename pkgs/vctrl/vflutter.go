@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gocolly/colly/v2"
 	"github.com/gogf/gf/encoding/gjson"
 	"github.com/gookit/color"
 	"github.com/mholt/archiver/v3"
@@ -32,7 +31,6 @@ type FlutterVersion struct {
 	Versions map[string][]*FlutterPackage
 	Json     *gjson.Json
 	Conf     *config.GVConfig
-	c        *colly.Collector
 	d        *downloader.Downloader
 	env      *utils.EnvsHandler
 	baseUrl  string
@@ -42,7 +40,6 @@ func NewFlutterVersion() (fv *FlutterVersion) {
 	fv = &FlutterVersion{
 		Versions: make(map[string][]*FlutterPackage, 500),
 		Conf:     config.New(),
-		c:        colly.NewCollector(),
 		d:        &downloader.Downloader{},
 		env:      utils.NewEnvsHandler(),
 	}
@@ -83,10 +80,9 @@ func (that *FlutterVersion) getJson() {
 	if !utils.VerifyUrls(fUrl) {
 		return
 	}
-	that.c.OnResponse(func(r *colly.Response) {
-		that.Json = gjson.New(r.Body)
-	})
-	that.c.Visit(fUrl)
+
+	that.d.Url = fUrl
+	that.Json = gjson.New(that.d.GetWithColly())
 	if that.Json != nil {
 		that.baseUrl = that.Json.GetString("base_url")
 	}

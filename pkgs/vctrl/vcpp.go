@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/gocolly/colly/v2"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	downloader "github.com/moqsien/gvc/pkgs/fetcher"
 	"github.com/moqsien/gvc/pkgs/utils"
@@ -32,7 +31,6 @@ var (
 
 type CppManager struct {
 	*downloader.Downloader
-	c    *colly.Collector
 	Conf *config.GVConfig
 	Doc  *goquery.Document
 	env  *utils.EnvsHandler
@@ -41,7 +39,6 @@ type CppManager struct {
 func NewCppManager() (cm *CppManager) {
 	cm = &CppManager{
 		Downloader: &downloader.Downloader{},
-		c:          colly.NewCollector(),
 		Conf:       config.New(),
 		env:        utils.NewEnvsHandler(),
 	}
@@ -78,14 +75,11 @@ func (that *CppManager) initDirs() {
 }
 
 func (that *CppManager) getDoc() {
-	mUrl := that.Conf.Cpp.MsysInstallerUrl
-	if !utils.VerifyUrls(mUrl) {
+	that.Url = that.Conf.Cpp.MsysInstallerUrl
+	if !utils.VerifyUrls(that.Url) {
 		return
 	}
-	that.c.OnResponse(func(r *colly.Response) {
-		that.Doc, _ = goquery.NewDocumentFromReader(bytes.NewBuffer(r.Body))
-	})
-	that.c.Visit(mUrl)
+	that.Doc, _ = goquery.NewDocumentFromReader(bytes.NewBuffer(that.GetWithColly()))
 }
 
 func (that *CppManager) getMsys2Installer() (fPath string) {

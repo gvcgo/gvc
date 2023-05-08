@@ -13,7 +13,6 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/aquasecurity/table"
-	"github.com/gocolly/colly/v2"
 	"github.com/gookit/color"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
@@ -410,61 +409,113 @@ func (that *GoVersion) RemoveVersion(version string) {
 // search libraries
 func (that *GoVersion) SearchLibs(name string, sortby int) {
 	that.Url = fmt.Sprintf(that.Conf.Go.SearchUrl, name)
-	c := colly.NewCollector(colly.UserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36"))
-	c.OnResponse(func(r *colly.Response) {
-		// fmt.Println("===", string(r.Body))
-		that.Doc, _ = goquery.NewDocumentFromReader(bytes.NewBuffer(r.Body))
-		itemList := make([]sorts.Item, 0)
-		that.Doc.Find(".SearchSnippet").Each(func(i int, s *goquery.Selection) {
-			item := &sorts.GoLibrary{}
-			item.Name = s.Find(".SearchSnippet-headerContainer").Find("a").AttrOr("href", "")
-			item.Name = strings.Trim(item.Name, "/")
-			item.Imported, _ = strconv.Atoi(s.Find(".SearchSnippet-infoLabel").Find("a").First().Find("strong").Text())
-			if s.Find(".SearchSnippet-infoLabel").Find(".go-textSubtle").Eq(2).Find("strong").Length() > 1 {
-				item.Version = s.Find(".SearchSnippet-infoLabel").Find(".go-textSubtle").Eq(2).Find("strong").Eq(0).Text()
-			}
-			item.Update = s.Find(".SearchSnippet-infoLabel").Find(".go-textSubtle").Eq(2).Find("span").First().Find("strong").Eq(0).Text()
-			if strings.Contains(item.Update, "day") {
-				s := strings.Split(item.Update, "day")[0]
-				d, _ := strconv.Atoi(strings.Trim(s, " "))
-				item.UpdateAt = time.Now().Add(-time.Duration(d) * 24 * time.Hour)
-			} else if strings.Contains(item.Update, ",") {
-				item.UpdateAt, _ = time.Parse("Jan2,2006", strings.ReplaceAll(item.Update, " ", ""))
-			} else {
-				item.UpdateAt = time.Now().UTC()
-			}
-			item.SortType = sortby
-			itemList = append(itemList, item)
-		})
-		result := sorts.SortGoLibs(itemList)
-		l := len(result)
-		totalPage := l / 25
-		currentPage := 0
-		var op string
-		for {
-			t := table.New(os.Stdout)
-			t.SetAlignment(table.AlignLeft, table.AlignCenter, table.AlignCenter, table.AlignCenter)
-			t.SetHeaders("Url", "Version", "ImportedBy", "UpdateAt")
-			for i := l - 1 - currentPage*25; i >= l-1-(currentPage+1)*25 && currentPage < totalPage && i > 0; i-- {
-				v := result[i]
-				t.AddRow(v.Name, v.Version, strconv.Itoa(v.Imported), v.Update)
-			}
-			t.Render()
-			currentPage += 1
-			fmt.Println("Choose what to do next: ")
-			fmt.Println("1- [n] Show next page.")
-			fmt.Println("2- [e] Exit.")
-			fmt.Scan(&op)
-			if op == "n" {
-				if currentPage >= totalPage-1 {
-					break
-				}
-				continue
-			} else {
-				break
-			}
+	that.Doc, _ = goquery.NewDocumentFromReader(bytes.NewBuffer(that.GetWithColly()))
+	itemList := make([]sorts.Item, 0)
+	that.Doc.Find(".SearchSnippet").Each(func(i int, s *goquery.Selection) {
+		item := &sorts.GoLibrary{}
+		item.Name = s.Find(".SearchSnippet-headerContainer").Find("a").AttrOr("href", "")
+		item.Name = strings.Trim(item.Name, "/")
+		item.Imported, _ = strconv.Atoi(s.Find(".SearchSnippet-infoLabel").Find("a").First().Find("strong").Text())
+		if s.Find(".SearchSnippet-infoLabel").Find(".go-textSubtle").Eq(2).Find("strong").Length() > 1 {
+			item.Version = s.Find(".SearchSnippet-infoLabel").Find(".go-textSubtle").Eq(2).Find("strong").Eq(0).Text()
 		}
+		item.Update = s.Find(".SearchSnippet-infoLabel").Find(".go-textSubtle").Eq(2).Find("span").First().Find("strong").Eq(0).Text()
+		if strings.Contains(item.Update, "day") {
+			s := strings.Split(item.Update, "day")[0]
+			d, _ := strconv.Atoi(strings.Trim(s, " "))
+			item.UpdateAt = time.Now().Add(-time.Duration(d) * 24 * time.Hour)
+		} else if strings.Contains(item.Update, ",") {
+			item.UpdateAt, _ = time.Parse("Jan2,2006", strings.ReplaceAll(item.Update, " ", ""))
+		} else {
+			item.UpdateAt = time.Now().UTC()
+		}
+		item.SortType = sortby
+		itemList = append(itemList, item)
 	})
 
-	c.Visit(that.Url)
+	result := sorts.SortGoLibs(itemList)
+	l := len(result)
+	totalPage := l / 25
+	currentPage := 0
+	var op string
+	for {
+		t := table.New(os.Stdout)
+		t.SetAlignment(table.AlignLeft, table.AlignCenter, table.AlignCenter, table.AlignCenter)
+		t.SetHeaders("Url", "Version", "ImportedBy", "UpdateAt")
+		for i := l - 1 - currentPage*25; i >= l-1-(currentPage+1)*25 && currentPage < totalPage && i > 0; i-- {
+			v := result[i]
+			t.AddRow(v.Name, v.Version, strconv.Itoa(v.Imported), v.Update)
+		}
+		t.Render()
+		currentPage += 1
+		fmt.Println("Choose what to do next: ")
+		fmt.Println("1- [n] Show next page.")
+		fmt.Println("2- [e] Exit.")
+		fmt.Scan(&op)
+		if op == "n" {
+			if currentPage >= totalPage-1 {
+				break
+			}
+			continue
+		} else {
+			break
+		}
+	}
+
+	// c := colly.NewCollector(colly.UserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36"))
+	// c.OnResponse(func(r *colly.Response) {
+	// 	// fmt.Println("===", string(r.Body))
+	// 	that.Doc, _ = goquery.NewDocumentFromReader(bytes.NewBuffer(r.Body))
+	// 	itemList := make([]sorts.Item, 0)
+	// 	that.Doc.Find(".SearchSnippet").Each(func(i int, s *goquery.Selection) {
+	// 		item := &sorts.GoLibrary{}
+	// 		item.Name = s.Find(".SearchSnippet-headerContainer").Find("a").AttrOr("href", "")
+	// 		item.Name = strings.Trim(item.Name, "/")
+	// 		item.Imported, _ = strconv.Atoi(s.Find(".SearchSnippet-infoLabel").Find("a").First().Find("strong").Text())
+	// 		if s.Find(".SearchSnippet-infoLabel").Find(".go-textSubtle").Eq(2).Find("strong").Length() > 1 {
+	// 			item.Version = s.Find(".SearchSnippet-infoLabel").Find(".go-textSubtle").Eq(2).Find("strong").Eq(0).Text()
+	// 		}
+	// 		item.Update = s.Find(".SearchSnippet-infoLabel").Find(".go-textSubtle").Eq(2).Find("span").First().Find("strong").Eq(0).Text()
+	// 		if strings.Contains(item.Update, "day") {
+	// 			s := strings.Split(item.Update, "day")[0]
+	// 			d, _ := strconv.Atoi(strings.Trim(s, " "))
+	// 			item.UpdateAt = time.Now().Add(-time.Duration(d) * 24 * time.Hour)
+	// 		} else if strings.Contains(item.Update, ",") {
+	// 			item.UpdateAt, _ = time.Parse("Jan2,2006", strings.ReplaceAll(item.Update, " ", ""))
+	// 		} else {
+	// 			item.UpdateAt = time.Now().UTC()
+	// 		}
+	// 		item.SortType = sortby
+	// 		itemList = append(itemList, item)
+	// 	})
+	// 	result := sorts.SortGoLibs(itemList)
+	// 	l := len(result)
+	// 	totalPage := l / 25
+	// 	currentPage := 0
+	// 	var op string
+	// 	for {
+	// 		t := table.New(os.Stdout)
+	// 		t.SetAlignment(table.AlignLeft, table.AlignCenter, table.AlignCenter, table.AlignCenter)
+	// 		t.SetHeaders("Url", "Version", "ImportedBy", "UpdateAt")
+	// 		for i := l - 1 - currentPage*25; i >= l-1-(currentPage+1)*25 && currentPage < totalPage && i > 0; i-- {
+	// 			v := result[i]
+	// 			t.AddRow(v.Name, v.Version, strconv.Itoa(v.Imported), v.Update)
+	// 		}
+	// 		t.Render()
+	// 		currentPage += 1
+	// 		fmt.Println("Choose what to do next: ")
+	// 		fmt.Println("1- [n] Show next page.")
+	// 		fmt.Println("2- [e] Exit.")
+	// 		fmt.Scan(&op)
+	// 		if op == "n" {
+	// 			if currentPage >= totalPage-1 {
+	// 				break
+	// 			}
+	// 			continue
+	// 		} else {
+	// 			break
+	// 		}
+	// 	}
+	// })
+	// c.Visit(that.Url)
 }
