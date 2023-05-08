@@ -18,6 +18,7 @@ import (
 	"github.com/Asutorufa/yuhaiin/pkg/node/register"
 	"github.com/Asutorufa/yuhaiin/pkg/protos/node/point"
 	"github.com/Asutorufa/yuhaiin/pkg/protos/node/protocol"
+	"github.com/TwiN/go-color"
 	"github.com/gocolly/colly/v2"
 	"github.com/k0kubun/go-ansi"
 	"github.com/moqsien/gvc/pkgs/utils"
@@ -31,11 +32,12 @@ type Downloader struct {
 	Headers          map[string]string
 	ManuallyRedirect bool
 	Proxy            string
+	SetUA            bool
 }
 
 func (that *Downloader) setHeaders(req *http.Request) {
 	ua := "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36"
-	if that.Headers == nil || len(that.Headers) == 0 {
+	if (that.Headers == nil || len(that.Headers) == 0) && that.SetUA {
 		that.Headers = map[string]string{
 			"User-Agent": ua,
 		}
@@ -62,7 +64,7 @@ func (that *Downloader) parseProxy() (scheme, host string, port int) {
 	return
 }
 
-func (that *Downloader) getClient() (client *http.Client) {
+func (that *Downloader) getClient() *http.Client {
 	httpTransport, _ := http.DefaultTransport.(*http.Transport)
 	scheme, host, port := that.parseProxy()
 	switch scheme {
@@ -99,7 +101,9 @@ func (that *Downloader) getClient() (client *http.Client) {
 			}
 		}
 	default:
-		httpTransport = nil
+	}
+	client := &http.Client{
+		Timeout: that.Timeout,
 	}
 	if that.Timeout != 0 {
 		if that.ManuallyRedirect {
@@ -112,7 +116,7 @@ func (that *Downloader) getClient() (client *http.Client) {
 	} else {
 		client = &http.Client{Transport: httpTransport}
 	}
-	return
+	return client
 }
 
 func (that *Downloader) GetUrl() *http.Response {
@@ -165,7 +169,7 @@ func (that *Downloader) parseFilename(fPath string) (fName string) {
 	fName = strings.ReplaceAll(fPath, dirPath, "")
 	fName = strings.TrimPrefix(fName, "/")
 	fName = strings.TrimPrefix(fName, `\`)
-	return
+	return fmt.Sprintf("<%s>", fName)
 }
 
 func (that *Downloader) GetFile(fPath string, flag int, perm fs.FileMode, force ...bool) (size int64) {
@@ -196,14 +200,14 @@ func (that *Downloader) GetFile(fPath string, flag int, perm fs.FileMode, force 
 		resp.ContentLength,
 		progressbar.OptionEnableColorCodes(true),
 		progressbar.OptionSetTheme(progressbar.Theme{
-			Saucer:        "=",
-			SaucerHead:    ">",
+			Saucer:        color.InGreen("="),
+			SaucerHead:    color.InGreen(">"),
 			SaucerPadding: " ",
-			BarStart:      "[",
-			BarEnd:        "]",
+			BarStart:      color.InGreen("["),
+			BarEnd:        color.InGreen("]"),
 		}),
 		progressbar.OptionSetWidth(15),
-		progressbar.OptionSetDescription(fmt.Sprintf("Downloading %s", that.parseFilename(fPath))),
+		progressbar.OptionSetDescription(fmt.Sprintf("Downloading %s", color.InYellow(that.parseFilename(fPath)))),
 		progressbar.OptionSetWriter(ansi.NewAnsiStdout()),
 		progressbar.OptionShowBytes(true),
 		progressbar.OptionThrottle(65*time.Millisecond),

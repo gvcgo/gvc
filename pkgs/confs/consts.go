@@ -451,6 +451,17 @@ var (
 	CppDownloadDir         = filepath.Join(CppFilesDir, "download")
 )
 
+// -G 'Ninja'
+var VCPkgScript string = `(cd %s && CXX="%s" eval cmake %s "-DCMAKE_BUILD_TYPE=Release -DVCPKG_DEVELOPMENT_WARNINGS=OFF") || exit 1
+(cd %s && cmake --build .) || exit 1`
+
+var VCPkgPowershell string = `cd %s
+set CXX="%s"
+cmake %s "-DCMAKE_BUILD_TYPE=Release -DVCPKG_DEVELOPMENT_WARNINGS=OFF"
+
+cd %s
+cmake --build .`
+
 /*
 Homebrew related
 */

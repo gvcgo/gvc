@@ -40,6 +40,7 @@ const (
 	SUB_LUA     = "lua"
 	SUB_JULIA   = "julia"
 	SUB_TYPST   = "typst"
+	SUB_VCPKG   = "vcpkg"
 )
 
 /*
@@ -147,6 +148,11 @@ export PATH="$JULIA_ROOT/bin:$PATH"`
 Typst Envs
 */
 var TypstEnv string = `export PATH="%s:$PATH"`
+
+/*
+VCPKG Envs
+*/
+var VcpkgEnv string = `export PATH="%s:$PATH"`
 
 type EnvsHandler struct {
 	shellName  string

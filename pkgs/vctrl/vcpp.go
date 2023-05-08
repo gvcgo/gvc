@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	downloader "github.com/moqsien/gvc/pkgs/fetcher"
 	"github.com/moqsien/gvc/pkgs/utils"
@@ -221,8 +222,124 @@ func (that *CppManager) InstallCygwin(packInfo string) {
 	}
 }
 
-func (that *CppManager) GetVCPkg() {
+var (
+	VCpkgFilename     string = "vcpkg.zip"
+	VCpkgToolFilename string = "vcpkg-tool.zip"
+)
+
+func (that *CppManager) getVCPkg() string {
 	that.Url = that.Conf.Cpp.VCpkgUrl
-	resp := that.GetUrl()
-	fmt.Println(resp.Request.URL)
+	fPath := filepath.Join(config.CppDownloadDir, VCpkgFilename)
+	if size := that.GetFile(fPath, os.O_CREATE|os.O_WRONLY, 0644); size != 0 {
+		return fPath
+	} else {
+		os.RemoveAll(fPath)
+	}
+	return ""
+}
+
+func (that *CppManager) getVCPkgTool() string {
+	that.Url = that.Conf.Cpp.VCpkgToolUrl
+	fPath := filepath.Join(config.CppDownloadDir, VCpkgToolFilename)
+	if size := that.GetFile(fPath, os.O_CREATE|os.O_WRONLY, 0644); size != 0 {
+		return fPath
+	} else {
+		os.RemoveAll(fPath)
+	}
+	return ""
+}
+
+func (that *CppManager) writeCompileScript(buildPath, srcPath string) (cmd, fPath string) {
+	if runtime.GOOS != utils.Windows {
+		script := fmt.Sprintf(config.VCPkgScript, buildPath,
+			"g++", srcPath, buildPath)
+		fPath = filepath.Join(config.CppDownloadDir, "compile_vcpkg.sh")
+		os.WriteFile(fPath, []byte(script), 0777)
+		cmd = "sh"
+	} else {
+		script := fmt.Sprintf(config.VCPkgPowershell, buildPath,
+			"g++", srcPath, buildPath)
+		fPath = filepath.Join(config.CppDownloadDir, "compile_vcpkg.ps1")
+		os.WriteFile(fPath, []byte(script), 0777)
+		cmd = "powershell"
+	}
+	return
+}
+
+func (that *CppManager) InstallVCPkg() {
+	fPath := that.getVCPkg()
+	if ok, _ := utils.PathIsExist(fPath); ok {
+		if err := archiver.Unarchive(fPath, config.CppDownloadDir); err != nil {
+			fmt.Println("[Unarchive failed] ", err)
+			return
+		}
+		dirList, _ := os.ReadDir(config.CppDownloadDir)
+		os.RemoveAll(config.VCpkgDir)
+		for _, d := range dirList {
+			if d.IsDir() && (strings.Contains(d.Name(), "vcpkg") && !strings.Contains(d.Name(), "tool")) {
+				os.Rename(filepath.Join(config.CppDownloadDir, d.Name()), config.VCpkgDir)
+				break
+			}
+		}
+		if ok, _ = utils.PathIsExist(config.VCpkgDir); !ok {
+			return
+		}
+		fPath = that.getVCPkgTool()
+		if ok, _ := utils.PathIsExist(fPath); !ok {
+			return
+		}
+		basePath := filepath.Join(config.VCpkgDir, "buildtrees", "_vcpkg")
+		buildPath := filepath.Join(basePath, "build")
+		srcPath := filepath.Join(basePath, "src")
+		os.MkdirAll(buildPath, os.ModePerm)
+
+		if err := archiver.Unarchive(fPath, config.CppDownloadDir); err != nil {
+			fmt.Println("[Unarchive failed] ", err)
+			return
+		}
+		dirList, _ = os.ReadDir(config.CppDownloadDir)
+		for _, d := range dirList {
+			if d.IsDir() && (strings.Contains(d.Name(), "vcpkg") && strings.Contains(d.Name(), "tool")) {
+				os.Rename(filepath.Join(config.CppDownloadDir, d.Name()), srcPath)
+				break
+			}
+		}
+
+		if ok, _ = utils.PathIsExist(srcPath); ok {
+			fmt.Println(srcPath)
+			cmdName, scriptPath := that.writeCompileScript(buildPath, srcPath)
+			if scriptPath != "" {
+				cmd := exec.Command(cmdName, scriptPath)
+				cmd.Env = os.Environ()
+				cmd.Stderr = os.Stderr
+				cmd.Stdin = os.Stdin
+				cmd.Stdout = os.Stdout
+				if err := cmd.Run(); err != nil {
+					fmt.Println("Execute Compilation Script Failed: ", err)
+					return
+				}
+			}
+		}
+		var name string = "vcpkg"
+		if runtime.GOOS == utils.Windows {
+			name = "vcpkg.exe"
+		}
+		vcpkgBinary := filepath.Join(buildPath, name)
+		if ok, _ := utils.PathIsExist(vcpkgBinary); ok {
+			os.Rename(vcpkgBinary, filepath.Join(config.VCpkgDir, name))
+			that.setEnvForVcpkg()
+		}
+		os.RemoveAll(filepath.Join(config.VCpkgDir, "buildtrees"))
+	}
+}
+
+func (that *CppManager) setEnvForVcpkg() {
+	if runtime.GOOS == utils.Windows {
+		that.env.SetEnvForWin(map[string]string{
+			"PATH": config.VCpkgDir,
+		})
+	} else {
+		vcpkgEnv := fmt.Sprintf(utils.VcpkgEnv, config.VCpkgDir)
+		that.env.UpdateSub(utils.SUB_VCPKG, vcpkgEnv)
+	}
 }

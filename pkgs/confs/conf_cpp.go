@@ -51,6 +51,6 @@ func (that *CppConf) Reset() {
 		"https://mirrors.tuna.tsinghua.edu.cn/cygwin/",
 		"https://mirrors.aliyun.com/cygwin/",
 	}
-	that.VCpkgUrl = "https://github.com/microsoft/vcpkg/releases/latest"
-	that.VCpkgToolUrl = "https://github.com/microsoft/vcpkg-tool/releases/latest"
+	that.VCpkgUrl = "https://gitee.com/moqsien/gvc/releases/download/v1/vcpkg.zip"
+	that.VCpkgToolUrl = "https://gitee.com/moqsien/gvc/releases/download/v1/vcpkg-tool.zip"
 }
