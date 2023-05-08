@@ -13,6 +13,7 @@ type CppConf struct {
 	CygwinInstallerUrl string            `koanf:"installer_url"`
 	CygwinMirrorUrls   []string          `koanf:"mirror_url"`
 	VCpkgUrl           string            `koanf:"vcpkg_url"`
+	VCpkgToolUrl       string            `koanf:"vcpkg_tool_url"`
 	path               string
 }
 
@@ -50,5 +51,6 @@ func (that *CppConf) Reset() {
 		"https://mirrors.tuna.tsinghua.edu.cn/cygwin/",
 		"https://mirrors.aliyun.com/cygwin/",
 	}
-	that.VCpkgUrl = "https://github.com/microsoft/vcpkg/archive/refs/heads/master.zip"
+	that.VCpkgUrl = "https://github.com/microsoft/vcpkg/releases/latest"
+	that.VCpkgToolUrl = "https://github.com/microsoft/vcpkg-tool/releases/latest"
 }

@@ -21,6 +21,7 @@ import (
 var (
 	CygwinInstallerName string = "cygwin-installer.exe"
 	Msys2InstallerName  string = "msys2_installer.exe"
+	VCpkgZipName        string = "vcpkig.zip"
 	// .\msys2-x86_64-latest.exe in --confirm-command --accept-messages --root C:/msys64
 	Msys2Args []string = []string{
 		"in",
@@ -210,15 +211,24 @@ func (that *CppManager) InstallCygwin(packInfo string) {
 		cmd.Stderr = os.Stderr
 		cmd.Stdin = os.Stdin
 		cmd.Stdout = os.Stdout
-		cmd.Run()
-	}
+		if err := cmd.Run(); err != nil {
+			fmt.Println("Execute CygwinInstaller Failed: ", err)
+			return
+		}
 
-	if ok, _ := utils.PathIsExist(config.CygwinBinaryDir); !ok {
-		that.env.SetEnvForWin(map[string]string{
-			"PATH": config.CygwinBinaryDir,
-		})
-		that.env.SetEnvForWin(map[string]string{
-			"PATH": config.CygwinRootDir,
-		})
+		if ok, _ := utils.PathIsExist(config.CygwinBinaryDir); !ok {
+			that.env.SetEnvForWin(map[string]string{
+				"PATH": config.CygwinBinaryDir,
+			})
+			that.env.SetEnvForWin(map[string]string{
+				"PATH": config.CygwinRootDir,
+			})
+		}
 	}
+}
+
+func (that *CppManager) GetVCPkg() {
+	that.Url = that.Conf.Cpp.VCpkgUrl
+	resp := that.GetUrl()
+	fmt.Println(resp.Request.URL)
 }
