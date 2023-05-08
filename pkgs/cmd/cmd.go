@@ -1264,6 +1264,18 @@ func (that *Cmder) vcpp() {
 	}
 	command.Subcommands = append(command.Subcommands, iCygwin)
 
+	iVcpkg := &cli.Command{
+		Name:    "install-vcpkg",
+		Aliases: []string{"insv", "iv"},
+		Usage:   "Install vcpkg.",
+		Action: func(ctx *cli.Context) error {
+			v := vctrl.NewCppManager()
+			v.InstallVCPkg()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, iVcpkg)
+
 	that.Commands = append(that.Commands, command)
 }
 
