@@ -14,6 +14,7 @@ type CppConf struct {
 	CygwinMirrorUrls   []string          `koanf:"mirror_url"`
 	VCpkgUrl           string            `koanf:"vcpkg_url"`
 	VCpkgToolUrl       string            `koanf:"vcpkg_tool_url"`
+	WinVCpkgToolUrls   map[string]string `koanf:"win_vcpkg_tool_urls"`
 	path               string
 }
 
@@ -53,4 +54,8 @@ func (that *CppConf) Reset() {
 	}
 	that.VCpkgUrl = "https://gitee.com/moqsien/gvc/releases/download/v1/vcpkg.zip"
 	that.VCpkgToolUrl = "https://gitee.com/moqsien/gvc/releases/download/v1/vcpkg-tool.zip"
+	that.WinVCpkgToolUrls = map[string]string{
+		"arm64": "https://gitee.com/moqsien/gvc/releases/download/v1/vcpkg-arm64.exe",
+		"amd64": "https://gitee.com/moqsien/gvc/releases/download/v1/vcpkg.exe",
+	}
 }

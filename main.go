@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"os"
+	"runtime"
 	"strings"
 
 	"github.com/moqsien/gvc/pkgs/cmd"
@@ -27,8 +29,9 @@ func main() {
 		// browser := vctrl.NewBrowser()
 		// browser.ShowSupportedBrowser()
 		// browser.Save("firefox", true)
-		cpp := vctrl.NewCppManager()
-		cpp.InstallVCPkg()
+		// cpp := vctrl.NewCppManager()
+		// cpp.InstallVCPkg()
+		fmt.Println(runtime.GOARCH)
 		// p := "a/b/c/d/e.zip"
 		// fmt.Println(strings.ReplaceAll(p, filepath.Dir(p), ""))
 	} else if len(os.Args) < 2 {

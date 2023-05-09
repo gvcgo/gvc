@@ -64,6 +64,9 @@ func (that *Self) Install() {
 			that.setEnv()
 			that.setShortcut()
 		}
+		// reset config file to default.
+		that.Conf.SetDefault()
+		that.Conf.Restore()
 	}
 	// init dirs and files
 	config.New()

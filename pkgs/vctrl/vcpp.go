@@ -257,27 +257,19 @@ func (that *CppManager) writeCompileScript(buildPath, srcPath string) (cmd, fPat
 		fPath = filepath.Join(config.CppDownloadDir, "compile_vcpkg.sh")
 		os.WriteFile(fPath, []byte(script), 0777)
 		cmd = "sh"
-	} else {
-		script := fmt.Sprintf(config.VCPkgPowershell, buildPath,
-			"g++", srcPath, buildPath)
-		fPath = filepath.Join(config.CppDownloadDir, "compile_vcpkg.ps1")
-		os.WriteFile(fPath, []byte(script), 0777)
-		cmd = "powershell"
 	}
 	return
 }
 
 func (that *CppManager) checkVcpkgCompilationEnv() (hasCompiler, hasCmake bool) {
+	if runtime.GOOS == utils.Windows {
+		return true, true
+	}
+
 	if ok, _ := utils.PathIsExist("/usr/bin/g++"); ok {
 		hasCompiler = true
 	}
 	if ok, _ := utils.PathIsExist("/usr/local/bin/g++"); ok {
-		hasCompiler = true
-	}
-	if ok, _ := utils.PathIsExist(filepath.Join(config.Msys2Dir, "usr", "bin", "g++.exe")); ok {
-		hasCompiler = true
-	}
-	if ok, _ := utils.PathIsExist(filepath.Join(config.CygwinBinaryDir, "g++.exe")); ok {
 		hasCompiler = true
 	}
 
@@ -285,13 +277,6 @@ func (that *CppManager) checkVcpkgCompilationEnv() (hasCompiler, hasCmake bool) 
 		hasCmake = true
 	}
 	if ok, _ := utils.PathIsExist("/usr/local/bin/cmake"); ok {
-		hasCmake = true
-	}
-
-	if ok, _ := utils.PathIsExist(filepath.Join(config.Msys2Dir, "usr", "bin", "cmake.exe")); ok {
-		hasCmake = true
-	}
-	if ok, _ := utils.PathIsExist(filepath.Join(config.CygwinBinaryDir, "cmake.exe")); ok {
 		hasCmake = true
 	}
 	if !hasCompiler {
@@ -325,52 +310,62 @@ func (that *CppManager) InstallVCPkg() {
 		if ok, _ = utils.PathIsExist(config.VCpkgDir); !ok {
 			return
 		}
-		fPath = that.getVCPkgTool()
-		if ok, _ := utils.PathIsExist(fPath); !ok {
-			return
-		}
-		basePath := filepath.Join(config.VCpkgDir, "buildtrees", "_vcpkg")
-		buildPath := filepath.Join(basePath, "build")
-		srcPath := filepath.Join(basePath, "src")
-		os.MkdirAll(buildPath, os.ModePerm)
 
-		if err := archiver.Unarchive(fPath, config.CppDownloadDir); err != nil {
-			fmt.Println("[Unarchive failed] ", err)
-			return
-		}
-		dirList, _ = os.ReadDir(config.CppDownloadDir)
-		for _, d := range dirList {
-			if d.IsDir() && (strings.Contains(d.Name(), "vcpkg") && strings.Contains(d.Name(), "tool")) {
-				os.Rename(filepath.Join(config.CppDownloadDir, d.Name()), srcPath)
-				break
+		if runtime.GOOS != utils.Windows {
+			fPath = that.getVCPkgTool()
+			if ok, _ := utils.PathIsExist(fPath); !ok {
+				return
 			}
-		}
+			basePath := filepath.Join(config.VCpkgDir, "buildtrees", "_vcpkg")
+			buildPath := filepath.Join(basePath, "build")
+			srcPath := filepath.Join(basePath, "src")
+			os.MkdirAll(buildPath, os.ModePerm)
 
-		if ok, _ = utils.PathIsExist(srcPath); ok {
-			fmt.Println(srcPath)
-			cmdName, scriptPath := that.writeCompileScript(buildPath, srcPath)
-			if scriptPath != "" {
-				cmd := exec.Command(cmdName, scriptPath)
-				cmd.Env = os.Environ()
-				cmd.Stderr = os.Stderr
-				cmd.Stdin = os.Stdin
-				cmd.Stdout = os.Stdout
-				if err := cmd.Run(); err != nil {
-					fmt.Println("Execute Compilation Script Failed: ", err)
-					return
+			if err := archiver.Unarchive(fPath, config.CppDownloadDir); err != nil {
+				fmt.Println("[Unarchive failed] ", err)
+				return
+			}
+			dirList, _ = os.ReadDir(config.CppDownloadDir)
+			for _, d := range dirList {
+				if d.IsDir() && (strings.Contains(d.Name(), "vcpkg") && strings.Contains(d.Name(), "tool")) {
+					os.Rename(filepath.Join(config.CppDownloadDir, d.Name()), srcPath)
+					break
+				}
+			}
+
+			if ok, _ = utils.PathIsExist(srcPath); ok {
+				fmt.Println(srcPath)
+				cmdName, scriptPath := that.writeCompileScript(buildPath, srcPath)
+				if scriptPath != "" {
+					cmd := exec.Command(cmdName, scriptPath)
+					cmd.Env = os.Environ()
+					cmd.Stderr = os.Stderr
+					cmd.Stdin = os.Stdin
+					cmd.Stdout = os.Stdout
+					if err := cmd.Run(); err != nil {
+						fmt.Println("Execute Compilation Script Failed: ", err)
+						return
+					}
+				}
+			}
+			var name string = "vcpkg"
+			vcpkgBinary := filepath.Join(buildPath, name)
+			if ok, _ := utils.PathIsExist(vcpkgBinary); ok {
+				os.Rename(vcpkgBinary, filepath.Join(config.VCpkgDir, name))
+				that.setEnvForVcpkg()
+			}
+			os.RemoveAll(filepath.Join(config.VCpkgDir, "buildtrees"))
+		} else {
+			fPath := filepath.Join(config.VCpkgDir, "vcpkg.exe")
+			that.Url = that.Conf.Cpp.WinVCpkgToolUrls[runtime.GOARCH]
+			if that.Url != "" {
+				if size := that.GetFile(fPath, os.O_CREATE|os.O_WRONLY, 0777); size == 0 {
+					os.RemoveAll(fPath)
+				} else {
+					that.setEnvForVcpkg()
 				}
 			}
 		}
-		var name string = "vcpkg"
-		if runtime.GOOS == utils.Windows {
-			name = "vcpkg.exe"
-		}
-		vcpkgBinary := filepath.Join(buildPath, name)
-		if ok, _ := utils.PathIsExist(vcpkgBinary); ok {
-			os.Rename(vcpkgBinary, filepath.Join(config.VCpkgDir, name))
-			that.setEnvForVcpkg()
-		}
-		os.RemoveAll(filepath.Join(config.VCpkgDir, "buildtrees"))
 	}
 }
 
