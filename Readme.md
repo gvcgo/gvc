@@ -164,7 +164,17 @@ Therefore, If you are planning to get a new PC for development, probably the onl
   <tr>
     <td><font color="Gree">Cygwin</font></td>
     <td><font color="LightBlue">Install, InstallPackage</font></td>
-    <td bgcolor="PaleVioletRed">gvc cygwin help; Only for Windows; git,bash, clang, gcc, etc.</td>
+    <td bgcolor="PaleVioletRed">gvc cpp ic help; Only for Windows; git,bash, clang, gcc, etc.</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">Msys2</font></td>
+    <td><font color="LightBlue">Install</font></td>
+    <td bgcolor="PaleVioletRed">gvc cpp im help; Only for Windows.</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">vcpkg</font></td>
+    <td><font color="LightBlue">Install</font></td>
+    <td bgcolor="PaleVioletRed">gvc cpp iv help; Cpp package management.</td>
   </tr>
   <tr>
     <td><font color="Gree">Flutter</font></td>
@@ -230,10 +240,10 @@ Download files, unarchive, then double clik or just run with no subcommand or ar
 ### gvc -h
 ```shell
 NAME:
-   gvc - gvc <Command> <SubCommand>...
+   g - gvc <Command> <SubCommand>...
 
 USAGE:
-   gvc [global options] command [command options] [arguments...]
+   g [global options] command [command options] [arguments...]
 
 DESCRIPTION:
    A productive tool to manage your development environment.
@@ -248,14 +258,14 @@ COMMANDS:
    flutter, flu, fl               Flutter version management.
    julia, jul, ju                 Julia version management.
    rust, rustc, ru, r             Rust installation.
+   cpp                            C/C++ management.
    typst, ty                      Typst installation.
    vlang, vl                      Vlang installation.
-   cygwin, cygw, cyg, cy          Cygwin installation.
    vscode, vsc, vs, v             VSCode and extensions installation.
    nvim, neovim, nv, n            Neovim installation.
    xtray-shell, xshell, xs, x     Start an xtray shell.
    xtray-runner, xrunner, xr      Start an xtray client. # this is used by xtray-shell
-   xtray-keeper, xkeeper, xk      Start an xtray keeper.  # this is used by xtray-shell
+   xtray-keeper, xkeeper, xk      Start an xtray keeper. # this is used by xtray-shell
    browser, br                    Browser data management.
    homebrew, brew, hb             Homebrew installation or update.
    host, h, hosts                 Sytem hosts file management(need admistrator or root).

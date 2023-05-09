@@ -168,7 +168,17 @@ GVC是一个全平台、多机器的一键管理多语言开发环境的辅助�
   <tr>
     <td><font color="Gree">Cygwin</font></td>
     <td><font color="LightBlue">自动安装, 配置环境变量, 国内源加速，自动添加Cygwin支持的软件工具</font></td>
-    <td bgcolor="PaleVioletRed">gvc cygwin help; 仅用于Windows; git,bash, clang, gcc等将被默认安装.</td>
+    <td bgcolor="PaleVioletRed">gvc cpp ic help; 仅用于Windows; git,bash, clang, gcc等将被默认安装.</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">Msys2</font></td>
+    <td><font color="LightBlue">自动安装, 配置环境变量, 国内源加速</font></td>
+    <td bgcolor="PaleVioletRed">gvc cpp im help; 仅用于Windows.</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">vcpkg</font></td>
+    <td><font color="LightBlue">自动安装, 配置环境变量, 国内源加速</font></td>
+    <td bgcolor="PaleVioletRed">gvc cpp iv help; C++包管理器，支持全平台.</td>
   </tr>
   <tr>
     <td><font color="Gree">Flutter</font></td>
@@ -233,10 +243,10 @@ GVC是一个全平台、多机器的一键管理多语言开发环境的辅助�
 ### gvc -h
 ```shell
 NAME:
-   gvc - gvc <Command> <SubCommand>...
+   g - gvc <Command> <SubCommand>...
 
 USAGE:
-   gvc [global options] command [command options] [arguments...]
+   g [global options] command [command options] [arguments...]
 
 DESCRIPTION:
    A productive tool to manage your development environment.
@@ -251,14 +261,14 @@ COMMANDS:
    flutter, flu, fl               Flutter version management.
    julia, jul, ju                 Julia version management.
    rust, rustc, ru, r             Rust installation.
+   cpp                            C/C++ management.
    typst, ty                      Typst installation.
    vlang, vl                      Vlang installation.
-   cygwin, cygw, cyg, cy          Cygwin installation.
    vscode, vsc, vs, v             VSCode and extensions installation.
    nvim, neovim, nv, n            Neovim installation.
    xtray-shell, xshell, xs, x     Start an xtray shell.
    xtray-runner, xrunner, xr      Start an xtray client. # 供xtray-shell使用，用户无需关心
-   xtray-keeper, xkeeper, xk      Start an xtray keeper.  # 供xtray-shell使用，用户无需关心
+   xtray-keeper, xkeeper, xk      Start an xtray keeper. # 供xtray-shell使用，用户无需关心
    browser, br                    Browser data management.
    homebrew, brew, hb             Homebrew installation or update.
    host, h, hosts                 Sytem hosts file management(need admistrator or root).
