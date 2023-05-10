@@ -43,7 +43,7 @@ func NewXtrayExa() *XtrayExa {
 	xe.Conf.FetcherUrl = xe.GVConf.Xtray.FetcherUrl
 	xe.Conf.WorkDir = xe.GVConf.Xtray.WorkDir
 	xe.Conf.RawProxyFile = xe.GVConf.Xtray.RawProxyFile
-	xe.Conf.PorxyFile = xe.GVConf.Xtray.PorxyFile
+	xe.Conf.ProxyFile = xe.GVConf.Xtray.PorxyFile
 	xe.Conf.PortRange.Start = xe.GVConf.Xtray.PortRange.Start
 	xe.Conf.PortRange.End = xe.GVConf.Xtray.PortRange.End
 	xe.Conf.Port = xe.GVConf.Xtray.Port
@@ -53,6 +53,8 @@ func NewXtrayExa() *XtrayExa {
 	// "@every 1h30m10s" https://pkg.go.dev/github.com/robfig/cron
 	xe.Conf.VerifierCron = xe.GVConf.Xtray.VerifierCron
 	xe.Conf.KeeperCron = xe.GVConf.Xtray.KeeperCron
+	xe.Conf.StorageSqlitePath = xe.GVConf.Xtray.StorageSqlitePath
+	xe.Conf.StorageExportPath = xe.GVConf.Xtray.StorageExportPath
 
 	xe.Runner = ctrl.NewXRunner(xe.Conf)
 	xe.Runner.RegisterStarter(Starter)

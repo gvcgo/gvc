@@ -17,19 +17,21 @@ type VPortRange struct {
 }
 
 type XtrayConf struct {
-	FetcherUrl      string      `koanf:"fetcher_url"`
-	WorkDir         string      `koanf:"work_dir"`
-	RawProxyFile    string      `koanf:"raw_file"`
-	PorxyFile       string      `koanf:"proxy_file"`
-	PortRange       *VPortRange `koanf:"port_range"`
-	Port            int         `koanf:"port"`
-	TestUrl         string      `koanf:"test_url"`
-	SwitchyOmegaUrl string      `koanf:"omega_url"`
-	GeoInfoUrl      string      `koanf:"geo_info_url"`
-	Timeout         int         `koanf:"timeout"`
-	VerifierCron    string      `koanf:"verifier_cron"`
-	KeeperCron      string      `koanf:"keeper_cron"`
-	path            string
+	FetcherUrl        string      `koanf:"fetcher_url"`
+	WorkDir           string      `koanf:"work_dir"`
+	RawProxyFile      string      `koanf:"raw_file"`
+	PorxyFile         string      `koanf:"proxy_file"`
+	PortRange         *VPortRange `koanf:"port_range"`
+	Port              int         `koanf:"port"`
+	TestUrl           string      `koanf:"test_url"`
+	SwitchyOmegaUrl   string      `koanf:"omega_url"`
+	GeoInfoUrl        string      `koanf:"geo_info_url"`
+	Timeout           int         `koanf:"timeout"`
+	VerifierCron      string      `koanf:"verifier_cron"`
+	KeeperCron        string      `koanf:"keeper_cron"`
+	StorageSqlitePath string      `koanf:"storage_sqlite_path"`
+	StorageExportPath string      `koanf:"storage_export_path"`
+	path              string
 }
 
 func NewXtrayConf() (r *XtrayConf) {
@@ -62,4 +64,7 @@ func (that *XtrayConf) Reset() {
 	// "@every 1h30m10s" https://pkg.go.dev/github.com/robfig/cron
 	that.VerifierCron = "@every 2h"
 	that.KeeperCron = "@every 3m"
+
+	that.StorageSqlitePath = filepath.Join(ProxyFilesDir, "storage.db")
+	that.StorageExportPath = filepath.Join(GVCBackupDir, "vpn_history.json")
 }
