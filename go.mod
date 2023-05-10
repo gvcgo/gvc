@@ -14,9 +14,9 @@ require (
 	github.com/k0kubun/go-ansi v0.0.0-20180517002512-3bf9e2903213
 	github.com/knadh/koanf v1.5.0
 	github.com/mholt/archiver/v3 v3.5.1
-	github.com/moqsien/hackbrowser v1.0.0
+	github.com/moqsien/hackbrowser v1.0.3
 	github.com/moqsien/processes v1.0.3
-	github.com/moqsien/xtray v1.0.1
+	github.com/moqsien/xtray v1.0.5
 	github.com/panjf2000/ants/v2 v2.7.1
 	github.com/prometheus-community/pro-bing v0.1.0
 	github.com/sashabaranov/go-openai v1.9.0
@@ -50,8 +50,6 @@ require (
 	github.com/gaukas/godicttls v0.0.3 // indirect
 	github.com/ghodss/yaml v1.0.1-0.20220118164431-d8423dcdf344 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
-	github.com/glebarez/go-sqlite v1.21.1 // indirect
-	github.com/glebarez/sqlite v1.8.0 // indirect
 	github.com/go-logr/logr v1.2.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
@@ -115,9 +113,9 @@ require (
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
-	github.com/sagernet/sing v0.2.4 // indirect
-	github.com/sagernet/sing-shadowsocks v0.2.1 // indirect
-	github.com/sagernet/wireguard-go v0.0.0-20230420044414-a7bac1754e77 // indirect
+	github.com/sagernet/sing v0.1.6 // indirect
+	github.com/sagernet/sing-shadowsocks v0.1.1-0.20230202035033-e3123545f2f7 // indirect
+	github.com/sagernet/wireguard-go v0.0.0-20221116151939-c99467f53f2c // indirect
 	github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d // indirect
 	github.com/seiflotfy/cuckoofilter v0.0.0-20220411075957-e3b120b3f5fb // indirect
 	github.com/syndtr/goleveldb v1.0.0 // indirect
@@ -132,11 +130,12 @@ require (
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	github.com/xo/terminfo v0.0.0-20210125001918-ca9a967f8778 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
-	github.com/xtls/reality v0.0.0-20230331223127-176a94313eda // indirect
-	github.com/xtls/xray-core v1.8.1 // indirect
+	github.com/xtls/go v0.0.0-20230107031059-4610f88d00f3 // indirect
+	github.com/xtls/xray-core v1.7.5 // indirect
 	go.opentelemetry.io/otel v1.15.1 // indirect
 	go.opentelemetry.io/otel/trace v1.15.1 // indirect
 	go.starlark.net v0.0.0-20230302034142-4b1e35fe2254 // indirect
+	go.uber.org/atomic v1.10.0 // indirect
 	golang.org/x/arch v0.3.0 // indirect
 	golang.org/x/crypto v0.9.0 // indirect
 	golang.org/x/exp v0.0.0-20230425010034-47ecfdc1ba53 // indirect
@@ -155,7 +154,7 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gorm.io/gorm v1.25.1 // indirect
-	gvisor.dev/gvisor v0.0.0-20230328010444-05f88d6490de // indirect
+	gvisor.dev/gvisor v0.0.0-20230324231650-b265e3e2c165 // indirect
 	lukechampine.com/blake3 v1.1.7 // indirect
 	lukechampine.com/uint128 v1.2.0 // indirect
 	modernc.org/cc/v3 v3.40.0 // indirect
