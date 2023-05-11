@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
 	"runtime"
@@ -236,8 +237,18 @@ func (that *Hosts) FormatAndSaveHosts(oldContent []byte) {
 			return
 		}
 		var err error
-		if utils.GetShell() == "win" {
+		if runtime.GOOS == utils.Windows {
 			err = os.WriteFile(config.GetHostsFilePath(), []byte(newStr), 0666)
+			if err != nil && strings.Contains(err.Error(), "denied") {
+				fmt.Println("Open powershell with administrator previlege...")
+				cmd := exec.Command("powershell", "Start-Process", "-verb runas powershell")
+				cmd.Env = os.Environ()
+				cmd.Stderr = os.Stderr
+				cmd.Stdin = os.Stdin
+				cmd.Stdout = os.Stdout
+				cmd.Run()
+				return
+			}
 		} else {
 			err = os.WriteFile(config.TempHostsFilePath, []byte(newStr), 0666)
 			if err == nil {
@@ -245,10 +256,10 @@ func (that *Hosts) FormatAndSaveHosts(oldContent []byte) {
 			}
 		}
 		if err != nil {
-			fmt.Println("\nWrite file errored: ", err)
+			fmt.Println("Write file errored: ", err)
 			return
 		}
-		fmt.Println("\nSuccessed!")
+		fmt.Println("Succeeded!")
 	}
 }
 
