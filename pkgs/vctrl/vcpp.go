@@ -165,6 +165,41 @@ func (that *CppManager) UninstallMsys2() {
 	}
 }
 
+/*
+use Msys2/Cygwin git for vscode.
+Need some fixes.
+*/
+func (that *CppManager) RepairGitForVSCode() {
+	if runtime.GOOS != utils.Windows {
+		return
+	}
+	bPath := filepath.Join(config.CppFilesDir, "mgit.bat")
+	if ok, _ := utils.PathIsExist(bPath); !ok {
+		os.WriteFile(bPath, []byte(config.Msys2CygwinGitFixBat), 0777)
+	}
+	vscodeSettingsPath := filepath.Join(utils.GetWinAppdataEnv(), `Code\User\settings.json`)
+	if ok, _ := utils.PathIsExist(vscodeSettingsPath); ok {
+		if vsContent, err := os.ReadFile(vscodeSettingsPath); err == nil {
+			strContent := strings.TrimSuffix(string(vsContent), "\n")
+			cList := strings.Split(strContent, "\n")
+			length := len(cList)
+			if strings.Contains(cList[length-1], "}") {
+				if length-2 >= 0 {
+					line := strings.TrimSuffix(cList[length-2], "\n")
+					if !strings.HasSuffix(line, ",") {
+						line = line + ","
+					}
+					line += "\n"
+				}
+				bPath = strings.ReplaceAll(bPath, `\`, `\\`)
+				cList = append(cList[:length-2], fmt.Sprintf(`    "git.path": "%s"`, bPath), "}")
+			}
+			strContent = strings.Join(cList, "\n")
+			os.WriteFile(vscodeSettingsPath, []byte(strContent), os.ModePerm)
+		}
+	}
+}
+
 func (that *CppManager) getCygwinInstaller() (fPath string) {
 	fPath = filepath.Join(config.CppDownloadDir, CygwinInstallerName)
 	if ok, _ := utils.PathIsExist(fPath); !ok {

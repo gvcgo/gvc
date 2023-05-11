@@ -455,6 +455,15 @@ var (
 var VCPkgScript string = `(cd %s && CXX="%s" eval cmake %s "-DCMAKE_BUILD_TYPE=Release -DVCPKG_DEVELOPMENT_WARNINGS=OFF") || exit 1
 (cd %s && cmake --build .) || exit 1`
 
+var Msys2CygwinGitFixBat = `@echo off
+setlocal
+
+if "%1" equ "rev-parse" goto rev_parse
+git %*
+goto :eof
+:rev_parse
+for /f %%1 in ('git %*') do cygpath -w %%1`
+
 /*
 Homebrew related
 */

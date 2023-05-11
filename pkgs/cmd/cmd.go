@@ -271,6 +271,18 @@ func (that *Cmder) vscode() {
 	}
 	command.Subcommands = append(command.Subcommands, installexts)
 
+	repairgit := &cli.Command{
+		Name:    "use-msys2-cygwin-git",
+		Aliases: []string{"use-git", "ug"},
+		Usage:   "Repair and make use of git.exe from Msys2/Cygwin.",
+		Action: func(ctx *cli.Context) error {
+			gcode := vctrl.NewCppManager()
+			gcode.RepairGitForVSCode()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, repairgit)
+
 	that.Commands = append(that.Commands, command)
 }
 

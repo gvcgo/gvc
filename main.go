@@ -8,6 +8,7 @@ import (
 
 	"github.com/moqsien/gvc/pkgs/cmd"
 	"github.com/moqsien/gvc/pkgs/confs"
+	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/vctrl"
 )
 
@@ -32,6 +33,7 @@ func main() {
 		// cpp := vctrl.NewCppManager()
 		// cpp.InstallVCPkg()
 		fmt.Println(runtime.GOARCH)
+		fmt.Println(utils.GetWinAppdataEnv())
 		// p := "a/b/c/d/e.zip"
 		// fmt.Println(strings.ReplaceAll(p, filepath.Dir(p), ""))
 	} else if len(os.Args) < 2 {

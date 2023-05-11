@@ -409,8 +409,8 @@ github.com/moqsien/hackbrowser v1.0.3 h1:HpXHg1goHU70YnifqPk8+ityK5/SpIu9e7BB5pN
 github.com/moqsien/hackbrowser v1.0.3/go.mod h1:xsUuSbleSJn0vz5TOFMD0nDEmv5fDGgb65HQq8INLJc=
 github.com/moqsien/processes v1.0.3 h1:bV8vi4JZnwlhsxguyVAtUUv+zq4yvMSZIfjrsFGfmPE=
 github.com/moqsien/processes v1.0.3/go.mod h1:+jsV7YfT+24Ea7Ks8UXW4x8jcbqX7exKej/o5zlPEm0=
-github.com/moqsien/xtray v1.0.5 h1:EYZnykP7FThP/G5SCqoIltR6n/hcqOMRN5PXIstnFXY=
-github.com/moqsien/xtray v1.0.5/go.mod h1:1iubyIiqz+mYhiAcW1Q9Pf96glIA6gT7Ua9+EysUEXA=
+github.com/moqsien/xtray v1.0.6 h1:CrVQtRtRmyUP2qjsOv3TRmRaR0St9LJLFUzSp2wN9OE=
+github.com/moqsien/xtray v1.0.6/go.mod h1:1iubyIiqz+mYhiAcW1Q9Pf96glIA6gT7Ua9+EysUEXA=
 github.com/mwitkow/go-conntrack v0.0.0-20161129095857-cc309e4a2223/go.mod h1:qRWi+5nqEBWmkhHvq77mSJWrCKwh8bxhgT7d/eI7P4U=
 github.com/mwitkow/go-conntrack v0.0.0-20190716064945-2f068394615f/go.mod h1:qRWi+5nqEBWmkhHvq77mSJWrCKwh8bxhgT7d/eI7P4U=
 github.com/neelance/astrewrite v0.0.0-20160511093645-99348263ae86/go.mod h1:kHJEU3ofeGjhHklVoIGuVj85JJwZ6kWPaJwCIxgnFmo=

@@ -16,7 +16,7 @@ require (
 	github.com/mholt/archiver/v3 v3.5.1
 	github.com/moqsien/hackbrowser v1.0.3
 	github.com/moqsien/processes v1.0.3
-	github.com/moqsien/xtray v1.0.5
+	github.com/moqsien/xtray v1.0.6
 	github.com/panjf2000/ants/v2 v2.7.1
 	github.com/prometheus-community/pro-bing v0.1.0
 	github.com/sashabaranov/go-openai v1.9.0
