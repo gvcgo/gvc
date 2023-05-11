@@ -7,6 +7,7 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/TwiN/go-color"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
 )
@@ -27,29 +28,28 @@ func (that *Self) setEnv() {
 	if runtime.GOOS != utils.Windows {
 		that.env.UpdateSub(utils.SUB_GVC, fmt.Sprintf(utils.GvcEnv, config.GVCWorkDir))
 	} else {
-		// utils.SetWinEnv("PATH", config.GVCWorkDir)
-		gEnv := map[string]string{
-			"PATH": config.GVCWorkDir,
-		}
-		that.env.SetEnvForWin(gEnv)
+		that.env.SetEnvForWin(map[string]string{"PATH": config.GVCWorkDir})
 	}
 }
 
 func (that *Self) setShortcut() {
-	if ok, _ := utils.PathIsExist(filepath.Join(config.GVCWorkDir, "gvc.exe")); ok && runtime.GOOS == utils.Windows {
-		// config.SaveWinShortcutCreator()
-		// exec.Command("wscript", config.GVCShortcutCommand...).Run()
-		utils.MkSymLink(filepath.Join(config.GVCWorkDir, "gvc.exe"), filepath.Join(config.GVCWorkDir, "g"))
-	}
-	if ok, _ := utils.PathIsExist(filepath.Join(config.GVCWorkDir, "gvc")); ok && runtime.GOOS != utils.Windows {
-		utils.MkSymLink(filepath.Join(config.GVCWorkDir, "gvc"), filepath.Join(config.GVCWorkDir, "g"))
+	switch runtime.GOOS {
+	case utils.Windows:
+		fPath := filepath.Join(config.GVCWorkDir, "gvc.exe")
+		if ok, _ := utils.PathIsExist(fPath); ok {
+			newPath := filepath.Join(config.GVCWorkDir, "g.exe")
+			os.RemoveAll(newPath)
+			utils.CopyFile(fPath, newPath)
+		}
+	default:
+		fPath := filepath.Join(config.GVCWorkDir, "gvc")
+		if ok, _ := utils.PathIsExist(fPath); ok {
+			utils.MkSymLink(fPath, filepath.Join(config.GVCWorkDir, "g"))
+		}
 	}
 }
 
 func (that *Self) Install() {
-	// if runtime.GOOS == utils.Windows {
-	// 	that.env.HintsForWin(1)
-	// }
 	if ok, _ := utils.PathIsExist(config.GVCWorkDir); !ok {
 		os.MkdirAll(config.GVCWorkDir, os.ModePerm)
 	}
@@ -68,18 +68,16 @@ func (that *Self) Install() {
 		that.Conf.SetDefault()
 		that.Conf.Restore()
 	}
-	// init dirs and files
-	config.New()
 }
 
 func (that *Self) Uninstall() {
 	var r string
-	fmt.Println("Are you sure to delete gvc and the softwares it installed?[Y/N]")
+	fmt.Println(color.InYellow("Are you sure to delete gvc and the softwares it installed? [Y/N]"))
 	fmt.Scan(&r)
 	r = strings.TrimSpace(r)
 	if strings.ToLower(r) == "y" || strings.ToLower(r) == "yes" {
 		that.env.RemoveSubs()
-		fmt.Println("Restore your config files to webdav?[Y/N]")
+		fmt.Println(color.InYellow("Restore your config files to webdav? [Y/N]"))
 		fmt.Scan(&r)
 		r = strings.TrimSpace(r)
 		if strings.ToLower(r) == "y" || strings.ToLower(r) == "yes" || r == "" {
@@ -90,13 +88,12 @@ func (that *Self) Uninstall() {
 			os.RemoveAll(config.GVCWorkDir)
 		}
 	} else {
-		fmt.Println("Uninstall gvc aborted.")
+		fmt.Println(color.InGreen("Uninstall gvc has been aborted."))
 	}
 }
 
 func (that *Self) ShowInstallPath() {
-	fmt.Println("===================================")
-	fmt.Println("[gvc] is installed @", config.GVCWorkDir)
-	fmt.Println("[gvc] 安装目录: ", config.GVCWorkDir)
-	fmt.Println("===================================")
+	fmt.Println(color.InCyan("======================================================"))
+	fmt.Println("[gvc] is installed in dir: ", color.InGreen(config.GVCWorkDir))
+	fmt.Println(color.InCyan("======================================================"))
 }

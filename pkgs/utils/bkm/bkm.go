@@ -8,6 +8,7 @@ import (
 	"github.com/gogf/gf/encoding/gjson"
 )
 
+// TODO: netscape format
 type BookmarkTree struct {
 	Root             *BkmNode
 	OriginalFilePath string
