@@ -181,6 +181,10 @@ func (that *CppManager) RepairGitForVSCode() {
 	if ok, _ := utils.PathIsExist(vscodeSettingsPath); ok {
 		if vsContent, err := os.ReadFile(vscodeSettingsPath); err == nil {
 			strContent := strings.TrimSuffix(string(vsContent), "\n")
+			if strings.Contains(strContent, `"git.path"`) {
+				fmt.Println(`"git.path" already exists in: `, vscodeSettingsPath)
+				return
+			}
 			cList := strings.Split(strContent, "\n")
 			length := len(cList)
 			if strings.Contains(cList[length-1], "}") {
