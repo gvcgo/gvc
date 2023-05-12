@@ -31,7 +31,7 @@ var (
 	keeperBatPath  = filepath.Join(config.ProxyFilesDir, "keeper.bat")
 )
 
-// Start-Process -WindowStyle hidden -FilePath "运行的内容"
+// Start-Process -WindowStyle hidden -FilePath "executable path"
 func GenStarter() (starter *exec.Cmd) {
 	if runtime.GOOS == utils.Windows {
 		if ok, _ := utils.PathIsExist(starterBatPath); !ok {

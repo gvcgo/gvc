@@ -1,8 +1,10 @@
 package cmd
 
 import (
+	"runtime"
 	"strconv"
 
+	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
 	"github.com/moqsien/gvc/pkgs/vctrl"
 	"github.com/urfave/cli/v2"
@@ -57,30 +59,56 @@ func (that *Cmder) showinfo() {
 
 func (that *Cmder) vhost() {
 	command := &cli.Command{
-		Name:        "host",
-		Aliases:     []string{"h", "hosts"},
+		Name:        vctrl.HostsCmd,
+		Aliases:     []string{"h", "host"},
 		Usage:       "Sytem hosts file management(need admistrator or root).",
 		Subcommands: []*cli.Command{},
 	}
+
+	var previlege bool
 	fetch := &cli.Command{
-		Name:    "fetch",
+		Name:    vctrl.HostsFileFetchCmd,
 		Aliases: []string{"f"},
 		Usage:   "Fetch github hosts info.",
+		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name:        vctrl.HostsFlagName,
+				Aliases:     []string{"pre", "p"},
+				Usage:       "Use admin previlege for windows.",
+				Destination: &previlege,
+			},
+		},
 		Action: func(ctx *cli.Context) error {
 			h := vctrl.NewHosts()
-			h.Run(true)
+			if runtime.GOOS != utils.Windows || previlege {
+				h.Run(true)
+			} else {
+				h.WinRunAsAdmin(false)
+			}
 			return nil
 		},
 	}
 	command.Subcommands = append(command.Subcommands, fetch)
 
 	fetchall := &cli.Command{
-		Name:    "fetchall",
+		Name:    vctrl.HostsFileFetchAllCmd,
 		Aliases: []string{"fa"},
 		Usage:   "Get all github hosts info with no ping filters.",
+		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name:        vctrl.HostsFlagName,
+				Aliases:     []string{"pre", "p"},
+				Usage:       "Use admin previlege for windows.",
+				Destination: &previlege,
+			},
+		},
 		Action: func(ctx *cli.Context) error {
 			h := vctrl.NewHosts()
-			h.Run()
+			if runtime.GOOS != utils.Windows || previlege {
+				h.Run(false)
+			} else {
+				h.WinRunAsAdmin(true)
+			}
 			return nil
 		},
 	}

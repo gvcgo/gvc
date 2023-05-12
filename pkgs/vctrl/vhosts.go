@@ -239,16 +239,6 @@ func (that *Hosts) FormatAndSaveHosts(oldContent []byte) {
 		var err error
 		if runtime.GOOS == utils.Windows {
 			err = os.WriteFile(config.GetHostsFilePath(), []byte(newStr), 0666)
-			if err != nil && strings.Contains(err.Error(), "denied") {
-				fmt.Println("Open powershell with administrator previlege...")
-				cmd := exec.Command("powershell", "Start-Process", "-verb runas powershell")
-				cmd.Env = os.Environ()
-				cmd.Stderr = os.Stderr
-				cmd.Stdin = os.Stdin
-				cmd.Stdout = os.Stdout
-				cmd.Run()
-				return
-			}
 		} else {
 			err = os.WriteFile(config.TempHostsFilePath, []byte(newStr), 0666)
 			if err == nil {
@@ -312,6 +302,48 @@ func (that *Hosts) Run(toPing ...bool) {
 	time.Sleep(1 * time.Second)
 	fmt.Printf("Find available hosts: <%v/%v(raw)>", len(that.hList), len(that.rawList))
 	that.FormatAndSaveHosts(oldContent)
+}
+
+const (
+	HostsCmd             = "hosts"
+	HostsFileFetchCmd    = "fetch"
+	HostsFileFetchAllCmd = "fetchall"
+	HostsFlagName        = "previlege"
+)
+
+var (
+	HostsFetchBatPath    = filepath.Join(config.GVCWorkDir, "hosts.bat")
+	HostsFetchAllBatPath = filepath.Join(config.GVCWorkDir, "hosts-all.bat")
+)
+
+func (that *Hosts) WinRunAsAdmin(fetchAll bool) {
+	if ok, _ := utils.PathIsExist(HostsFetchBatPath); !ok {
+		exePath, _ := os.Executable()
+		content := fmt.Sprintf("%s %s %s --%s", exePath, HostsCmd, HostsFileFetchCmd, HostsFlagName)
+		os.WriteFile(HostsFetchBatPath, []byte(content), 0777)
+	}
+	if ok, _ := utils.PathIsExist(HostsFetchAllBatPath); !ok {
+		exePath, _ := os.Executable()
+		content := fmt.Sprintf("%s %s %s --%s", exePath, HostsCmd, HostsFileFetchAllCmd, HostsFlagName)
+		os.WriteFile(HostsFetchAllBatPath, []byte(content), 0777)
+	}
+	var cmd *exec.Cmd
+	if fetchAll {
+		cmd = exec.Command("powershell", "Start-Process", "-verb", "runas", HostsFetchAllBatPath)
+	} else {
+		cmd = exec.Command("powershell", "Start-Process", "-verb", "runas", HostsFetchBatPath)
+	}
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	if err := cmd.Run(); err != nil {
+		fmt.Println("[update hosts file failed] ", err)
+	} else {
+		os.RemoveAll(HostsFetchAllBatPath)
+		os.RemoveAll(HostsFetchBatPath)
+		return
+	}
+	fmt.Println("Succeeded!")
 }
 
 func (that *Hosts) ShowFilePath() {
