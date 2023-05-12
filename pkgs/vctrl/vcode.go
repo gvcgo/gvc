@@ -124,16 +124,26 @@ func (that *Code) download() (r string) {
 	} else {
 		fmt.Println("Cannot find package for ", key)
 	}
+
 	if ok, _ := utils.PathIsExist(config.CodeUntarFile); !ok {
-		if r != "" {
-			if err := archiver.Unarchive(r, config.CodeUntarFile); err != nil {
-				os.RemoveAll(config.CodeUntarFile)
-				fmt.Println("[Unarchive failed] ", err)
-				return
-			}
+		that.Unarchive(r)
+	} else {
+		if runtime.GOOS == utils.Windows || runtime.GOOS == utils.Linux {
+			os.RemoveAll(config.CodeUntarFile)
+			that.Unarchive(r)
 		}
 	}
 	return
+}
+
+func (that *Code) Unarchive(fPath string) {
+	if fPath != "" {
+		if err := archiver.Unarchive(fPath, config.CodeUntarFile); err != nil {
+			os.RemoveAll(config.CodeUntarFile)
+			fmt.Println("[Unarchive failed] ", err)
+			return
+		}
+	}
 }
 
 func (that *Code) InstallForWin() {
@@ -141,9 +151,11 @@ func (that *Code) InstallForWin() {
 	if codeDir, _ := os.ReadDir(config.CodeUntarFile); len(codeDir) > 0 {
 		for _, file := range codeDir {
 			if strings.Contains(file.Name(), ".exe") {
-				that.env.SetEnvForWin(map[string]string{
-					"PATH": config.CodeWinCmdBinaryDir,
-				})
+				if !strings.Contains(os.Getenv("PATH"), config.CodeWinCmdBinaryDir) {
+					that.env.SetEnvForWin(map[string]string{
+						"PATH": config.CodeWinCmdBinaryDir,
+					})
+				}
 				// Automatically create shortcut.
 				that.GenerateShortcut()
 				break
@@ -193,6 +205,7 @@ func (that *Code) InstallForLinux() {
 	}
 }
 
+// TODO: update
 func (that *Code) Install() {
 	switch runtime.GOOS {
 	case utils.Windows:
