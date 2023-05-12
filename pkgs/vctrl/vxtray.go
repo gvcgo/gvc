@@ -1,10 +1,14 @@
 package vctrl
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"runtime"
 
 	config "github.com/moqsien/gvc/pkgs/confs"
+	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/xtray/pkgs/conf"
 	"github.com/moqsien/xtray/pkgs/ctrl"
 )
@@ -23,9 +27,36 @@ const (
 )
 
 var (
-	Starter *exec.Cmd = exec.Command(cmdName, XtrayStarterCmd)
-	Keeper  *exec.Cmd = exec.Command(cmdName, XtrayKeeperCmd)
+	starterBatPath = filepath.Join(config.ProxyFilesDir, "starter.bat")
+	keeperBatPath  = filepath.Join(config.ProxyFilesDir, "keeper.bat")
 )
+
+// Start-Process -WindowStyle hidden -FilePath "运行的内容"
+func GenStarter() (starter *exec.Cmd) {
+	if runtime.GOOS == utils.Windows {
+		if ok, _ := utils.PathIsExist(starterBatPath); !ok {
+			content := fmt.Sprintf("%s %s", cmdName, XtrayStarterCmd)
+			os.WriteFile(starterBatPath, []byte(content), 0777)
+		}
+		starter = exec.Command("powershell", "Start-Process", "-WindowStyle", "hidden", "-FilePath", starterBatPath)
+	} else {
+		starter = exec.Command(cmdName, XtrayStarterCmd)
+	}
+	return
+}
+
+func GenKeeper() (keeper *exec.Cmd) {
+	if runtime.GOOS == utils.Windows {
+		if ok, _ := utils.PathIsExist(keeperBatPath); !ok {
+			content := fmt.Sprintf("%s %s", cmdName, XtrayKeeperCmd)
+			os.WriteFile(keeperBatPath, []byte(content), 0777)
+		}
+		keeper = exec.Command("powershell", "Start-Process", "-WindowStyle", "hidden", "-FilePath", keeperBatPath)
+	} else {
+		keeper = exec.Command(cmdName, XtrayKeeperCmd)
+	}
+	return
+}
 
 type XtrayExa struct {
 	GVConf *config.GVConfig // gvc configuration
@@ -57,8 +88,8 @@ func NewXtrayExa() *XtrayExa {
 	xe.Conf.StorageExportPath = xe.GVConf.Xtray.StorageExportPath
 
 	xe.Runner = ctrl.NewXRunner(xe.Conf)
-	xe.Runner.RegisterStarter(Starter)
-	xe.Runner.RegisterKeeper(Keeper)
+	xe.Runner.RegisterStarter(GenStarter())
+	xe.Runner.RegisterKeeper(GenKeeper())
 	xe.Keeper = ctrl.NewXKeeper(xe.Conf, xe.Runner)
 	return xe
 }
