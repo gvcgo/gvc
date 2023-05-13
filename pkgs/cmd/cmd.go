@@ -1319,6 +1319,20 @@ func (that *Cmder) vcpp() {
 	that.Commands = append(that.Commands, command)
 }
 
+func (that *Cmder) version() {
+	command := &cli.Command{
+		Name:    "version",
+		Aliases: []string{"ver", "vsi"},
+		Usage:   "Show gvc version info.",
+		Action: func(ctx *cli.Context) error {
+			v := vctrl.NewVersion()
+			v.Show()
+			return nil
+		},
+	}
+	that.Commands = append(that.Commands, command)
+}
+
 func (that *Cmder) initiate() {
 	that.vgo()
 	that.vpython()
@@ -1342,6 +1356,7 @@ func (that *Cmder) initiate() {
 	that.vgithub()
 
 	that.vconf()
+	that.version()
 	that.showinfo()
 	that.uninstall()
 }
