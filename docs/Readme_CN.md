@@ -77,7 +77,7 @@
 </td>
 
 <td>
-<img src="https://cn.julialang.org/assets/infra/logo_cn.png" class="fl">
+<img src="https://julialang.org/assets/infra/logo.svg" class="fl">
 </td>
 </tr>
 <tr>
