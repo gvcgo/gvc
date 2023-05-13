@@ -8,6 +8,8 @@ import (
 	"github.com/gogf/gf/encoding/gjson"
 )
 
+var toolbarFlag bool
+
 type BrowserType string
 
 const (
@@ -100,9 +102,9 @@ func (that *BkmNode) ParseFirefoxBkm(parentId int64, db *sql.DB) {
 		}
 		break
 	}
-	if that.Name == "toolbar" {
-		that.Type = "toolbar"
-	}
+	// if that.Name == "toolbar" {
+	// 	that.Type = "toolbar"
+	// }
 	rows.Close()
 
 	sql_ := fmt.Sprintf(FirefoxSQLChildren, parentId)
@@ -155,23 +157,28 @@ func (that *BkmNode) Html() string {
 		that.DateLastUsed = that.DateLastUsed[:10]
 	}
 	if that.Type == BFolder {
-		h3Str := fmt.Sprintf(H3,
-			that.DateAdded,
-			that.DateModified,
-			that.Name)
+		var h3Str string
+		if (that.Name == "toolbar" || that.Name == "收藏夹栏" || that.Name == "收藏夹") && !toolbarFlag {
+			h3Str = fmt.Sprintf(H3,
+				that.DateAdded,
+				that.DateModified,
+				TOOLBAR,
+				that.Name)
+			toolbarFlag = true
+		} else {
+			h3Str = fmt.Sprintf(H3,
+				that.DateAdded,
+				that.DateModified,
+				"",
+				that.Name)
+		}
+
 		dlStrList := []string{}
 		for _, node := range that.Children {
 			dlStrList = append(dlStrList, node.Html())
 		}
 		dlStr := strings.Join(dlStrList, "\n")
-		return strings.Join([]string{h3Str, dlStr, P}, "\n")
-	} else if that.Type == "toolbar" {
-		dlStrList := []string{}
-		for _, node := range that.Children {
-			dlStrList = append(dlStrList, node.Html())
-		}
-		dlStr := strings.Join(dlStrList, "\n")
-		return strings.Join([]string{dlStr, P}, "\n")
+		return fmt.Sprintf(Folder, h3Str, dlStr)
 	} else if that.Type == BUrl {
 		aStr := fmt.Sprintf(A,
 			that.Url,

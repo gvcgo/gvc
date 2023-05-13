@@ -8,6 +8,7 @@ import (
 
 	"github.com/TwiN/go-color"
 	config "github.com/moqsien/gvc/pkgs/confs"
+	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/bkm"
 	"github.com/moqsien/hackbrowser/browser"
 	"github.com/moqsien/hackbrowser/item"
@@ -53,6 +54,38 @@ func (that *Browser) getBrowser(browserName string) browser.Browser {
 	return browsers[0]
 }
 
+func (that *Browser) clearTempFiles() {
+	fPathList := []string{
+		item.TempChromiumKey,
+		item.TempChromiumPassword,
+		item.TempChromiumCookie,
+		item.TempChromiumBookmark,
+		item.TempChromiumHistory,
+		item.TempChromiumDownload,
+		item.TempChromiumCreditCard,
+		item.TempChromiumLocalStorage,
+		item.TempChromiumSessionStorage,
+		item.TempChromiumExtension,
+		item.TempYandexPassword,
+		item.TempYandexCreditCard,
+		item.TempFirefoxKey4,
+		item.TempFirefoxPassword,
+		item.TempFirefoxCookie,
+		item.TempFirefoxBookmark,
+		item.TempFirefoxHistory,
+		item.TempFirefoxDownload,
+		item.TempFirefoxLocalStorage,
+		item.TempFirefoxSessionStorage,
+		item.TempFirefoxCreditCard,
+		item.TempFirefoxExtension,
+	}
+	for _, f := range fPathList {
+		if ok, _ := utils.PathIsExist(f); ok && f != "" {
+			os.RemoveAll(f)
+		}
+	}
+}
+
 func (that *Browser) Save(browserName string, toPush bool) {
 	if !that.isBrowserSupported(browserName) {
 		fmt.Println(color.InRed("unsupported browser!"))
@@ -89,11 +122,11 @@ func (that *Browser) Save(browserName string, toPush bool) {
 	toSavePath := filepath.Join(config.GVCBackupDir, fmt.Sprintf("%s_bookmarks.html", browserName))
 	n := bkm.NewBkmTree(bType, copyPath, toSavePath)
 	n.SaveHtml()
-	os.RemoveAll(copyPath)
 	if toPush {
 		vconf := NewGVCWebdav()
 		vconf.Push()
 	}
+	that.clearTempFiles()
 }
 
 func (that *Browser) PullData() {
