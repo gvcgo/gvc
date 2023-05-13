@@ -98,6 +98,7 @@
 
 ---------
 
+![logo](https://github.com/moqsien/gvc/blob/main/docs/logo.png)
 ## 关于[gvc](https://github.com/moqsien/gvc)的一些美好的事情
 ---------
 GVC是一个全平台、多机器的一键管理多语言开发环境的辅助开发工具。
@@ -240,13 +241,15 @@ GVC是一个全平台、多机器的一键管理多语言开发环境的辅助�
 
 ## gvc具体功能展示
 ---------
-### gvc -h
+## gvc Help Info
+---------
+### gvc -h(use "g -h" for short)
 ```shell
 NAME:
-   g - gvc <Command> <SubCommand>...
+   gvc.exe - gvc <Command> <SubCommand>...
 
 USAGE:
-   g [global options] command [command options] [arguments...]
+   gvc.exe [global options] command [command options] [arguments...]
 
 DESCRIPTION:
    A productive tool to manage your development environment.
@@ -271,9 +274,10 @@ COMMANDS:
    xtray-keeper, xkeeper, xk      Start an xtray keeper. # 供xtray-shell使用，用户无需关心
    browser, br                    Browser data management.
    homebrew, brew, hb             Homebrew installation or update.
-   host, h, hosts                 Sytem hosts file management(need admistrator or root).
+   hosts, h, host                 Sytem hosts file management(need admistrator or root).
    github, gh                     Open github download acceleration websites.
    config, conf, cnf, c           Config file management for gvc.
+   version, vsi                   Show gvc version info.
    show, sho, sh                  Show [gvc] installation path and config file path.
    uninstall, unins, delete, del  [Caution] Delete gvc and softwares installed by gvc!
    help, h                        Shows a list of commands or help for one command
