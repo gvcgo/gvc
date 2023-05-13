@@ -301,3 +301,8 @@ GLOBAL OPTIONS:
 - [xtray](https://github.com/moqsien/xtray)
 - [free](https://github.com/moqsien/free)
 - [HackBrowserData](https://github.com/moonD4rk/HackBrowserData)
+- [cygwin](https://github.com/cygwin/cygwin)
+- [msys2](https://github.com/orgs/msys2/repositories)
+- [vcpkg-tool](https://github.com/microsoft/vcpkg-tool)
+- [gf](https://github.com/gogf/gf)
+- [cli](https://github.com/urfave/cli)
