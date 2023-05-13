@@ -102,9 +102,6 @@ func (that *BkmNode) ParseFirefoxBkm(parentId int64, db *sql.DB) {
 		}
 		break
 	}
-	// if that.Name == "toolbar" {
-	// 	that.Type = "toolbar"
-	// }
 	rows.Close()
 
 	sql_ := fmt.Sprintf(FirefoxSQLChildren, parentId)
@@ -126,7 +123,7 @@ func (that *BkmNode) ParseFirefoxBkm(parentId int64, db *sql.DB) {
 			continue
 		}
 
-		if that.Type == BFolder || that.Type == "toolbar" {
+		if that.Type == BFolder {
 			child := &BkmNode{BType: Firefox}
 			child.ParseFirefoxBkm(id, db)
 			that.Children = append(that.Children, child)
