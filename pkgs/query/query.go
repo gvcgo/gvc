@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/fs"
 	"net"
 	"net/http"
 	"net/url"
@@ -64,7 +63,7 @@ func (that *Fetcher) parseProxy() (scheme, host string, port int) {
 }
 
 func (that *Fetcher) setProxy() {
-	if that.client != nil || that.Proxy != "" {
+	if that.client != nil && that.Proxy != "" {
 		scheme, host, port := that.parseProxy()
 		switch scheme {
 		case "http", "https":
@@ -115,22 +114,22 @@ func (that *Fetcher) setMisc() {
 	if that.RetryTimes > 0 {
 		that.client = that.client.SetRetryCount(that.RetryTimes)
 	}
+	if that.NoRedirect {
+		that.client = that.client.SetRedirectPolicy(resty.NoRedirectPolicy())
+	}
 }
 
-func (that *Fetcher) Get() (r []byte) {
+func (that *Fetcher) Get() (r *resty.Response) {
 	if that.client == nil {
 		fmt.Println("client is nil.")
 		return
 	} else {
 		that.setMisc()
 	}
-	if resp, err := that.client.R().Get(that.Url); err != nil {
+	if resp, err := that.client.R().SetDoNotParseResponse(true).Get(that.Url); err != nil {
 		fmt.Println(err)
 	} else {
-		r = resp.Body()
-		if body := resp.RawBody(); body != nil {
-			defer body.Close()
-		}
+		r = resp
 	}
 	return
 }
@@ -143,7 +142,7 @@ func (that *Fetcher) parseFilename(fPath string) (fName string) {
 	return fmt.Sprintf("<%s>", fName)
 }
 
-func (that *Fetcher) GetAndSaveFile(fPath string, flag int, perm fs.FileMode, force ...bool) (size int64) {
+func (that *Fetcher) GetAndSaveFile(fPath string, force ...bool) (size int64) {
 	if that.client == nil {
 		fmt.Println("client is nil.")
 		return
@@ -158,48 +157,56 @@ func (that *Fetcher) GetAndSaveFile(fPath string, flag int, perm fs.FileMode, fo
 		fmt.Println("[Downloader] File already exists.")
 		return 100
 	}
-	if resp, err := that.client.R().Get(that.Url); err != nil {
-		fmt.Println(err)
-		return
-	} else {
-		if r := resp.RawBody(); r != nil {
-			defer r.Close()
-			f, err := os.OpenFile(fPath, flag, perm)
-			if err != nil {
-				fmt.Println("[open file failed] ", err)
-				return
-			}
-			defer f.Close()
-			var dst io.Writer
-			bar := progressbar.NewOptions64(
-				resp.RawResponse.ContentLength,
-				progressbar.OptionEnableColorCodes(true),
-				progressbar.OptionSetTheme(progressbar.Theme{
-					Saucer:        color.InGreen("="),
-					SaucerHead:    color.InGreen(">"),
-					SaucerPadding: " ",
-					BarStart:      color.InGreen("["),
-					BarEnd:        color.InGreen("]"),
-				}),
-				progressbar.OptionSetWidth(15),
-				progressbar.OptionSetDescription(fmt.Sprintf("Downloading %s", color.InYellow(that.parseFilename(fPath)))),
-				progressbar.OptionSetWriter(ansi.NewAnsiStdout()),
-				progressbar.OptionShowBytes(true),
-				progressbar.OptionThrottle(65*time.Millisecond),
-				progressbar.OptionShowCount(),
-				progressbar.OptionOnCompletion(func() {
-					_, _ = fmt.Fprint(ansi.NewAnsiStdout(), "\n")
-				}),
-			)
-			_ = bar.RenderBlank()
-			dst = io.MultiWriter(f, bar)
-			size, _ = io.Copy(dst, r)
+	if forceToDownload {
+		os.RemoveAll(fPath)
+	}
+	if res, err := that.client.R().SetDoNotParseResponse(true).Get(that.Url); err == nil {
+		outFile, err := os.Create(fPath)
+		if err != nil {
+			fmt.Println("Cannot open file", err)
+			return
 		}
+		defer utils.Closeq(outFile)
+
+		defer utils.Closeq(res.RawResponse.Body)
+		var dst io.Writer
+		bar := progressbar.NewOptions64(
+			res.RawResponse.ContentLength,
+			progressbar.OptionEnableColorCodes(true),
+			progressbar.OptionSetTheme(progressbar.Theme{
+				Saucer:        color.InGreen("="),
+				SaucerHead:    color.InGreen(">"),
+				SaucerPadding: " ",
+				BarStart:      color.InGreen("["),
+				BarEnd:        color.InGreen("]"),
+			}),
+			progressbar.OptionSetWidth(15),
+			progressbar.OptionSetDescription(fmt.Sprintf("Downloading %s", color.InYellow(that.parseFilename(fPath)))),
+			progressbar.OptionSetWriter(ansi.NewAnsiStdout()),
+			progressbar.OptionShowBytes(true),
+			progressbar.OptionThrottle(65*time.Millisecond),
+			progressbar.OptionShowCount(),
+			progressbar.OptionOnCompletion(func() {
+				_, _ = fmt.Fprint(ansi.NewAnsiStdout(), "\n")
+			}),
+		)
+		_ = bar.RenderBlank()
+		dst = io.MultiWriter(outFile, bar)
+
+		// io.Copy reads maximum 32kb size, it is perfect for large file download too
+		written, err := io.Copy(dst, res.RawResponse.Body)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		size = written
+	} else {
+		fmt.Println(err)
 	}
 	return
 }
 
-func (that *Fetcher) Post() (r []byte) {
+func (that *Fetcher) Post() (r *resty.Response) {
 	if that.client == nil {
 		fmt.Println("client is nil.")
 		return
@@ -210,10 +217,7 @@ func (that *Fetcher) Post() (r []byte) {
 		fmt.Println(err)
 		return
 	} else {
-		r = resp.Body()
-		if body := resp.RawBody(); body != nil {
-			defer body.Close()
-		}
+		r = resp
 	}
 	return
 }

@@ -29,8 +29,8 @@ func main() {
 		// browser.Save("firefox", true)
 		// cpp := vctrl.NewCppManager()
 		// cpp.InstallVCPkg()
-		jdk := vctrl.NewJDKVersion()
-		jdk.ShowVersions()
+		jdk := vctrl.NewHosts()
+		jdk.Run(false)
 		// p := "a/b/c/d/e.zip"
 		// fmt.Println(strings.ReplaceAll(p, filepath.Dir(p), ""))
 	} else if len(os.Args) < 2 {

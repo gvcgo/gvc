@@ -401,47 +401,46 @@ func (that *Cmder) vjava() {
 		Subcommands: []*cli.Command{},
 	}
 
-	var useInjdk bool
+	var zhcn bool
 	vuse := &cli.Command{
 		Name:    "use",
 		Aliases: []string{"u"},
-		Usage:   "Download and use jdk.",
+		Usage:   "Download and use jdk. <Command> {gvc jdk use [-z] xxx}",
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
-				Name:        "cn",
-				Aliases:     []string{"zh", "z"},
+				Name:        "zh",
+				Aliases:     []string{"z", "cn"},
 				Usage:       "Use injdk.cn as resource url.",
-				Destination: &useInjdk,
+				Destination: &zhcn,
 			},
 		},
 		Action: func(ctx *cli.Context) error {
 			version := ctx.Args().First()
 			if version != "" {
 				gv := vctrl.NewJDKVersion()
-				gv.IsOfficial = !useInjdk
-				gv.UseVersion(version)
+				gv.UseVersion(version, !zhcn)
 			}
 			return nil
 		},
 	}
 	command.Subcommands = append(command.Subcommands, vuse)
 
+	var cncn bool
 	vshow := &cli.Command{
 		Name:    "remote",
 		Aliases: []string{"r"},
-		Usage:   "Show available versions.",
+		Usage:   "Show available versions.  <Command> {gvc jdk remote [-z]}",
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
-				Name:        "cn",
-				Aliases:     []string{"zh", "z"},
+				Name:        "zh",
+				Aliases:     []string{"z", "cn"},
 				Usage:       "Use injdk.cn as resource url.",
-				Destination: &useInjdk,
+				Destination: &cncn,
 			},
 		},
 		Action: func(ctx *cli.Context) error {
 			gv := vctrl.NewJDKVersion()
-			gv.IsOfficial = !useInjdk
-			gv.ShowVersions()
+			gv.ShowVersions(!cncn)
 			return nil
 		},
 	}

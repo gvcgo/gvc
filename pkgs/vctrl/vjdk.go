@@ -1,7 +1,6 @@
 package vctrl
 
 import (
-	"bytes"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -10,10 +9,10 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/gookit/color"
+	color "github.com/TwiN/go-color"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
-	downloader "github.com/moqsien/gvc/pkgs/fetcher"
+	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
 )
@@ -35,38 +34,23 @@ type JDKPackage struct {
 }
 
 type JDKVersion struct {
-	IsOfficial bool
-	Versions   map[string][]*JDKPackage
-	Doc        *goquery.Document
-	Conf       *config.GVConfig
-	d          *downloader.Downloader
-	dir        string
-	env        *utils.EnvsHandler
+	Versions map[string][]*JDKPackage
+	Doc      *goquery.Document
+	Conf     *config.GVConfig
+	fetcher  *query.Fetcher
+	dir      string
+	env      *utils.EnvsHandler
 }
 
 func NewJDKVersion() (jv *JDKVersion) {
 	jv = &JDKVersion{
 		Versions: make(map[string][]*JDKPackage, 100),
 		Conf:     config.New(),
-		d:        &downloader.Downloader{},
+		fetcher:  query.NewFetcher(),
 		env:      utils.NewEnvsHandler(),
 	}
 	jv.initeDirs()
 	return
-}
-
-func (that *JDKVersion) ChooseResource() {
-	fmt.Println("Choose a JDK download resource: ")
-	fmt.Println("1) From oracle.com (Only latest versions are available.)")
-	fmt.Println("2) From injdk.cn (Old version are available.)")
-	choice := "1"
-	fmt.Scan(&choice)
-	switch choice {
-	case "1":
-		that.IsOfficial = true
-	default:
-		that.IsOfficial = false
-	}
 }
 
 func (that *JDKVersion) initeDirs() {
@@ -88,23 +72,28 @@ func (that *JDKVersion) initeDirs() {
 	}
 }
 
-func (that *JDKVersion) getDoc() {
+func (that *JDKVersion) getDoc(isOfficial bool) {
 	jUrl := that.Conf.Java.JDKUrl
-	if that.IsOfficial {
+	if isOfficial {
 		jUrl = that.Conf.Java.CompilerUrl
 	}
 	if !utils.VerifyUrls(jUrl) {
 		return
 	}
-	that.d.Url = jUrl
-	resp := that.d.GetWithColly()
-	that.Doc, _ = goquery.NewDocumentFromReader(bytes.NewBuffer(resp))
+	that.fetcher.Url = jUrl
+	if resp := that.fetcher.Get(); resp != nil {
+		that.Doc, _ = goquery.NewDocumentFromReader(resp.RawBody())
+	}
+	if that.Doc == nil {
+		panic(fmt.Sprintf("Cannot parse html for %s", that.fetcher.Url))
+	}
 }
 
 func (that *JDKVersion) GetSha(sUrl string) (res string) {
-	if that.IsOfficial {
-		that.d.Url = sUrl
-		res = string(that.d.GetWithColly())
+	that.fetcher.Url = sUrl
+	resp := that.fetcher.Get()
+	if resp != nil {
+		res = string(resp.Body())
 	}
 	return
 }
@@ -118,11 +107,11 @@ func (that *JDKVersion) GetFileSuffix(fName string) string {
 	return ""
 }
 
-func (that *JDKVersion) GetVersions() {
+func (that *JDKVersion) GetVersions(isOfficial bool) {
 	if that.Doc == nil {
-		that.getDoc()
+		that.getDoc(isOfficial)
 	}
-	if that.IsOfficial {
+	if isOfficial {
 		that.Doc.Find("ul.rw-inpagetabs").First().Find("li").Each(func(i int, s *goquery.Selection) {
 			v, _ := s.Find("a").Attr("href")
 			sList := strings.Split(v, "java")
@@ -223,14 +212,14 @@ func (that *JDKVersion) GetVersions() {
 	}
 }
 
-func (that *JDKVersion) ShowVersions() {
-	that.GetVersions()
+func (that *JDKVersion) ShowVersions(isOfficial bool) {
+	that.GetVersions(isOfficial)
 	vList := []string{}
 	for k := range that.Versions {
 		vList = append(vList, k)
 	}
 	vList = sorts.SortJDKVersion(vList)
-	fmt.Println(strings.Join(vList, " "))
+	fmt.Println(color.InGreen(strings.Join(vList, " ")))
 }
 
 func (that *JDKVersion) findVersion(version string) (p *JDKPackage) {
@@ -251,14 +240,14 @@ func (that *JDKVersion) findVersion(version string) (p *JDKPackage) {
 	return
 }
 
-func (that *JDKVersion) download(version string) (r string) {
-	that.GetVersions()
+func (that *JDKVersion) download(version string, isOfficial bool) (r string) {
+	that.GetVersions(isOfficial)
 
 	if p := that.findVersion(version); p != nil {
-		that.d.Url = p.Url
-		that.d.Timeout = 100 * time.Minute
+		that.fetcher.Url = p.Url
+		that.fetcher.Timeout = 100 * time.Minute
 		fpath := filepath.Join(config.JavaTarFilesPath, p.FileName)
-		if size := that.d.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
+		if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 			if p.Checksum != "" {
 				if ok := utils.CheckFile(fpath, "sha256", p.Checksum); ok {
 					return fpath
@@ -272,7 +261,9 @@ func (that *JDKVersion) download(version string) (r string) {
 			os.RemoveAll(fpath)
 		}
 	} else {
-		fmt.Println("Invalid jdk version. ", version)
+		fmt.Println(color.InRed("Invalid jdk version: "), color.InYellow(version))
+		fmt.Println(color.InCyan("Versions available: "))
+		that.ShowVersions(isOfficial)
 	}
 	return
 }
@@ -305,13 +296,13 @@ func (that *JDKVersion) findDir(untarfile string) {
 	}
 }
 
-func (that *JDKVersion) UseVersion(version string) {
+func (that *JDKVersion) UseVersion(version string, isOfficial bool) {
 	untarfile := filepath.Join(config.JavaUnTarFilesPath, version)
 	if ok, _ := utils.PathIsExist(untarfile); !ok {
-		if tarfile := that.download(version); tarfile != "" {
+		if tarfile := that.download(version, isOfficial); tarfile != "" {
 			if err := archiver.Unarchive(tarfile, untarfile); err != nil {
 				os.RemoveAll(untarfile)
-				fmt.Println("[Unarchive failed] ", err)
+				fmt.Println(color.InRed("[Unarchive failed] "), err)
 				return
 			}
 		}
@@ -321,18 +312,18 @@ func (that *JDKVersion) UseVersion(version string) {
 	}
 	that.findDir(untarfile)
 	if that.dir == "" {
-		fmt.Println("[Can not find binaries] ", untarfile)
+		fmt.Println(color.InRed("[Can not find binaries] "), untarfile)
 		return
 	}
 
 	if err := utils.MkSymLink(that.dir, config.DefaultJavaRoot); err != nil {
-		fmt.Println("[Create link failed] ", err)
+		fmt.Println(color.InRed("[Create link failed] "), err)
 		return
 	}
 	if !that.env.DoesEnvExist(utils.SUB_JDK) {
 		that.CheckAndInitEnv()
 	}
-	fmt.Println("Use", version, "succeeded!")
+	fmt.Println(color.InGreen(fmt.Sprintf("Use %s succeeded!", version)))
 }
 
 func (that *JDKVersion) getCurrent() (version string) {
@@ -348,6 +339,7 @@ func (that *JDKVersion) getCurrent() (version string) {
 			version = fmt.Sprintf("jdk%s", version)
 		}
 	}
+	version = strings.TrimSpace(version)
 	return
 }
 
@@ -358,12 +350,11 @@ func (that *JDKVersion) ShowInstalled() {
 		if !strings.Contains(d.Name(), "jdk") {
 			continue
 		}
-		if current == d.Name() {
-			s := fmt.Sprintf("%s <Current>", d.Name())
-			color.Yellow.Println(s)
-			continue
+		if current == strings.TrimSpace(d.Name()) {
+			fmt.Println(color.InYellow(fmt.Sprintf("%s <Current>", d.Name())))
+		} else {
+			fmt.Println(color.InCyan(d.Name()))
 		}
-		color.Cyan.Println(d.Name())
 	}
 }
 

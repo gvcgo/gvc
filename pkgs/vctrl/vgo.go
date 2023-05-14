@@ -1,7 +1,6 @@
 package vctrl
 
 import (
-	"bytes"
 	"fmt"
 	"net/url"
 	"os"
@@ -12,11 +11,11 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	color "github.com/TwiN/go-color"
 	"github.com/aquasecurity/table"
-	"github.com/gookit/color"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
-	downloader "github.com/moqsien/gvc/pkgs/fetcher"
+	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
 )
@@ -34,20 +33,20 @@ type GoPackage struct {
 }
 
 type GoVersion struct {
-	*downloader.Downloader
 	Versions  map[string][]*GoPackage
 	Doc       *goquery.Document
 	Conf      *config.GVConfig
 	ParsedUrl *url.URL
 	env       *utils.EnvsHandler
+	fetcher   *query.Fetcher
 }
 
 func NewGoVersion() (gv *GoVersion) {
 	gv = &GoVersion{
-		Versions:   make(map[string][]*GoPackage, 50),
-		Conf:       config.New(),
-		Downloader: &downloader.Downloader{},
-		env:        utils.NewEnvsHandler(),
+		Versions: make(map[string][]*GoPackage, 50),
+		Conf:     config.New(),
+		env:      utils.NewEnvsHandler(),
+		fetcher:  query.NewFetcher(),
 	}
 	gv.initeDirs()
 	return
@@ -73,21 +72,21 @@ func (that *GoVersion) initeDirs() {
 
 func (that *GoVersion) getDoc() {
 	if len(that.Conf.Go.CompilerUrls) > 0 {
-		that.Url = that.Conf.Go.CompilerUrls[0]
+		that.fetcher.Url = that.Conf.Go.CompilerUrls[0]
 		var err error
-		if that.ParsedUrl, err = url.Parse(that.Url); err != nil {
+		if that.ParsedUrl, err = url.Parse(that.fetcher.Url); err != nil {
 			panic(err)
 		}
-		that.Timeout = 30 * time.Second
-		if resp := that.GetUrl(); resp != nil {
+		that.fetcher.Timeout = 30 * time.Second
+		if resp := that.fetcher.Get(); resp != nil {
 			var err error
-			that.Doc, err = goquery.NewDocumentFromReader(resp.Body)
+			that.Doc, err = goquery.NewDocumentFromReader(resp.RawBody())
 			if err != nil {
 				fmt.Println("[parse page errored] ", err)
 			}
-			c := []byte{}
-			resp.Body.Read(c)
-			resp.Body.Close()
+			if that.Doc == nil {
+				panic(fmt.Sprintf("Cannot parse html for %s", that.fetcher.Url))
+			}
 		}
 	}
 }
@@ -254,12 +253,12 @@ func (that *GoVersion) download(version string) (r string) {
 	if p != nil {
 		fName := fmt.Sprintf("go-%s-%s.%s%s", version, p.OS, p.Arch, utils.GetExt(p.FileName))
 		fpath := filepath.Join(config.GoTarFilesPath, fName)
-		that.Url = p.AliUrl
-		if that.Url == "" {
-			that.Url = p.Url
+		that.fetcher.Url = p.AliUrl
+		if that.fetcher.Url == "" {
+			that.fetcher.Url = p.Url
 		}
-		that.Timeout = 180 * time.Second
-		if size := that.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
+		that.fetcher.Timeout = 180 * time.Second
+		if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 			if ok := that.checkFile(p, fpath); ok {
 				return fpath
 			} else {
@@ -352,17 +351,16 @@ func (that *GoVersion) ShowInstalled() {
 	current := that.getCurrent()
 	installedList, err := os.ReadDir(config.GoUnTarFilesPath)
 	if err != nil {
-		fmt.Println("[Read dir failed] ", err)
+		fmt.Println(color.InRed("[Read dir failed] "), err)
 		return
 	}
 	for _, v := range installedList {
 		if v.IsDir() {
 			if current == v.Name() {
-				s := fmt.Sprintf("%s <Current>", v.Name())
-				color.Yellow.Println(s)
+				fmt.Println(color.InYellow(fmt.Sprintf("%s <Current>", v.Name())))
 				continue
 			}
-			color.Cyan.Println(v.Name())
+			fmt.Println(color.InCyan(v.Name()))
 		}
 	}
 }
@@ -376,7 +374,7 @@ func (that *GoVersion) RemoveUnused() {
 	current := that.getCurrent()
 	installedList, err := os.ReadDir(config.GoUnTarFilesPath)
 	if err != nil {
-		fmt.Println("[Read dir failed] ", err)
+		fmt.Println(color.InRed("[Read dir failed] "), err)
 		return
 	}
 	tarFiles, _ := os.ReadDir(config.GoTarFilesPath)
@@ -408,8 +406,9 @@ func (that *GoVersion) RemoveVersion(version string) {
 
 // search libraries
 func (that *GoVersion) SearchLibs(name string, sortby int) {
-	that.Url = fmt.Sprintf(that.Conf.Go.SearchUrl, name)
-	that.Doc, _ = goquery.NewDocumentFromReader(bytes.NewBuffer(that.GetWithColly()))
+	that.fetcher.Url = fmt.Sprintf(that.Conf.Go.SearchUrl, name)
+	resp := that.fetcher.Get()
+	that.Doc, _ = goquery.NewDocumentFromReader(resp.RawBody())
 	itemList := make([]sorts.Item, 0)
 	that.Doc.Find(".SearchSnippet").Each(func(i int, s *goquery.Selection) {
 		item := &sorts.GoLibrary{}

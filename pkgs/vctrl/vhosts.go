@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -14,8 +13,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/TwiN/go-color"
+	"github.com/go-resty/resty/v2"
 	config "github.com/moqsien/gvc/pkgs/confs"
-	downloader "github.com/moqsien/gvc/pkgs/fetcher"
+	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/panjf2000/ants/v2"
 	ping "github.com/prometheus-community/pro-bing"
@@ -52,7 +53,7 @@ type Hosts struct {
 	wg       sync.WaitGroup
 	pool     *ants.PoolWithFunc
 	bar      *progressbar.ProgressBar
-	*downloader.Downloader
+	fetcher  *query.Fetcher
 }
 
 func NewHosts() *Hosts {
@@ -60,15 +61,15 @@ func NewHosts() *Hosts {
 	lineReg := `((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}`
 	hostsReg := fmt.Sprintf(`%s[\s\S]*%s`, HEAD, TAIL)
 	return &Hosts{
-		Conf:       conf,
-		filePath:   config.GetHostsFilePath(),
-		rawList:    make(map[string]string, 200),
-		hList:      make(hostList, 200),
-		lineReg:    regexp.MustCompile(lineReg),
-		hostReg:    regexp.MustCompile(hostsReg),
-		lock:       &sync.Mutex{},
-		wg:         sync.WaitGroup{},
-		Downloader: &downloader.Downloader{},
+		Conf:     conf,
+		filePath: config.GetHostsFilePath(),
+		rawList:  make(map[string]string, 200),
+		hList:    make(hostList, 200),
+		lineReg:  regexp.MustCompile(lineReg),
+		hostReg:  regexp.MustCompile(hostsReg),
+		lock:     &sync.Mutex{},
+		wg:       sync.WaitGroup{},
+		fetcher:  query.NewFetcher(),
 	}
 }
 
@@ -96,15 +97,15 @@ func (that *Hosts) ParseHosts(content []byte) {
 }
 
 func (that *Hosts) GetHosts() {
-	resps := make(chan *http.Response, 10)
-	that.Timeout = time.Duration(that.Conf.Hosts.ReqTimeout) * time.Second
+	resps := make(chan *resty.Response, 10)
+	that.fetcher.Timeout = time.Duration(that.Conf.Hosts.ReqTimeout) * time.Second
 	for _, url := range that.Conf.Hosts.SourceUrls {
 		that.wg.Add(1)
 		var url_ string = url
 		go func() {
 			defer that.wg.Done()
-			that.Url = url_
-			resp := that.GetUrl()
+			that.fetcher.Url = url_
+			resp := that.fetcher.Get()
 			resps <- resp
 		}()
 	}
@@ -112,10 +113,10 @@ func (that *Hosts) GetHosts() {
 	close(resps)
 	for r := range resps {
 		if r != nil {
-			content, err := io.ReadAll(r.Body)
-			r.Body.Close()
+			content, err := io.ReadAll(r.RawBody())
+			r.RawBody().Close()
 			if err != nil {
-				fmt.Println("[Read Body Errored] ", err)
+				fmt.Println(color.InRed("[Read Body Errored] "), err)
 				return
 			}
 			that.ParseHosts(content)
@@ -151,7 +152,7 @@ func (that *Hosts) pingHosts(args interface{}) {
 	}
 	pinger, err := ping.NewPinger(ip)
 	if err != nil {
-		fmt.Println("Ping hosts errored: ", err)
+		fmt.Println(color.InRed("Ping hosts errored: "), err)
 		return
 	}
 	pinger.Count = that.Conf.Hosts.PingCount
@@ -200,7 +201,7 @@ func (that *Hosts) ReadAndBackupHosts(hPath, hBackupPath string) (content []byte
 		err = utils.CopyFileOnUnixSudo(hPath, hBackupPath)
 	}
 	if err != nil {
-		fmt.Println("Hosts file backup failed: ", err)
+		fmt.Println(color.InRed("Hosts file backup failed: "), err)
 		return
 	}
 	return
@@ -246,10 +247,10 @@ func (that *Hosts) FormatAndSaveHosts(oldContent []byte) {
 			}
 		}
 		if err != nil {
-			fmt.Println("Write file errored: ", err)
+			fmt.Println(color.InRed("Write file errored: "), err)
 			return
 		}
-		fmt.Println("Succeeded!")
+		fmt.Println(color.InGreen("Succeeded!"))
 	}
 }
 
@@ -295,7 +296,7 @@ func (that *Hosts) Run(toPing ...bool) {
 			URL: v,
 		})
 		if err != nil {
-			fmt.Println("[Invoke task failed] ", err)
+			fmt.Println(color.InRed("[Invoke task failed] "), err)
 		}
 	}
 	that.wg.Wait()
@@ -317,6 +318,7 @@ var (
 )
 
 func (that *Hosts) WinRunAsAdmin(fetchAll bool) {
+	// TODO: invalid
 	if ok, _ := utils.PathIsExist(HostsFetchBatPath); !ok {
 		exePath, _ := os.Executable()
 		content := fmt.Sprintf("%s %s %s --%s", exePath, HostsCmd, HostsFileFetchCmd, HostsFlagName)
@@ -337,15 +339,15 @@ func (that *Hosts) WinRunAsAdmin(fetchAll bool) {
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	if err := cmd.Run(); err != nil {
-		fmt.Println("[update hosts file failed] ", err)
+		fmt.Println(color.InRed("[update hosts file failed] "), err)
 	} else {
 		os.RemoveAll(HostsFetchAllBatPath)
 		os.RemoveAll(HostsFetchBatPath)
 		return
 	}
-	fmt.Println("Succeeded!")
+	fmt.Println(color.InGreen("Succeeded!"))
 }
 
 func (that *Hosts) ShowFilePath() {
-	fmt.Println("HostsFile: ", config.GetHostsFilePath())
+	fmt.Println(color.InGreen(fmt.Sprintf("HostsFile: %s", config.GetHostsFilePath())))
 }
