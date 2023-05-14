@@ -1,14 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"os"
-	"runtime"
 	"strings"
 
 	"github.com/moqsien/gvc/pkgs/cmd"
 	"github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/vctrl"
 )
 
@@ -32,8 +29,8 @@ func main() {
 		// browser.Save("firefox", true)
 		// cpp := vctrl.NewCppManager()
 		// cpp.InstallVCPkg()
-		fmt.Println(runtime.GOARCH)
-		fmt.Println(utils.GetWinAppdataEnv())
+		jdk := vctrl.NewJDKVersion()
+		jdk.ShowVersions()
 		// p := "a/b/c/d/e.zip"
 		// fmt.Println(strings.ReplaceAll(p, filepath.Dir(p), ""))
 	} else if len(os.Args) < 2 {

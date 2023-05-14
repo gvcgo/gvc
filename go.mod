@@ -8,6 +8,7 @@ require (
 	github.com/TwiN/go-color v1.4.0
 	github.com/aquasecurity/table v1.8.0
 	github.com/gin-gonic/gin v1.9.0
+	github.com/go-resty/resty/v2 v2.7.0
 	github.com/gocolly/colly/v2 v2.1.0
 	github.com/gogf/gf v1.16.9
 	github.com/gookit/color v1.5.2
