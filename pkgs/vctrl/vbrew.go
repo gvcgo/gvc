@@ -8,21 +8,21 @@ import (
 	"runtime"
 
 	config "github.com/moqsien/gvc/pkgs/confs"
-	downloader "github.com/moqsien/gvc/pkgs/fetcher"
+	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 )
 
 type Homebrew struct {
-	Conf *config.GVConfig
-	*downloader.Downloader
-	envs *utils.EnvsHandler
+	Conf    *config.GVConfig
+	envs    *utils.EnvsHandler
+	fetcher *query.Fetcher
 }
 
 func NewHomebrew() (hb *Homebrew) {
 	hb = &Homebrew{
-		Conf:       config.New(),
-		Downloader: &downloader.Downloader{},
-		envs:       utils.NewEnvsHandler(),
+		Conf:    config.New(),
+		fetcher: query.NewFetcher(),
+		envs:    utils.NewEnvsHandler(),
 	}
 	return
 }
@@ -30,8 +30,8 @@ func NewHomebrew() (hb *Homebrew) {
 func (that *Homebrew) getShellScript() string {
 	fPath := filepath.Join(config.HomebrewFileDir, "homebrew.sh")
 	if ok, _ := utils.PathIsExist(fPath); !ok {
-		that.Url = that.Conf.Homebrew.ShellScriptUrl
-		if size := that.GetFile(fPath, os.O_CREATE|os.O_WRONLY, 0777); size > 0 {
+		that.fetcher.Url = that.Conf.Homebrew.ShellScriptUrl
+		if size := that.fetcher.GetAndSaveFile(fPath); size > 0 {
 			return fPath
 		}
 		return ""

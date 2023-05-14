@@ -1,7 +1,6 @@
 package vctrl
 
 import (
-	"bytes"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -10,10 +9,10 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/gookit/color"
+	color "github.com/TwiN/go-color"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
-	downloader "github.com/moqsien/gvc/pkgs/fetcher"
+	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
 )
@@ -30,7 +29,7 @@ type GradleVersion struct {
 	sha      map[string]string
 	Doc      *goquery.Document
 	Conf     *config.GVConfig
-	d        *downloader.Downloader
+	fetcher  *query.Fetcher
 	env      *utils.EnvsHandler
 }
 
@@ -39,7 +38,7 @@ func NewGradleVersion() (gv *GradleVersion) {
 		Versions: make(map[string]*GradlePackage, 100),
 		sha:      make(map[string]string, 100),
 		Conf:     config.New(),
-		d:        &downloader.Downloader{},
+		fetcher:  query.NewFetcher(),
 		env:      utils.NewEnvsHandler(),
 	}
 	gv.initeDirs()
@@ -50,22 +49,22 @@ func (that *GradleVersion) initeDirs() {
 	if ok, _ := utils.PathIsExist(config.GradleRoot); !ok {
 		os.RemoveAll(config.GradleRoot)
 		if err := os.MkdirAll(config.GradleRoot, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			fmt.Println(color.InRed("[mkdir Failed] "), err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.GradleTarFilePath); !ok {
 		if err := os.MkdirAll(config.GradleTarFilePath, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			fmt.Println(color.InRed("[mkdir Failed] "), err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.GradleUntarFilePath); !ok {
 		if err := os.MkdirAll(config.GradleUntarFilePath, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			fmt.Println(color.InRed("[mkdir Failed] "), err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.GradleInitFilePath); !ok {
 		if err := os.MkdirAll(config.GradleInitFilePath, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			fmt.Println(color.InRed("[mkdir Failed] "), err)
 		}
 	}
 }
@@ -75,8 +74,13 @@ func (that *GradleVersion) getDoc() {
 	if !utils.VerifyUrls(gUrl) {
 		return
 	}
-	that.d.Url = gUrl
-	that.Doc, _ = goquery.NewDocumentFromReader(bytes.NewReader(that.d.GetWithColly()))
+	that.fetcher.Url = gUrl
+	if resp := that.fetcher.Get(); resp != nil {
+		that.Doc, _ = goquery.NewDocumentFromReader(resp.RawBody())
+	}
+	if that.Doc == nil {
+		panic(fmt.Sprintf("Cannot parse html for %s", that.fetcher.Url))
+	}
 }
 
 func (that *GradleVersion) getSha() {
@@ -85,8 +89,10 @@ func (that *GradleVersion) getSha() {
 		return
 	}
 	that.Doc = nil
-	that.d.Url = cUrl
-	that.Doc, _ = goquery.NewDocumentFromReader(bytes.NewReader(that.d.GetWithColly()))
+	that.fetcher.Url = cUrl
+	if resp := that.fetcher.Get(); resp != nil {
+		that.Doc, _ = goquery.NewDocumentFromReader(resp.RawBody())
+	}
 	if that.Doc != nil {
 		that.Doc.Find("h3.u-text-with-icon").Each(func(i int, s *goquery.Selection) {
 			version := s.Find("a").AttrOr("id", "")
@@ -149,10 +155,10 @@ func (that *GradleVersion) ShowVersions() {
 func (that *GradleVersion) download(version string) (r string) {
 	that.getVersions()
 	if p, ok := that.Versions[version]; ok {
-		that.d.Url = p.Url
-		that.d.Timeout = 30 * time.Minute
+		that.fetcher.Url = p.Url
+		that.fetcher.Timeout = 600 * time.Minute
 		fpath := filepath.Join(config.GradleTarFilePath, p.FileName)
-		if size := that.d.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
+		if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 			if ok := utils.CheckFile(fpath, "sha256", p.Checksum); ok {
 				return fpath
 			} else {
@@ -171,7 +177,7 @@ func (that *GradleVersion) UseVersion(version string) {
 		if tarfile := that.download(version); tarfile != "" {
 			if err := archiver.Unarchive(tarfile, untarfile); err != nil {
 				os.RemoveAll(untarfile)
-				fmt.Println("[Unarchive failed] ", err)
+				fmt.Println(color.InRed("[Unarchive failed] "), err)
 				return
 			}
 		}
@@ -183,14 +189,14 @@ func (that *GradleVersion) UseVersion(version string) {
 	dir := finder.String()
 	if dir != "" {
 		if err := utils.MkSymLink(dir, config.GradleRoot); err != nil {
-			fmt.Println("[Create link failed] ", err)
+			fmt.Println(color.InRed("[Create link failed] "), err)
 			return
 		}
 		if !that.env.DoesEnvExist(utils.SUB_GRADLE) {
 			that.CheckAndInitEnv()
 		}
 		utils.RecordVersion(version, dir)
-		fmt.Println("Use", version, "succeeded!")
+		fmt.Println(color.InGreen(fmt.Sprintf("Use %s succeeded!", version)))
 	}
 }
 
@@ -231,11 +237,10 @@ func (that *GradleVersion) ShowInstalled() {
 			if strings.Contains(d.Name(), "gradle-") {
 				version := strings.Split(d.Name(), "-")[1]
 				if current == version {
-					s := fmt.Sprintf("%s <Current>", version)
-					color.Yellow.Println(s)
+					fmt.Println(color.InYellow(fmt.Sprintf("%s <Current>", version)))
 					continue
 				}
-				color.Cyan.Println(version)
+				fmt.Println(color.InCyan(version))
 			}
 		}
 	}

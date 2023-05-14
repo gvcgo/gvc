@@ -1,7 +1,6 @@
 package vctrl
 
 import (
-	"bytes"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -10,10 +9,10 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/gookit/color"
+	color "github.com/TwiN/go-color"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
-	downloader "github.com/moqsien/gvc/pkgs/fetcher"
+	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
 )
@@ -29,7 +28,7 @@ type MavenVersion struct {
 	Versions map[string]*MavenPackage
 	Doc      *goquery.Document
 	Conf     *config.GVConfig
-	d        *downloader.Downloader
+	fetcher  *query.Fetcher
 	env      *utils.EnvsHandler
 }
 
@@ -37,7 +36,7 @@ func NewMavenVersion() (mv *MavenVersion) {
 	mv = &MavenVersion{
 		Versions: make(map[string]*MavenPackage, 20),
 		Conf:     config.New(),
-		d:        &downloader.Downloader{},
+		fetcher:  query.NewFetcher(),
 		env:      utils.NewEnvsHandler(),
 	}
 	mv.initeDirs()
@@ -48,22 +47,22 @@ func (that *MavenVersion) initeDirs() {
 	if ok, _ := utils.PathIsExist(config.MavenRoot); !ok {
 		os.RemoveAll(config.MavenRoot)
 		if err := os.MkdirAll(config.MavenRoot, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			fmt.Println(color.InRed("[mkdir Failed] "), err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.MavenTarFilePath); !ok {
 		if err := os.MkdirAll(config.MavenTarFilePath, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			fmt.Println(color.InRed("[mkdir Failed] "), err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.MavenUntarFilePath); !ok {
 		if err := os.MkdirAll(config.MavenUntarFilePath, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			fmt.Println(color.InRed("[mkdir Failed] "), err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.JavaLocalRepoPath); !ok {
 		if err := os.MkdirAll(config.JavaLocalRepoPath, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			fmt.Println(color.InRed("[mkdir Failed] "), err)
 		}
 	}
 }
@@ -80,8 +79,10 @@ func (that *MavenVersion) getVs(vn string) {
 		return
 	}
 	that.Doc = nil
-	that.d.Url = mUrl
-	that.Doc, _ = goquery.NewDocumentFromReader(bytes.NewBuffer(that.d.GetWithColly()))
+	that.fetcher.Url = mUrl
+	if resp := that.fetcher.Get(); resp != nil {
+		that.Doc, _ = goquery.NewDocumentFromReader(resp.RawBody())
+	}
 	if that.Doc != nil {
 		that.Doc.Find("a").Each(func(i int, s *goquery.Selection) {
 			link := s.AttrOr("href", "")
@@ -111,8 +112,10 @@ func (that *MavenVersion) getVersions() {
 
 func (that *MavenVersion) getSha(p *MavenPackage) (shaCode string) {
 	if utils.VerifyUrls(p.ChecksumUrl) {
-		that.d.Url = p.ChecksumUrl
-		shaCode = string(that.d.GetWithColly())
+		that.fetcher.Url = p.ChecksumUrl
+		if resp := that.fetcher.Get(); resp != nil {
+			shaCode = resp.String()
+		}
 	}
 	return
 }
@@ -132,10 +135,10 @@ func (that *MavenVersion) ShowVersions() {
 func (that *MavenVersion) download(version string) (r string) {
 	that.getVersions()
 	if p, ok := that.Versions[version]; ok {
-		that.d.Url = p.Url
-		that.d.Timeout = 30 * time.Minute
+		that.fetcher.Url = p.Url
+		that.fetcher.Timeout = 600 * time.Minute
 		fpath := filepath.Join(config.MavenTarFilePath, p.FileName)
-		if size := that.d.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
+		if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 			if ok := utils.CheckFile(fpath, "sha512", that.getSha(p)); ok {
 				return fpath
 			} else {
@@ -154,7 +157,7 @@ func (that *MavenVersion) UseVersion(version string) {
 		if tarfile := that.download(version); tarfile != "" {
 			if err := archiver.Unarchive(tarfile, untarfile); err != nil {
 				os.RemoveAll(untarfile)
-				fmt.Println("[Unarchive failed] ", err)
+				fmt.Println(color.InRed("[Unarchive failed] "), err)
 				return
 			}
 		}
@@ -166,14 +169,14 @@ func (that *MavenVersion) UseVersion(version string) {
 	dir := finder.String()
 	if dir != "" {
 		if err := utils.MkSymLink(dir, config.MavenRoot); err != nil {
-			fmt.Println("[Create link failed] ", err)
+			fmt.Println(color.InRed("[Create link failed] "), err)
 			return
 		}
 		if !that.env.DoesEnvExist(utils.SUB_MAVEN) {
 			that.CheckAndInitEnv()
 		}
 		utils.RecordVersion(version, dir)
-		fmt.Println("Use", version, "succeeded!")
+		fmt.Println(color.InGreen(fmt.Sprintf("Use %s succeeded!", version)))
 	}
 }
 
@@ -210,11 +213,10 @@ func (that *MavenVersion) ShowInstalled() {
 			if strings.Contains(d.Name(), "maven-") {
 				version := strings.Split(d.Name(), "-")[1]
 				if current == version {
-					s := fmt.Sprintf("%s <Current>", version)
-					color.Yellow.Println(s)
+					fmt.Println(color.InYellow(fmt.Sprintf("%s <Current>", version)))
 					continue
 				}
-				color.Cyan.Println(version)
+				fmt.Println(color.InCyan(version))
 			}
 		}
 	}

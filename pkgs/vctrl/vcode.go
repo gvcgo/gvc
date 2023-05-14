@@ -72,7 +72,7 @@ func (that *Code) initeDirs() {
 
 func (that *Code) getPackages() (r string) {
 	that.fetcher.Url = that.Conf.Code.DownloadUrl
-	that.fetcher.Timeout = 30 * time.Second
+	that.fetcher.Timeout = 60 * time.Second
 	if resp := that.fetcher.Get(); resp != nil {
 		defer resp.RawBody().Close()
 		rjson, _ := io.ReadAll(resp.RawBody())
@@ -113,7 +113,7 @@ func (that *Code) download() (r string) {
 		}
 		fpath := filepath.Join(config.CodeTarFileDir, fmt.Sprintf("%s-%s%s", key, that.Version, suffix))
 		that.fetcher.Url = strings.Replace(p.Url, that.Conf.Code.StableUrl, that.Conf.Code.CdnUrl, -1)
-		that.fetcher.Timeout = 60 * time.Second
+		that.fetcher.Timeout = 600 * time.Second
 		if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 			if ok := utils.CheckFile(fpath, p.CheckType, p.CheckSum); ok {
 				r = fpath
@@ -188,7 +188,6 @@ func (that *Code) InstallForMac() {
 			}
 		}
 	}
-	// that.addEnvForUnix(config.CodeMacCmdBinaryDir)
 	that.env.UpdateSub(utils.SUB_CODE, config.CodeMacCmdBinaryDir)
 }
 
@@ -198,14 +197,12 @@ func (that *Code) InstallForLinux() {
 		for _, file := range codeDir {
 			if file.IsDir() {
 				binaryDir := filepath.Join(config.CodeUntarFile, file.Name(), "bin")
-				// that.addEnvForUnix(binaryDir)
 				that.env.UpdateSub(utils.SUB_CODE, binaryDir)
 			}
 		}
 	}
 }
 
-// TODO: update
 func (that *Code) Install() {
 	switch runtime.GOOS {
 	case utils.Windows:
