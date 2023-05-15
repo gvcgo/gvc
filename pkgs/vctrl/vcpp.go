@@ -44,6 +44,7 @@ func NewCppManager() (cm *CppManager) {
 		env:     utils.NewEnvsHandler(),
 	}
 	cm.initDirs()
+	cm.env.SetWinWorkDir(config.GVCWorkDir)
 	return
 }
 

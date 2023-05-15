@@ -32,6 +32,7 @@ func NewNVim() (nv *NVim) {
 		env:       utils.NewEnvsHandler(),
 	}
 	nv.setup()
+	nv.env.SetWinWorkDir(config.GVCWorkDir)
 	return
 }
 

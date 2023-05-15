@@ -8,6 +8,9 @@ import (
 	"regexp"
 	"runtime"
 	"strings"
+
+	"github.com/TwiN/go-color"
+	xutils "github.com/moqsien/xtray/pkgs/utils"
 )
 
 /*
@@ -154,10 +157,17 @@ VCPKG Envs
 */
 var VcpkgEnv string = `export PATH="%s:$PATH"`
 
+type WinPathEnvTemp struct {
+	PathList []string `koanf,json:"path_list"`
+}
+
 type EnvsHandler struct {
-	shellName  string
-	rcFilePath string
-	oldContent []byte
+	shellName   string
+	rcFilePath  string
+	oldContent  []byte
+	winPathTemp *WinPathEnvTemp
+	koanfer     *xutils.Koanfer
+	winWorkdir  string
 }
 
 func NewEnvsHandler() (e *EnvsHandler) {
@@ -171,6 +181,7 @@ func NewEnvsHandler() (e *EnvsHandler) {
 		e.getRcFilePath()
 		e.getOldContents()
 	}
+	e.winPathTemp = &WinPathEnvTemp{PathList: []string{}}
 	return
 }
 
@@ -304,32 +315,64 @@ func (that *EnvsHandler) DoesEnvExist(subname string) bool {
 Windows PowerShell Environment Settings
 */
 const (
-	TempPath string = "TEMP_PATH_ENV"
+	TempName string = "windows_env_temp.json"
 )
 
-/*
-Temporarily restore PATH variables to set
-*/
-func (that *EnvsHandler) setTempPath(value string) {
-	if value == "" {
-		return
+func (that *EnvsHandler) SetWinWorkDir(dirPath string) {
+	if ok, _ := PathIsExist(dirPath); ok {
+		that.winWorkdir = dirPath
+	} else {
+		fmt.Println(color.InYellow(fmt.Sprintf("%s does not exist.", dirPath)))
 	}
-	if old, ok := os.LookupEnv(TempPath); ok {
-		value = fmt.Sprintf("%s;%s", old, value)
-	}
-	cmd := exec.Command("set", fmt.Sprintf("%s=%s", TempPath, value))
-	cmd.Env = os.Environ()
-	cmd.Stderr = os.Stderr
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Run()
 }
 
-func (that *EnvsHandler) getTempPath(value string) string {
-	if tempPath, ok := os.LookupEnv(TempPath); ok {
-		value = fmt.Sprintf("%s;%s", tempPath, value)
+func (that *EnvsHandler) loadTemp() {
+	if ok, _ := PathIsExist(that.winWorkdir); ok {
+		fPath := filepath.Join(that.winWorkdir, TempName)
+		if ok, _ := PathIsExist(fPath); !ok {
+			that.saveTemp()
+		}
+		if that.koanfer == nil {
+			that.koanfer = xutils.NewKoanfer(fPath)
+		}
+		if that.koanfer != nil {
+			that.koanfer.Load(that.winPathTemp)
+		}
+	}
+}
+
+func (that *EnvsHandler) saveTemp() {
+	if ok, _ := PathIsExist(that.winWorkdir); ok {
+		fPath := filepath.Join(that.winWorkdir, TempName)
+		if that.koanfer == nil {
+			that.koanfer = xutils.NewKoanfer(fPath)
+		}
+		if that.koanfer != nil {
+			that.koanfer.Save(*that.winPathTemp)
+		}
+	}
+}
+
+func (that *EnvsHandler) preparePathToSet(value string) string {
+	that.loadTemp()
+	pathEnv := os.Getenv("PATH")
+	for _, v := range that.winPathTemp.PathList {
+		if !strings.Contains(pathEnv, v) {
+			value = fmt.Sprintf("%s;%s", value, v)
+		}
 	}
 	return value
+}
+
+func (that *EnvsHandler) addToTemp(value string) {
+	that.loadTemp()
+	for _, v := range that.winPathTemp.PathList {
+		if v == value {
+			return
+		}
+	}
+	that.winPathTemp.PathList = append(that.winPathTemp.PathList, value)
+	that.saveTemp()
 }
 
 var (
@@ -341,27 +384,28 @@ func (that *EnvsHandler) setOneEnvForWin(key, value string) {
 	var arg string
 	_key := strings.ToLower(key)
 	if _key == "path" && strings.Contains(os.Getenv("PATH"), value) {
-		fmt.Printf("[%s] Already exists in Path.\n", value)
+		fmt.Println(color.InGreen(fmt.Sprintf("[%s] Already exists in Path.\n", value)))
 		return
 	}
+	originValue := value
 	if _key == "path" {
-		value = that.getTempPath(value)
+		value = that.preparePathToSet(value)
 		arg = fmt.Sprintf(PwSetPathEnv, value)
 	} else {
 		arg = fmt.Sprintf(PwSetOtherEnv, key, value)
 	}
-	cmd := exec.Command("powershell", arg)
+	cmd := exec.Command(PowerShell, arg)
 	cmd.Env = os.Environ()
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	if err := cmd.Run(); err != nil {
-		fmt.Println("[Set env failed]", err, key)
+		fmt.Println(color.InRed("[Set env failed]"), err, key)
 		return
 	}
 
 	if _key == "path" {
-		that.setTempPath(value)
+		that.addToTemp(originValue)
 	}
 }
 

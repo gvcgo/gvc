@@ -45,6 +45,7 @@ func NewFlutterVersion() (fv *FlutterVersion) {
 		env:      utils.NewEnvsHandler(),
 	}
 	fv.initeDirs()
+	fv.env.SetWinWorkDir(config.GVCWorkDir)
 	return
 }
 

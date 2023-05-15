@@ -41,6 +41,7 @@ func NewMavenVersion() (mv *MavenVersion) {
 		env:      utils.NewEnvsHandler(),
 	}
 	mv.initeDirs()
+	mv.env.SetWinWorkDir(config.GVCWorkDir)
 	return
 }
 

@@ -31,6 +31,7 @@ func NewPyVenv() (py *PyVenv) {
 		env:     utils.NewEnvsHandler(),
 	}
 	py.initeDirs()
+	py.env.SetWinWorkDir(config.GVCWorkDir)
 	return
 }
 

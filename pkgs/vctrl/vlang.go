@@ -25,6 +25,7 @@ func NewVlang() (vl *Vlang) {
 		fetcher: query.NewFetcher(),
 		env:     utils.NewEnvsHandler(),
 	}
+	vl.env.SetWinWorkDir(config.GVCWorkDir)
 	return
 }
 

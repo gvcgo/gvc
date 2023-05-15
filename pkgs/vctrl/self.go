@@ -18,10 +18,12 @@ type Self struct {
 }
 
 func NewSelf() (s *Self) {
-	return &Self{
+	s = &Self{
 		Conf: config.New(),
 		env:  utils.NewEnvsHandler(),
 	}
+	s.env.SetWinWorkDir(config.GVCWorkDir)
+	return
 }
 
 func (that *Self) setEnv() {

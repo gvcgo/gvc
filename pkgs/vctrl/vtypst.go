@@ -26,6 +26,7 @@ func NewTypstVersion() (tv *Typst) {
 		fetcher: query.NewFetcher(),
 		env:     utils.NewEnvsHandler(),
 	}
+	tv.env.SetWinWorkDir(config.GVCWorkDir)
 	return
 }
 
