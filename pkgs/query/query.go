@@ -25,18 +25,19 @@ import (
 )
 
 type Fetcher struct {
-	Url        string
-	PostBody   map[string]interface{}
-	Timeout    time.Duration
-	RetryTimes int
-	Headers    map[string]string
-	Proxy      string
-	NoRedirect bool
-	client     *resty.Client
+	Url          string
+	PostBody     map[string]interface{}
+	Timeout      time.Duration
+	RetryTimes   int
+	Headers      map[string]string
+	Proxy        string
+	NoRedirect   bool
+	client       *resty.Client
+	proxyEnvName string
 }
 
 func NewFetcher() *Fetcher {
-	return &Fetcher{client: resty.New()}
+	return &Fetcher{client: resty.New(), proxyEnvName: "GVC_DEFAULT_PROXY"}
 }
 
 func (that *Fetcher) setHeaders() {
@@ -49,6 +50,9 @@ func (that *Fetcher) setHeaders() {
 
 func (that *Fetcher) parseProxy() (scheme, host string, port int) {
 	if that.Proxy == "" {
+		that.Proxy = os.Getenv(that.proxyEnvName)
+	}
+	if that.Proxy == "" {
 		return
 	}
 	if u, err := url.Parse(that.Proxy); err == nil {
@@ -60,6 +64,12 @@ func (that *Fetcher) parseProxy() (scheme, host string, port int) {
 		}
 	}
 	return
+}
+
+func (that *Fetcher) SetProxyEnvName(name string) {
+	if name != "" {
+		that.proxyEnvName = name
+	}
 }
 
 func (that *Fetcher) setProxy() {
@@ -116,6 +126,12 @@ func (that *Fetcher) setMisc() {
 	}
 	if that.NoRedirect {
 		that.client = that.client.SetRedirectPolicy(resty.NoRedirectPolicy())
+	}
+}
+
+func (that *Fetcher) RemoveProxy() {
+	if that.client != nil {
+		that.client.RemoveProxy()
 	}
 }
 
