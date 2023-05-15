@@ -2,6 +2,7 @@ package vctrl
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -114,7 +115,9 @@ func (that *MavenVersion) getSha(p *MavenPackage) (shaCode string) {
 	if utils.VerifyUrls(p.ChecksumUrl) {
 		that.fetcher.Url = p.ChecksumUrl
 		if resp := that.fetcher.Get(); resp != nil {
-			shaCode = resp.String()
+			content, _ := io.ReadAll(resp.RawBody())
+			shaCode = string(content)
+			fmt.Println("+++++++", shaCode)
 		}
 	}
 	return
@@ -136,7 +139,7 @@ func (that *MavenVersion) download(version string) (r string) {
 	that.getVersions()
 	if p, ok := that.Versions[version]; ok {
 		that.fetcher.Url = p.Url
-		that.fetcher.Timeout = 600 * time.Minute
+		that.fetcher.Timeout = 900 * time.Minute
 		fpath := filepath.Join(config.MavenTarFilePath, p.FileName)
 		if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 			if ok := utils.CheckFile(fpath, "sha512", that.getSha(p)); ok {

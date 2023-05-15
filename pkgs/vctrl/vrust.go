@@ -9,37 +9,38 @@ import (
 	"strings"
 	"time"
 
+	color "github.com/TwiN/go-color"
 	config "github.com/moqsien/gvc/pkgs/confs"
-	downloader "github.com/moqsien/gvc/pkgs/fetcher"
+	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 )
 
 type RustInstaller struct {
-	*downloader.Downloader
-	Conf *config.GVConfig
-	env  *utils.EnvsHandler
+	Conf    *config.GVConfig
+	env     *utils.EnvsHandler
+	fetcher *query.Fetcher
 }
 
 func NewRustInstaller() (ri *RustInstaller) {
 	ri = &RustInstaller{
-		Downloader: &downloader.Downloader{},
-		Conf:       config.New(),
-		env:        utils.NewEnvsHandler(),
+		fetcher: query.NewFetcher(),
+		Conf:    config.New(),
+		env:     utils.NewEnvsHandler(),
 	}
 	return
 }
 
 func (that *RustInstaller) getInstaller() (fPath string) {
-	that.Timeout = 10 * time.Minute
+	that.fetcher.Timeout = 10 * time.Minute
 	if runtime.GOOS == utils.Windows {
-		that.Url = that.Conf.Rust.UrlWin
+		that.fetcher.Url = that.Conf.Rust.UrlWin
 		fPath = filepath.Join(config.RustFilesDir, that.Conf.Rust.FileNameWin)
 
 	} else {
-		that.Url = that.Conf.Rust.UrlUnix
+		that.fetcher.Url = that.Conf.Rust.UrlUnix
 		fPath = filepath.Join(config.RustFilesDir, that.Conf.Rust.FileNameUnix)
 	}
-	that.GetFile(fPath, os.O_CREATE|os.O_WRONLY, 0777)
+	that.fetcher.GetAndSaveFile(fPath)
 	return
 }
 
@@ -83,8 +84,8 @@ func (that *RustInstaller) Install() {
 		c.Stdin = os.Stdin
 		c.Stdout = os.Stdout
 		if err := c.Run(); err != nil {
-			fmt.Println("[Rust installer path] You can install rust by running rustup-init.exe @ ", iPath)
-			fmt.Printf("请切换到目录@ %s, 然后执行rustup-init.exe即可开始安装。", iPath)
+			fmt.Println("[Rust installer path] You can install rust by running rustup-init.exe @ ", color.InYellow(iPath))
+			fmt.Printf("请切换到目录@ %s, 然后执行rustup-init.exe即可开始安装。", color.InYellow(iPath))
 		}
 	} else {
 		cmd := exec.Command("sh", iPath)
@@ -93,7 +94,7 @@ func (that *RustInstaller) Install() {
 		cmd.Stdout = os.Stdout
 		cmd.Stdin = os.Stdin
 		if err := cmd.Run(); err != nil {
-			fmt.Println("[Execute installer errored] ", err)
+			fmt.Println(color.InRed("[Execute installer errored] "), err)
 		}
 	}
 }

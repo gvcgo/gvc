@@ -97,3 +97,16 @@ func (that *Self) ShowInstallPath() {
 	fmt.Println("[gvc] is installed in dir: ", color.InGreen(config.GVCWorkDir))
 	fmt.Println(color.InCyan("======================================================"))
 }
+
+const (
+	VERSION = "1.2.0"
+)
+
+func (that *Self) ShowVersion() {
+	fmt.Println(color.InGreen("***========================================================***"))
+	fmt.Println(color.InPurple("   GVC Version: ") + color.InYellow("v"+VERSION))
+	fmt.Println(color.InPurple("   Github:      ") + color.InYellow("https://github.com/moqsien/gvc"))
+	fmt.Println(color.InPurple("   Gitee:       ") + color.InYellow("https://gitee.com/moqsien/gvc_tools"))
+	fmt.Println(color.InPurple("   Email:       ") + color.InYellow("moqsien@foxmail.com"))
+	fmt.Println(color.InGreen("***========================================================***"))
+}

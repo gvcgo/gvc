@@ -1324,8 +1324,8 @@ func (that *Cmder) version() {
 		Aliases: []string{"ver", "vsi"},
 		Usage:   "Show gvc version info.",
 		Action: func(ctx *cli.Context) error {
-			v := vctrl.NewVersion()
-			v.Show()
+			v := vctrl.NewSelf()
+			v.ShowVersion()
 			return nil
 		},
 	}

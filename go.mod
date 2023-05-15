@@ -9,9 +9,7 @@ require (
 	github.com/aquasecurity/table v1.8.0
 	github.com/gin-gonic/gin v1.9.0
 	github.com/go-resty/resty/v2 v2.7.0
-	github.com/gocolly/colly/v2 v2.1.0
 	github.com/gogf/gf v1.16.9
-	github.com/gookit/color v1.5.2
 	github.com/k0kubun/go-ansi v0.0.0-20180517002512-3bf9e2903213
 	github.com/knadh/koanf v1.5.0
 	github.com/mholt/archiver/v3 v3.5.1
@@ -61,6 +59,7 @@ require (
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/gocarina/gocsv v0.0.0-20230226133904-70c27cb2918a // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
+	github.com/gocolly/colly/v2 v2.1.0 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/mock v1.6.0 // indirect
@@ -70,6 +69,7 @@ require (
 	github.com/google/btree v1.1.2 // indirect
 	github.com/google/pprof v0.0.0-20230510003242-05f3f57da91a // indirect
 	github.com/google/uuid v1.3.0 // indirect
+	github.com/gookit/color v1.5.2 // indirect
 	github.com/gookit/goutil v0.6.1 // indirect
 	github.com/gookit/gsr v0.0.8 // indirect
 	github.com/gookit/slog v0.4.0 // indirect

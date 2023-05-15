@@ -1,29 +1,24 @@
 package vctrl
 
 import (
-	"encoding/json"
 	"fmt"
 	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
 
+	color "github.com/TwiN/go-color"
 	config "github.com/moqsien/gvc/pkgs/confs"
-	downloader "github.com/moqsien/gvc/pkgs/fetcher"
+	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 )
-
-type serctl struct {
-	Uuid        string `json:"uuid"`
-	DownloadUrl string `json:"download_url"`
-}
 
 type GhDownloader struct {
 	UrlSerctl  string
 	UrlGhProxy string
 	Conf       *config.GVConfig
 	path       string
-	*downloader.Downloader
+	fetcher    *query.Fetcher
 }
 
 func NewGhDownloader() (gd *GhDownloader) {
@@ -31,30 +26,28 @@ func NewGhDownloader() (gd *GhDownloader) {
 		UrlSerctl:  "https://d.serctl.com/api.rb?dl_start",
 		UrlGhProxy: "https://ghproxy.com/%s",
 		path:       filepath.Join(utils.GetHomeDir(), "Downloads"),
-		Downloader: &downloader.Downloader{},
+		fetcher:    query.NewFetcher(),
 		Conf:       config.New(),
 	}
 	return
 }
 
 func (that *GhDownloader) sendSerctlPost(zipUrl string) {
-	body := serctl{
-		Uuid:        "",
-		DownloadUrl: zipUrl,
+	that.fetcher.PostBody = map[string]interface{}{
+		"uuid":        "",
+		"downloadUrl": zipUrl,
 	}
-	that.PostBody, _ = json.Marshal(body)
-	fmt.Println(string(that.PostBody))
-	that.Url = that.UrlSerctl
-	that.Headers = map[string]string{
+	that.fetcher.Url = that.UrlSerctl
+	that.fetcher.Headers = map[string]string{
 		"referer":    "https://d.serctl.com/?dl_start",
 		"origin":     "https://d.serctl.com",
 		"user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36",
 	}
-	if resp := that.PostUrl(); resp != nil {
+	if resp := that.fetcher.Post(); resp != nil {
 		content := []byte{}
-		resp.Body.Read(content)
+		resp.RawBody().Read(content)
 		fmt.Println(string(content))
-		fmt.Println(resp.StatusCode)
+		fmt.Println(resp.RawResponse.StatusCode)
 	}
 }
 
@@ -69,7 +62,7 @@ func (that *GhDownloader) Download(zipUrl string) {
 func (that *GhDownloader) OpenByBrowser(chosen int) {
 	urlList := that.Conf.Github.AccelUrls
 	if len(urlList) == 0 {
-		fmt.Println("No github download acceleration available.")
+		fmt.Println(color.InRed("No github download acceleration available."))
 		return
 	}
 	var gUrl string
@@ -90,7 +83,7 @@ func (that *GhDownloader) OpenByBrowser(chosen int) {
 			return
 		}
 		if err := cmd.Run(); err != nil {
-			fmt.Println(err)
+			fmt.Println(color.InRed("Execution failed: "), err)
 		}
 	}
 }

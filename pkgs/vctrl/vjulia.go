@@ -2,6 +2,7 @@ package vctrl
 
 import (
 	"fmt"
+	"io"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -9,11 +10,11 @@ import (
 	"strings"
 	"time"
 
+	color "github.com/TwiN/go-color"
 	"github.com/gogf/gf/encoding/gjson"
-	"github.com/gookit/color"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
-	downloader "github.com/moqsien/gvc/pkgs/fetcher"
+	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
 )
@@ -30,7 +31,7 @@ type JuliaVersion struct {
 	Versions map[string][]*JuliaPackage
 	Json     *gjson.Json
 	Conf     *config.GVConfig
-	d        *downloader.Downloader
+	fetcher  *query.Fetcher
 	env      *utils.EnvsHandler
 }
 
@@ -38,7 +39,7 @@ func NewJuliaVersion() (jv *JuliaVersion) {
 	jv = &JuliaVersion{
 		Versions: make(map[string][]*JuliaPackage, 500),
 		Conf:     config.New(),
-		d:        &downloader.Downloader{},
+		fetcher:  query.NewFetcher(),
 		env:      utils.NewEnvsHandler(),
 	}
 	jv.initeDirs()
@@ -49,27 +50,30 @@ func (that *JuliaVersion) initeDirs() {
 	if ok, _ := utils.PathIsExist(config.JuliaRootDir); !ok {
 		os.RemoveAll(config.JuliaRootDir)
 		if err := os.MkdirAll(config.JuliaRootDir, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			fmt.Println(color.InRed("[mkdir Failed] "), err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.JuliaTarFilePath); !ok {
 		if err := os.MkdirAll(config.JuliaTarFilePath, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			fmt.Println(color.InRed("[mkdir Failed] "), err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.JuliaUntarFilePath); !ok {
 		if err := os.MkdirAll(config.JuliaUntarFilePath, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			fmt.Println(color.InRed("[mkdir Failed] "), err)
 		}
 	}
 }
 
 func (that *JuliaVersion) getJson() {
-	that.d.Url = that.Conf.Julia.VersionUrl
-	if !utils.VerifyUrls(that.d.Url) {
+	that.fetcher.Url = that.Conf.Julia.VersionUrl
+	if !utils.VerifyUrls(that.fetcher.Url) {
 		return
 	}
-	that.Json = gjson.New(that.d.GetWithColly())
+	if resp := that.fetcher.Get(); resp != nil {
+		content, _ := io.ReadAll(resp.RawBody())
+		that.Json = gjson.New(content)
+	}
 }
 
 func (that *JuliaVersion) GetVersions() {
@@ -119,7 +123,7 @@ func (that *JuliaVersion) ShowVersions() {
 		vList = append(vList, v)
 	}
 	res := sorts.SortGoVersion(vList)
-	fmt.Println(strings.Join(res, "  "))
+	fmt.Println(color.InGreen(strings.Join(res, "  ")))
 }
 
 func (that *JuliaVersion) findPackage(version string) *JuliaPackage {
@@ -143,13 +147,13 @@ func (that *JuliaVersion) download(version string) (r string) {
 	}
 
 	if p := that.findPackage(version); p != nil {
-		that.d.Url = p.Url
-		if !utils.VerifyUrls(that.d.Url) {
+		that.fetcher.Url = p.Url
+		if !utils.VerifyUrls(that.fetcher.Url) {
 			return
 		}
-		that.d.Timeout = 100 * time.Minute
+		that.fetcher.Timeout = 100 * time.Minute
 		fpath := filepath.Join(config.JuliaTarFilePath, p.FileName)
-		if size := that.d.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
+		if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 			if p.Checksum != "" {
 				if ok := utils.CheckFile(fpath, "sha256", p.Checksum); ok {
 					return fpath
@@ -163,7 +167,7 @@ func (that *JuliaVersion) download(version string) (r string) {
 			os.RemoveAll(fpath)
 		}
 	} else {
-		fmt.Println("Invalid Julia version. ", version)
+		fmt.Println(color.InRed("Invalid Julia version. "), version)
 	}
 	return
 }
@@ -189,7 +193,7 @@ func (that *JuliaVersion) UseVersion(version string) {
 		if tarfile := that.download(version); tarfile != "" {
 			if err := archiver.Unarchive(tarfile, untarfile); err != nil {
 				os.RemoveAll(untarfile)
-				fmt.Println("[Unarchive failed] ", err)
+				fmt.Println(color.InRed("[Unarchive failed] "), err)
 				return
 			}
 		}
@@ -201,14 +205,14 @@ func (that *JuliaVersion) UseVersion(version string) {
 	dir := finder.String()
 	if dir != "" {
 		if err := utils.MkSymLink(dir, config.JuliaRootDir); err != nil {
-			fmt.Println("[Create link failed] ", err)
+			fmt.Println(color.InRed("[Create link failed] "), err)
 			return
 		}
 		if !that.env.DoesEnvExist(utils.SUB_JULIA) {
 			that.CheckAndInitEnv()
 		}
 		utils.RecordVersion(version, dir)
-		fmt.Println("Use", version, "succeeded!")
+		fmt.Println(color.InGreen(fmt.Sprintf("Use %s succeeded!", version)))
 	}
 }
 
@@ -219,10 +223,9 @@ func (that *JuliaVersion) ShowInstalled() {
 		if d.IsDir() {
 			switch d.Name() {
 			case current:
-				s := fmt.Sprintf("%s <Current>", d.Name())
-				color.Yellow.Println(s)
+				fmt.Println(color.InYellow(fmt.Sprintf("%s <Current>", d.Name())))
 			default:
-				color.Cyan.Println(d.Name())
+				fmt.Println(color.InCyan(d.Name()))
 			}
 		}
 	}

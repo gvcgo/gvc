@@ -1,7 +1,6 @@
 package vctrl
 
 import (
-	"bytes"
 	"fmt"
 	"net/url"
 	"os"
@@ -12,10 +11,10 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/TwiN/go-color"
+	color "github.com/TwiN/go-color"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
-	downloader "github.com/moqsien/gvc/pkgs/fetcher"
+	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 )
 
@@ -32,17 +31,17 @@ var (
 )
 
 type CppManager struct {
-	*downloader.Downloader
-	Conf *config.GVConfig
-	Doc  *goquery.Document
-	env  *utils.EnvsHandler
+	Conf    *config.GVConfig
+	Doc     *goquery.Document
+	env     *utils.EnvsHandler
+	fetcher *query.Fetcher
 }
 
 func NewCppManager() (cm *CppManager) {
 	cm = &CppManager{
-		Downloader: &downloader.Downloader{},
-		Conf:       config.New(),
-		env:        utils.NewEnvsHandler(),
+		fetcher: query.NewFetcher(),
+		Conf:    config.New(),
+		env:     utils.NewEnvsHandler(),
 	}
 	cm.initDirs()
 	return
@@ -51,37 +50,39 @@ func NewCppManager() (cm *CppManager) {
 func (that *CppManager) initDirs() {
 	if ok, _ := utils.PathIsExist(config.CppFilesDir); !ok {
 		if err := os.MkdirAll(config.CppFilesDir, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			fmt.Println(color.InRed("[mkdir Failed] "), err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.Msys2Dir); !ok {
 		if err := os.MkdirAll(config.Msys2Dir, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			fmt.Println(color.InRed("[mkdir Failed] "), err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.VCpkgDir); !ok {
 		if err := os.MkdirAll(config.VCpkgDir, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			fmt.Println(color.InRed("[mkdir Failed] "), err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.CppDownloadDir); !ok {
 		if err := os.MkdirAll(config.CppDownloadDir, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			fmt.Println(color.InRed("[mkdir Failed] "), err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.CygwinRootDir); !ok {
 		if err := os.MkdirAll(config.CygwinRootDir, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			fmt.Println(color.InRed("[mkdir Failed] "), err)
 		}
 	}
 }
 
 func (that *CppManager) getDoc() {
-	that.Url = that.Conf.Cpp.MsysInstallerUrl
-	if !utils.VerifyUrls(that.Url) {
+	that.fetcher.Url = that.Conf.Cpp.MsysInstallerUrl
+	if !utils.VerifyUrls(that.fetcher.Url) {
 		return
 	}
-	that.Doc, _ = goquery.NewDocumentFromReader(bytes.NewBuffer(that.GetWithColly()))
+	if resp := that.fetcher.Get(); resp != nil {
+		that.Doc, _ = goquery.NewDocumentFromReader(resp.RawBody())
+	}
 }
 
 func (that *CppManager) getMsys2Installer() (fPath string) {
@@ -102,9 +103,10 @@ func (that *CppManager) getMsys2Installer() (fPath string) {
 			if !strings.HasPrefix(exeUrl, "http://") {
 				exeUrl, _ = url.JoinPath(that.Conf.Cpp.MsysInstallerUrl, exeUrl)
 			}
+
 			fPath = filepath.Join(config.CppDownloadDir, Msys2InstallerName)
-			that.Url = exeUrl
-			that.GetFile(fPath, os.O_CREATE|os.O_WRONLY, 0777)
+			that.fetcher.Url = exeUrl
+			that.fetcher.GetAndSaveFile(fPath)
 		}
 	}
 	return
@@ -133,7 +135,7 @@ func (that *CppManager) InstallMsys2() {
 		c.Stdin = os.Stdin
 		c.Stdout = os.Stdout
 		if err := c.Run(); err != nil {
-			fmt.Println("Execute Msys2Installer Failed: ", err)
+			fmt.Println(color.InRed("Execute Msys2Installer Failed: "), err)
 			return
 		}
 		binPath := filepath.Join(config.Msys2Dir, "usr", "bin")
@@ -207,11 +209,11 @@ func (that *CppManager) RepairGitForVSCode() {
 func (that *CppManager) getCygwinInstaller() (fPath string) {
 	fPath = filepath.Join(config.CppDownloadDir, CygwinInstallerName)
 	if ok, _ := utils.PathIsExist(fPath); !ok {
-		that.Url = that.Conf.Cpp.CygwinInstallerUrl
-		if that.Url != "" {
-			that.Timeout = 10 * time.Minute
-			if size := that.GetFile(fPath, os.O_CREATE|os.O_WRONLY, 0777); size == 0 {
-				fmt.Println("[Download Cygwin installer failed!]")
+		that.fetcher.Url = that.Conf.Cpp.CygwinInstallerUrl
+		if that.fetcher.Url != "" {
+			that.fetcher.Timeout = 10 * time.Minute
+			if size := that.fetcher.GetAndSaveFile(fPath); size == 0 {
+				fmt.Println(color.InRed("[Download Cygwin installer failed!]"))
 				os.RemoveAll(fPath)
 			} else {
 				if runtime.GOOS == utils.Windows {
@@ -231,7 +233,7 @@ func (that *CppManager) InstallCygwin(packInfo string) {
 		packInfo = "git,bash,wget,gcc,gdb,clang,openssh,bashdb,gdbm,gcc-fortran,clang-analyzer,clang-doc,bash-completion,bash-devel,bash-completion-cmake"
 	}
 
-	fmt.Println("[Install Packages] ", packInfo)
+	fmt.Println(color.InGreen("[Install Packages] "), color.InYellow(packInfo))
 
 	if ok, _ := utils.PathIsExist(installerPath); ok && runtime.GOOS == utils.Windows {
 		ePath := os.Getenv("PATH")
@@ -247,7 +249,7 @@ func (that *CppManager) InstallCygwin(packInfo string) {
 		cmd.Stdin = os.Stdin
 		cmd.Stdout = os.Stdout
 		if err := cmd.Run(); err != nil {
-			fmt.Println("Execute CygwinInstaller Failed: ", err)
+			fmt.Println(color.InRed("Execute CygwinInstaller Failed: "), err)
 			return
 		}
 
@@ -268,9 +270,9 @@ var (
 )
 
 func (that *CppManager) getVCPkg() string {
-	that.Url = that.Conf.Cpp.VCpkgUrl
+	that.fetcher.Url = that.Conf.Cpp.VCpkgUrl
 	fPath := filepath.Join(config.CppDownloadDir, VCpkgFilename)
-	if size := that.GetFile(fPath, os.O_CREATE|os.O_WRONLY, 0644); size != 0 {
+	if size := that.fetcher.GetAndSaveFile(fPath); size != 0 {
 		return fPath
 	} else {
 		os.RemoveAll(fPath)
@@ -279,9 +281,9 @@ func (that *CppManager) getVCPkg() string {
 }
 
 func (that *CppManager) getVCPkgTool() string {
-	that.Url = that.Conf.Cpp.VCpkgToolUrl
+	that.fetcher.Url = that.Conf.Cpp.VCpkgToolUrl
 	fPath := filepath.Join(config.CppDownloadDir, VCpkgToolFilename)
-	if size := that.GetFile(fPath, os.O_CREATE|os.O_WRONLY, 0644); size != 0 {
+	if size := that.fetcher.GetAndSaveFile(fPath); size != 0 {
 		return fPath
 	} else {
 		os.RemoveAll(fPath)
@@ -335,7 +337,7 @@ func (that *CppManager) InstallVCPkg() {
 	fPath := that.getVCPkg()
 	if ok, _ := utils.PathIsExist(fPath); ok {
 		if err := archiver.Unarchive(fPath, config.CppDownloadDir); err != nil {
-			fmt.Println("[Unarchive failed] ", err)
+			fmt.Println(color.InRed("[Unarchive failed] "), err)
 			return
 		}
 		dirList, _ := os.ReadDir(config.CppDownloadDir)
@@ -361,7 +363,7 @@ func (that *CppManager) InstallVCPkg() {
 			os.MkdirAll(buildPath, os.ModePerm)
 
 			if err := archiver.Unarchive(fPath, config.CppDownloadDir); err != nil {
-				fmt.Println("[Unarchive failed] ", err)
+				fmt.Println(color.InRed("[Unarchive failed] "), err)
 				return
 			}
 			dirList, _ = os.ReadDir(config.CppDownloadDir)
@@ -382,7 +384,7 @@ func (that *CppManager) InstallVCPkg() {
 					cmd.Stdin = os.Stdin
 					cmd.Stdout = os.Stdout
 					if err := cmd.Run(); err != nil {
-						fmt.Println("Execute Compilation Script Failed: ", err)
+						fmt.Println(color.InRed("Execute Compilation Script Failed: "), err)
 						return
 					}
 				}
@@ -396,9 +398,9 @@ func (that *CppManager) InstallVCPkg() {
 			os.RemoveAll(filepath.Join(config.VCpkgDir, "buildtrees"))
 		} else {
 			fPath := filepath.Join(config.VCpkgDir, "vcpkg.exe")
-			that.Url = that.Conf.Cpp.WinVCpkgToolUrls[runtime.GOARCH]
-			if that.Url != "" {
-				if size := that.GetFile(fPath, os.O_CREATE|os.O_WRONLY, 0777); size == 0 {
+			that.fetcher.Url = that.Conf.Cpp.WinVCpkgToolUrls[runtime.GOARCH]
+			if that.fetcher.Url != "" {
+				if size := that.fetcher.GetAndSaveFile(fPath); size == 0 {
 					os.RemoveAll(fPath)
 				} else {
 					that.setEnvForVcpkg()

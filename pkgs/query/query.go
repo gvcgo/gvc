@@ -100,7 +100,7 @@ func (that *Fetcher) setProxy() {
 				}
 			}
 		default:
-			fmt.Println("Unsupported proxy: ", that.Proxy)
+			fmt.Println(color.InRed(fmt.Sprintf("Unsupported proxy: %s", that.Proxy)))
 		}
 	}
 }
@@ -121,7 +121,7 @@ func (that *Fetcher) setMisc() {
 
 func (that *Fetcher) Get() (r *resty.Response) {
 	if that.client == nil {
-		fmt.Println("client is nil.")
+		fmt.Println(color.InRed("client is nil."))
 		return
 	} else {
 		that.setMisc()
@@ -144,7 +144,7 @@ func (that *Fetcher) parseFilename(fPath string) (fName string) {
 
 func (that *Fetcher) GetAndSaveFile(fPath string, force ...bool) (size int64) {
 	if that.client == nil {
-		fmt.Println("client is nil.")
+		fmt.Println(color.InRed("client is nil."))
 		return
 	} else {
 		that.setMisc()
@@ -154,7 +154,7 @@ func (that *Fetcher) GetAndSaveFile(fPath string, force ...bool) (size int64) {
 		forceToDownload = true
 	}
 	if ok, _ := utils.PathIsExist(fPath); ok && !forceToDownload {
-		fmt.Println("[Downloader] File already exists.")
+		fmt.Println(color.InYellow("[Downloader] File already exists."))
 		return 100
 	}
 	if forceToDownload {
@@ -163,7 +163,7 @@ func (that *Fetcher) GetAndSaveFile(fPath string, force ...bool) (size int64) {
 	if res, err := that.client.R().SetDoNotParseResponse(true).Get(that.Url); err == nil {
 		outFile, err := os.Create(fPath)
 		if err != nil {
-			fmt.Println("Cannot open file", err)
+			fmt.Println(color.InRed("Cannot open file"), err)
 			return
 		}
 		defer utils.Closeq(outFile)
@@ -184,7 +184,7 @@ func (that *Fetcher) GetAndSaveFile(fPath string, force ...bool) (size int64) {
 			progressbar.OptionSetDescription(fmt.Sprintf("Downloading %s", color.InYellow(that.parseFilename(fPath)))),
 			progressbar.OptionSetWriter(ansi.NewAnsiStdout()),
 			progressbar.OptionShowBytes(true),
-			progressbar.OptionThrottle(65*time.Millisecond),
+			progressbar.OptionThrottle(20*time.Millisecond),
 			progressbar.OptionShowCount(),
 			progressbar.OptionOnCompletion(func() {
 				_, _ = fmt.Fprint(ansi.NewAnsiStdout(), "\n")
@@ -208,7 +208,7 @@ func (that *Fetcher) GetAndSaveFile(fPath string, force ...bool) (size int64) {
 
 func (that *Fetcher) Post() (r *resty.Response) {
 	if that.client == nil {
-		fmt.Println("client is nil.")
+		fmt.Println(color.InRed("client is nil."))
 		return
 	} else {
 		that.setMisc()
