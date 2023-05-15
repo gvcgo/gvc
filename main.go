@@ -30,7 +30,7 @@ func main() {
 		// cpp := vctrl.NewCppManager()
 		// cpp.InstallVCPkg()
 		jdk := vctrl.NewHosts()
-		jdk.Run(false)
+		jdk.Run()
 		// p := "a/b/c/d/e.zip"
 		// fmt.Println(strings.ReplaceAll(p, filepath.Dir(p), ""))
 	} else if len(os.Args) < 2 {

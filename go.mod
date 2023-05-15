@@ -16,8 +16,6 @@ require (
 	github.com/moqsien/hackbrowser v1.0.3
 	github.com/moqsien/processes v1.0.3
 	github.com/moqsien/xtray v1.0.7
-	github.com/panjf2000/ants/v2 v2.7.1
-	github.com/prometheus-community/pro-bing v0.1.0
 	github.com/sashabaranov/go-openai v1.9.0
 	github.com/schollz/progressbar/v3 v3.13.0
 	github.com/studio-b12/gowebdav v0.0.0-20230203202212-3282f94193f2
@@ -142,7 +140,6 @@ require (
 	golang.org/x/exp v0.0.0-20230425010034-47ecfdc1ba53 // indirect
 	golang.org/x/mod v0.10.0 // indirect
 	golang.org/x/net v0.10.0 // indirect
-	golang.org/x/sync v0.2.0 // indirect
 	golang.org/x/sys v0.8.0 // indirect
 	golang.org/x/term v0.8.0 // indirect
 	golang.org/x/text v0.9.0 // indirect

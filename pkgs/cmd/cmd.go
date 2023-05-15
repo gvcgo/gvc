@@ -81,38 +81,14 @@ func (that *Cmder) vhost() {
 		Action: func(ctx *cli.Context) error {
 			h := vctrl.NewHosts()
 			if runtime.GOOS != utils.Windows || previlege {
-				h.Run(true)
+				h.Run()
 			} else {
-				h.WinRunAsAdmin(false)
+				h.WinRunAsAdmin()
 			}
 			return nil
 		},
 	}
 	command.Subcommands = append(command.Subcommands, fetch)
-
-	fetchall := &cli.Command{
-		Name:    vctrl.HostsFileFetchAllCmd,
-		Aliases: []string{"fa"},
-		Usage:   "Get all github hosts info with no ping filters.",
-		Flags: []cli.Flag{
-			&cli.BoolFlag{
-				Name:        vctrl.HostsFlagName,
-				Aliases:     []string{"pre", "p"},
-				Usage:       "Use admin previlege for windows.",
-				Destination: &previlege,
-			},
-		},
-		Action: func(ctx *cli.Context) error {
-			h := vctrl.NewHosts()
-			if runtime.GOOS != utils.Windows || previlege {
-				h.Run(false)
-			} else {
-				h.WinRunAsAdmin(true)
-			}
-			return nil
-		},
-	}
-	command.Subcommands = append(command.Subcommands, fetchall)
 
 	showpath := &cli.Command{
 		Name:    "show",

@@ -18,9 +18,6 @@ import (
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
-	"github.com/panjf2000/ants/v2"
-	ping "github.com/prometheus-community/pro-bing"
-	"github.com/schollz/progressbar/v3"
 )
 
 const (
@@ -29,11 +26,6 @@ const (
 	TIME        = "# UpdateTime: %s"
 	LinePattern = "%s\t\t\t%s # %s"
 )
-
-type taskArgs struct {
-	IP  string
-	URL string
-}
 
 type host struct {
 	IP     string        // ip address
@@ -51,8 +43,6 @@ type Hosts struct {
 	hostReg  *regexp.Regexp
 	lock     *sync.Mutex
 	wg       sync.WaitGroup
-	pool     *ants.PoolWithFunc
-	bar      *progressbar.ProgressBar
 	fetcher  *query.Fetcher
 }
 
@@ -121,61 +111,6 @@ func (that *Hosts) GetHosts() {
 			}
 			that.ParseHosts(content)
 		}
-	}
-}
-
-func (that *Hosts) toSave(url string) bool {
-	filters := that.Conf.Hosts.HostFilters
-	if len(filters) == 0 {
-		return true
-	}
-	for _, filter := range filters {
-		if strings.Contains(url, filter) {
-			return true
-		}
-	}
-	return false
-}
-
-func (that *Hosts) pingHosts(args interface{}) {
-	var url, ip string
-	defer that.wg.Done()
-	defer that.bar.Add(1)
-	if tArgs, ok := args.(*taskArgs); !ok {
-		return
-	} else {
-		url = tArgs.URL
-		ip = tArgs.IP
-	}
-	if !that.toSave(url) {
-		return
-	}
-	pinger, err := ping.NewPinger(ip)
-	if err != nil {
-		fmt.Println(color.InRed("Ping hosts errored: "), err)
-		return
-	}
-	pinger.Count = that.Conf.Hosts.PingCount
-	if runtime.GOOS == utils.Windows {
-		pinger.SetPrivileged(true)
-	}
-	pinger.Timeout = time.Duration(that.Conf.Hosts.ReqTimeout) * time.Millisecond
-	pinger.OnFinish = func(statics *ping.Statistics) {
-		if len(statics.Rtts) > 0 {
-			that.lock.Lock()
-			if old, ok := that.hList[url]; !ok {
-				that.hList[url] = host{IP: ip, AvgRTT: statics.AvgRtt}
-			} else {
-				if old.AvgRTT > statics.AvgRtt {
-					that.hList[url] = host{IP: ip, AvgRTT: statics.AvgRtt}
-				}
-			}
-			that.lock.Unlock()
-		}
-	}
-	err = pinger.Run()
-	if err != nil {
-		fmt.Println(err)
 	}
 }
 
@@ -254,96 +189,39 @@ func (that *Hosts) FormatAndSaveHosts(oldContent []byte) {
 	}
 }
 
-func (that *Hosts) Run(toPing ...bool) {
+func (that *Hosts) Run() {
 	that.GetHosts()
 	hostFilePath := config.GetHostsFilePath()
 	hostBackupFilePath := filepath.Join(filepath.Dir(hostFilePath), "hosts.backup")
 	oldContent := that.ReadAndBackupHosts(hostFilePath, hostBackupFilePath)
-	if len(toPing) == 0 || (len(toPing) > 0 && !toPing[0]) {
-		for ip, hUrl := range that.rawList {
-			that.hList[hUrl] = host{IP: ip, AvgRTT: 0}
-		}
-		that.FormatAndSaveHosts(oldContent)
-		return
+	for ip, hUrl := range that.rawList {
+		that.hList[hUrl] = host{IP: ip, AvgRTT: 0}
 	}
-	length := len(that.rawList)
-	bar := progressbar.NewOptions(length,
-		progressbar.OptionEnableColorCodes(true),
-		progressbar.OptionSetWidth(20),
-		progressbar.OptionSetDescription("[gvc] ping hosts..."),
-		progressbar.OptionSetTheme(progressbar.Theme{
-			Saucer:        "[green]=[reset]",
-			SaucerHead:    "[green]>[reset]",
-			SaucerPadding: " ",
-			BarStart:      "[",
-			BarEnd:        "]",
-		}))
-	that.bar = bar
-
-	if pool, err := ants.NewPoolWithFunc(that.Conf.Hosts.WorkerNum, func(args interface{}) {
-		that.pingHosts(args)
-	}); err != nil {
-		return
-	} else {
-		that.pool = pool
-	}
-
-	defer that.pool.Release()
-	for k, v := range that.rawList {
-		that.wg.Add(1)
-		err := that.pool.Invoke(&taskArgs{
-			IP:  k,
-			URL: v,
-		})
-		if err != nil {
-			fmt.Println(color.InRed("[Invoke task failed] "), err)
-		}
-	}
-	that.wg.Wait()
-	time.Sleep(1 * time.Second)
-	fmt.Printf("Find available hosts: <%v/%v(raw)>", len(that.hList), len(that.rawList))
 	that.FormatAndSaveHosts(oldContent)
 }
 
 const (
-	HostsCmd             = "hosts"
-	HostsFileFetchCmd    = "fetch"
-	HostsFileFetchAllCmd = "fetchall"
-	HostsFlagName        = "previlege"
+	HostsCmd          = "hosts"
+	HostsFileFetchCmd = "fetch"
+	HostsFlagName     = "previlege"
 )
 
 var (
-	HostsFetchBatPath    = filepath.Join(config.GVCWorkDir, "hosts.bat")
-	HostsFetchAllBatPath = filepath.Join(config.GVCWorkDir, "hosts-all.bat")
+	HostsFetchBatPath = filepath.Join(config.GVCWorkDir, "hosts.bat")
 )
 
-func (that *Hosts) WinRunAsAdmin(fetchAll bool) {
-	// TODO: invalid
+func (that *Hosts) WinRunAsAdmin() {
 	if ok, _ := utils.PathIsExist(HostsFetchBatPath); !ok {
 		exePath, _ := os.Executable()
 		content := fmt.Sprintf("%s %s %s --%s", exePath, HostsCmd, HostsFileFetchCmd, HostsFlagName)
 		os.WriteFile(HostsFetchBatPath, []byte(content), 0777)
 	}
-	if ok, _ := utils.PathIsExist(HostsFetchAllBatPath); !ok {
-		exePath, _ := os.Executable()
-		content := fmt.Sprintf("%s %s %s --%s", exePath, HostsCmd, HostsFileFetchAllCmd, HostsFlagName)
-		os.WriteFile(HostsFetchAllBatPath, []byte(content), 0777)
-	}
-	var cmd *exec.Cmd
-	if fetchAll {
-		cmd = exec.Command("powershell", "Start-Process", "-verb", "runas", HostsFetchAllBatPath)
-	} else {
-		cmd = exec.Command("powershell", "Start-Process", "-verb", "runas", HostsFetchBatPath)
-	}
+	cmd := exec.Command("powershell", "Start-Process", "-verb", "runas", HostsFetchBatPath)
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	if err := cmd.Run(); err != nil {
 		fmt.Println(color.InRed("[update hosts file failed] "), err)
-	} else {
-		os.RemoveAll(HostsFetchAllBatPath)
-		os.RemoveAll(HostsFetchBatPath)
-		return
 	}
 	fmt.Println(color.InGreen("Succeeded!"))
 }

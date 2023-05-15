@@ -190,11 +190,11 @@ func (that *Fetcher) GetAndSaveFile(fPath string, force ...bool) (size int64) {
 			res.RawResponse.ContentLength,
 			progressbar.OptionEnableColorCodes(true),
 			progressbar.OptionSetTheme(progressbar.Theme{
-				Saucer:        color.InGreen("="),
-				SaucerHead:    color.InGreen(">"),
+				Saucer:        color.InCyan("="),
+				SaucerHead:    color.InCyan(">"),
 				SaucerPadding: " ",
-				BarStart:      color.InGreen("["),
-				BarEnd:        color.InGreen("]"),
+				BarStart:      color.InYellow("["),
+				BarEnd:        color.InYellow("]"),
 			}),
 			progressbar.OptionSetWidth(15),
 			progressbar.OptionSetDescription(fmt.Sprintf("Downloading %s", color.InYellow(that.parseFilename(fPath)))),
@@ -229,7 +229,7 @@ func (that *Fetcher) Post() (r *resty.Response) {
 	} else {
 		that.setMisc()
 	}
-	if resp, err := that.client.R().SetBody(that.PostBody).Post(that.Url); err != nil {
+	if resp, err := that.client.SetDoNotParseResponse(true).R().SetBody(that.PostBody).Post(that.Url); err != nil {
 		fmt.Println(err)
 		return
 	} else {
