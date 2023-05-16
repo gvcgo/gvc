@@ -236,7 +236,27 @@ func (that *PyVenv) setTempEnvs() {
 func (that *PyVenv) ListRemoteVersions() {
 	that.getPyenv()
 	that.setTempEnvs()
-	utils.ExecuteCommand(that.getExecutablePath(), "install", "--list")
+	if output, err := utils.ExecuteSysCommand(true, that.getExecutablePath(), "install", "--list"); err == nil {
+		result := output.String()
+		if result == "" {
+			return
+		}
+		var rList []string
+		if strings.Contains(result, "\r") {
+			rList = strings.Split(result, "\r")
+		} else {
+			rList = strings.Split(result, "\n")
+		}
+		newList := []string{}
+		for _, v := range rList {
+			v = strings.Trim(strings.Trim(v, "\n"), "\r")
+			if strings.Contains(v, ":") || strings.Contains(v, "[") {
+				continue
+			}
+			newList = append(newList, v)
+		}
+		fmt.Println(color.InGreen(strings.Join(newList, "  ")))
+	}
 }
 
 func (that *PyVenv) isInstalled(version string) (r bool) {

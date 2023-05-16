@@ -287,6 +287,27 @@ func ExecuteCommand(args ...string) error {
 	return cmd.Run()
 }
 
+func ExecuteSysCommand(collectOutput bool, args ...string) (*bytes.Buffer, error) {
+	var cmd *exec.Cmd
+	if runtime.GOOS == Windows {
+		args = append([]string{"/c"}, args...)
+		cmd = exec.Command("cmd", args...)
+	} else {
+		FlushPathEnvForUnix()
+		cmd = exec.Command(args[0], args[1:]...)
+	}
+	cmd.Env = os.Environ()
+	var output bytes.Buffer
+	if collectOutput {
+		cmd.Stdout = &output
+	} else {
+		cmd.Stdout = os.Stdout
+	}
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	return &output, cmd.Run()
+}
+
 func ClearDir(dirPath string) {
 	fList, _ := os.ReadDir(dirPath)
 	for _, f := range fList {
