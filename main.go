@@ -1,11 +1,14 @@
 package main
 
 import (
+	"bytes"
+	"io"
 	"os"
 	"strings"
 
 	"github.com/moqsien/gvc/pkgs/cmd"
 	"github.com/moqsien/gvc/pkgs/confs"
+	"github.com/moqsien/gvc/pkgs/utils/tui"
 	"github.com/moqsien/gvc/pkgs/vctrl"
 )
 
@@ -29,8 +32,10 @@ func main() {
 		// browser.Save("firefox", true)
 		// cpp := vctrl.NewCppManager()
 		// cpp.InstallVCPkg()
-		jdk := vctrl.NewHosts()
-		jdk.Run()
+		content := []byte("testejalkjfldjfakljdflkdjfklajfl")
+		bar := tui.NewProgressBar("test", len(content))
+		bar.Start()
+		io.Copy(bar, bytes.NewBuffer(content))
 		// p := "a/b/c/d/e.zip"
 		// fmt.Println(strings.ReplaceAll(p, filepath.Dir(p), ""))
 	} else if len(os.Args) < 2 {

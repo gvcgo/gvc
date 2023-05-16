@@ -20,6 +20,7 @@ import (
 	"strings"
 	"unicode"
 
+	"github.com/TwiN/go-color"
 	"github.com/gogf/gf/os/genv"
 )
 
@@ -221,7 +222,7 @@ func GetExt(filename string) (ext string) {
 func CheckFile(fpath, cType, cSum string) (r bool) {
 	f, err := os.Open(fpath)
 	if err != nil {
-		fmt.Println("[Open file failed] ", err)
+		fmt.Println(color.InRed("[Open file failed] "), err)
 		return false
 	}
 	defer f.Close()
@@ -235,20 +236,20 @@ func CheckFile(fpath, cType, cSum string) (r bool) {
 	case "sha512":
 		h = sha512.New()
 	default:
-		fmt.Println("[Crypto] ", cType, " not supported.")
+		fmt.Println(color.InRed(fmt.Sprintf("[Crypto] %s  not supported.", cType)))
 		return
 	}
 
 	if _, err = io.Copy(h, f); err != nil {
-		fmt.Println("[Copy file failed] ", err)
+		fmt.Println(color.InRed("[Copy file failed] "), err)
 		return
 	}
 
 	if cSum != hex.EncodeToString(h.Sum(nil)) {
-		fmt.Println("Checksum failed.")
+		fmt.Println(color.InRed("Checksum failed."))
 		return
 	}
-	fmt.Println("Checksum successed.")
+	fmt.Println(color.InGreen("Checksum succeeded."))
 	return true
 }
 

@@ -21,6 +21,7 @@ import (
 	"github.com/go-resty/resty/v2"
 	"github.com/k0kubun/go-ansi"
 	"github.com/moqsien/gvc/pkgs/utils"
+	"github.com/moqsien/gvc/pkgs/utils/tui"
 	"github.com/schollz/progressbar/v3"
 )
 
@@ -155,7 +156,7 @@ func (that *Fetcher) parseFilename(fPath string) (fName string) {
 	fName = strings.ReplaceAll(fPath, dirPath, "")
 	fName = strings.TrimPrefix(fName, "/")
 	fName = strings.TrimPrefix(fName, `\`)
-	return fmt.Sprintf("<%s>", fName)
+	return
 }
 
 func (that *Fetcher) GetAndSaveFile(fPath string, force ...bool) (size int64) {
@@ -209,6 +210,50 @@ func (that *Fetcher) GetAndSaveFile(fPath string, force ...bool) (size int64) {
 		_ = bar.RenderBlank()
 		dst = io.MultiWriter(outFile, bar)
 
+		// io.Copy reads maximum 32kb size, it is perfect for large file download too
+		written, err := io.Copy(dst, res.RawResponse.Body)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		size = written
+	} else {
+		fmt.Println(err)
+	}
+	return
+}
+
+func (that *Fetcher) DownloadFile(localPath string, force ...bool) (size int64) {
+	if that.client == nil {
+		fmt.Println(color.InRed("client is nil."))
+		return
+	} else {
+		that.setMisc()
+	}
+	forceToDownload := false
+	if len(force) > 0 && force[0] {
+		forceToDownload = true
+	}
+	if ok, _ := utils.PathIsExist(localPath); ok && !forceToDownload {
+		fmt.Println(color.InYellow("[Downloader] File already exists."))
+		return 100
+	}
+	if forceToDownload {
+		os.RemoveAll(localPath)
+	}
+	if res, err := that.client.R().SetDoNotParseResponse(true).Get(that.Url); err == nil {
+		outFile, err := os.Create(localPath)
+		if err != nil {
+			fmt.Println(color.InRed("Cannot open file"), err)
+			return
+		}
+		defer utils.Closeq(outFile)
+
+		defer utils.Closeq(res.RawResponse.Body)
+		var dst io.Writer
+		bar := tui.NewProgressBar(fmt.Sprintf("Downloading <%s>", that.parseFilename(localPath)), int(res.RawResponse.ContentLength))
+		bar.Start()
+		dst = io.MultiWriter(outFile, bar)
 		// io.Copy reads maximum 32kb size, it is perfect for large file download too
 		written, err := io.Copy(dst, res.RawResponse.Body)
 		if err != nil {
