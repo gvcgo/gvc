@@ -132,7 +132,11 @@ Moreover, GVC will sync config files to WebDAV if you have configured one, which
 
 Therefore, If you are planning to get a new PC for development, probably the only thing you need to download is GVC!
 
-### Note that: All download urls are customed for visit acceleration in China by default. However, you can also custom your own download urls in gvc's config file according to your convenience. The config file is likely to be ${Your home dir}/.gvc/backup/gvc-config.json. Once you hava found the config file, you will know how to modify it.
+### Note that: 
+
+All download urls are customed for speeding-up in China by default. However, you can also custom your own download urls in gvc's config file at your convenience. The config file is likely to be ${Your-home-dir}/.gvc/backup/gvc-config.json. Once you have found the file, you will know how to modify it.
+
+Of course, you can also use "g config show" to show the config file path after the installation of gvc.
 
 ### Features
 <table>
