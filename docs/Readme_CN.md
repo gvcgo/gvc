@@ -95,6 +95,28 @@
 </tr>
 </table>
 
+---------
+## 演示(以windows下的Powershell为例)
+
+### 帮助信息
+![](https://github.com/moqsien/gvc/blob/main/docs/ghelp.png)
+
+### Go语言相关帮助信息
+![](https://github.com/moqsien/gvc/blob/main/docs/goRemote.png)
+
+### 显示目前可以获取的go编译器版本
+![](https://github.com/moqsien/gvc/blob/main/docs/goRemoteShow.png)
+
+### 自动安装go编译器并配置环境变量
+![](https://github.com/moqsien/gvc/blob/main/docs/goInstall.png)
+![](https://github.com/moqsien/gvc/blob/main/docs/goInstallationFinished.png)
+
+### 通过关键字搜索go的第三方库
+![](https://github.com/moqsien/gvc/blob/main/docs/goSearch.png)
+
+### 其他语言的编译器或解释器的可获取的版本
+![](https://github.com/moqsien/gvc/blob/main/docs/pyNodeFlutterJulia.png)
+
 
 ---------
 
