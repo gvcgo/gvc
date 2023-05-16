@@ -56,17 +56,17 @@ func NewGoVersion() (gv *GoVersion) {
 func (that *GoVersion) initeDirs() {
 	if ok, _ := utils.PathIsExist(config.DefaultGoRoot); !ok {
 		if err := os.MkdirAll(config.DefaultGoRoot, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			fmt.Println(color.InRed("[mkdir Failed] "), err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.GoTarFilesPath); !ok {
 		if err := os.MkdirAll(config.GoTarFilesPath, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			fmt.Println(color.InRed("[mkdir Failed] "), err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.GoUnTarFilesPath); !ok {
 		if err := os.MkdirAll(config.GoUnTarFilesPath, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			fmt.Println(color.InRed("[mkdir Failed] "), err)
 		}
 	}
 }
@@ -83,7 +83,7 @@ func (that *GoVersion) getDoc() {
 			var err error
 			that.Doc, err = goquery.NewDocumentFromReader(resp.RawBody())
 			if err != nil {
-				fmt.Println("[parse page errored] ", err)
+				fmt.Println(color.InRed("[parse page errored] "), err)
 			}
 			if that.Doc == nil {
 				panic(fmt.Sprintf("Cannot parse html for %s", that.fetcher.Url))
@@ -211,6 +211,19 @@ const (
 	ShowUnstable string = "3"
 )
 
+func (that *GoVersion) filterVersionsForCurrentPlatform() (vList []string) {
+	for key, value := range that.Versions {
+	INNER:
+		for _, p := range value {
+			if p.OS == runtime.GOOS && p.Arch == runtime.GOARCH {
+				vList = append(vList, key)
+				break INNER
+			}
+		}
+	}
+	return
+}
+
 func (that *GoVersion) ShowRemoteVersions(arg string) {
 	if that.Doc == nil {
 		that.getDoc()
@@ -218,18 +231,18 @@ func (that *GoVersion) ShowRemoteVersions(arg string) {
 	switch arg {
 	case ShowAll:
 		if err := that.AllVersions(); err == nil {
-			fmt.Println(strings.Join(sorts.SortGoVersion(that.GetVersions()), "  "))
+			fmt.Println(color.InCyan(strings.Join(sorts.SortGoVersion(that.filterVersionsForCurrentPlatform()), "  ")))
 		}
 	case ShowStable:
 		if err := that.StableVersions(); err == nil {
-			fmt.Println(strings.Join(sorts.SortGoVersion(that.GetVersions()), "  "))
+			fmt.Println(color.InGreen(strings.Join(sorts.SortGoVersion(that.filterVersionsForCurrentPlatform()), "  ")))
 		}
 	case ShowUnstable:
 		if err := that.UnstableVersions(); err == nil {
-			fmt.Println(strings.Join(sorts.SortGoVersion(that.GetVersions()), "  "))
+			fmt.Println(color.InYellow(strings.Join(sorts.SortGoVersion(that.filterVersionsForCurrentPlatform()), "  ")))
 		}
 	default:
-		fmt.Println("[Unknown show type] ", arg)
+		fmt.Println(color.InYellow("[Unknown show type] "), arg)
 	}
 }
 
@@ -267,7 +280,7 @@ func (that *GoVersion) download(version string) (r string) {
 			}
 		}
 	} else {
-		fmt.Println("Cannot find version:", version, ".")
+		fmt.Println(color.InYellow(fmt.Sprintf("Cannot find version: %s.", version)))
 	}
 	return
 }
@@ -316,7 +329,7 @@ func (that *GoVersion) UseVersion(version string) {
 		if tarfile := that.download(version); tarfile != "" {
 			if err := archiver.Unarchive(tarfile, untarfile); err != nil {
 				os.RemoveAll(untarfile)
-				fmt.Println("[Unarchive failed] ", err)
+				fmt.Println(color.InRed("[Unarchive failed] "), err)
 				return
 			}
 		} else {
@@ -329,13 +342,13 @@ func (that *GoVersion) UseVersion(version string) {
 		os.RemoveAll(config.DefaultGoRoot)
 	}
 	if err := utils.MkSymLink(filepath.Join(untarfile, "go"), config.DefaultGoRoot); err != nil {
-		fmt.Println("[Create link failed] ", err)
+		fmt.Println(color.InRed("[Create link failed] "), err)
 		return
 	}
 	if !that.env.DoesEnvExist(utils.SUB_GO) {
 		that.CheckAndInitEnv()
 	}
-	fmt.Println("Use", version, "succeeded!")
+	fmt.Println(color.InGreen(fmt.Sprintf("Use %s succeeded!", version)))
 }
 
 func (that *GoVersion) getCurrent() (current string) {
@@ -444,13 +457,14 @@ func (that *GoVersion) SearchLibs(name string, sortby int) {
 		t.SetHeaders("Url", "Version", "ImportedBy", "UpdateAt")
 		for i := l - 1 - currentPage*25; i >= l-1-(currentPage+1)*25 && currentPage < totalPage && i > 0; i-- {
 			v := result[i]
-			t.AddRow(v.Name, v.Version, strconv.Itoa(v.Imported), v.Update)
+			t.AddRow(color.InCyan(v.Name), color.InGreen(v.Version), color.InYellow(strconv.Itoa(v.Imported)), v.Update)
 		}
 		t.Render()
 		currentPage += 1
-		fmt.Println("Choose what to do next: ")
-		fmt.Println("1- [n] Show next page.")
-		fmt.Println("2- [e] Exit.")
+		fmt.Println(color.InGreen("Choose what to do next: "))
+		fmt.Println(color.InGreen("1) Press <n> to show next page."))
+		fmt.Println(color.InGreen("2) Press <e> to Exit."))
+		fmt.Print(color.InGreen(">> "))
 		fmt.Scan(&op)
 		if op == "n" {
 			if currentPage >= totalPage-1 {
