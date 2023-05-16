@@ -251,7 +251,7 @@ func (that *Fetcher) GetAndSaveFile(localPath string, force ...bool) (size int64
 
 		defer utils.Closeq(res.RawResponse.Body)
 		var dst io.Writer
-		bar := tui.NewProgressBar(fmt.Sprintf("Downloading <%s>", that.parseFilename(localPath)), int(res.RawResponse.ContentLength))
+		bar := tui.NewProgressBar(that.parseFilename(localPath), int(res.RawResponse.ContentLength))
 		bar.Start()
 		dst = io.MultiWriter(outFile, bar)
 		// io.Copy reads maximum 32kb size, it is perfect for large file download too

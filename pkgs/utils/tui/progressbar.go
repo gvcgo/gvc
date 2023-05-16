@@ -10,22 +10,26 @@ const (
 	BarLength int = 192
 )
 
+/*
+ProgressBar for downloading files.
+*/
 type ProgressBar struct {
 	Bar             *pterm.ProgressbarPrinter
-	Title           string
+	Filename        string
 	ContentLength   int
 	CurrentReceived int
 	divideBy        int
 }
 
-func NewProgressBar(title string, length int) (p *ProgressBar) {
+func NewProgressBar(filename string, length int) (p *ProgressBar) {
 	if length <= 0 {
 		return
 	}
 	p = &ProgressBar{
 		ContentLength: length,
+		Filename:      filename,
 	}
-	p.Bar = pterm.DefaultProgressbar.WithTitle(fmt.Sprintf("%s|<%sMB>", title, p.calcSize())).WithTotal(BarLength).WithShowCount(false).WithShowPercentage(true)
+	p.Bar = pterm.DefaultProgressbar.WithTitle(fmt.Sprintf("Downloading <%s %sMB>", filename, p.calcSize())).WithTotal(BarLength).WithShowCount(false).WithShowPercentage(true)
 	p.divideBy = length / BarLength
 	return
 }
@@ -43,6 +47,9 @@ func (that *ProgressBar) Write(p []byte) (n int, err error) {
 		increasement = that.Bar.Total - that.Bar.Current
 	} else {
 		increasement = (that.CurrentReceived / that.divideBy) - that.Bar.Current
+	}
+	if that.CurrentReceived == that.ContentLength {
+		that.Bar.UpdateTitle(fmt.Sprintf("Downloading <%s %sMB>", that.Filename, that.calcSize()))
 	}
 	if increasement > 0 {
 		that.Bar.Add(increasement)
