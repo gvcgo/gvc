@@ -134,9 +134,9 @@ Therefore, If you are planning to get a new PC for development, probably the onl
 
 ### Note that: 
 
-All download urls are customed for speeding-up in China by default. However, you can also custom your own download urls in gvc's config file at your convenience. The config file is likely to be ${Your-home-dir}/.gvc/backup/gvc-config.json. Once you have found the file, you will know how to modify it.
+All download urls are customed for speeding-up in China by default. However, you can also <b>custom your own download urls</b> in gvc's config file at your convenience. The config file is likely to be <b>${Your-home-dir}/.gvc/backup/gvc-config.json</b>. Once you have found the file, you will know how to modify it.
 
-Of course, you can also use "g config show" to show the config file path after the installation of gvc.
+Of course, you can also use <b>"g config show"</b> to show the config file path after the installation of gvc.
 
 ### Features
 <table>
