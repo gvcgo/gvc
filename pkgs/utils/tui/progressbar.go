@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	BarLength = 192
+	BarLength int = 192
 )
 
 type ProgressBar struct {

@@ -272,7 +272,7 @@ func (that *GoVersion) download(version string) (r string) {
 			that.fetcher.Url = p.Url
 		}
 		that.fetcher.Timeout = 180 * time.Second
-		if size := that.fetcher.DownloadFile(fpath); size > 0 {
+		if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 			if ok := that.checkFile(p, fpath); ok {
 				return fpath
 			} else {

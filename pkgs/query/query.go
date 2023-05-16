@@ -159,7 +159,7 @@ func (that *Fetcher) parseFilename(fPath string) (fName string) {
 	return
 }
 
-func (that *Fetcher) GetAndSaveFile(fPath string, force ...bool) (size int64) {
+func (that *Fetcher) DownloadFile(fPath string, force ...bool) (size int64) {
 	if that.client == nil {
 		fmt.Println(color.InRed("client is nil."))
 		return
@@ -223,7 +223,7 @@ func (that *Fetcher) GetAndSaveFile(fPath string, force ...bool) (size int64) {
 	return
 }
 
-func (that *Fetcher) DownloadFile(localPath string, force ...bool) (size int64) {
+func (that *Fetcher) GetAndSaveFile(localPath string, force ...bool) (size int64) {
 	if that.client == nil {
 		fmt.Println(color.InRed("client is nil."))
 		return
