@@ -47,10 +47,7 @@ func (that *Cmder) showinfo() {
 		Usage:   "Show [gvc] installation path and config file path.",
 		Action: func(ctx *cli.Context) error {
 			self := vctrl.NewSelf()
-			self.ShowInstallPath()
-
-			dav := vctrl.NewGVCWebdav()
-			dav.ShowConfigPath()
+			self.ShowPath()
 			return nil
 		},
 	}

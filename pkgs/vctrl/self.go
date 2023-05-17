@@ -10,6 +10,8 @@ import (
 	"github.com/TwiN/go-color"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
+	"github.com/pterm/pterm"
+	"github.com/pterm/pterm/putils"
 )
 
 type Self struct {
@@ -94,10 +96,17 @@ func (that *Self) Uninstall() {
 	}
 }
 
-func (that *Self) ShowInstallPath() {
-	fmt.Println(color.InCyan("======================================================"))
-	fmt.Println("[gvc] is installed in dir: ", color.InGreen(config.GVCWorkDir))
-	fmt.Println(color.InCyan("======================================================"))
+func (that *Self) ShowPath() {
+	str := pterm.DefaultBox.
+		WithRightPadding(1).
+		WithLeftPadding(1).
+		WithTopPadding(1).
+		WithBottomPadding(1).
+		Sprintf("%s: %s\n%s: %s\n%s: %s",
+			pterm.Cyan("Installation Dir"), pterm.Green(config.GVCWorkDir),
+			pterm.Cyan("GVC Config Path"), pterm.Green(config.GVConfigPath),
+			pterm.Cyan("GVC Webdav Config Path"), pterm.Green(config.GVCWebdavConfigPath))
+	fmt.Println(str)
 }
 
 const (
@@ -105,10 +114,20 @@ const (
 )
 
 func (that *Self) ShowVersion() {
-	fmt.Println(color.InGreen("***========================================================***"))
-	fmt.Println(color.InPurple("   GVC Version: ") + color.InYellow("v"+VERSION))
-	fmt.Println(color.InPurple("   Github:      ") + color.InYellow("https://github.com/moqsien/gvc"))
-	fmt.Println(color.InPurple("   Gitee:       ") + color.InYellow("https://gitee.com/moqsien/gvc_tools"))
-	fmt.Println(color.InPurple("   Email:       ") + color.InYellow("moqsien@foxmail.com"))
-	fmt.Println(color.InGreen("***========================================================***"))
+	pterm.DefaultBigText.WithLetters(
+		putils.LettersFromStringWithStyle("G", pterm.FgCyan.ToStyle()),
+		putils.LettersFromStringWithStyle("VC", pterm.FgLightMagenta.ToStyle())).Render()
+
+	str := pterm.DefaultBox.
+		WithRightPadding(2).
+		WithLeftPadding(2).
+		WithTopPadding(2).
+		WithBottomPadding(2).
+		Sprintf(
+			"%s\n%s\n%s\n%s", pterm.LightCyan("   Version: ")+pterm.LightYellow("v"+VERSION),
+			pterm.LightCyan("   Github:      ")+pterm.LightYellow("https://github.com/moqsien/gvc"),
+			pterm.LightCyan("   Gitee:       ")+pterm.LightYellow("https://gitee.com/moqsien/gvc_tools"),
+			pterm.LightCyan("   Email:       ")+pterm.LightYellow("moqsien@foxmail.com"),
+		)
+	fmt.Println(str)
 }

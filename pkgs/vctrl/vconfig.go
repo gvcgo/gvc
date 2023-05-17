@@ -99,11 +99,6 @@ func (that *GVCWebdav) RestoreDefaultGVConf() {
 	that.conf.Restore()
 }
 
-func (that *GVCWebdav) ShowConfigPath() {
-	fmt.Println("GVC Config File Path: ", config.GVConfigPath)
-	fmt.Println("Webdav Config File Path: ", config.GVCWebdavConfigPath)
-}
-
 func (that *GVCWebdav) Reload() {
 	if ok, _ := utils.PathIsExist(config.GVCWebdavConfigPath); !ok {
 		fmt.Println("[Warning] It seems that you have not set up your webdav account.")
