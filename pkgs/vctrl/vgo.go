@@ -380,7 +380,10 @@ func (that *GoVersion) ShowInstalled() {
 }
 
 func (that *GoVersion) parseTarFileName(name string) (v string) {
-	v = strings.Split(name, "-")[1]
+	vList := strings.Split(name, "-")
+	if len(vList) > 1 {
+		v = vList[1]
+	}
 	return
 }
 

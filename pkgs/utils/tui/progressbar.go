@@ -7,7 +7,8 @@ import (
 )
 
 const (
-	BarLength int = 192
+	BarLength int    = 192
+	BarTitle  string = "GetFile|<%s %s/%sMB>"
 )
 
 /*
@@ -17,8 +18,10 @@ type ProgressBar struct {
 	Bar             *pterm.ProgressbarPrinter
 	Filename        string
 	ContentLength   int
+	Total           string
 	CurrentReceived int
 	divideBy        int
+	writeCount      int64
 }
 
 func NewProgressBar(filename string, length int) (p *ProgressBar) {
@@ -30,17 +33,21 @@ func NewProgressBar(filename string, length int) (p *ProgressBar) {
 		Filename:      filename,
 	}
 	total, current := p.calcSize()
-	p.Bar = pterm.DefaultProgressbar.WithTitle(fmt.Sprintf("Downloading <%s %s/%sMB>", filename, current, total)).WithTotal(BarLength).WithShowCount(false).WithShowPercentage(true)
+	p.Bar = pterm.DefaultProgressbar.WithTotal(BarLength).WithTitle(fmt.Sprintf(BarTitle, p.Filename, current, total)).WithShowCount(false).WithShowPercentage(true)
 	p.divideBy = length / BarLength
 	return
 }
 
 func (that *ProgressBar) calcSize() (total, current string) {
-	mb := float64(that.ContentLength) / float64(1024*1024)
-	total = fmt.Sprintf("%.2f", mb)
-	length := len(total) - 2
-	mb = float64(that.CurrentReceived) / float64(1024*1024)
-	current = fmt.Sprintf("%"+fmt.Sprintf("%v", length)+".2f", mb)
+	if that.Total == "" {
+		that.Total = fmt.Sprintf("%.2f", float64(that.ContentLength)/float64(1024*1024))
+	}
+	total = that.Total
+	if that.Total != "" {
+		length := len(that.Total) - 3
+		mb := float64(that.CurrentReceived) / float64(1024*1024)
+		current = fmt.Sprintf("%"+fmt.Sprintf("%v", length)+".2f", mb)
+	}
 	return
 }
 
@@ -56,8 +63,11 @@ func (that *ProgressBar) Write(p []byte) (n int, err error) {
 	} else {
 		increasement = (that.CurrentReceived / that.divideBy) - that.Bar.Current
 	}
-	total, current := that.calcSize()
-	that.Bar.UpdateTitle(fmt.Sprintf("Downloading <%s %s/%sMB>", that.Filename, current, total))
+	if that.CurrentReceived == that.ContentLength || that.writeCount%10 == 0 {
+		total, current := that.calcSize()
+		that.Bar.UpdateTitle(fmt.Sprintf(BarTitle, that.Filename, current, total))
+	}
+	that.writeCount += 1
 	if increasement > 0 {
 		that.Bar.Add(increasement)
 	}
