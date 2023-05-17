@@ -1,7 +1,6 @@
 package vctrl
 
 import (
-	"bytes"
 	"fmt"
 	"net/url"
 	"os"
@@ -12,18 +11,18 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	color "github.com/TwiN/go-color"
 	"github.com/aquasecurity/table"
-	"github.com/gocolly/colly/v2"
-	"github.com/gookit/color"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/downloader"
+	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
 )
 
 type GoPackage struct {
 	Url       string
+	AliUrl    string
 	FileName  string
 	Kind      string
 	OS        string
@@ -34,60 +33,61 @@ type GoPackage struct {
 }
 
 type GoVersion struct {
-	*downloader.Downloader
 	Versions  map[string][]*GoPackage
 	Doc       *goquery.Document
 	Conf      *config.GVConfig
 	ParsedUrl *url.URL
 	env       *utils.EnvsHandler
+	fetcher   *query.Fetcher
 }
 
 func NewGoVersion() (gv *GoVersion) {
 	gv = &GoVersion{
-		Versions:   make(map[string][]*GoPackage, 50),
-		Conf:       config.New(),
-		Downloader: &downloader.Downloader{},
-		env:        utils.NewEnvsHandler(),
+		Versions: make(map[string][]*GoPackage, 50),
+		Conf:     config.New(),
+		env:      utils.NewEnvsHandler(),
+		fetcher:  query.NewFetcher(),
 	}
 	gv.initeDirs()
+	gv.env.SetWinWorkDir(config.GVCWorkDir)
 	return
 }
 
 func (that *GoVersion) initeDirs() {
 	if ok, _ := utils.PathIsExist(config.DefaultGoRoot); !ok {
 		if err := os.MkdirAll(config.DefaultGoRoot, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			fmt.Println(color.InRed("[mkdir Failed] "), err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.GoTarFilesPath); !ok {
 		if err := os.MkdirAll(config.GoTarFilesPath, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			fmt.Println(color.InRed("[mkdir Failed] "), err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.GoUnTarFilesPath); !ok {
 		if err := os.MkdirAll(config.GoUnTarFilesPath, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			fmt.Println(color.InRed("[mkdir Failed] "), err)
 		}
 	}
 }
 
 func (that *GoVersion) getDoc() {
 	if len(that.Conf.Go.CompilerUrls) > 0 {
-		that.Url = that.Conf.Go.CompilerUrls[0]
+		that.fetcher.Url = that.Conf.Go.CompilerUrls[0]
 		var err error
-		if that.ParsedUrl, err = url.Parse(that.Url); err != nil {
+		if that.ParsedUrl, err = url.Parse(that.fetcher.Url); err != nil {
 			panic(err)
 		}
-		that.Timeout = 30 * time.Second
-		if resp := that.GetUrl(); resp != nil {
+		that.fetcher.Timeout = 30 * time.Second
+		if resp := that.fetcher.Get(); resp != nil {
 			var err error
-			that.Doc, err = goquery.NewDocumentFromReader(resp.Body)
+			that.Doc, err = goquery.NewDocumentFromReader(resp.RawBody())
 			if err != nil {
-				fmt.Println("[parse page errored] ", err)
+				fmt.Println(color.InRed("[parse page errored] "), err)
 			}
-			c := []byte{}
-			resp.Body.Read(c)
-			resp.Body.Close()
+			if that.Doc == nil {
+				panic(fmt.Sprintf("Cannot parse html for %s", that.fetcher.Url))
+			}
 		}
 	}
 }
@@ -98,12 +98,23 @@ func (that *GoVersion) findPackages(table *goquery.Selection) (pkgs []*GoPackage
 	table.Find("tr").Not(".first").Each(func(j int, tr *goquery.Selection) {
 		td := tr.Find("td")
 		href := td.Eq(0).Find("a").AttrOr("href", "")
+		aliUrl := href
 		if strings.HasPrefix(href, "/") { // relative paths
 			href = fmt.Sprintf("%s://%s%s", that.ParsedUrl.Scheme, that.ParsedUrl.Host, href)
+			fnameList := strings.Split(aliUrl, "/")
+			fname := fnameList[len(fnameList)-1]
+			if strings.Contains(fname, ".") {
+				aliUrl = fmt.Sprintf("%s%s", that.Conf.Go.AliRepoUrl, fname)
+			} else {
+				aliUrl = ""
+			}
+		} else {
+			aliUrl = ""
 		}
 		pkgs = append(pkgs, &GoPackage{
 			FileName:  td.Eq(0).Find("a").Text(),
 			Url:       href,
+			AliUrl:    aliUrl,
 			Kind:      strings.ToLower(td.Eq(1).Text()),
 			OS:        utils.MapArchAndOS(td.Eq(2).Text()),
 			Arch:      utils.MapArchAndOS(td.Eq(3).Text()),
@@ -200,6 +211,19 @@ const (
 	ShowUnstable string = "3"
 )
 
+func (that *GoVersion) filterVersionsForCurrentPlatform() (vList []string) {
+	for key, value := range that.Versions {
+	INNER:
+		for _, p := range value {
+			if p.OS == runtime.GOOS && p.Arch == runtime.GOARCH {
+				vList = append(vList, key)
+				break INNER
+			}
+		}
+	}
+	return
+}
+
 func (that *GoVersion) ShowRemoteVersions(arg string) {
 	if that.Doc == nil {
 		that.getDoc()
@@ -207,18 +231,18 @@ func (that *GoVersion) ShowRemoteVersions(arg string) {
 	switch arg {
 	case ShowAll:
 		if err := that.AllVersions(); err == nil {
-			fmt.Println(strings.Join(sorts.SortGoVersion(that.GetVersions()), "  "))
+			fmt.Println(color.InCyan(strings.Join(sorts.SortGoVersion(that.filterVersionsForCurrentPlatform()), "  ")))
 		}
 	case ShowStable:
 		if err := that.StableVersions(); err == nil {
-			fmt.Println(strings.Join(sorts.SortGoVersion(that.GetVersions()), "  "))
+			fmt.Println(color.InGreen(strings.Join(sorts.SortGoVersion(that.filterVersionsForCurrentPlatform()), "  ")))
 		}
 	case ShowUnstable:
 		if err := that.UnstableVersions(); err == nil {
-			fmt.Println(strings.Join(sorts.SortGoVersion(that.GetVersions()), "  "))
+			fmt.Println(color.InYellow(strings.Join(sorts.SortGoVersion(that.filterVersionsForCurrentPlatform()), "  ")))
 		}
 	default:
-		fmt.Println("[Unknown show type] ", arg)
+		fmt.Println(color.InYellow("[Unknown show type] "), arg)
 	}
 }
 
@@ -243,9 +267,12 @@ func (that *GoVersion) download(version string) (r string) {
 	if p != nil {
 		fName := fmt.Sprintf("go-%s-%s.%s%s", version, p.OS, p.Arch, utils.GetExt(p.FileName))
 		fpath := filepath.Join(config.GoTarFilesPath, fName)
-		that.Url = p.Url
-		that.Timeout = 180 * time.Second
-		if size := that.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
+		that.fetcher.Url = p.AliUrl
+		if that.fetcher.Url == "" {
+			that.fetcher.Url = p.Url
+		}
+		that.fetcher.Timeout = 180 * time.Second
+		if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 			if ok := that.checkFile(p, fpath); ok {
 				return fpath
 			} else {
@@ -253,7 +280,7 @@ func (that *GoVersion) download(version string) (r string) {
 			}
 		}
 	} else {
-		fmt.Println("Cannot find version:", version, ".")
+		fmt.Println(color.InYellow(fmt.Sprintf("Cannot find version: %s.", version)))
 	}
 	return
 }
@@ -299,14 +326,15 @@ func (that *GoVersion) CheckAndInitEnv() {
 func (that *GoVersion) UseVersion(version string) {
 	untarfile := filepath.Join(config.GoUnTarFilesPath, version)
 	if ok, _ := utils.PathIsExist(untarfile); !ok {
-		tarfile := that.download(version)
-		if tarfile == "" {
-			// not exist or download failed or check failed
-			return
-		}
-		if err := archiver.Unarchive(tarfile, untarfile); err != nil {
+		if tarfile := that.download(version); tarfile != "" {
+			if err := archiver.Unarchive(tarfile, untarfile); err != nil {
+				os.RemoveAll(untarfile)
+				fmt.Println(color.InRed("[Unarchive failed] "), err)
+				return
+			}
+		} else {
+			// version does not exist.
 			os.RemoveAll(untarfile)
-			fmt.Println("[Unarchive failed] ", err)
 			return
 		}
 	}
@@ -314,13 +342,13 @@ func (that *GoVersion) UseVersion(version string) {
 		os.RemoveAll(config.DefaultGoRoot)
 	}
 	if err := utils.MkSymLink(filepath.Join(untarfile, "go"), config.DefaultGoRoot); err != nil {
-		fmt.Println("[Create link failed] ", err)
+		fmt.Println(color.InRed("[Create link failed] "), err)
 		return
 	}
 	if !that.env.DoesEnvExist(utils.SUB_GO) {
 		that.CheckAndInitEnv()
 	}
-	fmt.Println("Use", version, "succeeded!")
+	fmt.Println(color.InGreen(fmt.Sprintf("Use %s succeeded!", version)))
 }
 
 func (that *GoVersion) getCurrent() (current string) {
@@ -337,23 +365,25 @@ func (that *GoVersion) ShowInstalled() {
 	current := that.getCurrent()
 	installedList, err := os.ReadDir(config.GoUnTarFilesPath)
 	if err != nil {
-		fmt.Println("[Read dir failed] ", err)
+		fmt.Println(color.InRed("[Read dir failed] "), err)
 		return
 	}
 	for _, v := range installedList {
 		if v.IsDir() {
 			if current == v.Name() {
-				s := fmt.Sprintf("%s <Current>", v.Name())
-				color.Yellow.Println(s)
+				fmt.Println(color.InYellow(fmt.Sprintf("%s <Current>", v.Name())))
 				continue
 			}
-			color.Cyan.Println(v.Name())
+			fmt.Println(color.InCyan(v.Name()))
 		}
 	}
 }
 
 func (that *GoVersion) parseTarFileName(name string) (v string) {
-	v = strings.Split(name, "-")[1]
+	vList := strings.Split(name, "-")
+	if len(vList) > 1 {
+		v = vList[1]
+	}
 	return
 }
 
@@ -361,7 +391,7 @@ func (that *GoVersion) RemoveUnused() {
 	current := that.getCurrent()
 	installedList, err := os.ReadDir(config.GoUnTarFilesPath)
 	if err != nil {
-		fmt.Println("[Read dir failed] ", err)
+		fmt.Println(color.InRed("[Read dir failed] "), err)
 		return
 	}
 	tarFiles, _ := os.ReadDir(config.GoTarFilesPath)
@@ -393,62 +423,59 @@ func (that *GoVersion) RemoveVersion(version string) {
 
 // search libraries
 func (that *GoVersion) SearchLibs(name string, sortby int) {
-	that.Url = fmt.Sprintf(that.Conf.Go.SearchUrl, name)
-	c := colly.NewCollector(colly.UserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36"))
-	c.OnResponse(func(r *colly.Response) {
-		// fmt.Println("===", string(r.Body))
-		that.Doc, _ = goquery.NewDocumentFromReader(bytes.NewBuffer(r.Body))
-		itemList := make([]sorts.Item, 0)
-		that.Doc.Find(".SearchSnippet").Each(func(i int, s *goquery.Selection) {
-			item := &sorts.GoLibrary{}
-			item.Name = s.Find(".SearchSnippet-headerContainer").Find("a").AttrOr("href", "")
-			item.Name = strings.Trim(item.Name, "/")
-			item.Imported, _ = strconv.Atoi(s.Find(".SearchSnippet-infoLabel").Find("a").First().Find("strong").Text())
-			if s.Find(".SearchSnippet-infoLabel").Find(".go-textSubtle").Eq(2).Find("strong").Length() > 1 {
-				item.Version = s.Find(".SearchSnippet-infoLabel").Find(".go-textSubtle").Eq(2).Find("strong").Eq(0).Text()
-			}
-			item.Update = s.Find(".SearchSnippet-infoLabel").Find(".go-textSubtle").Eq(2).Find("span").First().Find("strong").Eq(0).Text()
-			if strings.Contains(item.Update, "day") {
-				s := strings.Split(item.Update, "day")[0]
-				d, _ := strconv.Atoi(strings.Trim(s, " "))
-				item.UpdateAt = time.Now().Add(-time.Duration(d) * 24 * time.Hour)
-			} else if strings.Contains(item.Update, ",") {
-				item.UpdateAt, _ = time.Parse("Jan2,2006", strings.ReplaceAll(item.Update, " ", ""))
-			} else {
-				item.UpdateAt = time.Now().UTC()
-			}
-			item.SortType = sortby
-			itemList = append(itemList, item)
-		})
-		result := sorts.SortGoLibs(itemList)
-		l := len(result)
-		totalPage := l / 25
-		currentPage := 0
-		var op string
-		for {
-			t := table.New(os.Stdout)
-			t.SetAlignment(table.AlignLeft, table.AlignCenter, table.AlignCenter, table.AlignCenter)
-			t.SetHeaders("Url", "Version", "ImportedBy", "UpdateAt")
-			for i := l - 1 - currentPage*25; i >= l-1-(currentPage+1)*25 && currentPage < totalPage && i > 0; i-- {
-				v := result[i]
-				t.AddRow(v.Name, v.Version, strconv.Itoa(v.Imported), v.Update)
-			}
-			t.Render()
-			currentPage += 1
-			fmt.Println("Choose what to do next: ")
-			fmt.Println("1- [n] Show next page.")
-			fmt.Println("2- [e] Exit.")
-			fmt.Scan(&op)
-			if op == "n" {
-				if currentPage >= totalPage-1 {
-					break
-				}
-				continue
-			} else {
-				break
-			}
+	that.fetcher.Url = fmt.Sprintf(that.Conf.Go.SearchUrl, name)
+	resp := that.fetcher.Get()
+	that.Doc, _ = goquery.NewDocumentFromReader(resp.RawBody())
+	itemList := make([]sorts.Item, 0)
+	that.Doc.Find(".SearchSnippet").Each(func(i int, s *goquery.Selection) {
+		item := &sorts.GoLibrary{}
+		item.Name = s.Find(".SearchSnippet-headerContainer").Find("a").AttrOr("href", "")
+		item.Name = strings.Trim(item.Name, "/")
+		item.Imported, _ = strconv.Atoi(s.Find(".SearchSnippet-infoLabel").Find("a").First().Find("strong").Text())
+		if s.Find(".SearchSnippet-infoLabel").Find(".go-textSubtle").Eq(2).Find("strong").Length() > 1 {
+			item.Version = s.Find(".SearchSnippet-infoLabel").Find(".go-textSubtle").Eq(2).Find("strong").Eq(0).Text()
 		}
+		item.Update = s.Find(".SearchSnippet-infoLabel").Find(".go-textSubtle").Eq(2).Find("span").First().Find("strong").Eq(0).Text()
+		if strings.Contains(item.Update, "day") {
+			s := strings.Split(item.Update, "day")[0]
+			d, _ := strconv.Atoi(strings.Trim(s, " "))
+			item.UpdateAt = time.Now().Add(-time.Duration(d) * 24 * time.Hour)
+		} else if strings.Contains(item.Update, ",") {
+			item.UpdateAt, _ = time.Parse("Jan2,2006", strings.ReplaceAll(item.Update, " ", ""))
+		} else {
+			item.UpdateAt = time.Now().UTC()
+		}
+		item.SortType = sortby
+		itemList = append(itemList, item)
 	})
 
-	c.Visit(that.Url)
+	result := sorts.SortGoLibs(itemList)
+	l := len(result)
+	totalPage := l / 25
+	currentPage := 0
+	var op string
+	for {
+		t := table.New(os.Stdout)
+		t.SetAlignment(table.AlignLeft, table.AlignCenter, table.AlignCenter, table.AlignCenter)
+		t.SetHeaders("Url", "Version", "ImportedBy", "UpdateAt")
+		for i := l - 1 - currentPage*25; i >= l-1-(currentPage+1)*25 && currentPage < totalPage && i > 0; i-- {
+			v := result[i]
+			t.AddRow(color.InCyan(v.Name), color.InGreen(v.Version), color.InYellow(strconv.Itoa(v.Imported)), v.Update)
+		}
+		t.Render()
+		currentPage += 1
+		fmt.Println(color.InGreen("Choose what to do next: "))
+		fmt.Println(color.InGreen("1) Press <n> to show next page."))
+		fmt.Println(color.InGreen("2) Press <e> to Exit."))
+		fmt.Print(color.InGreen(">> "))
+		fmt.Scan(&op)
+		if op == "n" {
+			if currentPage >= totalPage-1 {
+				break
+			}
+			continue
+		} else {
+			break
+		}
+	}
 }

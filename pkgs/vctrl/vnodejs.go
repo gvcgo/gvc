@@ -13,11 +13,10 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/gocolly/colly/v2"
-	"github.com/gookit/color"
+	color "github.com/TwiN/go-color"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/downloader"
+	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 )
 
@@ -46,8 +45,7 @@ type nV struct {
 }
 
 type NodeVersion struct {
-	c        *colly.Collector
-	d        *downloader.Downloader
+	fetcher  *query.Fetcher
 	dir      string
 	env      *utils.EnvsHandler
 	Versions map[string]*NodePackage
@@ -61,28 +59,28 @@ func NewNodeVersion() (nv *NodeVersion) {
 		Versions: make(map[string]*NodePackage, 50),
 		Conf:     config.New(),
 		vList:    []*nV{},
-		c:        colly.NewCollector(),
-		d:        &downloader.Downloader{},
+		fetcher:  query.NewFetcher(),
 		env:      utils.NewEnvsHandler(),
 	}
 	nv.initeDirs()
+	nv.env.SetWinWorkDir(config.GVCWorkDir)
 	return
 }
 
 func (that *NodeVersion) initeDirs() {
 	if ok, _ := utils.PathIsExist(config.NodejsRoot); !ok {
 		if err := os.MkdirAll(config.NodejsRoot, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			fmt.Println(color.InRed("[mkdir Failed] "), err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.NodejsTarFiles); !ok {
 		if err := os.MkdirAll(config.NodejsTarFiles, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			fmt.Println(color.InRed("[mkdir Failed] "), err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.NodejsUntarFiles); !ok {
 		if err := os.MkdirAll(config.NodejsUntarFiles, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			fmt.Println(color.InRed("[mkdir Failed] "), err)
 		}
 	}
 }
@@ -96,17 +94,19 @@ func (that *NodeVersion) getSuffix() string {
 }
 
 func (that *NodeVersion) getVersions() (r []string) {
-	if that.Conf.Nodejs.CompilerUrl != "" {
-		that.c.OnResponse(func(r *colly.Response) {
-			if err := json.Unmarshal(r.Body, &that.vList); err != nil {
-				fmt.Println(err)
-			}
-		})
-	}
-	if _, err := url.Parse(that.Conf.Nodejs.CompilerUrl); err != nil {
+
+	that.fetcher.Url = that.Conf.Nodejs.CompilerUrl
+	if _, err := url.Parse(that.fetcher.Url); err != nil {
 		panic(err)
 	}
-	that.c.Visit(that.Conf.Nodejs.CompilerUrl)
+
+	if resp := that.fetcher.Get(); resp != nil {
+		content, _ := io.ReadAll(resp.RawBody())
+		if err := json.Unmarshal(content, &that.vList); err != nil {
+			fmt.Println(color.InRed(fmt.Sprintf("Parse content from %s failed: ", that.fetcher.Url)), err)
+			return
+		}
+	}
 
 	for i, v := range that.vList {
 		if v.Version == "" {
@@ -144,48 +144,50 @@ func (that *NodeVersion) parseLTS(v any) (r string) {
 }
 
 func (that *NodeVersion) ShowVersions() {
-	fmt.Println(strings.Join(that.getVersions(), "  "))
+	fmt.Println(color.InGreen(strings.Join(that.getVersions(), "  ")))
 }
 
 func (that *NodeVersion) download(version string) string {
 	if len(that.vList) == 0 {
 		that.getVersions()
 	}
-	that.c = colly.NewCollector()
-	that.c.OnResponse(func(r *colly.Response) {
-		that.Doc, _ = goquery.NewDocumentFromReader(bytes.NewBuffer(r.Body))
-	})
-
 	if v, ok := that.Versions[version]; ok {
-		that.c.Visit(v.VUrl)
+		that.fetcher.Url = v.VUrl
+		if that.fetcher.Url == "" {
+			return ""
+		}
+		that.Doc = nil
+		if resp := that.fetcher.Get(); resp != nil {
+			that.Doc, _ = goquery.NewDocumentFromReader(resp.RawBody())
+		}
 		if that.Doc != nil {
 			that.Doc.Find("a")
 			that.Doc.Find("a").Each(func(i int, s *goquery.Selection) {
 				href, _ := s.Attr("href")
-
 				if strings.Contains(href, PlatformList[runtime.GOOS]) && strings.Contains(href, PlatformList[runtime.GOARCH]) && strings.HasSuffix(href, that.getSuffix()) {
 					v.Url, _ = url.JoinPath(v.VUrl, href)
 				}
 			})
 		}
+
 		if v.Url != "" {
-			sumUrl, _ := url.JoinPath(v.VUrl, "SHASUMS256.txt")
-			that.c = colly.NewCollector()
-			that.c.OnResponse(func(r *colly.Response) {
-				sumList := strings.Split(string(r.Body), "\n")
+			that.fetcher.Url, _ = url.JoinPath(v.VUrl, "SHASUMS256.txt")
+			if resp := that.fetcher.Get(); resp != nil {
+				content, _ := io.ReadAll(resp.RawBody())
+				sumList := strings.Split(string(content), "\n")
 				nameList := strings.Split(v.Url, "/")
 				for _, vl := range sumList {
 					if strings.Contains(vl, nameList[len(nameList)-1]) {
 						v.Checksum = strings.Trim(strings.Split(vl, " ")[0], " ")
 					}
 				}
-			})
-			that.c.Visit(sumUrl)
+			}
+
 			if v.Checksum != "" {
-				that.d.Url = v.Url
-				that.d.Timeout = 100 * time.Minute
+				that.fetcher.Url = v.Url
+				that.fetcher.Timeout = 100 * time.Minute
 				fpath := filepath.Join(config.NodejsTarFiles, v.FileName)
-				if size := that.d.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
+				if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 					if ok := utils.CheckFile(fpath, "sha256", v.Checksum); ok {
 						return fpath
 					} else {
@@ -234,7 +236,7 @@ func (that *NodeVersion) UseVersion(version string) {
 		if tarfile = that.download(version); tarfile != "" {
 			if err := archiver.Unarchive(tarfile, untarfile); err != nil {
 				os.RemoveAll(untarfile)
-				fmt.Println("[Unarchive failed] ", err)
+				fmt.Println(color.InRed("[Unarchive failed] "), err)
 				return
 			}
 		}
@@ -247,14 +249,14 @@ func (that *NodeVersion) UseVersion(version string) {
 		return
 	}
 	if err := utils.MkSymLink(that.dir, config.NodejsRoot); err != nil {
-		fmt.Println("[Create link failed] ", err)
+		fmt.Println(color.InRed("[Create link failed] "), err)
 		return
 	}
 	vFilePath := filepath.Join(that.dir, "version.txt")
 	if ok, _ := utils.PathIsExist(vFilePath); !ok {
 		vFile, err := os.OpenFile(vFilePath, os.O_WRONLY|os.O_CREATE, os.ModePerm)
 		if err != nil {
-			fmt.Printf("open file err = %v\n", err)
+			fmt.Println(color.InRed("[Open file failed] "), err)
 			return
 		}
 		defer vFile.Close()
@@ -262,7 +264,7 @@ func (that *NodeVersion) UseVersion(version string) {
 	}
 	that.setEnv(config.NodejsRoot)
 	that.setNpm()
-	fmt.Println("Use", version, "successed!")
+	fmt.Println(color.InGreen(fmt.Sprintf("Use %s successed!", version)))
 }
 
 func (that *NodeVersion) getCurrent() (v string) {
@@ -281,11 +283,10 @@ func (that *NodeVersion) ShowInstalled() {
 		for _, v := range rd {
 			if v.IsDir() {
 				if current == v.Name() {
-					s := fmt.Sprintf("%s <Current>", v.Name())
-					color.Yellow.Println(s)
+					fmt.Println(color.InYellow(fmt.Sprintf("%s <Current>", v.Name())))
 					continue
 				}
-				color.Cyan.Println(v.Name())
+				fmt.Println(color.InCyan(v.Name()))
 			}
 		}
 	}

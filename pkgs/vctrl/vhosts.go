@@ -4,8 +4,8 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
 	"runtime"
@@ -13,12 +13,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/TwiN/go-color"
+	"github.com/go-resty/resty/v2"
 	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/downloader"
+	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
-	"github.com/panjf2000/ants/v2"
-	ping "github.com/prometheus-community/pro-bing"
-	"github.com/schollz/progressbar/v3"
 )
 
 const (
@@ -27,11 +26,6 @@ const (
 	TIME        = "# UpdateTime: %s"
 	LinePattern = "%s\t\t\t%s # %s"
 )
-
-type taskArgs struct {
-	IP  string
-	URL string
-}
 
 type host struct {
 	IP     string        // ip address
@@ -49,9 +43,7 @@ type Hosts struct {
 	hostReg  *regexp.Regexp
 	lock     *sync.Mutex
 	wg       sync.WaitGroup
-	pool     *ants.PoolWithFunc
-	bar      *progressbar.ProgressBar
-	*downloader.Downloader
+	fetcher  *query.Fetcher
 }
 
 func NewHosts() *Hosts {
@@ -59,15 +51,15 @@ func NewHosts() *Hosts {
 	lineReg := `((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}`
 	hostsReg := fmt.Sprintf(`%s[\s\S]*%s`, HEAD, TAIL)
 	return &Hosts{
-		Conf:       conf,
-		filePath:   config.GetHostsFilePath(),
-		rawList:    make(map[string]string, 200),
-		hList:      make(hostList, 200),
-		lineReg:    regexp.MustCompile(lineReg),
-		hostReg:    regexp.MustCompile(hostsReg),
-		lock:       &sync.Mutex{},
-		wg:         sync.WaitGroup{},
-		Downloader: &downloader.Downloader{},
+		Conf:     conf,
+		filePath: config.GetHostsFilePath(),
+		rawList:  make(map[string]string, 200),
+		hList:    make(hostList, 200),
+		lineReg:  regexp.MustCompile(lineReg),
+		hostReg:  regexp.MustCompile(hostsReg),
+		lock:     &sync.Mutex{},
+		wg:       sync.WaitGroup{},
+		fetcher:  query.NewFetcher(),
 	}
 }
 
@@ -95,15 +87,15 @@ func (that *Hosts) ParseHosts(content []byte) {
 }
 
 func (that *Hosts) GetHosts() {
-	resps := make(chan *http.Response, 10)
-	that.Timeout = time.Duration(that.Conf.Hosts.ReqTimeout) * time.Second
+	resps := make(chan *resty.Response, 10)
+	that.fetcher.Timeout = time.Duration(that.Conf.Hosts.ReqTimeout) * time.Second
 	for _, url := range that.Conf.Hosts.SourceUrls {
 		that.wg.Add(1)
 		var url_ string = url
 		go func() {
 			defer that.wg.Done()
-			that.Url = url_
-			resp := that.GetUrl()
+			that.fetcher.Url = url_
+			resp := that.fetcher.Get()
 			resps <- resp
 		}()
 	}
@@ -111,69 +103,14 @@ func (that *Hosts) GetHosts() {
 	close(resps)
 	for r := range resps {
 		if r != nil {
-			content, err := io.ReadAll(r.Body)
-			r.Body.Close()
+			content, err := io.ReadAll(r.RawBody())
+			r.RawBody().Close()
 			if err != nil {
-				fmt.Println("[Read Body Errored] ", err)
+				fmt.Println(color.InRed("[Read Body Errored] "), err)
 				return
 			}
 			that.ParseHosts(content)
 		}
-	}
-}
-
-func (that *Hosts) toSave(url string) bool {
-	filters := that.Conf.Hosts.HostFilters
-	if len(filters) == 0 {
-		return true
-	}
-	for _, filter := range filters {
-		if strings.Contains(url, filter) {
-			return true
-		}
-	}
-	return false
-}
-
-func (that *Hosts) pingHosts(args interface{}) {
-	var url, ip string
-	defer that.wg.Done()
-	defer that.bar.Add(1)
-	if tArgs, ok := args.(*taskArgs); !ok {
-		return
-	} else {
-		url = tArgs.URL
-		ip = tArgs.IP
-	}
-	if !that.toSave(url) {
-		return
-	}
-	pinger, err := ping.NewPinger(ip)
-	if err != nil {
-		fmt.Println("Ping hosts errored: ", err)
-		return
-	}
-	pinger.Count = that.Conf.Hosts.PingCount
-	if runtime.GOOS == utils.Windows {
-		pinger.SetPrivileged(true)
-	}
-	pinger.Timeout = time.Duration(that.Conf.Hosts.ReqTimeout) * time.Millisecond
-	pinger.OnFinish = func(statics *ping.Statistics) {
-		if len(statics.Rtts) > 0 {
-			that.lock.Lock()
-			if old, ok := that.hList[url]; !ok {
-				that.hList[url] = host{IP: ip, AvgRTT: statics.AvgRtt}
-			} else {
-				if old.AvgRTT > statics.AvgRtt {
-					that.hList[url] = host{IP: ip, AvgRTT: statics.AvgRtt}
-				}
-			}
-			that.lock.Unlock()
-		}
-	}
-	err = pinger.Run()
-	if err != nil {
-		fmt.Println(err)
 	}
 }
 
@@ -199,7 +136,7 @@ func (that *Hosts) ReadAndBackupHosts(hPath, hBackupPath string) (content []byte
 		err = utils.CopyFileOnUnixSudo(hPath, hBackupPath)
 	}
 	if err != nil {
-		fmt.Println("Hosts file backup failed: ", err)
+		fmt.Println(color.InRed("Hosts file backup failed: "), err)
 		return
 	}
 	return
@@ -236,7 +173,7 @@ func (that *Hosts) FormatAndSaveHosts(oldContent []byte) {
 			return
 		}
 		var err error
-		if utils.GetShell() == "win" {
+		if runtime.GOOS == utils.Windows {
 			err = os.WriteFile(config.GetHostsFilePath(), []byte(newStr), 0666)
 		} else {
 			err = os.WriteFile(config.TempHostsFilePath, []byte(newStr), 0666)
@@ -245,64 +182,50 @@ func (that *Hosts) FormatAndSaveHosts(oldContent []byte) {
 			}
 		}
 		if err != nil {
-			fmt.Println("\nWrite file errored: ", err)
+			fmt.Println(color.InRed("Write file errored: "), err)
 			return
 		}
-		fmt.Println("\nSuccessed!")
+		fmt.Println(color.InGreen("Succeeded!"))
 	}
 }
 
-func (that *Hosts) Run(toPing ...bool) {
+func (that *Hosts) Run() {
 	that.GetHosts()
 	hostFilePath := config.GetHostsFilePath()
 	hostBackupFilePath := filepath.Join(filepath.Dir(hostFilePath), "hosts.backup")
 	oldContent := that.ReadAndBackupHosts(hostFilePath, hostBackupFilePath)
-	if len(toPing) == 0 || (len(toPing) > 0 && !toPing[0]) {
-		for ip, hUrl := range that.rawList {
-			that.hList[hUrl] = host{IP: ip, AvgRTT: 0}
-		}
-		that.FormatAndSaveHosts(oldContent)
-		return
+	for ip, hUrl := range that.rawList {
+		that.hList[hUrl] = host{IP: ip, AvgRTT: 0}
 	}
-	length := len(that.rawList)
-	bar := progressbar.NewOptions(length,
-		progressbar.OptionEnableColorCodes(true),
-		progressbar.OptionSetWidth(20),
-		progressbar.OptionSetDescription("[gvc] ping hosts..."),
-		progressbar.OptionSetTheme(progressbar.Theme{
-			Saucer:        "[green]=[reset]",
-			SaucerHead:    "[green]>[reset]",
-			SaucerPadding: " ",
-			BarStart:      "[",
-			BarEnd:        "]",
-		}))
-	that.bar = bar
-
-	if pool, err := ants.NewPoolWithFunc(that.Conf.Hosts.WorkerNum, func(args interface{}) {
-		that.pingHosts(args)
-	}); err != nil {
-		return
-	} else {
-		that.pool = pool
-	}
-
-	defer that.pool.Release()
-	for k, v := range that.rawList {
-		that.wg.Add(1)
-		err := that.pool.Invoke(&taskArgs{
-			IP:  k,
-			URL: v,
-		})
-		if err != nil {
-			fmt.Println("[Invoke task failed] ", err)
-		}
-	}
-	that.wg.Wait()
-	time.Sleep(1 * time.Second)
-	fmt.Printf("Find available hosts: <%v/%v(raw)>", len(that.hList), len(that.rawList))
 	that.FormatAndSaveHosts(oldContent)
 }
 
+const (
+	HostsCmd          = "hosts"
+	HostsFileFetchCmd = "fetch"
+	HostsFlagName     = "previlege"
+)
+
+var (
+	HostsFetchBatPath = filepath.Join(config.GVCWorkDir, "hosts.bat")
+)
+
+func (that *Hosts) WinRunAsAdmin() {
+	if ok, _ := utils.PathIsExist(HostsFetchBatPath); !ok {
+		exePath, _ := os.Executable()
+		content := fmt.Sprintf("%s %s %s --%s", exePath, HostsCmd, HostsFileFetchCmd, HostsFlagName)
+		os.WriteFile(HostsFetchBatPath, []byte(content), 0777)
+	}
+	cmd := exec.Command("powershell", "Start-Process", "-verb", "runas", HostsFetchBatPath)
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	if err := cmd.Run(); err != nil {
+		fmt.Println(color.InRed("[update hosts file failed] "), err)
+	}
+	fmt.Println(color.InGreen("Succeeded!"))
+}
+
 func (that *Hosts) ShowFilePath() {
-	fmt.Println("HostsFile: ", config.GetHostsFilePath())
+	fmt.Println(color.InGreen(fmt.Sprintf("HostsFile: %s", config.GetHostsFilePath())))
 }

@@ -8,7 +8,9 @@ import (
 	"regexp"
 	"runtime"
 	"strings"
-	"time"
+
+	"github.com/TwiN/go-color"
+	xutils "github.com/moqsien/xtray/pkgs/utils"
 )
 
 /*
@@ -41,6 +43,7 @@ const (
 	SUB_LUA     = "lua"
 	SUB_JULIA   = "julia"
 	SUB_TYPST   = "typst"
+	SUB_VCPKG   = "vcpkg"
 )
 
 /*
@@ -149,10 +152,22 @@ Typst Envs
 */
 var TypstEnv string = `export PATH="%s:$PATH"`
 
+/*
+VCPKG Envs
+*/
+var VcpkgEnv string = `export PATH="%s:$PATH"`
+
+type WinPathEnvTemp struct {
+	PathList []string `koanf,json:"path_list"`
+}
+
 type EnvsHandler struct {
-	shellName  string
-	rcFilePath string
-	oldContent []byte
+	shellName   string
+	rcFilePath  string
+	oldContent  []byte
+	winPathTemp *WinPathEnvTemp
+	koanfer     *xutils.Koanfer
+	winWorkdir  string
 }
 
 func NewEnvsHandler() (e *EnvsHandler) {
@@ -166,6 +181,7 @@ func NewEnvsHandler() (e *EnvsHandler) {
 		e.getRcFilePath()
 		e.getOldContents()
 	}
+	e.winPathTemp = &WinPathEnvTemp{PathList: []string{}}
 	return
 }
 
@@ -298,65 +314,103 @@ func (that *EnvsHandler) DoesEnvExist(subname string) bool {
 /*
 Windows PowerShell Environment Settings
 */
+const (
+	TempName string = "windows_env_temp.json"
+)
+
+func (that *EnvsHandler) SetWinWorkDir(dirPath string) {
+	if ok, _ := PathIsExist(dirPath); ok {
+		that.winWorkdir = dirPath
+	} else {
+		fmt.Println(color.InYellow(fmt.Sprintf("%s does not exist.", dirPath)))
+	}
+}
+
+func (that *EnvsHandler) loadTemp() {
+	if ok, _ := PathIsExist(that.winWorkdir); ok {
+		fPath := filepath.Join(that.winWorkdir, TempName)
+		if ok, _ := PathIsExist(fPath); !ok {
+			that.saveTemp()
+		}
+		if that.koanfer == nil {
+			that.koanfer = xutils.NewKoanfer(fPath)
+		}
+		if that.koanfer != nil {
+			that.koanfer.Load(that.winPathTemp)
+		}
+	}
+}
+
+func (that *EnvsHandler) saveTemp() {
+	if ok, _ := PathIsExist(that.winWorkdir); ok {
+		fPath := filepath.Join(that.winWorkdir, TempName)
+		if that.koanfer == nil {
+			that.koanfer = xutils.NewKoanfer(fPath)
+		}
+		if that.koanfer != nil {
+			that.koanfer.Save(*that.winPathTemp)
+		}
+	}
+}
+
+func (that *EnvsHandler) preparePathToSet(value string) string {
+	that.loadTemp()
+	pathEnv := os.Getenv("PATH")
+	for _, v := range that.winPathTemp.PathList {
+		if !strings.Contains(pathEnv, v) {
+			value = fmt.Sprintf("%s;%s", value, v)
+		}
+	}
+	return value
+}
+
+func (that *EnvsHandler) addToTemp(value string) {
+	that.loadTemp()
+	for _, v := range that.winPathTemp.PathList {
+		if v == value {
+			return
+		}
+	}
+	that.winPathTemp.PathList = append(that.winPathTemp.PathList, value)
+	that.saveTemp()
+}
+
 var (
 	PwSetPathEnv  string = `[Environment]::SetEnvironmentVariable("PATH", $Env:Path + ";%s", "User")`
 	PwSetOtherEnv string = `[Environment]::SetEnvironmentVariable("%s", "%s", "User")`
 )
 
-func (that *EnvsHandler) flushEnvForWin(key string) {
-	cmd := exec.Command(fmt.Sprintf("$env:%s", key))
-	cmd.Env = os.Environ()
-	cmd.Stderr = os.Stderr
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Run()
-}
-
 func (that *EnvsHandler) setOneEnvForWin(key, value string) {
 	var arg string
 	_key := strings.ToLower(key)
-	if strings.HasSuffix(_key, "path") && strings.Contains(os.Getenv("PATH"), value) {
-		fmt.Printf("[%s] Already exists in Path.\n", value)
+	if _key == "path" && strings.Contains(os.Getenv("PATH"), value) {
+		fmt.Println(color.InGreen(fmt.Sprintf("[%s] Already exists in Path.\n", value)))
 		return
 	}
-	if strings.HasPrefix(_key, "path") && !strings.Contains(_key, "_") {
+	originValue := value
+	if _key == "path" {
+		value = that.preparePathToSet(value)
 		arg = fmt.Sprintf(PwSetPathEnv, value)
 	} else {
 		arg = fmt.Sprintf(PwSetOtherEnv, key, value)
 	}
-	cmd := exec.Command("powershell", arg)
+	cmd := exec.Command(PowerShell, arg)
 	cmd.Env = os.Environ()
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	if err := cmd.Run(); err != nil {
-		fmt.Println("[Set env failed]", err, key)
+		fmt.Println(color.InRed("[Set env failed]"), err, key)
 		return
 	}
-	that.flushEnvForWin(key)
+
+	if _key == "path" {
+		that.addToTemp(originValue)
+	}
 }
 
 func (that *EnvsHandler) SetEnvForWin(envList map[string]string) {
 	for key, value := range envList {
 		that.setOneEnvForWin(key, value)
-	}
-	time.Sleep(time.Second * 3)
-	that.HintsForWin()
-}
-
-var HintStr string = ` +-++-++-++-++-++-++-+
-|W||a||r||n||i||n||g|
-+-++-++-++-++-++-++-+`
-
-func (that *EnvsHandler) HintsForWin(flag ...int) {
-	if runtime.GOOS == Windows {
-		fmt.Println(HintStr)
-		if len(flag) > 0 {
-			fmt.Println("[**WARNING**] Make sure you have PowerShell installed.")
-			fmt.Println("[**注意**] Windows用户需要使用PowerShell! 请自行检查系统是否自带或者手动安装PowerShell。")
-		} else {
-			fmt.Println("[**WARNING**] You have to exit current PowerShell and enter another one to make envs work properly.")
-			fmt.Println("[**注意**] Windows用户需要关闭当前PowerShell, 然后重开一个, 环境变量才能生效!否则当前设置过的[Path环境变量会被后面的设置操作覆盖]!!! ")
-		}
 	}
 }

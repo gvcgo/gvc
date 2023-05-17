@@ -6,45 +6,48 @@ import (
 	"path/filepath"
 	"runtime"
 
+	color "github.com/TwiN/go-color"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/downloader"
+	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 )
 
 type Vlang struct {
-	Conf *config.GVConfig
-	*downloader.Downloader
-	env *utils.EnvsHandler
+	Conf    *config.GVConfig
+	env     *utils.EnvsHandler
+	fetcher *query.Fetcher
 }
 
 func NewVlang() (vl *Vlang) {
 	vl = &Vlang{
-		Conf:       config.New(),
-		Downloader: &downloader.Downloader{},
-		env:        utils.NewEnvsHandler(),
+		Conf:    config.New(),
+		fetcher: query.NewFetcher(),
+		env:     utils.NewEnvsHandler(),
 	}
+	vl.env.SetWinWorkDir(config.GVCWorkDir)
 	return
 }
 
 func (that *Vlang) download(force bool) string {
 	vUrls := that.Conf.Vlang.VlangGiteeUrls
-	fmt.Println("Choose your URL to download:")
-	fmt.Println("1) Gitee (by default & fast in China);")
-	fmt.Println("2) Github .")
+	fmt.Println(color.InGreen("Choose your URL to download:"))
+	fmt.Println(color.InYellow("1) Gitee (by default & fast in China);"))
+	fmt.Println(color.InYellow("2) Github ."))
+	fmt.Print(color.InGreen("Input>>"))
 	var choice string
 	fmt.Scan(&choice)
 	if choice == "2" {
 		vUrls = that.Conf.Vlang.VlangUrls
 	}
-	that.Url = vUrls[runtime.GOOS]
-	if that.Url != "" {
+	that.fetcher.Url = vUrls[runtime.GOOS]
+	if that.fetcher.Url != "" {
 		fpath := filepath.Join(config.VlangFilesDir, "vlang.zip")
 		if force {
 			os.RemoveAll(fpath)
 		}
 		if ok, _ := utils.PathIsExist(fpath); !ok || force {
-			if size := that.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
+			if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 				return fpath
 			} else {
 				os.RemoveAll(fpath)
@@ -57,15 +60,15 @@ func (that *Vlang) download(force bool) string {
 func (that *Vlang) Install(force bool) {
 	zipFilePath := that.download(force)
 	if ok, _ := utils.PathIsExist(config.VlangRootDir); ok && !force {
-		fmt.Println("Vlang is already installed.")
+		fmt.Println(color.InYellow("Vlang is already installed."))
 		return
 	} else {
 		os.RemoveAll(config.VlangRootDir)
 	}
 	if err := archiver.Unarchive(zipFilePath, config.VlangFilesDir); err != nil {
 		os.RemoveAll(config.VlangRootDir)
-		os.RemoveAll(zipFilePath)
-		fmt.Println("[Unarchive failed] ", err)
+		// os.RemoveAll(zipFilePath)
+		fmt.Println(color.InRed("[Unarchive failed] "), err)
 		return
 	}
 	if ok, _ := utils.PathIsExist(config.VlangRootDir); ok {

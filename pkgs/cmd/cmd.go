@@ -1,11 +1,12 @@
 package cmd
 
 import (
+	"runtime"
 	"strconv"
 
+	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
 	"github.com/moqsien/gvc/pkgs/vctrl"
-	"github.com/moqsien/gvc/pkgs/vctrl/vproxy"
 	"github.com/urfave/cli/v2"
 )
 
@@ -56,75 +57,38 @@ func (that *Cmder) showinfo() {
 	that.Commands = append(that.Commands, command)
 }
 
-func (that *Cmder) startXray() {
-	var (
-		start bool
-		keep  bool
-	)
+func (that *Cmder) vhost() {
 	command := &cli.Command{
-		Name:    "xray",
-		Aliases: []string{"ray", "xry", "x"},
-		Usage:   "Start Xray Shell for free VPN.",
+		Name:        vctrl.HostsCmd,
+		Aliases:     []string{"h", "host"},
+		Usage:       "Sytem hosts file management(need admistrator or root).",
+		Subcommands: []*cli.Command{},
+	}
+
+	var previlege bool
+	fetch := &cli.Command{
+		Name:    vctrl.HostsFileFetchCmd,
+		Aliases: []string{"f"},
+		Usage:   "Fetch github hosts info.",
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
-				Name:        "start",
-				Aliases:     []string{"st", "s"},
-				Usage:       "Start Xray Client.",
-				Destination: &start,
-			},
-			&cli.BoolFlag{
-				Name:        "keep",
-				Aliases:     []string{"kp", "k"},
-				Usage:       "Keep running by verifications.",
-				Destination: &keep,
+				Name:        vctrl.HostsFlagName,
+				Aliases:     []string{"pre", "p"},
+				Usage:       "Use admin previlege for windows.",
+				Destination: &previlege,
 			},
 		},
 		Action: func(ctx *cli.Context) error {
-			xctrl := vproxy.NewXrayCtrl()
-			xctrl.DownloadGeoIP()
-			if start {
-				xctrl.StartXray()
-			} else if keep {
-				xctrl.KeepRunning()
+			h := vctrl.NewHosts()
+			if runtime.GOOS != utils.Windows || previlege {
+				h.Run()
 			} else {
-				xctrl.StartShell()
+				h.WinRunAsAdmin()
 			}
 			return nil
 		},
 	}
-	that.Commands = append(that.Commands, command)
-}
-
-func (that *Cmder) vhost() {
-	command := &cli.Command{
-		Name:        "host",
-		Aliases:     []string{"h", "hosts"},
-		Usage:       "Sytem hosts file management(need admistrator or root).",
-		Subcommands: []*cli.Command{},
-	}
-	fetch := &cli.Command{
-		Name:    "fetch",
-		Aliases: []string{"f"},
-		Usage:   "Fetch github hosts info.",
-		Action: func(ctx *cli.Context) error {
-			h := vctrl.NewHosts()
-			h.Run(true)
-			return nil
-		},
-	}
 	command.Subcommands = append(command.Subcommands, fetch)
-
-	fetchall := &cli.Command{
-		Name:    "fetchall",
-		Aliases: []string{"fa"},
-		Usage:   "Get all github hosts info with no ping filters.",
-		Action: func(ctx *cli.Context) error {
-			h := vctrl.NewHosts()
-			h.Run()
-			return nil
-		},
-	}
-	command.Subcommands = append(command.Subcommands, fetchall)
 
 	showpath := &cli.Command{
 		Name:    "show",
@@ -311,6 +275,18 @@ func (that *Cmder) vscode() {
 	}
 	command.Subcommands = append(command.Subcommands, installexts)
 
+	repairgit := &cli.Command{
+		Name:    "use-msys2-cygwin-git",
+		Aliases: []string{"use-git", "ug"},
+		Usage:   "Repair and make use of git.exe from Msys2/Cygwin.",
+		Action: func(ctx *cli.Context) error {
+			gcode := vctrl.NewCppManager()
+			gcode.RepairGitForVSCode()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, repairgit)
+
 	that.Commands = append(that.Commands, command)
 }
 
@@ -401,47 +377,46 @@ func (that *Cmder) vjava() {
 		Subcommands: []*cli.Command{},
 	}
 
-	var useInjdk bool
+	var zhcn bool
 	vuse := &cli.Command{
 		Name:    "use",
 		Aliases: []string{"u"},
-		Usage:   "Download and use jdk.",
+		Usage:   "Download and use jdk. <Command> {gvc jdk use [-z] xxx}",
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
-				Name:        "cn",
-				Aliases:     []string{"zh", "z"},
+				Name:        "zh",
+				Aliases:     []string{"z", "cn"},
 				Usage:       "Use injdk.cn as resource url.",
-				Destination: &useInjdk,
+				Destination: &zhcn,
 			},
 		},
 		Action: func(ctx *cli.Context) error {
 			version := ctx.Args().First()
 			if version != "" {
 				gv := vctrl.NewJDKVersion()
-				gv.IsOfficial = !useInjdk
-				gv.UseVersion(version)
+				gv.UseVersion(version, !zhcn)
 			}
 			return nil
 		},
 	}
 	command.Subcommands = append(command.Subcommands, vuse)
 
+	var cncn bool
 	vshow := &cli.Command{
 		Name:    "remote",
 		Aliases: []string{"r"},
-		Usage:   "Show available versions.",
+		Usage:   "Show available versions.  <Command> {gvc jdk remote [-z]}",
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
-				Name:        "cn",
-				Aliases:     []string{"zh", "z"},
+				Name:        "zh",
+				Aliases:     []string{"z", "cn"},
 				Usage:       "Use injdk.cn as resource url.",
-				Destination: &useInjdk,
+				Destination: &cncn,
 			},
 		},
 		Action: func(ctx *cli.Context) error {
 			gv := vctrl.NewJDKVersion()
-			gv.IsOfficial = !useInjdk
-			gv.ShowVersions()
+			gv.ShowVersions(!cncn)
 			return nil
 		},
 	}
@@ -692,41 +667,6 @@ func (that *Cmder) vpython() {
 	}
 	command.Subcommands = append(command.Subcommands, showPath)
 
-	that.Commands = append(that.Commands, command)
-}
-
-func (that *Cmder) vcygwin() {
-	command := &cli.Command{
-		Name:        "cygwin",
-		Aliases:     []string{"cygw", "cyg", "cy"},
-		Usage:       "Cygwin installation.",
-		Subcommands: []*cli.Command{},
-	}
-	install := &cli.Command{
-		Name:    "install",
-		Aliases: []string{"ins", "i"},
-		Usage:   "Install Cygwin.",
-		Action: func(ctx *cli.Context) error {
-			v := vctrl.NewCygwin()
-			v.InstallByDefault("")
-			return nil
-		},
-	}
-	command.Subcommands = append(command.Subcommands, install)
-
-	ipackage := &cli.Command{
-		Name:    "package",
-		Aliases: []string{"pack", "p"},
-		Usage:   "Install packages for Cygwin.",
-		Action: func(ctx *cli.Context) error {
-			if packs := ctx.Args().First(); packs != "" {
-				v := vctrl.NewCygwin()
-				v.InstallByDefault(packs)
-			}
-			return nil
-		},
-	}
-	command.Subcommands = append(command.Subcommands, ipackage)
 	that.Commands = append(that.Commands, command)
 }
 
@@ -1191,6 +1131,183 @@ func (that *Cmder) vtypst() {
 	that.Commands = append(that.Commands, command)
 }
 
+func (that *Cmder) vxtray() {
+	commands := &cli.Command{
+		Name:    "xtray-shell",
+		Aliases: []string{"xshell", "xs", "x"},
+		Usage:   "Start an xtray shell.",
+		Action: func(ctx *cli.Context) error {
+			xe := vctrl.NewXtrayExa()
+			xe.Runner.CtrlShell()
+			return nil
+		},
+	}
+	that.Commands = append(that.Commands, commands)
+
+	commandr := &cli.Command{
+		Name:    vctrl.XtrayStarterCmd,
+		Aliases: []string{"xrunner", "xr"},
+		Usage:   "Start an xtray client.",
+		Action: func(ctx *cli.Context) error {
+			xe := vctrl.NewXtrayExa()
+			xe.Runner.Start()
+			return nil
+		},
+	}
+	that.Commands = append(that.Commands, commandr)
+
+	commandk := &cli.Command{
+		Name:    vctrl.XtrayKeeperCmd,
+		Aliases: []string{"xkeeper", "xk"},
+		Usage:   "Start an xtray keeper.",
+		Action: func(ctx *cli.Context) error {
+			xe := vctrl.NewXtrayExa()
+			xe.Keeper.Run()
+			return nil
+		},
+	}
+	that.Commands = append(that.Commands, commandk)
+}
+
+func (that *Cmder) vbrowser() {
+	command := &cli.Command{
+		Name:        "browser",
+		Aliases:     []string{"br"},
+		Usage:       "Browser data management.",
+		Subcommands: []*cli.Command{},
+	}
+
+	vshow := &cli.Command{
+		Name:    "show-info",
+		Aliases: []string{"show", "sh"},
+		Usage:   "Show supported browsers and data restore dir.",
+		Action: func(ctx *cli.Context) error {
+			b := vctrl.NewBrowser()
+			b.ShowSupportedBrowser()
+			b.ShowBackupPath()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vshow)
+
+	vpush := &cli.Command{
+		Name:      "push",
+		Aliases:   []string{"psh", "pu"},
+		Usage:     "Push browser Bookmarks/Password/ExtensionInfo to webdav.",
+		ArgsUsage: "gvc browser push xxx",
+		Action: func(ctx *cli.Context) error {
+			browserName := ctx.Args().First()
+			if browserName != "" {
+				b := vctrl.NewBrowser()
+				b.Save(browserName, true)
+			}
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vpush)
+
+	vsave := &cli.Command{
+		Name:      "save",
+		Aliases:   []string{"sa", "s"},
+		Usage:     "Save browser Bookmarks/Password/ExtensionInfo to local dir.",
+		ArgsUsage: "gvc browser save xxx",
+		Action: func(ctx *cli.Context) error {
+			browserName := ctx.Args().First()
+			if browserName != "" {
+				b := vctrl.NewBrowser()
+				b.Save(browserName, false)
+			}
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vsave)
+
+	vpull := &cli.Command{
+		Name:    "pull",
+		Aliases: []string{"pul", "pl"},
+		Usage:   "Pull browser data from webdav to local dir.",
+		Action: func(ctx *cli.Context) error {
+			b := vctrl.NewBrowser()
+			b.PullData()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vpull)
+
+	that.Commands = append(that.Commands, command)
+}
+
+func (that *Cmder) vcpp() {
+	command := &cli.Command{
+		Name:        "cpp",
+		Usage:       "C/C++ management.",
+		Subcommands: []*cli.Command{},
+	}
+	iMsys2 := &cli.Command{
+		Name:    "install-msys2",
+		Aliases: []string{"insm", "im"},
+		Usage:   "Install the latest msys2.",
+		Action: func(ctx *cli.Context) error {
+			v := vctrl.NewCppManager()
+			v.InstallMsys2()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, iMsys2)
+
+	uMsys2 := &cli.Command{
+		Name:    "uninstall-msys2",
+		Aliases: []string{"unim", "um", "remove", "rm"},
+		Usage:   "Uninstall msys2.",
+		Action: func(ctx *cli.Context) error {
+			v := vctrl.NewCppManager()
+			v.UninstallMsys2()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, uMsys2)
+
+	iCygwin := &cli.Command{
+		Name:    "install-cygwin",
+		Aliases: []string{"insc", "ic"},
+		Usage:   "Install Cygwin.",
+		Action: func(ctx *cli.Context) error {
+			v := vctrl.NewCppManager()
+			v.InstallCygwin("")
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, iCygwin)
+
+	iVcpkg := &cli.Command{
+		Name:    "install-vcpkg",
+		Aliases: []string{"insv", "iv"},
+		Usage:   "Install vcpkg.",
+		Action: func(ctx *cli.Context) error {
+			v := vctrl.NewCppManager()
+			v.InstallVCPkg()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, iVcpkg)
+
+	that.Commands = append(that.Commands, command)
+}
+
+func (that *Cmder) version() {
+	command := &cli.Command{
+		Name:    "version",
+		Aliases: []string{"ver", "vsi"},
+		Usage:   "Show gvc version info.",
+		Action: func(ctx *cli.Context) error {
+			v := vctrl.NewSelf()
+			v.ShowVersion()
+			return nil
+		},
+	}
+	that.Commands = append(that.Commands, command)
+}
+
 func (that *Cmder) initiate() {
 	that.vgo()
 	that.vpython()
@@ -1201,18 +1318,20 @@ func (that *Cmder) initiate() {
 	that.vflutter()
 	that.vjulia()
 	that.vrust()
+	that.vcpp()
 	that.vtypst()
 	that.vlang()
-	that.vcygwin()
 
 	that.vscode()
 	that.vnvim()
-	that.startXray()
+	that.vxtray()
+	that.vbrowser()
 	that.vhomebrew()
 	that.vhost()
 	that.vgithub()
 
 	that.vconf()
+	that.version()
 	that.showinfo()
 	that.uninstall()
 }

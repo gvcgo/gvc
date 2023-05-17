@@ -11,9 +11,10 @@ import (
 	"strings"
 	"time"
 
+	color "github.com/TwiN/go-color"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/downloader"
+	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/tidwall/gjson"
 )
@@ -29,8 +30,8 @@ type Code struct {
 	Version  string
 	Packages map[string]*CodePackage
 	Conf     *config.GVConfig
-	*downloader.Downloader
-	env *utils.EnvsHandler
+	env      *utils.EnvsHandler
+	fetcher  *query.Fetcher
 }
 
 type typeMap map[string]string
@@ -48,34 +49,34 @@ func NewCode() (co *Code) {
 	co = &Code{
 		Packages: make(map[string]*CodePackage),
 		Conf:     config.New(),
-		Downloader: &downloader.Downloader{
-			ManuallyRedirect: true,
-		},
-		env: utils.NewEnvsHandler(),
+		fetcher:  query.NewFetcher(),
+		env:      utils.NewEnvsHandler(),
 	}
+	co.fetcher.NoRedirect = true
 	co.initeDirs()
+	co.env.SetWinWorkDir(config.GVCWorkDir)
 	return
 }
 
 func (that *Code) initeDirs() {
 	if ok, _ := utils.PathIsExist(config.CodeFileDir); !ok {
 		if err := os.MkdirAll(config.CodeFileDir, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			fmt.Println(color.InRed("[mkdir Failed] "), err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.CodeTarFileDir); !ok {
 		if err := os.MkdirAll(config.CodeTarFileDir, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			fmt.Println(color.InRed("[mkdir Failed] "), err)
 		}
 	}
 }
 
 func (that *Code) getPackages() (r string) {
-	that.Url = that.Conf.Code.DownloadUrl
-	that.Timeout = 30 * time.Second
-	if resp := that.GetUrl(); resp != nil {
-		defer resp.Body.Close()
-		rjson, _ := io.ReadAll(resp.Body)
+	that.fetcher.Url = that.Conf.Code.DownloadUrl
+	that.fetcher.Timeout = 60 * time.Second
+	if resp := that.fetcher.Get(); resp != nil {
+		defer resp.RawBody().Close()
+		rjson, _ := io.ReadAll(resp.RawBody())
 		products := gjson.Get(string(rjson), "products")
 		for _, product := range products.Array() {
 			if that.Version == "" {
@@ -92,7 +93,7 @@ func (that *Code) getPackages() (r string) {
 			}
 		}
 	} else {
-		fmt.Println("[Get vscode package info failed]")
+		fmt.Println(color.InRed("[Get vscode package info failed]"))
 	}
 	return
 }
@@ -108,13 +109,13 @@ func (that *Code) download() (r string) {
 		} else if strings.HasSuffix(p.Url, ".tar.gz") {
 			suffix = ".tar.gz"
 		} else {
-			fmt.Println("[Unsupported file type] ", p.Url)
+			fmt.Println(color.InRed("[Unsupported file type] "), p.Url)
 			return
 		}
 		fpath := filepath.Join(config.CodeTarFileDir, fmt.Sprintf("%s-%s%s", key, that.Version, suffix))
-		that.Url = strings.Replace(p.Url, that.Conf.Code.StableUrl, that.Conf.Code.CdnUrl, -1)
-		that.Timeout = 60 * time.Second
-		if size := that.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
+		that.fetcher.Url = strings.Replace(p.Url, that.Conf.Code.StableUrl, that.Conf.Code.CdnUrl, -1)
+		that.fetcher.Timeout = 600 * time.Second
+		if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 			if ok := utils.CheckFile(fpath, p.CheckType, p.CheckSum); ok {
 				r = fpath
 			} else {
@@ -122,18 +123,28 @@ func (that *Code) download() (r string) {
 			}
 		}
 	} else {
-		fmt.Println("Cannot find package for ", key)
+		fmt.Println(color.InRed(fmt.Sprintf("Cannot find package for %s", key)))
 	}
+
 	if ok, _ := utils.PathIsExist(config.CodeUntarFile); !ok {
-		if r != "" {
-			if err := archiver.Unarchive(r, config.CodeUntarFile); err != nil {
-				os.RemoveAll(config.CodeUntarFile)
-				fmt.Println("[Unarchive failed] ", err)
-				return
-			}
+		that.Unarchive(r)
+	} else {
+		if runtime.GOOS == utils.Windows || runtime.GOOS == utils.Linux {
+			os.RemoveAll(config.CodeUntarFile)
+			that.Unarchive(r)
 		}
 	}
 	return
+}
+
+func (that *Code) Unarchive(fPath string) {
+	if fPath != "" {
+		if err := archiver.Unarchive(fPath, config.CodeUntarFile); err != nil {
+			os.RemoveAll(config.CodeUntarFile)
+			fmt.Println(color.InRed("[Unarchive failed] "), err)
+			return
+		}
+	}
 }
 
 func (that *Code) InstallForWin() {
@@ -141,9 +152,11 @@ func (that *Code) InstallForWin() {
 	if codeDir, _ := os.ReadDir(config.CodeUntarFile); len(codeDir) > 0 {
 		for _, file := range codeDir {
 			if strings.Contains(file.Name(), ".exe") {
-				that.env.SetEnvForWin(map[string]string{
-					"PATH": config.CodeWinCmdBinaryDir,
-				})
+				if !strings.Contains(os.Getenv("PATH"), config.CodeWinCmdBinaryDir) {
+					that.env.SetEnvForWin(map[string]string{
+						"PATH": config.CodeWinCmdBinaryDir,
+					})
+				}
 				// Automatically create shortcut.
 				that.GenerateShortcut()
 				break
@@ -168,7 +181,7 @@ func (that *Code) InstallForMac() {
 				source := filepath.Join(config.CodeUntarFile, file.Name())
 				if ok, _ := utils.PathIsExist(config.CodeMacCmdBinaryDir); !ok {
 					if err := utils.CopyFileOnUnixSudo(source, config.CodeMacInstallDir); err != nil {
-						fmt.Println("[Install vscode failed] ", err)
+						fmt.Println(color.InRed("[Install vscode failed] "), err)
 					} else {
 						os.RemoveAll(config.CodeUntarFile)
 					}
@@ -176,7 +189,6 @@ func (that *Code) InstallForMac() {
 			}
 		}
 	}
-	// that.addEnvForUnix(config.CodeMacCmdBinaryDir)
 	that.env.UpdateSub(utils.SUB_CODE, config.CodeMacCmdBinaryDir)
 }
 
@@ -186,7 +198,6 @@ func (that *Code) InstallForLinux() {
 		for _, file := range codeDir {
 			if file.IsDir() {
 				binaryDir := filepath.Join(config.CodeUntarFile, file.Name(), "bin")
-				// that.addEnvForUnix(binaryDir)
 				that.env.UpdateSub(utils.SUB_CODE, binaryDir)
 			}
 		}

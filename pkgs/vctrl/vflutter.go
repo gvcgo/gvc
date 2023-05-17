@@ -2,6 +2,7 @@ package vctrl
 
 import (
 	"fmt"
+	"io"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -9,12 +10,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gocolly/colly/v2"
+	color "github.com/TwiN/go-color"
 	"github.com/gogf/gf/encoding/gjson"
-	"github.com/gookit/color"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/downloader"
+	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
 )
@@ -32,8 +32,7 @@ type FlutterVersion struct {
 	Versions map[string][]*FlutterPackage
 	Json     *gjson.Json
 	Conf     *config.GVConfig
-	c        *colly.Collector
-	d        *downloader.Downloader
+	fetcher  *query.Fetcher
 	env      *utils.EnvsHandler
 	baseUrl  string
 }
@@ -42,11 +41,11 @@ func NewFlutterVersion() (fv *FlutterVersion) {
 	fv = &FlutterVersion{
 		Versions: make(map[string][]*FlutterPackage, 500),
 		Conf:     config.New(),
-		c:        colly.NewCollector(),
-		d:        &downloader.Downloader{},
+		fetcher:  query.NewFetcher(),
 		env:      utils.NewEnvsHandler(),
 	}
 	fv.initeDirs()
+	fv.env.SetWinWorkDir(config.GVCWorkDir)
 	return
 }
 
@@ -54,17 +53,17 @@ func (that *FlutterVersion) initeDirs() {
 	if ok, _ := utils.PathIsExist(config.FlutterRootDir); !ok {
 		os.RemoveAll(config.FlutterRootDir)
 		if err := os.MkdirAll(config.FlutterRootDir, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			fmt.Println(color.InRed("[mkdir Failed] "), err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.FlutterTarFilePath); !ok {
 		if err := os.MkdirAll(config.FlutterTarFilePath, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			fmt.Println(color.InRed("[mkdir Failed] "), err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.FlutterUntarFilePath); !ok {
 		if err := os.MkdirAll(config.FlutterUntarFilePath, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			fmt.Println(color.InRed("[mkdir Failed] "), err)
 		}
 	}
 }
@@ -83,10 +82,12 @@ func (that *FlutterVersion) getJson() {
 	if !utils.VerifyUrls(fUrl) {
 		return
 	}
-	that.c.OnResponse(func(r *colly.Response) {
-		that.Json = gjson.New(r.Body)
-	})
-	that.c.Visit(fUrl)
+
+	that.fetcher.Url = fUrl
+	if resp := that.fetcher.Get(); resp != nil {
+		content, _ := io.ReadAll(resp.RawBody())
+		that.Json = gjson.New(content)
+	}
 	if that.Json != nil {
 		that.baseUrl = that.Json.GetString("base_url")
 	}
@@ -144,7 +145,7 @@ func (that *FlutterVersion) ShowVersions() {
 		vList = append(vList, k)
 	}
 	res := sorts.SortGoVersion(vList)
-	fmt.Println(strings.Join(res, "  "))
+	fmt.Println(color.InGreen(strings.Join(res, "  ")))
 }
 
 func (that *FlutterVersion) findPackage(version string) *FlutterPackage {
@@ -162,13 +163,13 @@ func (that *FlutterVersion) download(version string) (r string) {
 	}
 
 	if p := that.findPackage(version); p != nil {
-		that.d.Url, _ = url.JoinPath(that.baseUrl, p.Url)
-		if !utils.VerifyUrls(that.d.Url) {
+		that.fetcher.Url, _ = url.JoinPath(that.baseUrl, p.Url)
+		if !utils.VerifyUrls(that.fetcher.Url) {
 			return
 		}
-		that.d.Timeout = 100 * time.Minute
+		that.fetcher.Timeout = 100 * time.Minute
 		fpath := filepath.Join(config.FlutterTarFilePath, p.FileName)
-		if size := that.d.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
+		if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 			if p.Checksum != "" {
 				if ok := utils.CheckFile(fpath, "sha256", p.Checksum); ok {
 					return fpath
@@ -182,7 +183,7 @@ func (that *FlutterVersion) download(version string) (r string) {
 			os.RemoveAll(fpath)
 		}
 	} else {
-		fmt.Println("Invalid Flutter version. ", version)
+		fmt.Println(color.InRed(fmt.Sprintf("Invalid Flutter version: %s", version)))
 	}
 	return
 }
@@ -212,7 +213,7 @@ func (that *FlutterVersion) UseVersion(version string) {
 		if tarfile := that.download(version); tarfile != "" {
 			if err := archiver.Unarchive(tarfile, untarfile); err != nil {
 				os.RemoveAll(untarfile)
-				fmt.Println("[Unarchive failed] ", err)
+				fmt.Println(color.InRed("[Unarchive failed] "), err)
 				return
 			}
 		}
@@ -224,13 +225,13 @@ func (that *FlutterVersion) UseVersion(version string) {
 	dir := finder.String()
 	if dir != "" {
 		if err := utils.MkSymLink(dir, config.FlutterRootDir); err != nil {
-			fmt.Println("[Create link failed] ", err)
+			fmt.Println(color.InRed("[Create link failed] "), err)
 			return
 		}
 		if !that.env.DoesEnvExist(utils.SUB_FLUTTER) {
 			that.CheckAndInitEnv()
 		}
-		fmt.Println("Use", version, "succeeded!")
+		fmt.Println(color.InGreen(fmt.Sprintf("Use %s succeeded!", version)))
 	}
 }
 
@@ -246,10 +247,9 @@ func (that *FlutterVersion) ShowInstalled() {
 		if d.IsDir() {
 			switch d.Name() {
 			case current:
-				s := fmt.Sprintf("%s <Current>", d.Name())
-				color.Yellow.Println(s)
+				fmt.Println(color.InYellow(fmt.Sprintf("%s <Current>", d.Name())))
 			default:
-				color.Cyan.Println(d.Name())
+				fmt.Println(color.InCyan(d.Name()))
 			}
 		}
 	}

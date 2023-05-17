@@ -9,6 +9,7 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/TwiN/go-color"
 	"github.com/gogf/gf/os/genv"
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/yaml"
@@ -16,6 +17,7 @@ import (
 	"github.com/knadh/koanf/providers/structs"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
+	xutils "github.com/moqsien/xtray/pkgs/utils"
 	"github.com/studio-b12/gowebdav"
 )
 
@@ -26,7 +28,12 @@ type WebdavConf struct {
 	RemoteDir       string `koanf:"remote_dir"`
 	LocalDir        string `koanf:"local_dir"`
 	DefaultFilesUrl string `koanf:"default_files"`
+	EncryptPass     string `koanf:"encrypt_pass"`
 }
+
+const (
+	defaultEncryptPass = "^*wgvc$@]}"
+)
 
 type VSCodeExtIds struct {
 	VSCodeExts []string `koanf:"vscode_exts"`
@@ -34,11 +41,13 @@ type VSCodeExtIds struct {
 
 type GVCWebdav struct {
 	DavConf    *WebdavConf
+	AESCrypt   *utils.AesCrypt
 	conf       *config.GVConfig
 	vscodeExts *VSCodeExtIds
+	client     *gowebdav.Client
+	koanfer    *xutils.Koanfer
 	k          *koanf.Koanf
 	parser     *yaml.YAML
-	client     *gowebdav.Client
 }
 
 func NewGVCWebdav() (gw *GVCWebdav) {
@@ -48,10 +57,12 @@ func NewGVCWebdav() (gw *GVCWebdav) {
 		},
 		conf:       config.New(),
 		vscodeExts: &VSCodeExtIds{},
+		koanfer:    xutils.NewKoanfer(config.GVCWebdavConfigPath),
 		k:          koanf.New("."),
 		parser:     yaml.Parser(),
 	}
 	gw.initeDirs()
+	gw.initeAES()
 	return
 }
 
@@ -64,17 +75,23 @@ func (that *GVCWebdav) initeDirs() {
 	that.Reload()
 }
 
+func (that *GVCWebdav) initeAES() {
+	if that.DavConf.EncryptPass != "" {
+		that.AESCrypt = utils.NewCrypt(that.DavConf.EncryptPass)
+	} else {
+		fmt.Println(color.InYellow("[Warning] use default encryption password."))
+		that.AESCrypt = utils.NewCrypt(defaultEncryptPass)
+	}
+}
+
 func (that *GVCWebdav) resetKoanf() {
 	that.k = koanf.New(".")
 	that.parser = yaml.Parser()
 }
 
-// save webdav configurations to yml file.
+// save webdav configurations to json file.
 func (that *GVCWebdav) Restore() {
-	that.k.Load(structs.Provider(that.DavConf, "koanf"), nil)
-	if b, err := that.k.Marshal(that.parser); err == nil && len(b) > 0 {
-		os.WriteFile(config.GVCWebdavConfigPath, b, 0666)
-	}
+	that.koanfer.Save(that.DavConf)
 }
 
 func (that *GVCWebdav) RestoreDefaultGVConf() {
@@ -92,20 +109,16 @@ func (that *GVCWebdav) Reload() {
 		fmt.Println("[Warning] It seems that you have not set up your webdav account.")
 		return
 	}
-	err := that.k.Load(file.Provider(config.GVCWebdavConfigPath), that.parser)
-	if err != nil {
-		fmt.Println("[Config Load Failed] ", err)
-		return
-	}
-	that.k.UnmarshalWithConf("", that.DavConf, koanf.UnmarshalConf{Tag: "koanf"})
+	that.koanfer.Load(that.DavConf)
 	that.getClient(true)
 }
 
 func (that *GVCWebdav) SetAccount() {
 	var (
-		wUrl string
-		name string
-		pass string
+		wUrl    string
+		name    string
+		pass    string
+		encPass string
 	)
 	fmt.Println("Please enter your webdav host uri,\n[https://dav.jianguoyun.com/dav/]by default: ")
 	fmt.Println("How to get your webdav? Please see https://github.com/moqsien/easynotes/blob/main/usage.md.")
@@ -114,6 +127,10 @@ func (that *GVCWebdav) SetAccount() {
 	fmt.Scanln(&name)
 	fmt.Println("Please enter your webdav password: ")
 	fmt.Scanln(&pass)
+
+	fmt.Println("Please enter your password to encrypt files: ")
+	fmt.Scanln(&encPass)
+
 	wUrl = strings.Trim(wUrl, " ")
 	name = strings.Trim(name, " ")
 	pass = strings.Trim(pass, " ")
@@ -130,18 +147,24 @@ func (that *GVCWebdav) SetAccount() {
 	if name != "" {
 		that.DavConf.Username = name
 	} else {
-		fmt.Println("[Warning] Your username is empty!")
+		fmt.Println(color.InYellow("[Warning] Your username is empty!"))
 	}
 	if pass != "" {
 		that.DavConf.Password = pass
 	} else {
-		fmt.Println("[Warning] Your password is empty!")
+		fmt.Println(color.InYellow("[Warning] Your password is empty!"))
+	}
+
+	if encPass != "" {
+		that.DavConf.EncryptPass = encPass
+	} else {
+		fmt.Println(color.InYellow("[Warning] Your file will sync to webdav without encryted!"))
 	}
 	if that.conf.Webdav.DefaultWebdavRemoteDir != "" {
 		that.DavConf.RemoteDir = that.conf.Webdav.DefaultWebdavRemoteDir
 	}
 	if that.conf.Webdav.DefaultWebdavLocalDir != "" {
-		that.DavConf.RemoteDir = that.conf.Webdav.DefaultWebdavLocalDir
+		that.DavConf.LocalDir = that.conf.Webdav.DefaultWebdavLocalDir
 	}
 	that.Restore()
 }
@@ -170,6 +193,18 @@ func (that *GVCWebdav) getClient(force bool) {
 	}
 }
 
+func (that *GVCWebdav) decryptFile(fpath string) {
+	if ok, _ := utils.PathIsExist(fpath); ok {
+		b, _ := os.ReadFile(fpath)
+		if len(b) > 0 && that.AESCrypt != nil {
+			var err error
+			if b, err = that.AESCrypt.AesDecrypt(b); err == nil {
+				os.WriteFile(fpath, b, 0666)
+			}
+		}
+	}
+}
+
 func (that *GVCWebdav) Pull() {
 	that.getClient(true)
 	if that.client == nil {
@@ -192,11 +227,20 @@ func (that *GVCWebdav) Pull() {
 			if !info.IsDir() {
 				rPath := utils.JoinUnixFilePath(that.DavConf.RemoteDir, info.Name())
 				b, _ := that.client.Read(rPath)
+				// decrypt private info.
+				if that.AESCrypt != nil && len(b) > 0 && (strings.Contains(info.Name(), "password") || strings.Contains(info.Name(), "credit")) {
+					b, _ = that.AESCrypt.AesDecrypt(b)
+				}
+				fmt.Println(info.Name())
 				if len(b) == 0 {
 					r, _ := that.client.ReadStream(rPath)
-					file, _ := os.OpenFile(filepath.Join(that.DavConf.LocalDir, info.Name()), os.O_CREATE|os.O_WRONLY, 0666)
+					fpath := filepath.Join(that.DavConf.LocalDir, info.Name())
+					file, _ := os.OpenFile(fpath, os.O_CREATE|os.O_WRONLY, 0666)
 					io.Copy(file, r)
-					return
+					file.Close()
+					// decrypt private info.
+					that.decryptFile(fpath)
+					continue
 				}
 				os.WriteFile(filepath.Join(that.DavConf.LocalDir, info.Name()), b, os.ModePerm)
 			}
@@ -224,6 +268,10 @@ func (that *GVCWebdav) Push() {
 		for _, info := range iList {
 			if !info.IsDir() {
 				b, _ := os.ReadFile(filepath.Join(that.DavConf.LocalDir, info.Name()))
+				// encrypt private info.
+				if that.AESCrypt != nil && (strings.Contains(info.Name(), "password") || strings.Contains(info.Name(), "credit")) {
+					b, _ = that.AESCrypt.AesEncrypt(b)
+				}
 				rPath := utils.JoinUnixFilePath(that.DavConf.RemoteDir, info.Name())
 				that.client.Write(rPath, b, os.ModePerm)
 			}

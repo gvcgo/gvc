@@ -79,7 +79,7 @@
 </td>
 
 <td>
-<img src="https://cn.julialang.org/assets/infra/logo_cn.png" class="fl">
+<img src="https://julialang.org/assets/infra/logo.svg" class="fl">
 </td>
 </tr>
 <tr>
@@ -98,7 +98,31 @@
 </table>
 
 ---------
+## Gallery (In powershell for example.)
+
+### Help info. 
+![](https://github.com/moqsien/gvc/blob/main/docs/ghelp.png)
+
+### Subcommands available for go management. 
+![](https://github.com/moqsien/gvc/blob/main/docs/goRemote.png)
+
+### Show the versions available for go compilers. 
+![](https://github.com/moqsien/gvc/blob/main/docs/goRemoteShow.png)
+
+### Installation of go compiler.
+![](https://github.com/moqsien/gvc/blob/main/docs/goInstall.png)
+![](https://github.com/moqsien/gvc/blob/main/docs/goInstallationFinished.png)
+
+### Search third party libraries written in go using keyword.
+![](https://github.com/moqsien/gvc/blob/main/docs/goSearch.png)
+
+### Show available versions of compiler/interpreter for other languages.
+![](https://github.com/moqsien/gvc/blob/main/docs/pyNodeFlutterJulia.png)
+
+---------
 ## Something nice about [gvc](https://github.com/moqsien/gvc).
+
+![logo](https://github.com/moqsien/gvc/blob/main/docs/logo.png)
 ---------
 GVC is a nice tool designed for managing your development environment on multi-platforms and -machines.
 It will help you to create a dev environment for Go, Python, Java, NodeJS or Rust, Cygwin, etc.
@@ -107,6 +131,12 @@ You can even install VSCode as well as Neovim through GVC.
 Moreover, GVC will sync config files to WebDAV if you have configured one, which will help recreate your dev environment on another PC.
 
 Therefore, If you are planning to get a new PC for development, probably the only thing you need to download is GVC!
+
+### Note that: 
+
+All download urls are customed for speeding-up in China by default. However, you can also <b>custom your own download urls</b> in gvc's config file at your convenience. The config file is likely to be <b>${Your-home-dir}/.gvc/backup/gvc-config.json</b>. Once you have found the file, you will know how to modify it.
+
+Of course, you can also use <b>"g config show"</b> to show the config file path after the installation of gvc.
 
 ### Features
 <table>
@@ -164,7 +194,17 @@ Therefore, If you are planning to get a new PC for development, probably the onl
   <tr>
     <td><font color="Gree">Cygwin</font></td>
     <td><font color="LightBlue">Install, InstallPackage</font></td>
-    <td bgcolor="PaleVioletRed">gvc cygwin help; Only for Windows; git,bash, clang, gcc, etc.</td>
+    <td bgcolor="PaleVioletRed">gvc cpp ic help; Only for Windows; git,bash, clang, gcc, etc.</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">Msys2</font></td>
+    <td><font color="LightBlue">Install</font></td>
+    <td bgcolor="PaleVioletRed">gvc cpp im help; Only for Windows.</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">vcpkg</font></td>
+    <td><font color="LightBlue">Install</font></td>
+    <td bgcolor="PaleVioletRed">gvc cpp iv help; Cpp package management.</td>
   </tr>
   <tr>
     <td><font color="Gree">Flutter</font></td>
@@ -203,8 +243,13 @@ Therefore, If you are planning to get a new PC for development, probably the onl
   </tr>
   <tr>
     <td><font color="Gree">Xray-Core</font></td>
-    <td><font color="LightBlue">Auto get free Vmess start listen at localhost:2019</font></td>
-    <td bgcolor="PaleVioletRed">HelpInfo: gvc xray help; EnterTheOperationShell: gvc xray</td>
+    <td><font color="LightBlue">Auto get free Vmess/Vless/Trojan/Shadowsocks start listen at localhost:2019</font></td>
+    <td bgcolor="PaleVioletRed">HelpInfo: gvc x help; EnterTheOperationShell: gvc x; <a href="https://github.com/moqsien/xtray">xtray docs</a></td>
+  </tr>
+  <tr>
+    <td><font color="Gree">Browser</font></td>
+    <td><font color="LightBlue">Auto backup browser data, such as bookmarks/password/extensionInfo. Your private info data, such as password is encrypted automatically.</font></td>
+    <td bgcolor="PaleVioletRed">HelpInfo: gvc browser help</td>
   </tr>
   <tr>
     <td><font color="Gree">Github</font></td>
@@ -222,13 +267,13 @@ Download files, unarchive, then double clik or just run with no subcommand or ar
 
 ## gvc Help Info
 ---------
-### gvc -h
+### gvc -h(use "g -h" for short)
 ```shell
 NAME:
-   gvc - gvc <Command> <SubCommand>...
+   gvc.exe - gvc <Command> <SubCommand>...
 
 USAGE:
-   gvc [global options] command [command options] [arguments...]
+   gvc.exe [global options] command [command options] [arguments...]
 
 DESCRIPTION:
    A productive tool to manage your development environment.
@@ -243,16 +288,20 @@ COMMANDS:
    flutter, flu, fl               Flutter version management.
    julia, jul, ju                 Julia version management.
    rust, rustc, ru, r             Rust installation.
+   cpp                            C/C++ management.
    typst, ty                      Typst installation.
    vlang, vl                      Vlang installation.
-   cygwin, cygw, cyg, cy          Cygwin installation.
    vscode, vsc, vs, v             VSCode and extensions installation.
    nvim, neovim, nv, n            Neovim installation.
-   xray, ray, xry, x              Start Xray Shell for free VPN.
+   xtray-shell, xshell, xs, x     Start an xtray shell.
+   xtray-runner, xrunner, xr      Start an xtray client. # this is only used by xtray-shell
+   xtray-keeper, xkeeper, xk      Start an xtray keeper. # this is only used by xtray-shell
+   browser, br                    Browser data management.
    homebrew, brew, hb             Homebrew installation or update.
-   host, h, hosts                 Sytem hosts file management(need admistrator or root).
+   hosts, h, host                 Sytem hosts file management(need admistrator or root).
    github, gh                     Open github download acceleration websites.
    config, conf, cnf, c           Config file management for gvc.
+   version, vsi                   Show gvc version info.
    show, sho, sh                  Show [gvc] installation path and config file path.
    uninstall, unins, delete, del  [Caution] Delete gvc and softwares installed by gvc!
    help, h                        Shows a list of commands or help for one command
@@ -273,3 +322,11 @@ GLOBAL OPTIONS:
 - [pyenv-win](https://github.com/pyenv-win/pyenv-win)
 - [g](https://github.com/voidint/g)
 - [gvm](https://github.com/andrewkroh/gvm)
+- [xtray](https://github.com/moqsien/xtray)
+- [free](https://github.com/moqsien/free)
+- [HackBrowserData](https://github.com/moonD4rk/HackBrowserData)
+- [cygwin](https://github.com/cygwin/cygwin)
+- [msys2](https://github.com/orgs/msys2/repositories)
+- [vcpkg-tool](https://github.com/microsoft/vcpkg-tool)
+- [gf](https://github.com/gogf/gf)
+- [cli](https://github.com/urfave/cli)

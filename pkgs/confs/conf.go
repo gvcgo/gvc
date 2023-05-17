@@ -5,11 +5,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/knadh/koanf"
-	"github.com/knadh/koanf/parsers/yaml"
-	"github.com/knadh/koanf/providers/file"
-	"github.com/knadh/koanf/providers/structs"
 	"github.com/moqsien/gvc/pkgs/utils"
+	xutils "github.com/moqsien/xtray/pkgs/utils"
 )
 
 func init() {
@@ -31,9 +28,9 @@ type GVConfig struct {
 	Nodejs   *NodejsConf   `koanf:"nodejs"`
 	Python   *PyConf       `koanf:"python"`
 	NVim     *NVimConf     `koanf:"nvim"`
-	Proxy    *ProxyConf    `koanf:"proxy"`
+	Xtray    *XtrayConf    `koanf:"xtray"`
 	Github   *GithubConf   `koanf:"github"`
-	Cygwin   *CygwinConf   `koanf:"cygwin"`
+	Cpp      *CppConf      `koanf:"cpp"`
 	Homebrew *HomebrewConf `koanf:"homebrew"`
 	Vlang    *VlangConf    `koanf:"vlang"`
 	Flutter  *FlutterConf  `koanf:"flutter"`
@@ -41,9 +38,8 @@ type GVConfig struct {
 	Typst    *TypstConf    `koanf:"typst"`
 	Chatgpt  *ChatgptConf  `koanf:"chatgpt"`
 	Webdav   *DavConf      `koanf:"dav"`
-	k        *koanf.Koanf
-	parser   *yaml.YAML
 	path     string
+	koanfer  *xutils.Koanfer
 }
 
 func New() (r *GVConfig) {
@@ -57,9 +53,9 @@ func New() (r *GVConfig) {
 		Code:     NewCodeConf(),
 		Nodejs:   NewNodejsConf(),
 		Python:   NewPyConf(),
-		Proxy:    NewProxyConf(),
+		Xtray:    NewXtrayConf(),
 		Github:   NewGithubConf(),
-		Cygwin:   NewCygwinConf(),
+		Cpp:      NewCppConf(),
 		Homebrew: NewHomebrewConf(),
 		Vlang:    NewVlangConf(),
 		Flutter:  NewFlutterConf(),
@@ -67,19 +63,14 @@ func New() (r *GVConfig) {
 		Typst:    NewTypstConf(),
 		Chatgpt:  NewGptConf(),
 		Webdav:   NewDavConf(),
-		k:        koanf.New("."),
-		parser:   yaml.Parser(),
 		path:     GVConfigPath,
+		koanfer:  xutils.NewKoanfer(GVConfigPath),
 	}
 	r.initiate()
 	return
 }
 
 func (that *GVConfig) initiate() {
-	if ok, _ := utils.PathIsExist(GVCBackupDir); !ok {
-		os.MkdirAll(GVCBackupDir, os.ModePerm)
-	}
-
 	if ok, _ := utils.PathIsExist(that.path); !ok {
 		that.SetDefault()
 		that.Restore()
@@ -119,12 +110,12 @@ func (that *GVConfig) SetDefault() {
 	that.Python.Reset()
 	that.NVim = NewNVimConf()
 	that.NVim.Reset()
-	that.Proxy = NewProxyConf()
-	that.Proxy.Reset()
+	that.Xtray = NewXtrayConf()
+	that.Xtray.Reset()
 	that.Github = NewGithubConf()
 	that.Github.Reset()
-	that.Cygwin = NewCygwinConf()
-	that.Cygwin.Reset()
+	that.Cpp = NewCppConf()
+	that.Cpp.Reset()
 	that.Homebrew = NewHomebrewConf()
 	that.Homebrew.Reset()
 	that.Vlang = NewVlangConf()
@@ -148,20 +139,9 @@ func (that *GVConfig) Reset() {
 }
 
 func (that *GVConfig) Reload() {
-	err := that.k.Load(file.Provider(that.path), that.parser)
-	if err != nil {
-		fmt.Println("[Config Load Failed] ", err)
-		return
-	}
-	that.k.UnmarshalWithConf("", that, koanf.UnmarshalConf{Tag: "koanf"})
+	that.koanfer.Load(that)
 }
 
 func (that *GVConfig) Restore() {
-	if ok, _ := utils.PathIsExist(GVCBackupDir); !ok {
-		os.MkdirAll(GVCBackupDir, os.ModePerm)
-	}
-	that.k.Load(structs.Provider(*that, "koanf"), nil)
-	if b, err := that.k.Marshal(that.parser); err == nil && len(b) > 0 {
-		os.WriteFile(that.path, b, 0666)
-	}
+	that.koanfer.Save(that)
 }

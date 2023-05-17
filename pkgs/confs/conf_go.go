@@ -9,6 +9,7 @@ import (
 
 type GoConf struct {
 	CompilerUrls []string `koanf:"compiler_urls"`
+	AliRepoUrl   string   `koanf:"ali_repo_url"`
 	Proxies      []string `koanf:"proxies"`
 	SearchUrl    string   `koanf:"search_url"`
 	path         string
@@ -36,6 +37,7 @@ func (that *GoConf) Reset() {
 		"https://go.dev/dl/",
 		"https://studygolang.com/dl",
 	}
+	that.AliRepoUrl = "https://mirrors.aliyun.com/golang/"
 	that.Proxies = []string{
 		"https://goproxy.cn,direct",
 		"https://repo.huaweicloud.com/repository/goproxy/,direct",

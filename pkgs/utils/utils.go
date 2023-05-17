@@ -20,6 +20,7 @@ import (
 	"strings"
 	"unicode"
 
+	"github.com/TwiN/go-color"
 	"github.com/gogf/gf/os/genv"
 )
 
@@ -221,7 +222,7 @@ func GetExt(filename string) (ext string) {
 func CheckFile(fpath, cType, cSum string) (r bool) {
 	f, err := os.Open(fpath)
 	if err != nil {
-		fmt.Println("[Open file failed] ", err)
+		fmt.Println(color.InRed("[Open file failed] "), err)
 		return false
 	}
 	defer f.Close()
@@ -235,20 +236,20 @@ func CheckFile(fpath, cType, cSum string) (r bool) {
 	case "sha512":
 		h = sha512.New()
 	default:
-		fmt.Println("[Crypto] ", cType, " not supported.")
+		fmt.Println(color.InRed(fmt.Sprintf("[Crypto] %s  not supported.", cType)))
 		return
 	}
 
 	if _, err = io.Copy(h, f); err != nil {
-		fmt.Println("[Copy file failed] ", err)
+		fmt.Println(color.InRed("[Copy file failed] "), err)
 		return
 	}
 
 	if cSum != hex.EncodeToString(h.Sum(nil)) {
-		fmt.Println("Checksum failed.")
+		fmt.Println(color.InRed("Checksum failed."))
 		return
 	}
-	fmt.Println("Checksum successed.")
+	fmt.Println(color.InGreen("Checksum succeeded."))
 	return true
 }
 
@@ -285,6 +286,27 @@ func ExecuteCommand(args ...string) error {
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	return cmd.Run()
+}
+
+func ExecuteSysCommand(collectOutput bool, args ...string) (*bytes.Buffer, error) {
+	var cmd *exec.Cmd
+	if runtime.GOOS == Windows {
+		args = append([]string{"/c"}, args...)
+		cmd = exec.Command("cmd", args...)
+	} else {
+		FlushPathEnvForUnix()
+		cmd = exec.Command(args[0], args[1:]...)
+	}
+	cmd.Env = os.Environ()
+	var output bytes.Buffer
+	if collectOutput {
+		cmd.Stdout = &output
+	} else {
+		cmd.Stdout = os.Stdout
+	}
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	return &output, cmd.Run()
 }
 
 func ClearDir(dirPath string) {
@@ -387,3 +409,11 @@ func FindMaxLengthOfStringList(sl []string) (max int) {
 	}
 	return
 }
+
+func Closeq(v interface{}) {
+	if c, ok := v.(io.Closer); ok {
+		silently(c.Close())
+	}
+}
+
+func silently(_ ...interface{}) {}

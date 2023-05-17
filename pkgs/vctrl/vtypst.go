@@ -7,46 +7,48 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/TwiN/go-color"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/downloader"
+	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 )
 
 type Typst struct {
-	Conf *config.GVConfig
-	*downloader.Downloader
-	env *utils.EnvsHandler
+	Conf    *config.GVConfig
+	fetcher *query.Fetcher
+	env     *utils.EnvsHandler
 }
 
 func NewTypstVersion() (tv *Typst) {
 	tv = &Typst{
-		Conf:       config.New(),
-		Downloader: &downloader.Downloader{},
-		env:        utils.NewEnvsHandler(),
+		Conf:    config.New(),
+		fetcher: query.NewFetcher(),
+		env:     utils.NewEnvsHandler(),
 	}
+	tv.env.SetWinWorkDir(config.GVCWorkDir)
 	return
 }
 
 func (that *Typst) download(force bool) string {
 	vUrls := that.Conf.Typst.GiteeUrls
-	fmt.Println("Choose your URL to download:")
-	fmt.Println("1) Gitee (by default & fast in China);")
-	fmt.Println("2) Github .")
+	fmt.Println(color.InGreen("Choose your URL to download:"))
+	fmt.Println(color.InGreen("1) Gitee (by default & fast in China);"))
+	fmt.Println(color.InGreen("2) Github ."))
 	var choice string
 	fmt.Scan(&choice)
 	if choice == "2" {
 		vUrls = that.Conf.Typst.GithubUrls
 	}
-	that.Url = vUrls[runtime.GOOS]
-	suffix := utils.GetExt(that.Url)
-	if that.Url != "" {
+	that.fetcher.Url = vUrls[runtime.GOOS]
+	suffix := utils.GetExt(that.fetcher.Url)
+	if that.fetcher.Url != "" {
 		fpath := filepath.Join(config.TypstFilesDir, fmt.Sprintf("typst%s", suffix))
 		if force {
 			os.RemoveAll(fpath)
 		}
 		if ok, _ := utils.PathIsExist(fpath); !ok || force {
-			if size := that.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
+			if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 				return fpath
 			} else {
 				os.RemoveAll(fpath)
@@ -69,7 +71,7 @@ func (that *Typst) renameDir() {
 func (that *Typst) Install(force bool) {
 	zipFilePath := that.download(force)
 	if ok, _ := utils.PathIsExist(config.TypstRootDir); ok && !force {
-		fmt.Println("Vlang is already installed.")
+		fmt.Println(color.InGreen("Vlang is already installed."))
 		return
 	} else {
 		os.RemoveAll(config.TypstRootDir)
@@ -77,14 +79,14 @@ func (that *Typst) Install(force bool) {
 	if err := archiver.Unarchive(zipFilePath, config.TypstFilesDir); err != nil {
 		os.RemoveAll(config.TypstRootDir)
 		os.RemoveAll(zipFilePath)
-		fmt.Println("[Unarchive failed] ", err)
+		fmt.Println(color.InRed("[Unarchive failed] "), err)
 		return
 	}
 	that.renameDir()
 	if ok, _ := utils.PathIsExist(config.TypstRootDir); ok {
 		that.CheckAndInitEnv()
 	} else {
-		fmt.Println("Install typst failed!")
+		fmt.Println(color.InRed("Install typst failed!"))
 	}
 }
 

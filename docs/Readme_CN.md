@@ -77,7 +77,7 @@
 </td>
 
 <td>
-<img src="https://cn.julialang.org/assets/infra/logo_cn.png" class="fl">
+<img src="https://julialang.org/assets/infra/logo.svg" class="fl">
 </td>
 </tr>
 <tr>
@@ -95,18 +95,46 @@
 </tr>
 </table>
 
+---------
+## 演示(以windows下的Powershell为例)
+
+### 帮助信息
+![](https://github.com/moqsien/gvc/blob/main/docs/ghelp.png)
+
+### Go语言相关帮助信息
+![](https://github.com/moqsien/gvc/blob/main/docs/goRemote.png)
+
+### 显示目前可以获取的go编译器版本
+![](https://github.com/moqsien/gvc/blob/main/docs/goRemoteShow.png)
+
+### 自动安装go编译器并配置环境变量
+![](https://github.com/moqsien/gvc/blob/main/docs/goInstall.png)
+![](https://github.com/moqsien/gvc/blob/main/docs/goInstallationFinished.png)
+
+### 通过关键字搜索go的第三方库
+![](https://github.com/moqsien/gvc/blob/main/docs/goSearch.png)
+
+### 其他语言的编译器或解释器的可获取的版本
+![](https://github.com/moqsien/gvc/blob/main/docs/pyNodeFlutterJulia.png)
+
 
 ---------
 
+![logo](https://github.com/moqsien/gvc/blob/main/docs/logo.png)
 ## 关于[gvc](https://github.com/moqsien/gvc)的一些美好的事情
 ---------
 GVC是一个全平台、多机器的一键管理多语言开发环境的辅助开发工具。
 目前支持MacOS、Linux、Windows三大平台。
-使用GVC能够轻松帮你一键搭建Go、Python、Java、Nodejs、Rust、Cygwin等开发环境，你可以轻松管理某个开发语言的多个版本，也不用自己操心任何环境变量。
+使用GVC能够轻松帮你一键搭建Go、Python、Java、Nodejs、Flutter、Julia、Rust、C/C++等开发环境，你可以轻松管理某个开发语言的多个版本，也不用自己操心任何环境变量。
+
 此外，它还能轻松帮你一键搞定VSCode+Neovim安装和配置。
 同时，GVC能把你的gvc配置，VSCode和Neovim配置同步到网盘，实现在其他机器上一键重建你熟悉的开发环境。你只需要配置一个任何支持WebDAV的网盘就行。
 而且，GVC已经默认把很多加速方案进行了集成，比如Go的GOPROXY，Python的Pip以及本身安装包换成国内源，NPM添加国内源，Rust下载添加国内镜像等等。
-重要的是，GVC是高度可配置的，你可以在gvc的主文件夹的backup目录下找到配置文件gvc-config.yml，然后修改比如加速镜像地址之类的，这样你就可以使用离你最近的镜像源，比如你在南方，可以使用中国科大或者浙大的镜像，你在北方可以使用清华镜像源等等。
+
+重要的是，GVC是高度可配置的，你可以在gvc的主文件夹的backup目录下找到配置文件gvc-config.json，然后修改比如加速镜像地址之类的，这样你就可以使用离你最近的镜像源，比如你在南方，可以使用中国科大或者浙大的镜像，你在北方可以使用清华镜像源等等。
+
+GVC还能管理你的浏览器数据，很多常见的基于Chromium的浏览器以及Firefox浏览器的书签、插件信息、本地密码(可以设置加密保护)，都能一键导出，并同步到你自己的网盘。
+
 除了Rust需要自己选择安装路径(由官方installer提供)之外，其他语言都默认安装在gvc的主目录中，当你不想要这些时，同样可以一键卸载所有，真是"强迫症"和"洁癖"患者的福音。
 
 总之，GVC能帮助你搞定那些无聊的开发环境配置操作，当你想要尝试某个语言的新版本或者要在新的机器上做开发时，你无需再到处找下载资源，无需手动配置环境变量，你只需下载gvc即可。
@@ -168,7 +196,17 @@ GVC是一个全平台、多机器的一键管理多语言开发环境的辅助�
   <tr>
     <td><font color="Gree">Cygwin</font></td>
     <td><font color="LightBlue">自动安装, 配置环境变量, 国内源加速，自动添加Cygwin支持的软件工具</font></td>
-    <td bgcolor="PaleVioletRed">gvc cygwin help; 仅用于Windows; git,bash, clang, gcc等将被默认安装.</td>
+    <td bgcolor="PaleVioletRed">gvc cpp ic help; 仅用于Windows; git,bash, clang, gcc等将被默认安装.</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">Msys2</font></td>
+    <td><font color="LightBlue">自动安装, 配置环境变量, 国内源加速</font></td>
+    <td bgcolor="PaleVioletRed">gvc cpp im help; 仅用于Windows.</td>
+  </tr>
+  <tr>
+    <td><font color="Gree">vcpkg</font></td>
+    <td><font color="LightBlue">自动安装, 配置环境变量, 国内源加速</font></td>
+    <td bgcolor="PaleVioletRed">gvc cpp iv help; C++包管理器，支持全平台.</td>
   </tr>
   <tr>
     <td><font color="Gree">Flutter</font></td>
@@ -208,7 +246,12 @@ GVC是一个全平台、多机器的一键管理多语言开发环境的辅助�
   <tr>
     <td><font color="Gree">Xray-Core</font></td>
     <td><font color="LightBlue">一键开启免费VPN——localhost:2019</font></td>
-    <td bgcolor="PaleVioletRed">帮助信息: gvc xray help; 进入xray操作shell: gvc xray(可以在shell内控制启停等)</td>
+    <td bgcolor="PaleVioletRed">帮助信息: gvc x help; 进入xray操作shell: gvc x(可以在shell内控制启停等); <a href="https://github.com/moqsien/xtray">xtray docs</a></td>
+  </tr>
+  <tr>
+    <td><font color="Gree">Browser</font></td>
+    <td><font color="LightBlue">一键自动备份浏览器数据到webdav网盘，包括书签(html格式)、密码(json格式，可以自动加密内容之后上传，安全有保障)、插件信息；支持Chromium系列浏览器和Firefox浏览器等</font></td>
+    <td bgcolor="PaleVioletRed">帮助信息: gvc browser help</td>
   </tr>
   <tr>
     <td><font color="Gree">Github</font></td>
@@ -225,13 +268,15 @@ GVC是一个全平台、多机器的一键管理多语言开发环境的辅助�
 
 ## gvc具体功能展示
 ---------
-### gvc -h
+## gvc Help Info
+---------
+### gvc -h(use "g -h" for short)
 ```shell
 NAME:
-   gvc - gvc <Command> <SubCommand>...
+   gvc.exe - gvc <Command> <SubCommand>...
 
 USAGE:
-   gvc [global options] command [command options] [arguments...]
+   gvc.exe [global options] command [command options] [arguments...]
 
 DESCRIPTION:
    A productive tool to manage your development environment.
@@ -246,16 +291,20 @@ COMMANDS:
    flutter, flu, fl               Flutter version management.
    julia, jul, ju                 Julia version management.
    rust, rustc, ru, r             Rust installation.
+   cpp                            C/C++ management.
    typst, ty                      Typst installation.
    vlang, vl                      Vlang installation.
-   cygwin, cygw, cyg, cy          Cygwin installation.
    vscode, vsc, vs, v             VSCode and extensions installation.
    nvim, neovim, nv, n            Neovim installation.
-   xray, ray, xry, x              Start Xray Shell for free VPN.
+   xtray-shell, xshell, xs, x     Start an xtray shell.
+   xtray-runner, xrunner, xr      Start an xtray client. # 供xtray-shell使用，用户无需关心
+   xtray-keeper, xkeeper, xk      Start an xtray keeper. # 供xtray-shell使用，用户无需关心
+   browser, br                    Browser data management.
    homebrew, brew, hb             Homebrew installation or update.
-   host, h, hosts                 Sytem hosts file management(need admistrator or root).
+   hosts, h, host                 Sytem hosts file management(need admistrator or root).
    github, gh                     Open github download acceleration websites.
    config, conf, cnf, c           Config file management for gvc.
+   version, vsi                   Show gvc version info.
    show, sho, sh                  Show [gvc] installation path and config file path.
    uninstall, unins, delete, del  [Caution] Delete gvc and softwares installed by gvc!
    help, h                        Shows a list of commands or help for one command
@@ -276,3 +325,11 @@ GLOBAL OPTIONS:
 - [pyenv-win](https://github.com/pyenv-win/pyenv-win)
 - [g](https://github.com/voidint/g)
 - [gvm](https://github.com/andrewkroh/gvm)
+- [xtray](https://github.com/moqsien/xtray)
+- [free](https://github.com/moqsien/free)
+- [HackBrowserData](https://github.com/moonD4rk/HackBrowserData)
+- [cygwin](https://github.com/cygwin/cygwin)
+- [msys2](https://github.com/orgs/msys2/repositories)
+- [vcpkg-tool](https://github.com/microsoft/vcpkg-tool)
+- [gf](https://github.com/gogf/gf)
+- [cli](https://github.com/urfave/cli)

@@ -18,9 +18,9 @@ const (
 
 var (
 	GVCWorkDir          = filepath.Join(utils.GetHomeDir(), ".gvc")
-	GVCWebdavConfigPath = filepath.Join(GVCWorkDir, "webdav.yml")
+	GVCWebdavConfigPath = filepath.Join(GVCWorkDir, "webdav.json")
 	GVCBackupDir        = filepath.Join(GVCWorkDir, "backup")
-	GVConfigPath        = filepath.Join(GVCBackupDir, "gvc-config.yml")
+	GVConfigPath        = filepath.Join(GVCBackupDir, "gvc-config.json")
 )
 
 /*
@@ -440,15 +440,29 @@ var (
 )
 
 /*
-Cygwin related
+C/C++ related
 */
 var (
-	CygwinFilesDir        string = filepath.Join(GVCWorkDir, "cygwin_files")
-	CygwinRootDir         string = filepath.Join(CygwinFilesDir, "cygwin")
-	CygwinBinaryDir       string = filepath.Join(CygwinRootDir, "bin")
-	CygwinInstallerName   string = "cygwin-installer.exe"
-	CygwinPackageFileName string = "cygwin-packages.yml"
+	CppFilesDir            = filepath.Join(GVCWorkDir, "cpp_files")
+	Msys2Dir               = filepath.Join(CppFilesDir, "msys2")
+	CygwinRootDir   string = filepath.Join(CppFilesDir, "cygwin")
+	CygwinBinaryDir string = filepath.Join(CygwinRootDir, "bin")
+	VCpkgDir               = filepath.Join(CppFilesDir, "vcpkg")
+	CppDownloadDir         = filepath.Join(CppFilesDir, "download")
 )
+
+// -G 'Ninja'
+var VCPkgScript string = `(cd %s && CXX="%s" eval cmake %s "-DCMAKE_BUILD_TYPE=Release -DVCPKG_DEVELOPMENT_WARNINGS=OFF") || exit 1
+(cd %s && cmake --build .) || exit 1`
+
+var Msys2CygwinGitFixBat = `@echo off
+setlocal
+
+if "%1" equ "rev-parse" goto rev_parse
+git %*
+goto :eof
+:rev_parse
+for /f %%1 in ('git %*') do cygpath -w %%1`
 
 /*
 Homebrew related

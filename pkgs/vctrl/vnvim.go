@@ -8,29 +8,31 @@ import (
 	"strings"
 	"time"
 
+	"github.com/TwiN/go-color"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/downloader"
+	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 )
 
 type NVim struct {
-	*downloader.Downloader
 	Conf      *config.GVConfig
 	checksum  string
 	checktype string
 	env       *utils.EnvsHandler
+	fetcher   *query.Fetcher
 }
 
 func NewNVim() (nv *NVim) {
 	nv = &NVim{
-		Downloader: &downloader.Downloader{},
-		Conf:       config.New(),
-		checksum:   "",
-		checktype:  "sha256",
-		env:        utils.NewEnvsHandler(),
+		fetcher:   query.NewFetcher(),
+		Conf:      config.New(),
+		checksum:  "",
+		checktype: "sha256",
+		env:       utils.NewEnvsHandler(),
 	}
 	nv.setup()
+	nv.env.SetWinWorkDir(config.GVCWorkDir)
 	return
 }
 
@@ -41,10 +43,11 @@ func (that *NVim) setup() {
 }
 
 func (that *NVim) getChecksum() {
-	that.Url = that.Conf.NVim.ChecksumUrl
-	that.Timeout = 10 * time.Second
+	that.fetcher.Url = that.Conf.NVim.ChecksumUrl
+	that.fetcher.Timeout = 10 * time.Second
 	fpath := filepath.Join(config.NVimFileDir, "checksum.txt")
-	if size := that.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
+
+	if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 		if ok, _ := utils.PathIsExist(fpath); ok {
 			if b, err := os.ReadFile(fpath); err == nil && len(b) > 0 {
 				c := string(b)
@@ -63,10 +66,10 @@ func (that *NVim) download() (r string) {
 	nurl, ok := that.Conf.NVim.Urls[runtime.GOOS]
 	if ok {
 		utils.ClearDir(config.NVimFileDir)
-		that.Url = nurl.Url
-		that.Timeout = 120 * time.Second
+		that.fetcher.Url = nurl.Url
+		that.fetcher.Timeout = 120 * time.Second
 		fpath := filepath.Join(config.NVimFileDir, fmt.Sprintf("%s%s", nurl.Name, nurl.Ext))
-		if size := that.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
+		if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 			if ok := utils.CheckFile(fpath, that.checktype, that.checksum); ok {
 				r = fpath
 			} else {
@@ -74,14 +77,14 @@ func (that *NVim) download() (r string) {
 			}
 		}
 	} else {
-		fmt.Println("Cannot find nvim package for ", runtime.GOOS)
+		fmt.Println(color.InRed(fmt.Sprintf("Cannot find nvim package for %s", runtime.GOOS)))
 	}
 	if ok, _ := utils.PathIsExist(config.NVimFileDir); ok && r != "" {
 		dst := config.NVimFileDir
 		if err := archiver.Unarchive(r, dst); err != nil {
 			os.RemoveAll(filepath.Dir(that.getBinaryPath()))
 			os.RemoveAll(r)
-			fmt.Println("[Unarchive failed] ", err)
+			fmt.Println(color.InRed("[Unarchive failed] "), err)
 			return
 		}
 		os.RemoveAll(r)
@@ -120,7 +123,7 @@ func (that *NVim) setenv() {
 func (that *NVim) setInitFile() {
 	dst := config.GetNVimInitPath()
 	if ok, _ := utils.PathIsExist(dst); ok {
-		fmt.Println("Neovim init file already exists. ", dst)
+		fmt.Println(color.InYellow(fmt.Sprintf("Neovim init file already exists: %s", dst)))
 		return
 	}
 	dir_ := filepath.Dir(config.NVimInitBackupPath)
@@ -131,10 +134,10 @@ func (that *NVim) setInitFile() {
 }
 
 func (that *NVim) initiatePlugins() {
-	that.Url = that.Conf.NVim.PluginsUrl
-	that.Timeout = 120 * time.Second
+	that.fetcher.Url = that.Conf.NVim.PluginsUrl
+	that.fetcher.Timeout = 120 * time.Second
 	fpath := filepath.Join(config.NVimFileDir, "nvim-plugins.zip")
-	if size := that.GetFile(fpath, os.O_CREATE|os.O_WRONLY, 0644); size > 0 {
+	if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 		if ok, _ := utils.PathIsExist(fpath); ok {
 			archiver.Unarchive(fpath, config.NVimFileDir)
 			os.Remove(fpath)
