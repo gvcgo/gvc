@@ -15,6 +15,7 @@ import (
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
+	"github.com/moqsien/gvc/pkgs/utils/tui"
 )
 
 type PyVenv struct {
@@ -255,7 +256,8 @@ func (that *PyVenv) ListRemoteVersions() {
 			}
 			newList = append(newList, v)
 		}
-		fmt.Println(color.InGreen(strings.Join(newList, "  ")))
+		fc := tui.NewFadeColors(newList)
+		fc.Println()
 	}
 }
 

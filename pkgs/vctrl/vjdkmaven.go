@@ -16,6 +16,7 @@ import (
 	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
+	"github.com/moqsien/gvc/pkgs/utils/tui"
 )
 
 type MavenPackage struct {
@@ -118,7 +119,6 @@ func (that *MavenVersion) getSha(p *MavenPackage) (shaCode string) {
 		if resp := that.fetcher.Get(); resp != nil {
 			content, _ := io.ReadAll(resp.RawBody())
 			shaCode = string(content)
-			fmt.Println("+++++++", shaCode)
 		}
 	}
 	return
@@ -132,7 +132,8 @@ func (that *MavenVersion) ShowVersions() {
 	}
 	if len(vList) > 0 {
 		res := sorts.SortGoVersion(vList)
-		fmt.Println(strings.Join(res, "  "))
+		fc := tui.NewFadeColors(res)
+		fc.Println()
 	}
 }
 

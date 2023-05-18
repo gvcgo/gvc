@@ -15,6 +15,7 @@ import (
 	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
+	"github.com/moqsien/gvc/pkgs/utils/tui"
 )
 
 var AllowedSuffixes = []string{
@@ -220,7 +221,8 @@ func (that *JDKVersion) ShowVersions(isOfficial bool) {
 		vList = append(vList, k)
 	}
 	vList = sorts.SortJDKVersion(vList)
-	fmt.Println(color.InGreen(strings.Join(vList, " ")))
+	fc := tui.NewFadeColors(vList)
+	fc.Println()
 }
 
 func (that *JDKVersion) findVersion(version string) (p *JDKPackage) {

@@ -17,6 +17,7 @@ import (
 	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
+	"github.com/moqsien/gvc/pkgs/utils/tui"
 )
 
 type JuliaPackage struct {
@@ -124,7 +125,8 @@ func (that *JuliaVersion) ShowVersions() {
 		vList = append(vList, v)
 	}
 	res := sorts.SortGoVersion(vList)
-	fmt.Println(color.InGreen(strings.Join(res, "  ")))
+	fc := tui.NewFadeColors(res)
+	fc.Println()
 }
 
 func (that *JuliaVersion) findPackage(version string) *JuliaPackage {

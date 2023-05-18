@@ -17,6 +17,7 @@ import (
 	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
+	"github.com/moqsien/gvc/pkgs/utils/tui"
 )
 
 type FlutterPackage struct {
@@ -145,7 +146,8 @@ func (that *FlutterVersion) ShowVersions() {
 		vList = append(vList, k)
 	}
 	res := sorts.SortGoVersion(vList)
-	fmt.Println(color.InGreen(strings.Join(res, "  ")))
+	fc := tui.NewFadeColors(res)
+	fc.Println()
 }
 
 func (that *FlutterVersion) findPackage(version string) *FlutterPackage {

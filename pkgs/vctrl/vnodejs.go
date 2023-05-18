@@ -18,6 +18,7 @@ import (
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
+	"github.com/moqsien/gvc/pkgs/utils/tui"
 )
 
 type NodePackage struct {
@@ -144,7 +145,8 @@ func (that *NodeVersion) parseLTS(v any) (r string) {
 }
 
 func (that *NodeVersion) ShowVersions() {
-	fmt.Println(color.InGreen(strings.Join(that.getVersions(), "  ")))
+	fc := tui.NewFadeColors(that.getVersions())
+	fc.Println()
 }
 
 func (that *NodeVersion) download(version string) string {

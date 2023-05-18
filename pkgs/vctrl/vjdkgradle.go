@@ -15,6 +15,7 @@ import (
 	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
+	"github.com/moqsien/gvc/pkgs/utils/tui"
 )
 
 type GradlePackage struct {
@@ -150,7 +151,8 @@ func (that *GradleVersion) ShowVersions() {
 		vList = append(vList, k)
 	}
 	res := sorts.SortGoVersion(vList)
-	fmt.Println(strings.Join(res, "  "))
+	fc := tui.NewFadeColors(res)
+	fc.Println()
 }
 
 func (that *GradleVersion) download(version string) (r string) {
