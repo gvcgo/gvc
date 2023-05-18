@@ -74,7 +74,7 @@ func (that *Self) Install() {
 	}
 }
 
-func (that *Self) Uninstall() {
+func (that *Self) Remove() {
 	var r string
 	fmt.Println(color.InYellow("Are you sure to delete gvc and the softwares it installed? [Y/N]"))
 	fmt.Scan(&r)
@@ -93,6 +93,28 @@ func (that *Self) Uninstall() {
 		}
 	} else {
 		fmt.Println(color.InGreen("Uninstall gvc has been aborted."))
+	}
+}
+
+func (that *Self) Uninstall() {
+	confirmPrinter := pterm.DefaultInteractiveConfirm
+	confirmPrinter.DefaultText = "Confirm to remove gvc. "
+	confirmPrinter.TextStyle = &pterm.Style{pterm.FgRed}
+	if result, _ := confirmPrinter.Show(); result {
+		pterm.Println()
+		that.env.RemoveSubs()
+		cp := pterm.DefaultInteractiveConfirm
+		cp.DefaultText = "Confirm to save config files to WebDAV. "
+		if r, _ := cp.Show(); r {
+			dav := NewGVCWebdav()
+			dav.GatherAndPushSettings()
+		}
+		pterm.Println()
+		if ok, _ := utils.PathIsExist(config.GVCWorkDir); ok {
+			os.RemoveAll(config.GVCWorkDir)
+		}
+	} else {
+		fmt.Println(pterm.Cyan("Remove gvc has been aborted."))
 	}
 }
 

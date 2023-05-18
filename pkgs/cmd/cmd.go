@@ -30,7 +30,7 @@ func (that *Cmder) uninstall() {
 	command := &cli.Command{
 		Name:    "uninstall",
 		Aliases: []string{"unins", "delete", "del"},
-		Usage:   "[Caution] Delete gvc and softwares installed by gvc!",
+		Usage:   "[Caution] Remove gvc and softwares installed by gvc!",
 		Action: func(ctx *cli.Context) error {
 			self := vctrl.NewSelf()
 			self.Uninstall()
