@@ -31,6 +31,7 @@ type XtrayConf struct {
 	KeeperCron        string      `koanf:"keeper_cron"`
 	StorageSqlitePath string      `koanf:"storage_sqlite_path"`
 	StorageExportPath string      `koanf:"storage_export_path"`
+	SockFileDir       string      `koanf:"sock_file_dir"`
 	path              string
 }
 
@@ -67,4 +68,5 @@ func (that *XtrayConf) Reset() {
 
 	that.StorageSqlitePath = filepath.Join(ProxyFilesDir, "storage.db")
 	that.StorageExportPath = filepath.Join(GVCBackupDir, "vpn_history.json")
+	that.SockFileDir = that.path
 }

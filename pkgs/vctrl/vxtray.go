@@ -86,6 +86,7 @@ func NewXtrayExa() *XtrayExa {
 	xe.Conf.KeeperCron = xe.GVConf.Xtray.KeeperCron
 	xe.Conf.StorageSqlitePath = xe.GVConf.Xtray.StorageSqlitePath
 	xe.Conf.StorageExportPath = xe.GVConf.Xtray.StorageExportPath
+	xe.Conf.SockFileDir = xe.GVConf.Xtray.SockFileDir
 
 	xe.Runner = ctrl.NewXRunner(xe.Conf)
 	xe.Runner.RegisterStarter(GenStarter())

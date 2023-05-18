@@ -15,7 +15,7 @@ require (
 	github.com/mholt/archiver/v3 v3.5.1
 	github.com/moqsien/hackbrowser v1.0.3
 	github.com/moqsien/processes v1.0.3
-	github.com/moqsien/xtray v1.0.7
+	github.com/moqsien/xtray v1.0.8
 	github.com/pterm/pterm v0.12.61
 	github.com/sashabaranov/go-openai v1.9.0
 	github.com/schollz/progressbar/v3 v3.13.0
@@ -99,7 +99,7 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/moqsien/free v0.0.0-20230501132114-a78105776368 // indirect
-	github.com/moqsien/goktrl v1.3.6 // indirect
+	github.com/moqsien/goktrl v1.3.7 // indirect
 	github.com/nwaples/rardecode v1.1.3 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/onsi/ginkgo/v2 v2.9.4 // indirect

@@ -432,12 +432,16 @@ github.com/moqsien/free v0.0.0-20230501132114-a78105776368 h1:QuIIBySqm+FgmGPnuI
 github.com/moqsien/free v0.0.0-20230501132114-a78105776368/go.mod h1:Wuvu5m5iGh0E5g7e2y2Yj+MQicLF2I15uu2UTW0kT90=
 github.com/moqsien/goktrl v1.3.6 h1:PHU8icqEvDLo1EmvFwBeRp2Uy73rlAT6aJ7G9HYBUlE=
 github.com/moqsien/goktrl v1.3.6/go.mod h1:vtYPnSuyWeOGl7HSQ08SX8b8m/NdiVv9icf9gQhT07A=
+github.com/moqsien/goktrl v1.3.7 h1:G50yVgYqVcSw5MHJpZPif5saCswjLJH12C6CudXf47c=
+github.com/moqsien/goktrl v1.3.7/go.mod h1:vtYPnSuyWeOGl7HSQ08SX8b8m/NdiVv9icf9gQhT07A=
 github.com/moqsien/hackbrowser v1.0.3 h1:HpXHg1goHU70YnifqPk8+ityK5/SpIu9e7BB5pN4TUY=
 github.com/moqsien/hackbrowser v1.0.3/go.mod h1:xsUuSbleSJn0vz5TOFMD0nDEmv5fDGgb65HQq8INLJc=
 github.com/moqsien/processes v1.0.3 h1:bV8vi4JZnwlhsxguyVAtUUv+zq4yvMSZIfjrsFGfmPE=
 github.com/moqsien/processes v1.0.3/go.mod h1:+jsV7YfT+24Ea7Ks8UXW4x8jcbqX7exKej/o5zlPEm0=
 github.com/moqsien/xtray v1.0.7 h1:U0TLhEeJWUy4dzJeeujI7kBC9RgFEXkKK/x2diwA9d4=
 github.com/moqsien/xtray v1.0.7/go.mod h1:1iubyIiqz+mYhiAcW1Q9Pf96glIA6gT7Ua9+EysUEXA=
+github.com/moqsien/xtray v1.0.8 h1:tFX+sKy8LwhUiXd9o9oF6NzI9/2WPmvclY662tiEVKc=
+github.com/moqsien/xtray v1.0.8/go.mod h1:MfYLOJuErjWjksQpzFQYtbwiIBxOw7gmZowdExBVNmk=
 github.com/mwitkow/go-conntrack v0.0.0-20161129095857-cc309e4a2223/go.mod h1:qRWi+5nqEBWmkhHvq77mSJWrCKwh8bxhgT7d/eI7P4U=
 github.com/mwitkow/go-conntrack v0.0.0-20190716064945-2f068394615f/go.mod h1:qRWi+5nqEBWmkhHvq77mSJWrCKwh8bxhgT7d/eI7P4U=
 github.com/neelance/astrewrite v0.0.0-20160511093645-99348263ae86/go.mod h1:kHJEU3ofeGjhHklVoIGuVj85JJwZ6kWPaJwCIxgnFmo=
