@@ -7,7 +7,6 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/TwiN/go-color"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/pterm/pterm"
@@ -74,28 +73,6 @@ func (that *Self) Install() {
 	}
 }
 
-func (that *Self) Remove() {
-	var r string
-	fmt.Println(color.InYellow("Are you sure to delete gvc and the softwares it installed? [Y/N]"))
-	fmt.Scan(&r)
-	r = strings.TrimSpace(r)
-	if strings.ToLower(r) == "y" || strings.ToLower(r) == "yes" {
-		that.env.RemoveSubs()
-		fmt.Println(color.InYellow("Restore your config files to webdav? [Y/N]"))
-		fmt.Scan(&r)
-		r = strings.TrimSpace(r)
-		if strings.ToLower(r) == "y" || strings.ToLower(r) == "yes" || r == "" {
-			dav := NewGVCWebdav()
-			dav.GatherAndPushSettings()
-		}
-		if ok, _ := utils.PathIsExist(config.GVCWorkDir); ok {
-			os.RemoveAll(config.GVCWorkDir)
-		}
-	} else {
-		fmt.Println(color.InGreen("Uninstall gvc has been aborted."))
-	}
-}
-
 func (that *Self) Uninstall() {
 	confirmPrinter := pterm.DefaultInteractiveConfirm
 	confirmPrinter.DefaultText = "Confirm to remove gvc. "
@@ -114,7 +91,7 @@ func (that *Self) Uninstall() {
 			os.RemoveAll(config.GVCWorkDir)
 		}
 	} else {
-		fmt.Println(pterm.Cyan("Remove gvc has been aborted."))
+		fmt.Println(pterm.Cyan("Remove has been aborted."))
 	}
 }
 
@@ -146,7 +123,8 @@ func (that *Self) ShowVersion() {
 		WithTopPadding(2).
 		WithBottomPadding(2).
 		Sprintf(
-			"%s\n%s\n%s\n%s", pterm.LightCyan("   Version: ")+pterm.LightYellow("v"+VERSION),
+			"%s\n%s\n%s\n%s",
+			pterm.LightCyan("   Version:     ")+pterm.LightYellow("v"+VERSION),
 			pterm.LightCyan("   Github:      ")+pterm.LightYellow("https://github.com/moqsien/gvc"),
 			pterm.LightCyan("   Gitee:       ")+pterm.LightYellow("https://gitee.com/moqsien/gvc_tools"),
 			pterm.LightCyan("   Email:       ")+pterm.LightYellow("moqsien@foxmail.com"),
