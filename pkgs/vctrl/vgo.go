@@ -18,6 +18,7 @@ import (
 	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
+	"github.com/moqsien/gvc/pkgs/utils/tui"
 )
 
 type GoPackage struct {
@@ -231,15 +232,18 @@ func (that *GoVersion) ShowRemoteVersions(arg string) {
 	switch arg {
 	case ShowAll:
 		if err := that.AllVersions(); err == nil {
-			fmt.Println(color.InCyan(strings.Join(sorts.SortGoVersion(that.filterVersionsForCurrentPlatform()), "  ")))
+			fc := tui.NewFadeColors(sorts.SortGoVersion(that.filterVersionsForCurrentPlatform()))
+			fc.Println()
 		}
 	case ShowStable:
 		if err := that.StableVersions(); err == nil {
-			fmt.Println(color.InGreen(strings.Join(sorts.SortGoVersion(that.filterVersionsForCurrentPlatform()), "  ")))
+			fc := tui.NewFadeColors(sorts.SortGoVersion(that.filterVersionsForCurrentPlatform()))
+			fc.Println()
 		}
 	case ShowUnstable:
 		if err := that.UnstableVersions(); err == nil {
-			fmt.Println(color.InYellow(strings.Join(sorts.SortGoVersion(that.filterVersionsForCurrentPlatform()), "  ")))
+			fc := tui.NewFadeColors(sorts.SortGoVersion(that.filterVersionsForCurrentPlatform()))
+			fc.Println()
 		}
 	default:
 		fmt.Println(color.InYellow("[Unknown show type] "), arg)
