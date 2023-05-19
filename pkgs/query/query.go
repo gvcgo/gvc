@@ -19,10 +19,8 @@ import (
 	"github.com/Asutorufa/yuhaiin/pkg/protos/node/protocol"
 	"github.com/TwiN/go-color"
 	"github.com/go-resty/resty/v2"
-	"github.com/k0kubun/go-ansi"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/tui"
-	"github.com/schollz/progressbar/v3"
 )
 
 type Fetcher struct {
@@ -156,70 +154,6 @@ func (that *Fetcher) parseFilename(fPath string) (fName string) {
 	fName = strings.ReplaceAll(fPath, dirPath, "")
 	fName = strings.TrimPrefix(fName, "/")
 	fName = strings.TrimPrefix(fName, `\`)
-	return
-}
-
-func (that *Fetcher) DownloadFile(fPath string, force ...bool) (size int64) {
-	if that.client == nil {
-		fmt.Println(color.InRed("client is nil."))
-		return
-	} else {
-		that.setMisc()
-	}
-	forceToDownload := false
-	if len(force) > 0 && force[0] {
-		forceToDownload = true
-	}
-	if ok, _ := utils.PathIsExist(fPath); ok && !forceToDownload {
-		fmt.Println(color.InYellow("[Downloader] File already exists."))
-		return 100
-	}
-	if forceToDownload {
-		os.RemoveAll(fPath)
-	}
-	if res, err := that.client.R().SetDoNotParseResponse(true).Get(that.Url); err == nil {
-		outFile, err := os.Create(fPath)
-		if err != nil {
-			fmt.Println(color.InRed("Cannot open file"), err)
-			return
-		}
-		defer utils.Closeq(outFile)
-
-		defer utils.Closeq(res.RawResponse.Body)
-		var dst io.Writer
-		bar := progressbar.NewOptions64(
-			res.RawResponse.ContentLength,
-			progressbar.OptionEnableColorCodes(true),
-			progressbar.OptionSetTheme(progressbar.Theme{
-				Saucer:        color.InCyan("="),
-				SaucerHead:    color.InCyan(">"),
-				SaucerPadding: " ",
-				BarStart:      color.InYellow("["),
-				BarEnd:        color.InYellow("]"),
-			}),
-			progressbar.OptionSetWidth(15),
-			progressbar.OptionSetDescription(fmt.Sprintf("Downloading %s", color.InYellow(that.parseFilename(fPath)))),
-			progressbar.OptionSetWriter(ansi.NewAnsiStdout()),
-			progressbar.OptionShowBytes(true),
-			progressbar.OptionThrottle(20*time.Millisecond),
-			progressbar.OptionShowCount(),
-			progressbar.OptionOnCompletion(func() {
-				_, _ = fmt.Fprint(ansi.NewAnsiStdout(), "\n")
-			}),
-		)
-		_ = bar.RenderBlank()
-		dst = io.MultiWriter(outFile, bar)
-
-		// io.Copy reads maximum 32kb size, it is perfect for large file download too
-		written, err := io.Copy(dst, res.RawResponse.Body)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		size = written
-	} else {
-		fmt.Println(err)
-	}
 	return
 }
 

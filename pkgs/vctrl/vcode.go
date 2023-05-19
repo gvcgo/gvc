@@ -11,11 +11,11 @@ import (
 	"strings"
 	"time"
 
-	color "github.com/TwiN/go-color"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
+	"github.com/moqsien/gvc/pkgs/utils/tui"
 	"github.com/tidwall/gjson"
 )
 
@@ -61,12 +61,12 @@ func NewCode() (co *Code) {
 func (that *Code) initeDirs() {
 	if ok, _ := utils.PathIsExist(config.CodeFileDir); !ok {
 		if err := os.MkdirAll(config.CodeFileDir, os.ModePerm); err != nil {
-			fmt.Println(color.InRed("[mkdir Failed] "), err)
+			tui.PrintError(err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.CodeTarFileDir); !ok {
 		if err := os.MkdirAll(config.CodeTarFileDir, os.ModePerm); err != nil {
-			fmt.Println(color.InRed("[mkdir Failed] "), err)
+			tui.PrintError(err)
 		}
 	}
 }
@@ -93,7 +93,7 @@ func (that *Code) getPackages() (r string) {
 			}
 		}
 	} else {
-		fmt.Println(color.InRed("[Get vscode package info failed]"))
+		tui.PrintError("Get vscode package info failed.")
 	}
 	return
 }
@@ -109,7 +109,7 @@ func (that *Code) download() (r string) {
 		} else if strings.HasSuffix(p.Url, ".tar.gz") {
 			suffix = ".tar.gz"
 		} else {
-			fmt.Println(color.InRed("[Unsupported file type] "), p.Url)
+			tui.PrintError(fmt.Sprintf("Unsupported file type: %s", p.Url))
 			return
 		}
 		fpath := filepath.Join(config.CodeTarFileDir, fmt.Sprintf("%s-%s%s", key, that.Version, suffix))
@@ -123,7 +123,7 @@ func (that *Code) download() (r string) {
 			}
 		}
 	} else {
-		fmt.Println(color.InRed(fmt.Sprintf("Cannot find package for %s", key)))
+		tui.PrintError(fmt.Sprintf("Cannot find package for %s", key))
 	}
 
 	if ok, _ := utils.PathIsExist(config.CodeUntarFile); !ok {
@@ -141,7 +141,7 @@ func (that *Code) Unarchive(fPath string) {
 	if fPath != "" {
 		if err := archiver.Unarchive(fPath, config.CodeUntarFile); err != nil {
 			os.RemoveAll(config.CodeUntarFile)
-			fmt.Println(color.InRed("[Unarchive failed] "), err)
+			tui.PrintError(fmt.Sprintf("Unarchive failed: %s", err.Error()))
 			return
 		}
 	}
@@ -181,7 +181,7 @@ func (that *Code) InstallForMac() {
 				source := filepath.Join(config.CodeUntarFile, file.Name())
 				if ok, _ := utils.PathIsExist(config.CodeMacCmdBinaryDir); !ok {
 					if err := utils.CopyFileOnUnixSudo(source, config.CodeMacInstallDir); err != nil {
-						fmt.Println(color.InRed("[Install vscode failed] "), err)
+						tui.PrintError(fmt.Sprintf("Install vscode failed: %s", err.Error()))
 					} else {
 						os.RemoveAll(config.CodeUntarFile)
 					}

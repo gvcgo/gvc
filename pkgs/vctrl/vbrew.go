@@ -10,6 +10,7 @@ import (
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
+	"github.com/moqsien/gvc/pkgs/utils/tui"
 )
 
 type Homebrew struct {
@@ -40,6 +41,7 @@ func (that *Homebrew) getShellScript() string {
 	return fPath
 }
 
+// TODO: pterm options
 func (that *Homebrew) SetEnv() {
 	mirror := ""
 	fmt.Println("Choose a Mirror Site in China:")
@@ -66,7 +68,8 @@ func (that *Homebrew) SetEnv() {
 			envMap["HOMEBREW_PIP_INDEX_URL"])
 		that.envs.UpdateSub(utils.SUB_BREW, envars)
 	default:
-		fmt.Println("Unknown Mirror Choice!")
+		l := tui.NewLog("Unknown Mirror Choice!")
+		l.Info()
 	}
 }
 
@@ -79,11 +82,12 @@ func (that *Homebrew) Install() {
 		cmd.Stdin = os.Stdin
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
-			fmt.Println("[Install Homebrew failed] ", err)
+			tui.PrintError(err)
 			return
 		}
 		that.SetEnv()
 	} else {
-		fmt.Println("[Homebrew does not support Windows]")
+		l := tui.NewLog("[Homebrew does not support Windows]")
+		l.Info()
 	}
 }

@@ -19,6 +19,7 @@ import (
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
 	"github.com/moqsien/gvc/pkgs/utils/tui"
+	"github.com/pterm/pterm"
 )
 
 type GoPackage struct {
@@ -57,17 +58,17 @@ func NewGoVersion() (gv *GoVersion) {
 func (that *GoVersion) initeDirs() {
 	if ok, _ := utils.PathIsExist(config.DefaultGoRoot); !ok {
 		if err := os.MkdirAll(config.DefaultGoRoot, os.ModePerm); err != nil {
-			fmt.Println(color.InRed("[mkdir Failed] "), err)
+			tui.PrintError(err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.GoTarFilesPath); !ok {
 		if err := os.MkdirAll(config.GoTarFilesPath, os.ModePerm); err != nil {
-			fmt.Println(color.InRed("[mkdir Failed] "), err)
+			tui.PrintError(err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.GoUnTarFilesPath); !ok {
 		if err := os.MkdirAll(config.GoUnTarFilesPath, os.ModePerm); err != nil {
-			fmt.Println(color.InRed("[mkdir Failed] "), err)
+			tui.PrintError(err)
 		}
 	}
 }
@@ -77,17 +78,19 @@ func (that *GoVersion) getDoc() {
 		that.fetcher.Url = that.Conf.Go.CompilerUrls[0]
 		var err error
 		if that.ParsedUrl, err = url.Parse(that.fetcher.Url); err != nil {
-			panic(err)
+			tui.PrintError(err)
+			os.Exit(1)
 		}
 		that.fetcher.Timeout = 30 * time.Second
 		if resp := that.fetcher.Get(); resp != nil {
 			var err error
 			that.Doc, err = goquery.NewDocumentFromReader(resp.RawBody())
 			if err != nil {
-				fmt.Println(color.InRed("[parse page errored] "), err)
+				tui.PrintError(fmt.Sprintf("Parse page errored: %s", err.Error()))
 			}
 			if that.Doc == nil {
-				panic(fmt.Sprintf("Cannot parse html for %s", that.fetcher.Url))
+				tui.PrintError(fmt.Sprintf("Cannot parse html for %s", that.fetcher.Url))
+				os.Exit(1)
 			}
 		}
 	}
@@ -246,7 +249,7 @@ func (that *GoVersion) ShowRemoteVersions(arg string) {
 			fc.Println()
 		}
 	default:
-		fmt.Println(color.InYellow("[Unknown show type] "), arg)
+		tui.PrintWarning(fmt.Sprintf("Unknown show type: %s", arg))
 	}
 }
 
@@ -284,7 +287,7 @@ func (that *GoVersion) download(version string) (r string) {
 			}
 		}
 	} else {
-		fmt.Println(color.InYellow(fmt.Sprintf("Cannot find version: %s.", version)))
+		tui.PrintError(fmt.Sprintf("Cannot find version: %s.", version))
 	}
 	return
 }
@@ -333,7 +336,7 @@ func (that *GoVersion) UseVersion(version string) {
 		if tarfile := that.download(version); tarfile != "" {
 			if err := archiver.Unarchive(tarfile, untarfile); err != nil {
 				os.RemoveAll(untarfile)
-				fmt.Println(color.InRed("[Unarchive failed] "), err)
+				tui.PrintError(fmt.Sprintf("Unarchive failed: %s.", err.Error()))
 				return
 			}
 		} else {
@@ -346,13 +349,13 @@ func (that *GoVersion) UseVersion(version string) {
 		os.RemoveAll(config.DefaultGoRoot)
 	}
 	if err := utils.MkSymLink(filepath.Join(untarfile, "go"), config.DefaultGoRoot); err != nil {
-		fmt.Println(color.InRed("[Create link failed] "), err)
+		tui.PrintError(fmt.Sprintf("Create link failed: %s.", err.Error()))
 		return
 	}
 	if !that.env.DoesEnvExist(utils.SUB_GO) {
 		that.CheckAndInitEnv()
 	}
-	fmt.Println(color.InGreen(fmt.Sprintf("Use %s succeeded!", version)))
+	tui.PrintSuccess(fmt.Sprintf("Use %s succeeded!", version))
 }
 
 func (that *GoVersion) getCurrent() (current string) {
@@ -369,16 +372,16 @@ func (that *GoVersion) ShowInstalled() {
 	current := that.getCurrent()
 	installedList, err := os.ReadDir(config.GoUnTarFilesPath)
 	if err != nil {
-		fmt.Println(color.InRed("[Read dir failed] "), err)
+		tui.PrintError(fmt.Sprintf("Read dir failed: %s", err.Error()))
 		return
 	}
 	for _, v := range installedList {
 		if v.IsDir() {
 			if current == v.Name() {
-				fmt.Println(color.InYellow(fmt.Sprintf("%s <Current>", v.Name())))
+				fmt.Println(pterm.Yellow(fmt.Sprintf("%s <Current>", v.Name())))
 				continue
 			}
-			fmt.Println(color.InCyan(v.Name()))
+			fmt.Println(pterm.Cyan(v.Name()))
 		}
 	}
 }
@@ -395,7 +398,7 @@ func (that *GoVersion) RemoveUnused() {
 	current := that.getCurrent()
 	installedList, err := os.ReadDir(config.GoUnTarFilesPath)
 	if err != nil {
-		fmt.Println(color.InRed("[Read dir failed] "), err)
+		tui.PrintError(fmt.Sprintf("Read dir failed: %s", err.Error()))
 		return
 	}
 	tarFiles, _ := os.ReadDir(config.GoTarFilesPath)
@@ -468,6 +471,7 @@ func (that *GoVersion) SearchLibs(name string, sortby int) {
 		}
 		t.Render()
 		currentPage += 1
+		// TODO: pterm options
 		fmt.Println(color.InGreen("Choose what to do next: "))
 		fmt.Println(color.InGreen("1) Press <n> to show next page."))
 		fmt.Println(color.InGreen("2) Press <e> to Exit."))

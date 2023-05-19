@@ -9,6 +9,7 @@ import (
 
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
+	"github.com/moqsien/gvc/pkgs/utils/tui"
 	"github.com/pterm/pterm"
 	"github.com/pterm/pterm/putils"
 )
@@ -91,7 +92,7 @@ func (that *Self) Uninstall() {
 			os.RemoveAll(config.GVCWorkDir)
 		}
 	} else {
-		fmt.Println(pterm.Cyan("Remove has been aborted."))
+		tui.PrintInfo("Remove has been aborted.")
 	}
 }
 

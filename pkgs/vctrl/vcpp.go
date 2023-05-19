@@ -16,6 +16,7 @@ import (
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
+	"github.com/moqsien/gvc/pkgs/utils/tui"
 )
 
 var (
@@ -51,27 +52,27 @@ func NewCppManager() (cm *CppManager) {
 func (that *CppManager) initDirs() {
 	if ok, _ := utils.PathIsExist(config.CppFilesDir); !ok {
 		if err := os.MkdirAll(config.CppFilesDir, os.ModePerm); err != nil {
-			fmt.Println(color.InRed("[mkdir Failed] "), err)
+			tui.PrintError(err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.Msys2Dir); !ok {
 		if err := os.MkdirAll(config.Msys2Dir, os.ModePerm); err != nil {
-			fmt.Println(color.InRed("[mkdir Failed] "), err)
+			tui.PrintError(err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.VCpkgDir); !ok {
 		if err := os.MkdirAll(config.VCpkgDir, os.ModePerm); err != nil {
-			fmt.Println(color.InRed("[mkdir Failed] "), err)
+			tui.PrintError(err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.CppDownloadDir); !ok {
 		if err := os.MkdirAll(config.CppDownloadDir, os.ModePerm); err != nil {
-			fmt.Println(color.InRed("[mkdir Failed] "), err)
+			tui.PrintError(err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.CygwinRootDir); !ok {
 		if err := os.MkdirAll(config.CygwinRootDir, os.ModePerm); err != nil {
-			fmt.Println(color.InRed("[mkdir Failed] "), err)
+			tui.PrintError(err)
 		}
 	}
 }
@@ -136,7 +137,7 @@ func (that *CppManager) InstallMsys2() {
 		c.Stdin = os.Stdin
 		c.Stdout = os.Stdout
 		if err := c.Run(); err != nil {
-			fmt.Println(color.InRed("Execute Msys2Installer Failed: "), err)
+			tui.PrintError(err)
 			return
 		}
 		binPath := filepath.Join(config.Msys2Dir, "usr", "bin")
@@ -162,7 +163,7 @@ func (that *CppManager) UninstallMsys2() {
 		c.Stdin = os.Stdin
 		c.Stdout = os.Stdout
 		if err := c.Run(); err != nil {
-			fmt.Println("Execute uninstall.exe Failed: ", err)
+			tui.PrintError(err)
 			return
 		}
 	}
@@ -185,7 +186,7 @@ func (that *CppManager) RepairGitForVSCode() {
 		if vsContent, err := os.ReadFile(vscodeSettingsPath); err == nil {
 			strContent := strings.TrimSuffix(string(vsContent), "\n")
 			if strings.Contains(strContent, `"git.path"`) {
-				fmt.Println(`"git.path" already exists in: `, vscodeSettingsPath)
+				tui.PrintInfo(fmt.Sprintf(`"git.path" already exists in: %s`, vscodeSettingsPath))
 				return
 			}
 			cList := strings.Split(strContent, "\n")
@@ -214,7 +215,7 @@ func (that *CppManager) getCygwinInstaller() (fPath string) {
 		if that.fetcher.Url != "" {
 			that.fetcher.Timeout = 10 * time.Minute
 			if size := that.fetcher.GetAndSaveFile(fPath); size == 0 {
-				fmt.Println(color.InRed("[Download Cygwin installer failed!]"))
+				tui.PrintError("Download Cygwin installer failed!")
 				os.RemoveAll(fPath)
 			} else {
 				if runtime.GOOS == utils.Windows {
@@ -233,9 +234,7 @@ func (that *CppManager) InstallCygwin(packInfo string) {
 	if packInfo == "" {
 		packInfo = "git,bash,wget,gcc,gdb,clang,openssh,bashdb,gdbm,gcc-fortran,clang-analyzer,clang-doc,bash-completion,bash-devel,bash-completion-cmake"
 	}
-
-	fmt.Println(color.InGreen("[Install Packages] "), color.InYellow(packInfo))
-
+	tui.PrintInfo(fmt.Sprintf("Install Packages: %s", packInfo))
 	if ok, _ := utils.PathIsExist(installerPath); ok && runtime.GOOS == utils.Windows {
 		ePath := os.Getenv("PATH")
 		if !strings.Contains(ePath, config.CppDownloadDir) {
@@ -250,7 +249,7 @@ func (that *CppManager) InstallCygwin(packInfo string) {
 		cmd.Stdin = os.Stdin
 		cmd.Stdout = os.Stdout
 		if err := cmd.Run(); err != nil {
-			fmt.Println(color.InRed("Execute CygwinInstaller Failed: "), err)
+			tui.PrintError(err)
 			return
 		}
 
@@ -338,7 +337,7 @@ func (that *CppManager) InstallVCPkg() {
 	fPath := that.getVCPkg()
 	if ok, _ := utils.PathIsExist(fPath); ok {
 		if err := archiver.Unarchive(fPath, config.CppDownloadDir); err != nil {
-			fmt.Println(color.InRed("[Unarchive failed] "), err)
+			tui.PrintError(fmt.Sprintf("Unarchive failed: %s", err.Error()))
 			return
 		}
 		dirList, _ := os.ReadDir(config.CppDownloadDir)
@@ -364,7 +363,7 @@ func (that *CppManager) InstallVCPkg() {
 			os.MkdirAll(buildPath, os.ModePerm)
 
 			if err := archiver.Unarchive(fPath, config.CppDownloadDir); err != nil {
-				fmt.Println(color.InRed("[Unarchive failed] "), err)
+				tui.PrintError(fmt.Sprintf("Unarchive failed: %s", err.Error()))
 				return
 			}
 			dirList, _ = os.ReadDir(config.CppDownloadDir)
@@ -376,7 +375,6 @@ func (that *CppManager) InstallVCPkg() {
 			}
 
 			if ok, _ = utils.PathIsExist(srcPath); ok {
-				fmt.Println(srcPath)
 				cmdName, scriptPath := that.writeCompileScript(buildPath, srcPath)
 				if scriptPath != "" {
 					cmd := exec.Command(cmdName, scriptPath)
@@ -385,7 +383,7 @@ func (that *CppManager) InstallVCPkg() {
 					cmd.Stdin = os.Stdin
 					cmd.Stdout = os.Stdout
 					if err := cmd.Run(); err != nil {
-						fmt.Println(color.InRed("Execute Compilation Script Failed: "), err)
+						tui.PrintError(fmt.Sprintf("Execute Compilation Script Failed: %s", err.Error()))
 						return
 					}
 				}

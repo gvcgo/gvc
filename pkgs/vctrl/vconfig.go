@@ -9,7 +9,6 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/TwiN/go-color"
 	"github.com/gogf/gf/os/genv"
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/yaml"
@@ -71,7 +70,7 @@ func NewGVCWebdav() (gw *GVCWebdav) {
 func (that *GVCWebdav) initeDirs() {
 	if ok, _ := utils.PathIsExist(config.GVCBackupDir); config.GVCBackupDir != "" && !ok {
 		if err := os.MkdirAll(config.GVCBackupDir, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", config.GVCBackupDir, err)
+			tui.PrintError(err)
 		}
 	}
 	that.Reload()
@@ -81,7 +80,7 @@ func (that *GVCWebdav) initeAES() {
 	if that.DavConf.EncryptPass != "" {
 		that.AESCrypt = utils.NewCrypt(that.DavConf.EncryptPass)
 	} else {
-		fmt.Println(color.InYellow("[Warning] use default encryption password."))
+		tui.PrintWarning("use default encryption password.")
 		that.AESCrypt = utils.NewCrypt(defaultEncryptPass)
 	}
 }
@@ -103,7 +102,7 @@ func (that *GVCWebdav) RestoreDefaultGVConf() {
 
 func (that *GVCWebdav) Reload() {
 	if ok, _ := utils.PathIsExist(config.GVCWebdavConfigPath); !ok {
-		fmt.Println("[Warning] It seems that you have not set up your webdav account.")
+		tui.PrintWarning("It seems that you have not set up your webdav account.")
 		return
 	}
 	that.koanfer.Load(that.DavConf)
@@ -139,7 +138,7 @@ func (that *GVCWebdav) SetWebdavAccount() {
 		case wEncrypter:
 			that.DavConf.EncryptPass = v
 		default:
-			fmt.Println(pterm.Yellow("unknown input"))
+			tui.PrintError("unknown input")
 		}
 	}
 
@@ -154,7 +153,7 @@ func (that *GVCWebdav) SetWebdavAccount() {
 
 func (that *GVCWebdav) getClient(force bool) {
 	if that.DavConf.Host == "" || that.DavConf.Username == "" || that.DavConf.Password == "" {
-		fmt.Println(pterm.Yellow("It seems that you haven't set a webdav account."))
+		tui.PrintWarning("It seems that you haven't set a webdav account.")
 		ok, _ := pterm.DefaultInteractiveConfirm.WithConfirmText("Set your webdav account right now?").Show()
 		pterm.Println()
 		if ok {
@@ -168,8 +167,7 @@ func (that *GVCWebdav) getClient(force bool) {
 			that.DavConf.Username, that.DavConf.Password)
 		if err := that.client.Connect(); err != nil {
 			that.client = nil
-			fmt.Println("[Webdav connecting failed] ", err)
-			fmt.Println("Please check your webdav account info or network.")
+			tui.PrintError(fmt.Sprintf("Webdav connecting failed: %s", err.Error()))
 		}
 	}
 }
@@ -195,11 +193,11 @@ func (that *GVCWebdav) Pull() {
 	if err != nil {
 		if strings.Contains(err.Error(), "404") {
 			if err := that.client.MkdirAll(that.DavConf.RemoteDir, os.ModePerm); err != nil {
-				fmt.Println("Create a new dir for webdav failed! ", err)
+				tui.PrintError(fmt.Sprintf("Create a new dir for webdav failed: %s.", err.Error()))
 				return
 			}
 		} else {
-			fmt.Println("[Get files from webdav failed] ", err)
+			tui.PrintError(fmt.Sprintf("Get files from webdav failed: %s.", err.Error()))
 			return
 		}
 	}
@@ -238,7 +236,7 @@ func (that *GVCWebdav) Push() {
 	if err != nil {
 		if strings.Contains(err.Error(), "404") {
 			if err := that.client.MkdirAll(that.DavConf.RemoteDir, os.ModePerm); err != nil {
-				fmt.Println("Create a new dir for webdav failed! ", err)
+				tui.PrintError(fmt.Sprintf("Create a new dir for webdav failed: %s.", err.Error()))
 				return
 			}
 		}
@@ -309,7 +307,7 @@ func (that *GVCWebdav) modifyKeybindings(backupPath string) {
 }
 
 func (that *GVCWebdav) FetchAndApplySettings() {
-	fmt.Println("Fetching config files from webdav...")
+	tui.PrintInfo("Fetching config files from webdav...")
 	that.Pull()
 	for backupName, fpath := range that.getFilesToSync() {
 		if fpath == "" {
@@ -317,7 +315,7 @@ func (that *GVCWebdav) FetchAndApplySettings() {
 		}
 		backupPath := filepath.Join(that.DavConf.LocalDir, backupName)
 		if ok, _ := utils.PathIsExist(backupPath); ok {
-			fmt.Println("[set config files] ", backupPath)
+			tui.PrintInfo(fmt.Sprintf("Set config files: %s", backupPath))
 			if content, _ := os.ReadFile(backupPath); len(content) == 0 {
 				continue
 			}
@@ -338,12 +336,12 @@ func (that *GVCWebdav) InstallVSCodeExts(backupPath string) {
 	if ok, _ := utils.PathIsExist(backupPath); ok {
 		err := that.k.Load(file.Provider(backupPath), that.parser)
 		if err != nil {
-			fmt.Println("[Config Load Failed] ", err)
+			tui.PrintError(fmt.Sprintf("Config Load Failed: %s", err.Error()))
 			return
 		}
 		that.k.UnmarshalWithConf("", that.vscodeExts, koanf.UnmarshalConf{Tag: "koanf"})
 	} else {
-		fmt.Println("[Can not find extensions backup file] ", backupPath)
+		tui.PrintError(fmt.Sprintf("Can not find extensions backup file: %s", backupPath))
 		return
 	}
 	if len(that.vscodeExts.VSCodeExts) == 0 {
@@ -364,19 +362,21 @@ func (that *GVCWebdav) gatherVSCodeExtsions() {
 	cmd := exec.Command("code", "--list-extensions")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		fmt.Printf("cmd.Run() failed with %sn", err)
+		tui.PrintError(err)
 		return
 	}
 	iNameList := strings.Split(string(out), "\n")
 	if len(iNameList) > 0 {
 		newList := []string{}
-		fmt.Println("Local installed vscode extensions: ")
 		for _, iName := range iNameList {
 			if strings.Contains(iName, ".") && len(iName) > 3 {
 				newList = append(newList, iName)
-				fmt.Println(iName)
 			}
 		}
+		tui.PrintInfo("Local installed vscode extensions: ")
+		fc := tui.NewFadeColors(newList)
+		fc.Println()
+
 		if len(newList) > 0 {
 			that.vscodeExts.VSCodeExts = newList
 			that.resetKoanf()
@@ -396,16 +396,16 @@ func (that *GVCWebdav) GatherAndPushSettings() {
 	that.gatherVSCodeExtsions()
 	if ok, _ := utils.PathIsExist(that.DavConf.LocalDir); !ok {
 		if err := os.MkdirAll(that.DavConf.LocalDir, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", that.DavConf.LocalDir, err)
+			tui.PrintError(err)
 			return
 		}
 	}
 	for backupName, fpath := range that.getFilesToSync() {
 		if ok, _ := utils.PathIsExist(fpath); ok {
-			fmt.Println("[gathering file] ", backupName)
+			tui.PrintInfo(fmt.Sprintf("Gathering file: %s.", backupName))
 			utils.CopyFile(fpath, filepath.Join(that.DavConf.LocalDir, backupName))
 		}
 	}
-	fmt.Println("Pushing config files to webdav...")
+	tui.PrintInfo("Pushing config files to webdav...")
 	that.Push()
 }

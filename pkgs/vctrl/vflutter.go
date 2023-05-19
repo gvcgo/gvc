@@ -10,7 +10,6 @@ import (
 	"strings"
 	"time"
 
-	color "github.com/TwiN/go-color"
 	"github.com/gogf/gf/encoding/gjson"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
@@ -18,6 +17,7 @@ import (
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
 	"github.com/moqsien/gvc/pkgs/utils/tui"
+	"github.com/pterm/pterm"
 )
 
 type FlutterPackage struct {
@@ -54,17 +54,17 @@ func (that *FlutterVersion) initeDirs() {
 	if ok, _ := utils.PathIsExist(config.FlutterRootDir); !ok {
 		os.RemoveAll(config.FlutterRootDir)
 		if err := os.MkdirAll(config.FlutterRootDir, os.ModePerm); err != nil {
-			fmt.Println(color.InRed("[mkdir Failed] "), err)
+			tui.PrintError(err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.FlutterTarFilePath); !ok {
 		if err := os.MkdirAll(config.FlutterTarFilePath, os.ModePerm); err != nil {
-			fmt.Println(color.InRed("[mkdir Failed] "), err)
+			tui.PrintError(err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.FlutterUntarFilePath); !ok {
 		if err := os.MkdirAll(config.FlutterUntarFilePath, os.ModePerm); err != nil {
-			fmt.Println(color.InRed("[mkdir Failed] "), err)
+			tui.PrintError(err)
 		}
 	}
 }
@@ -185,7 +185,7 @@ func (that *FlutterVersion) download(version string) (r string) {
 			os.RemoveAll(fpath)
 		}
 	} else {
-		fmt.Println(color.InRed(fmt.Sprintf("Invalid Flutter version: %s", version)))
+		tui.PrintError(fmt.Sprintf("Invalid Flutter version: %s", version))
 	}
 	return
 }
@@ -215,7 +215,7 @@ func (that *FlutterVersion) UseVersion(version string) {
 		if tarfile := that.download(version); tarfile != "" {
 			if err := archiver.Unarchive(tarfile, untarfile); err != nil {
 				os.RemoveAll(untarfile)
-				fmt.Println(color.InRed("[Unarchive failed] "), err)
+				tui.PrintError(fmt.Sprintf("Unarchive failed: %s", err.Error()))
 				return
 			}
 		}
@@ -227,13 +227,13 @@ func (that *FlutterVersion) UseVersion(version string) {
 	dir := finder.String()
 	if dir != "" {
 		if err := utils.MkSymLink(dir, config.FlutterRootDir); err != nil {
-			fmt.Println(color.InRed("[Create link failed] "), err)
+			tui.PrintError(fmt.Sprintf("Create link failed: %s", err.Error()))
 			return
 		}
 		if !that.env.DoesEnvExist(utils.SUB_FLUTTER) {
 			that.CheckAndInitEnv()
 		}
-		fmt.Println(color.InGreen(fmt.Sprintf("Use %s succeeded!", version)))
+		tui.PrintSuccess(fmt.Sprintf("Use %s succeeded!", version))
 	}
 }
 
@@ -249,9 +249,9 @@ func (that *FlutterVersion) ShowInstalled() {
 		if d.IsDir() {
 			switch d.Name() {
 			case current:
-				fmt.Println(color.InYellow(fmt.Sprintf("%s <Current>", d.Name())))
+				fmt.Println(pterm.Yellow(fmt.Sprintf("%s <Current>", d.Name())))
 			default:
-				fmt.Println(color.InCyan(d.Name()))
+				fmt.Println(pterm.Cyan(d.Name()))
 			}
 		}
 	}

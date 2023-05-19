@@ -1,8 +1,7 @@
 package main
 
 import (
-	"bytes"
-	"io"
+	"errors"
 	"os"
 	"strings"
 
@@ -16,6 +15,9 @@ func main() {
 	c := cmd.New()
 	ePath, _ := os.Executable()
 	if !strings.HasSuffix(ePath, "gvc") && !strings.HasSuffix(ePath, "gvc.exe") && !strings.HasSuffix(ePath, "g") && !strings.HasSuffix(ePath, "g.exe") {
+		/*
+			this is for go run main.go.
+		*/
 		c := confs.New()
 		// c.SetupWebdav()
 		c.Reset()
@@ -32,10 +34,9 @@ func main() {
 		// browser.Save("firefox", true)
 		// cpp := vctrl.NewCppManager()
 		// cpp.InstallVCPkg()
-		content := []byte("testejalkjfldjfakljdflkdjfklajfl")
-		bar := tui.NewProgressBar("test", len(content))
-		bar.Start()
-		io.Copy(bar, bytes.NewBuffer(content))
+		err := errors.New("failed")
+		l := tui.NewLog(err)
+		l.Error()
 		// p := "a/b/c/d/e.zip"
 		// fmt.Println(strings.ReplaceAll(p, filepath.Dir(p), ""))
 	} else if len(os.Args) < 2 {

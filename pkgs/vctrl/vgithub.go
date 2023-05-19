@@ -11,6 +11,7 @@ import (
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
+	"github.com/moqsien/gvc/pkgs/utils/tui"
 )
 
 type GhDownloader struct {
@@ -83,7 +84,7 @@ func (that *GhDownloader) OpenByBrowser(chosen int) {
 			return
 		}
 		if err := cmd.Run(); err != nil {
-			fmt.Println(color.InRed("Execution failed: "), err)
+			tui.PrintError(fmt.Sprintf("Execution failed: %s", err.Error()))
 		}
 	}
 }
