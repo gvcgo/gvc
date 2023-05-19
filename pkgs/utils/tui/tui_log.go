@@ -37,7 +37,7 @@ func (that *TuiLog) Warning() {
 }
 
 func (that *TuiLog) Error() {
-	pterm.Error.WithShowLineNumber(true).Println(that.String())
+	pterm.Error.Println(that.String())
 }
 
 func (that *TuiLog) Fatal() {

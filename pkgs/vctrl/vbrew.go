@@ -2,15 +2,15 @@ package vctrl
 
 import (
 	"fmt"
-	"os"
-	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
 
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/tui"
+	"github.com/pterm/pterm"
 )
 
 type Homebrew struct {
@@ -41,13 +41,16 @@ func (that *Homebrew) getShellScript() string {
 	return fPath
 }
 
-// TODO: pterm options
 func (that *Homebrew) SetEnv() {
 	mirror := ""
-	fmt.Println("Choose a Mirror Site in China:")
-	fmt.Println("1) TsingHua")
-	fmt.Println("2) USTC")
+	tui.PrintInfo("Choose a Mirror Site in China: ")
+	pterm.DefaultBulletList.WithItems([]pterm.BulletListItem{
+		{Level: 0, Text: "TsingHua.", TextStyle: pterm.NewStyle(pterm.FgCyan), Bullet: "1)", BulletStyle: pterm.NewStyle(pterm.FgYellow)},
+		{Level: 0, Text: "USTC.", TextStyle: pterm.NewStyle(pterm.FgCyan), Bullet: "2)", BulletStyle: pterm.NewStyle(pterm.FgYellow)},
+	}).Render()
+	fmt.Print(pterm.Cyan("Input>> "))
 	fmt.Scan(&mirror)
+	mirror = strings.TrimSpace(mirror)
 	switch mirror {
 	case "1":
 		envMap := that.Conf.Homebrew.TsingHua
@@ -68,26 +71,19 @@ func (that *Homebrew) SetEnv() {
 			envMap["HOMEBREW_PIP_INDEX_URL"])
 		that.envs.UpdateSub(utils.SUB_BREW, envars)
 	default:
-		l := tui.NewLog("Unknown Mirror Choice!")
-		l.Info()
+		tui.PrintError("Unknown Mirror Choice.")
 	}
 }
 
 func (that *Homebrew) Install() {
 	if runtime.GOOS != utils.Windows {
 		script := that.getShellScript()
-		cmd := exec.Command("sh", script)
-		cmd.Env = os.Environ()
-		cmd.Stdout = os.Stdout
-		cmd.Stdin = os.Stdin
-		cmd.Stderr = os.Stderr
-		if err := cmd.Run(); err != nil {
+		if _, err := utils.ExecuteSysCommand(false, "sh", script); err != nil {
 			tui.PrintError(err)
 			return
 		}
 		that.SetEnv()
 	} else {
-		l := tui.NewLog("[Homebrew does not support Windows]")
-		l.Info()
+		tui.PrintError("Homebrew does not support Windows.")
 	}
 }

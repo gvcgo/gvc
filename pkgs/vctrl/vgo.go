@@ -471,12 +471,15 @@ func (that *GoVersion) SearchLibs(name string, sortby int) {
 		}
 		t.Render()
 		currentPage += 1
-		// TODO: pterm options
-		fmt.Println(color.InGreen("Choose what to do next: "))
-		fmt.Println(color.InGreen("1) Press <n> to show next page."))
-		fmt.Println(color.InGreen("2) Press <e> to Exit."))
-		fmt.Print(color.InGreen(">> "))
+
+		tui.PrintInfo("Choose what to do next: ")
+		pterm.DefaultBulletList.WithItems([]pterm.BulletListItem{
+			{Level: 0, Text: "Enter <n> to show next page.", TextStyle: pterm.NewStyle(pterm.FgCyan), Bullet: "1)", BulletStyle: pterm.NewStyle(pterm.FgYellow)},
+			{Level: 0, Text: "Enter <any other key> to exit.", TextStyle: pterm.NewStyle(pterm.FgCyan), Bullet: "2)", BulletStyle: pterm.NewStyle(pterm.FgYellow)},
+		}).Render()
+		fmt.Print(pterm.Cyan(">> "))
 		fmt.Scan(&op)
+		op = strings.TrimSpace(op)
 		if op == "n" {
 			if currentPage >= totalPage-1 {
 				break

@@ -7,12 +7,12 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/TwiN/go-color"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/tui"
+	"github.com/pterm/pterm"
 )
 
 type Typst struct {
@@ -33,12 +33,16 @@ func NewTypstVersion() (tv *Typst) {
 
 func (that *Typst) download(force bool) string {
 	vUrls := that.Conf.Typst.GiteeUrls
-	// TODO: pterm options
-	fmt.Println(color.InGreen("Choose your URL to download:"))
-	fmt.Println(color.InGreen("1) Gitee (by default & fast in China);"))
-	fmt.Println(color.InGreen("2) Github ."))
+
+	tui.PrintInfo("Choose your URL to download: ")
+	pterm.DefaultBulletList.WithItems([]pterm.BulletListItem{
+		{Level: 0, Text: "From Gitee (by default & fast in China).", TextStyle: pterm.NewStyle(pterm.FgCyan), Bullet: "1)", BulletStyle: pterm.NewStyle(pterm.FgYellow)},
+		{Level: 0, Text: "From Github.", TextStyle: pterm.NewStyle(pterm.FgCyan), Bullet: "2)", BulletStyle: pterm.NewStyle(pterm.FgYellow)},
+	}).Render()
+	fmt.Print(pterm.Cyan("Input>> "))
 	var choice string
 	fmt.Scan(&choice)
+	choice = strings.TrimSpace(choice)
 	if choice == "2" {
 		vUrls = that.Conf.Typst.GithubUrls
 	}

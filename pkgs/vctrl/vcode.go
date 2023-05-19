@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -168,7 +167,9 @@ func (that *Code) InstallForWin() {
 func (that *Code) GenerateShortcut() error {
 	config.SaveWinShortcutCreator()
 	if ok, _ := utils.PathIsExist(config.WinShortcutCreatorPath); ok {
-		return exec.Command("wscript", config.WinVSCodeShortcutCommand...).Run()
+		args := append([]string{"wscript"}, config.WinVSCodeShortcutCommand...)
+		_, err := utils.ExecuteSysCommand(false, args...)
+		return err
 	}
 	return errors.New("shortcut script not found")
 }
