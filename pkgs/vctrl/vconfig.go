@@ -17,7 +17,9 @@ import (
 	"github.com/knadh/koanf/providers/structs"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
+	"github.com/moqsien/gvc/pkgs/utils/tui"
 	xutils "github.com/moqsien/xtray/pkgs/utils"
+	"github.com/pterm/pterm"
 	"github.com/studio-b12/gowebdav"
 )
 
@@ -108,53 +110,43 @@ func (that *GVCWebdav) Reload() {
 	that.getClient(true)
 }
 
-func (that *GVCWebdav) SetAccount() {
+func (that *GVCWebdav) SetWebdavAccount() {
 	var (
-		wUrl    string
-		name    string
-		pass    string
-		encPass string
+		wHost      string = "Webdav Host"
+		wUname     string = "Username"
+		wPass      string = "Password"
+		wEncrypter string = "Encrypt Password"
 	)
-	fmt.Println("Please enter your webdav host uri,\n[https://dav.jianguoyun.com/dav/]by default: ")
-	fmt.Println("How to get your webdav? Please see https://github.com/moqsien/easynotes/blob/main/usage.md.")
-	fmt.Scanln(&wUrl)
-	fmt.Println("Please enter your webdav username: ")
-	fmt.Scanln(&name)
-	fmt.Println("Please enter your webdav password: ")
-	fmt.Scanln(&pass)
+	inputItems := []*tui.InputItem{
+		{Title: wHost, Default: "https://dav.jianguoyun.com/dav/"},
+		{Title: wUname},
+		{Title: wPass},
+		{Title: wEncrypter},
+	}
 
-	fmt.Println("Please enter your password to encrypt files: ")
-	fmt.Scanln(&encPass)
+	iput := tui.NewInput(inputItems)
+	iput.Render()
 
-	wUrl = strings.Trim(wUrl, " ")
-	name = strings.Trim(name, " ")
-	pass = strings.Trim(pass, " ")
-	if utils.VerifyUrls(wUrl) {
-		that.DavConf.Host = wUrl
-	} else if wUrl == "" {
-		defaultUrl := "https://dav.jianguoyun.com/dav/"
-		if that.conf.Webdav.DefaultWebdavHost != "" {
-			defaultUrl = that.conf.Webdav.DefaultWebdavHost
+	for _, item := range inputItems {
+		v := item.String()
+		switch item.Title {
+		case wHost:
+			that.DavConf.Host = v
+		case wUname:
+			that.DavConf.Username = v
+		case wPass:
+			that.DavConf.Password = v
+		case wEncrypter:
+			that.DavConf.EncryptPass = v
+		default:
+			fmt.Println(pterm.Yellow("unknown input"))
 		}
-		fmt.Println("Use default webdav url: ", defaultUrl)
-		that.DavConf.Host = defaultUrl
-	}
-	if name != "" {
-		that.DavConf.Username = name
-	} else {
-		fmt.Println(color.InYellow("[Warning] Your username is empty!"))
-	}
-	if pass != "" {
-		that.DavConf.Password = pass
-	} else {
-		fmt.Println(color.InYellow("[Warning] Your password is empty!"))
+		if v == "" {
+			fmt.Println(pterm.Red(fmt.Sprintf("Invalid [%s] input.", item.Title)))
+			os.Exit(1)
+		}
 	}
 
-	if encPass != "" {
-		that.DavConf.EncryptPass = encPass
-	} else {
-		fmt.Println(color.InYellow("[Warning] Your file will sync to webdav without encryted!"))
-	}
 	if that.conf.Webdav.DefaultWebdavRemoteDir != "" {
 		that.DavConf.RemoteDir = that.conf.Webdav.DefaultWebdavRemoteDir
 	}
@@ -172,7 +164,7 @@ func (that *GVCWebdav) getClient(force bool) {
 		var flag string
 		fmt.Scan(&flag)
 		if strings.HasPrefix(strings.ToLower(flag), "y") {
-			that.SetAccount()
+			that.SetWebdavAccount()
 			that.getClient(force)
 		}
 		return

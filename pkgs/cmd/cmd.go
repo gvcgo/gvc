@@ -300,7 +300,7 @@ func (that *Cmder) vconf() {
 		Usage:   "Setup webdav account info.",
 		Action: func(ctx *cli.Context) error {
 			dav := vctrl.NewGVCWebdav()
-			dav.SetAccount()
+			dav.SetWebdavAccount()
 			return nil
 		},
 	}
