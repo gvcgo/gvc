@@ -154,12 +154,10 @@ func (that *GVCWebdav) SetWebdavAccount() {
 
 func (that *GVCWebdav) getClient(force bool) {
 	if that.DavConf.Host == "" || that.DavConf.Username == "" || that.DavConf.Password == "" {
-		fmt.Println("[Webdav account info missing]")
-		fmt.Println("Please set your webdav account info.")
-		fmt.Println("Do you want to set your webdav account now? [Y/N]")
-		var flag string
-		fmt.Scan(&flag)
-		if strings.HasPrefix(strings.ToLower(flag), "y") {
+		fmt.Println(pterm.Yellow("It seems that you haven't set a webdav account."))
+		ok, _ := pterm.DefaultInteractiveConfirm.WithConfirmText("Set your webdav account right now?").Show()
+		pterm.Println()
+		if ok {
 			that.SetWebdavAccount()
 			that.getClient(force)
 		}
