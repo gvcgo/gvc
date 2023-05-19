@@ -13,12 +13,12 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	color "github.com/TwiN/go-color"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/tui"
+	"github.com/pterm/pterm"
 )
 
 type NodePackage struct {
@@ -71,17 +71,17 @@ func NewNodeVersion() (nv *NodeVersion) {
 func (that *NodeVersion) initeDirs() {
 	if ok, _ := utils.PathIsExist(config.NodejsRoot); !ok {
 		if err := os.MkdirAll(config.NodejsRoot, os.ModePerm); err != nil {
-			fmt.Println(color.InRed("[mkdir Failed] "), err)
+			tui.PrintError(err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.NodejsTarFiles); !ok {
 		if err := os.MkdirAll(config.NodejsTarFiles, os.ModePerm); err != nil {
-			fmt.Println(color.InRed("[mkdir Failed] "), err)
+			tui.PrintError(err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.NodejsUntarFiles); !ok {
 		if err := os.MkdirAll(config.NodejsUntarFiles, os.ModePerm); err != nil {
-			fmt.Println(color.InRed("[mkdir Failed] "), err)
+			tui.PrintError(err)
 		}
 	}
 }
@@ -95,16 +95,16 @@ func (that *NodeVersion) getSuffix() string {
 }
 
 func (that *NodeVersion) getVersions() (r []string) {
-
 	that.fetcher.Url = that.Conf.Nodejs.CompilerUrl
 	if _, err := url.Parse(that.fetcher.Url); err != nil {
-		panic(err)
+		tui.PrintError(err)
+		os.Exit(1)
 	}
 
 	if resp := that.fetcher.Get(); resp != nil {
 		content, _ := io.ReadAll(resp.RawBody())
 		if err := json.Unmarshal(content, &that.vList); err != nil {
-			fmt.Println(color.InRed(fmt.Sprintf("Parse content from %s failed: ", that.fetcher.Url)), err)
+			tui.PrintError(fmt.Sprintf("Parse content from %s failed.", that.fetcher.Url))
 			return
 		}
 	}
@@ -238,7 +238,7 @@ func (that *NodeVersion) UseVersion(version string) {
 		if tarfile = that.download(version); tarfile != "" {
 			if err := archiver.Unarchive(tarfile, untarfile); err != nil {
 				os.RemoveAll(untarfile)
-				fmt.Println(color.InRed("[Unarchive failed] "), err)
+				tui.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
 				return
 			}
 		}
@@ -251,14 +251,14 @@ func (that *NodeVersion) UseVersion(version string) {
 		return
 	}
 	if err := utils.MkSymLink(that.dir, config.NodejsRoot); err != nil {
-		fmt.Println(color.InRed("[Create link failed] "), err)
+		tui.PrintError(fmt.Sprintf("Create link failed: %+v", err))
 		return
 	}
 	vFilePath := filepath.Join(that.dir, "version.txt")
 	if ok, _ := utils.PathIsExist(vFilePath); !ok {
 		vFile, err := os.OpenFile(vFilePath, os.O_WRONLY|os.O_CREATE, os.ModePerm)
 		if err != nil {
-			fmt.Println(color.InRed("[Open file failed] "), err)
+			tui.PrintError(fmt.Sprintf("Open file failed: %+v", err))
 			return
 		}
 		defer vFile.Close()
@@ -266,7 +266,7 @@ func (that *NodeVersion) UseVersion(version string) {
 	}
 	that.setEnv(config.NodejsRoot)
 	that.setNpm()
-	fmt.Println(color.InGreen(fmt.Sprintf("Use %s successed!", version)))
+	tui.PrintSuccess(fmt.Sprintf("Use %s succeeded!", version))
 }
 
 func (that *NodeVersion) getCurrent() (v string) {
@@ -285,10 +285,10 @@ func (that *NodeVersion) ShowInstalled() {
 		for _, v := range rd {
 			if v.IsDir() {
 				if current == v.Name() {
-					fmt.Println(color.InYellow(fmt.Sprintf("%s <Current>", v.Name())))
+					fmt.Println(pterm.Yellow(fmt.Sprintf("%s <Current>", v.Name())))
 					continue
 				}
-				fmt.Println(color.InCyan(v.Name()))
+				fmt.Println(pterm.Cyan(v.Name()))
 			}
 		}
 	}

@@ -9,13 +9,13 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	color "github.com/TwiN/go-color"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
 	"github.com/moqsien/gvc/pkgs/utils/tui"
+	"github.com/pterm/pterm"
 )
 
 var AllowedSuffixes = []string{
@@ -59,17 +59,17 @@ func (that *JDKVersion) initeDirs() {
 	if ok, _ := utils.PathIsExist(config.DefaultJavaRoot); !ok {
 		os.RemoveAll(config.DefaultJavaRoot)
 		if err := os.MkdirAll(config.DefaultJavaRoot, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			tui.PrintError(err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.JavaTarFilesPath); !ok {
 		if err := os.MkdirAll(config.JavaTarFilesPath, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			tui.PrintError(err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.JavaUnTarFilesPath); !ok {
 		if err := os.MkdirAll(config.JavaUnTarFilesPath, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", err)
+			tui.PrintError(err)
 		}
 	}
 }
@@ -87,7 +87,8 @@ func (that *JDKVersion) getDoc(isOfficial bool) {
 		that.Doc, _ = goquery.NewDocumentFromReader(resp.RawBody())
 	}
 	if that.Doc == nil {
-		panic(fmt.Sprintf("Cannot parse html for %s", that.fetcher.Url))
+		tui.PrintError(fmt.Sprintf("Cannot parse html for %s", that.fetcher.Url))
+		os.Exit(1)
 	}
 }
 
@@ -264,8 +265,8 @@ func (that *JDKVersion) download(version string, isOfficial bool) (r string) {
 			os.RemoveAll(fpath)
 		}
 	} else {
-		fmt.Println(color.InRed("Invalid jdk version: "), color.InYellow(version))
-		fmt.Println(color.InCyan("Versions available: "))
+		tui.PrintError(fmt.Sprintf("Invalid jdk version: %s", version))
+		tui.PrintInfo("Versions available: ")
 		that.ShowVersions(isOfficial)
 	}
 	return
@@ -305,7 +306,7 @@ func (that *JDKVersion) UseVersion(version string, isOfficial bool) {
 		if tarfile := that.download(version, isOfficial); tarfile != "" {
 			if err := archiver.Unarchive(tarfile, untarfile); err != nil {
 				os.RemoveAll(untarfile)
-				fmt.Println(color.InRed("[Unarchive failed] "), err)
+				tui.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
 				return
 			}
 		}
@@ -315,18 +316,18 @@ func (that *JDKVersion) UseVersion(version string, isOfficial bool) {
 	}
 	that.findDir(untarfile)
 	if that.dir == "" {
-		fmt.Println(color.InRed("[Can not find binaries] "), untarfile)
+		tui.PrintError(fmt.Sprintf("Can not find binaries in %s", untarfile))
 		return
 	}
 
 	if err := utils.MkSymLink(that.dir, config.DefaultJavaRoot); err != nil {
-		fmt.Println(color.InRed("[Create link failed] "), err)
+		tui.PrintError(fmt.Sprintf("Create link failed: %+v", err))
 		return
 	}
 	if !that.env.DoesEnvExist(utils.SUB_JDK) {
 		that.CheckAndInitEnv()
 	}
-	fmt.Println(color.InGreen(fmt.Sprintf("Use %s succeeded!", version)))
+	tui.PrintSuccess(fmt.Sprintf("Use %s succeeded!", version))
 }
 
 func (that *JDKVersion) getCurrent() (version string) {
@@ -354,9 +355,9 @@ func (that *JDKVersion) ShowInstalled() {
 			continue
 		}
 		if current == strings.TrimSpace(d.Name()) {
-			fmt.Println(color.InYellow(fmt.Sprintf("%s <Current>", d.Name())))
+			fmt.Println(pterm.Yellow(fmt.Sprintf("%s <Current>", d.Name())))
 		} else {
-			fmt.Println(color.InCyan(d.Name()))
+			fmt.Println(pterm.Cyan(d.Name()))
 		}
 	}
 }

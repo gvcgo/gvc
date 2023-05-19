@@ -9,7 +9,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/TwiN/go-color"
+	"github.com/moqsien/gvc/pkgs/utils/tui"
 	xutils "github.com/moqsien/xtray/pkgs/utils"
 )
 
@@ -192,7 +192,8 @@ func getShellTypeForUnix() (st string) {
 	} else if strings.Contains(s, Bash) {
 		st = Bash
 	} else {
-		panic("[unsupported shell] please use zsh or bash.")
+		tui.PrintError("Please use zsh or bash.")
+		os.Exit(1)
 	}
 	return
 }
@@ -322,7 +323,7 @@ func (that *EnvsHandler) SetWinWorkDir(dirPath string) {
 	if ok, _ := PathIsExist(dirPath); ok {
 		that.winWorkdir = dirPath
 	} else {
-		fmt.Println(color.InYellow(fmt.Sprintf("%s does not exist.", dirPath)))
+		tui.PrintError(fmt.Sprintf("[%s] does not exist.", dirPath))
 	}
 }
 
@@ -384,7 +385,7 @@ func (that *EnvsHandler) setOneEnvForWin(key, value string) {
 	var arg string
 	_key := strings.ToLower(key)
 	if _key == "path" && strings.Contains(os.Getenv("PATH"), value) {
-		fmt.Println(color.InGreen(fmt.Sprintf("[%s] Already exists in Path.\n", value)))
+		tui.PrintInfo(fmt.Sprintf("[%s] Already exists in Path.", value))
 		return
 	}
 	originValue := value
@@ -400,7 +401,7 @@ func (that *EnvsHandler) setOneEnvForWin(key, value string) {
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	if err := cmd.Run(); err != nil {
-		fmt.Println(color.InRed("[Set env failed]"), err, key)
+		tui.PrintError(fmt.Sprintf("Set env [%s] failed: %+v.", key, err))
 		return
 	}
 

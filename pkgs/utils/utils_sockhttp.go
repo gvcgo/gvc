@@ -12,7 +12,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gogf/gf/os/gfile"
-	"github.com/moqsien/processes/logger"
+	"github.com/moqsien/gvc/pkgs/utils/tui"
 )
 
 /*
@@ -68,7 +68,7 @@ func (that *UServer) Start() (err error) {
 	}
 	listener, err := net.ListenUnix("unix", unixAddr)
 	if err != nil {
-		logger.Error("listening error:", err)
+		tui.PrintError(fmt.Sprintf("Listen errored: %+v", err))
 		return err
 	}
 	return http.Serve(listener, that.Engine)

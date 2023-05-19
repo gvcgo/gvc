@@ -1,10 +1,10 @@
 package confs
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/moqsien/gvc/pkgs/utils"
+	"github.com/moqsien/gvc/pkgs/utils/tui"
 )
 
 type CodeConf struct {
@@ -26,7 +26,7 @@ func NewCodeConf() (r *CodeConf) {
 func (that *CodeConf) setup() {
 	if ok, _ := utils.PathIsExist(that.path); !ok {
 		if err := os.MkdirAll(that.path, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", that.path)
+			tui.PrintError(err)
 		}
 	}
 }
@@ -59,8 +59,4 @@ func (that *CodeConf) Reset() {
 		"akamud.vscode-theme-onedark",
 		"pkief.material-icon-theme",
 	}
-}
-
-func (that *CodeConf) SaveExtInfo() {
-
 }

@@ -337,7 +337,7 @@ func (that *CppManager) InstallVCPkg() {
 	fPath := that.getVCPkg()
 	if ok, _ := utils.PathIsExist(fPath); ok {
 		if err := archiver.Unarchive(fPath, config.CppDownloadDir); err != nil {
-			tui.PrintError(fmt.Sprintf("Unarchive failed: %s", err.Error()))
+			tui.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
 			return
 		}
 		dirList, _ := os.ReadDir(config.CppDownloadDir)
@@ -363,7 +363,7 @@ func (that *CppManager) InstallVCPkg() {
 			os.MkdirAll(buildPath, os.ModePerm)
 
 			if err := archiver.Unarchive(fPath, config.CppDownloadDir); err != nil {
-				tui.PrintError(fmt.Sprintf("Unarchive failed: %s", err.Error()))
+				tui.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
 				return
 			}
 			dirList, _ = os.ReadDir(config.CppDownloadDir)
@@ -383,7 +383,7 @@ func (that *CppManager) InstallVCPkg() {
 					cmd.Stdin = os.Stdin
 					cmd.Stdout = os.Stdout
 					if err := cmd.Run(); err != nil {
-						tui.PrintError(fmt.Sprintf("Execute Compilation Script Failed: %s", err.Error()))
+						tui.PrintError(fmt.Sprintf("Execute Compilation Script Failed: %+v", err))
 						return
 					}
 				}

@@ -8,11 +8,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/TwiN/go-color"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
+	"github.com/moqsien/gvc/pkgs/utils/tui"
 )
 
 type NVim struct {
@@ -38,7 +38,9 @@ func NewNVim() (nv *NVim) {
 
 func (that *NVim) setup() {
 	if ok, _ := utils.PathIsExist(config.NVimFileDir); !ok {
-		os.MkdirAll(config.NVimFileDir, os.ModePerm)
+		if err := os.MkdirAll(config.NVimFileDir, os.ModePerm); err != nil {
+			tui.PrintError(err)
+		}
 	}
 }
 
@@ -77,14 +79,14 @@ func (that *NVim) download() (r string) {
 			}
 		}
 	} else {
-		fmt.Println(color.InRed(fmt.Sprintf("Cannot find nvim package for %s", runtime.GOOS)))
+		tui.PrintError(fmt.Sprintf("Cannot find nvim package for %s", runtime.GOOS))
 	}
 	if ok, _ := utils.PathIsExist(config.NVimFileDir); ok && r != "" {
 		dst := config.NVimFileDir
 		if err := archiver.Unarchive(r, dst); err != nil {
 			os.RemoveAll(filepath.Dir(that.getBinaryPath()))
 			os.RemoveAll(r)
-			fmt.Println(color.InRed("[Unarchive failed] "), err)
+			tui.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
 			return
 		}
 		os.RemoveAll(r)
@@ -123,7 +125,7 @@ func (that *NVim) setenv() {
 func (that *NVim) setInitFile() {
 	dst := config.GetNVimInitPath()
 	if ok, _ := utils.PathIsExist(dst); ok {
-		fmt.Println(color.InYellow(fmt.Sprintf("Neovim init file already exists: %s", dst)))
+		tui.PrintInfo(fmt.Sprintf("Neovim init file already exists: %s", dst))
 		return
 	}
 	dir_ := filepath.Dir(config.NVimInitBackupPath)

@@ -9,13 +9,13 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	color "github.com/TwiN/go-color"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
 	"github.com/moqsien/gvc/pkgs/utils/tui"
+	"github.com/pterm/pterm"
 )
 
 type GradlePackage struct {
@@ -51,22 +51,22 @@ func (that *GradleVersion) initeDirs() {
 	if ok, _ := utils.PathIsExist(config.GradleRoot); !ok {
 		os.RemoveAll(config.GradleRoot)
 		if err := os.MkdirAll(config.GradleRoot, os.ModePerm); err != nil {
-			fmt.Println(color.InRed("[mkdir Failed] "), err)
+			tui.PrintError(err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.GradleTarFilePath); !ok {
 		if err := os.MkdirAll(config.GradleTarFilePath, os.ModePerm); err != nil {
-			fmt.Println(color.InRed("[mkdir Failed] "), err)
+			tui.PrintError(err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.GradleUntarFilePath); !ok {
 		if err := os.MkdirAll(config.GradleUntarFilePath, os.ModePerm); err != nil {
-			fmt.Println(color.InRed("[mkdir Failed] "), err)
+			tui.PrintError(err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.GradleInitFilePath); !ok {
 		if err := os.MkdirAll(config.GradleInitFilePath, os.ModePerm); err != nil {
-			fmt.Println(color.InRed("[mkdir Failed] "), err)
+			tui.PrintError(err)
 		}
 	}
 }
@@ -81,7 +81,8 @@ func (that *GradleVersion) getDoc() {
 		that.Doc, _ = goquery.NewDocumentFromReader(resp.RawBody())
 	}
 	if that.Doc == nil {
-		panic(fmt.Sprintf("Cannot parse html for %s", that.fetcher.Url))
+		tui.PrintError(fmt.Sprintf("Cannot parse html for %s", that.fetcher.Url))
+		os.Exit(1)
 	}
 }
 
@@ -180,7 +181,7 @@ func (that *GradleVersion) UseVersion(version string) {
 		if tarfile := that.download(version); tarfile != "" {
 			if err := archiver.Unarchive(tarfile, untarfile); err != nil {
 				os.RemoveAll(untarfile)
-				fmt.Println(color.InRed("[Unarchive failed] "), err)
+				tui.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
 				return
 			}
 		}
@@ -192,14 +193,14 @@ func (that *GradleVersion) UseVersion(version string) {
 	dir := finder.String()
 	if dir != "" {
 		if err := utils.MkSymLink(dir, config.GradleRoot); err != nil {
-			fmt.Println(color.InRed("[Create link failed] "), err)
+			tui.PrintError(fmt.Sprintf("Create link failed: %+v", err))
 			return
 		}
 		if !that.env.DoesEnvExist(utils.SUB_GRADLE) {
 			that.CheckAndInitEnv()
 		}
 		utils.RecordVersion(version, dir)
-		fmt.Println(color.InGreen(fmt.Sprintf("Use %s succeeded!", version)))
+		tui.PrintSuccess(fmt.Sprintf("Use %s succeeded!", version))
 	}
 }
 
@@ -240,10 +241,10 @@ func (that *GradleVersion) ShowInstalled() {
 			if strings.Contains(d.Name(), "gradle-") {
 				version := strings.Split(d.Name(), "-")[1]
 				if current == version {
-					fmt.Println(color.InYellow(fmt.Sprintf("%s <Current>", version)))
+					fmt.Println(pterm.Yellow(fmt.Sprintf("%s <Current>", version)))
 					continue
 				}
-				fmt.Println(color.InCyan(version))
+				fmt.Println(pterm.Cyan(version))
 			}
 		}
 	}

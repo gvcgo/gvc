@@ -9,6 +9,7 @@ import (
 
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
+	"github.com/moqsien/gvc/pkgs/utils/tui"
 	"github.com/moqsien/xtray/pkgs/conf"
 	"github.com/moqsien/xtray/pkgs/ctrl"
 )
@@ -16,7 +17,8 @@ import (
 var cmdName string = func() string {
 	epath, err := os.Executable()
 	if err != nil {
-		panic("cannot find executable path")
+		tui.PrintError(fmt.Sprintf("cannot find executable path: %+v", err))
+		os.Exit(1)
 	}
 	return epath
 }()

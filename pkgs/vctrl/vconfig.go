@@ -167,7 +167,7 @@ func (that *GVCWebdav) getClient(force bool) {
 			that.DavConf.Username, that.DavConf.Password)
 		if err := that.client.Connect(); err != nil {
 			that.client = nil
-			tui.PrintError(fmt.Sprintf("Webdav connecting failed: %s", err.Error()))
+			tui.PrintError(fmt.Sprintf("Webdav connecting failed: %+v", err))
 		}
 	}
 }
@@ -193,11 +193,11 @@ func (that *GVCWebdav) Pull() {
 	if err != nil {
 		if strings.Contains(err.Error(), "404") {
 			if err := that.client.MkdirAll(that.DavConf.RemoteDir, os.ModePerm); err != nil {
-				tui.PrintError(fmt.Sprintf("Create a new dir for webdav failed: %s.", err.Error()))
+				tui.PrintError(fmt.Sprintf("Create a new dir for webdav failed: %+v.", err))
 				return
 			}
 		} else {
-			tui.PrintError(fmt.Sprintf("Get files from webdav failed: %s.", err.Error()))
+			tui.PrintError(fmt.Sprintf("Get files from webdav failed: %+v.", err))
 			return
 		}
 	}
@@ -236,7 +236,7 @@ func (that *GVCWebdav) Push() {
 	if err != nil {
 		if strings.Contains(err.Error(), "404") {
 			if err := that.client.MkdirAll(that.DavConf.RemoteDir, os.ModePerm); err != nil {
-				tui.PrintError(fmt.Sprintf("Create a new dir for webdav failed: %s.", err.Error()))
+				tui.PrintError(fmt.Sprintf("Create a new dir for webdav failed: %+v.", err))
 				return
 			}
 		}
@@ -336,7 +336,7 @@ func (that *GVCWebdav) InstallVSCodeExts(backupPath string) {
 	if ok, _ := utils.PathIsExist(backupPath); ok {
 		err := that.k.Load(file.Provider(backupPath), that.parser)
 		if err != nil {
-			tui.PrintError(fmt.Sprintf("Config Load Failed: %s", err.Error()))
+			tui.PrintError(fmt.Sprintf("Config Load Failed: %+v", err))
 			return
 		}
 		that.k.UnmarshalWithConf("", that.vscodeExts, koanf.UnmarshalConf{Tag: "koanf"})

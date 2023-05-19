@@ -12,6 +12,7 @@ import (
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
+	"github.com/moqsien/gvc/pkgs/utils/tui"
 )
 
 type Typst struct {
@@ -32,6 +33,7 @@ func NewTypstVersion() (tv *Typst) {
 
 func (that *Typst) download(force bool) string {
 	vUrls := that.Conf.Typst.GiteeUrls
+	// TODO: pterm options
 	fmt.Println(color.InGreen("Choose your URL to download:"))
 	fmt.Println(color.InGreen("1) Gitee (by default & fast in China);"))
 	fmt.Println(color.InGreen("2) Github ."))
@@ -71,7 +73,7 @@ func (that *Typst) renameDir() {
 func (that *Typst) Install(force bool) {
 	zipFilePath := that.download(force)
 	if ok, _ := utils.PathIsExist(config.TypstRootDir); ok && !force {
-		fmt.Println(color.InGreen("Vlang is already installed."))
+		tui.PrintInfo("Vlang is already installed.")
 		return
 	} else {
 		os.RemoveAll(config.TypstRootDir)
@@ -79,14 +81,14 @@ func (that *Typst) Install(force bool) {
 	if err := archiver.Unarchive(zipFilePath, config.TypstFilesDir); err != nil {
 		os.RemoveAll(config.TypstRootDir)
 		os.RemoveAll(zipFilePath)
-		fmt.Println(color.InRed("[Unarchive failed] "), err)
+		tui.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
 		return
 	}
 	that.renameDir()
 	if ok, _ := utils.PathIsExist(config.TypstRootDir); ok {
 		that.CheckAndInitEnv()
 	} else {
-		fmt.Println(color.InRed("Install typst failed!"))
+		tui.PrintError("Install typst failed.")
 	}
 }
 

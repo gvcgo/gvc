@@ -17,7 +17,6 @@ import (
 	"github.com/Asutorufa/yuhaiin/pkg/node/register"
 	"github.com/Asutorufa/yuhaiin/pkg/protos/node/point"
 	"github.com/Asutorufa/yuhaiin/pkg/protos/node/protocol"
-	"github.com/TwiN/go-color"
 	"github.com/go-resty/resty/v2"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/tui"
@@ -109,7 +108,7 @@ func (that *Fetcher) setProxy() {
 				}
 			}
 		default:
-			fmt.Println(color.InRed(fmt.Sprintf("Unsupported proxy: %s", that.Proxy)))
+			tui.PrintError(fmt.Sprintf("Unsupported proxy: %s", that.Proxy))
 		}
 	}
 }
@@ -136,7 +135,7 @@ func (that *Fetcher) RemoveProxy() {
 
 func (that *Fetcher) Get() (r *resty.Response) {
 	if that.client == nil {
-		fmt.Println(color.InRed("client is nil."))
+		tui.PrintError("Client is nil.")
 		return
 	} else {
 		that.setMisc()
@@ -159,7 +158,7 @@ func (that *Fetcher) parseFilename(fPath string) (fName string) {
 
 func (that *Fetcher) GetAndSaveFile(localPath string, force ...bool) (size int64) {
 	if that.client == nil {
-		fmt.Println(color.InRed("client is nil."))
+		tui.PrintError("Client is nil.")
 		return
 	} else {
 		that.setMisc()
@@ -169,7 +168,7 @@ func (that *Fetcher) GetAndSaveFile(localPath string, force ...bool) (size int64
 		forceToDownload = true
 	}
 	if ok, _ := utils.PathIsExist(localPath); ok && !forceToDownload {
-		fmt.Println(color.InYellow("[Downloader] File already exists."))
+		tui.PrintInfo("File already exists.")
 		return 100
 	}
 	if forceToDownload {
@@ -178,7 +177,7 @@ func (that *Fetcher) GetAndSaveFile(localPath string, force ...bool) (size int64
 	if res, err := that.client.R().SetDoNotParseResponse(true).Get(that.Url); err == nil {
 		outFile, err := os.Create(localPath)
 		if err != nil {
-			fmt.Println(color.InRed("Cannot open file"), err)
+			tui.PrintError(fmt.Sprintf("Cannot open file: %+v", err))
 			return
 		}
 		defer utils.Closeq(outFile)
@@ -203,7 +202,7 @@ func (that *Fetcher) GetAndSaveFile(localPath string, force ...bool) (size int64
 
 func (that *Fetcher) Post() (r *resty.Response) {
 	if that.client == nil {
-		fmt.Println(color.InRed("client is nil."))
+		tui.PrintError("Client is nil.")
 		return
 	} else {
 		that.setMisc()

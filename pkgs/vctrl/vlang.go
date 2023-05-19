@@ -11,6 +11,7 @@ import (
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
+	"github.com/moqsien/gvc/pkgs/utils/tui"
 )
 
 type Vlang struct {
@@ -31,6 +32,7 @@ func NewVlang() (vl *Vlang) {
 
 func (that *Vlang) download(force bool) string {
 	vUrls := that.Conf.Vlang.VlangGiteeUrls
+	// TODO: pterm options
 	fmt.Println(color.InGreen("Choose your URL to download:"))
 	fmt.Println(color.InYellow("1) Gitee (by default & fast in China);"))
 	fmt.Println(color.InYellow("2) Github ."))
@@ -60,15 +62,15 @@ func (that *Vlang) download(force bool) string {
 func (that *Vlang) Install(force bool) {
 	zipFilePath := that.download(force)
 	if ok, _ := utils.PathIsExist(config.VlangRootDir); ok && !force {
-		fmt.Println(color.InYellow("Vlang is already installed."))
+		tui.PrintInfo("Vlang is already installed.")
 		return
 	} else {
 		os.RemoveAll(config.VlangRootDir)
 	}
 	if err := archiver.Unarchive(zipFilePath, config.VlangFilesDir); err != nil {
 		os.RemoveAll(config.VlangRootDir)
-		// os.RemoveAll(zipFilePath)
-		fmt.Println(color.InRed("[Unarchive failed] "), err)
+		os.RemoveAll(zipFilePath)
+		tui.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
 		return
 	}
 	if ok, _ := utils.PathIsExist(config.VlangRootDir); ok {

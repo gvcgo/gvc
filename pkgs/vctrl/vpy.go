@@ -10,12 +10,12 @@ import (
 	"strings"
 	"time"
 
-	color "github.com/TwiN/go-color"
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/tui"
+	"github.com/pterm/pterm"
 )
 
 type PyVenv struct {
@@ -39,28 +39,28 @@ func NewPyVenv() (py *PyVenv) {
 func (that *PyVenv) initeDirs() {
 	if ok, _ := utils.PathIsExist(config.PythonToolsPath); !ok {
 		if err := os.MkdirAll(config.PythonToolsPath, os.ModePerm); err != nil {
-			fmt.Println(color.InRed("[mkdir Failed] "), err)
+			tui.PrintError(err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(config.PyenvInstallDir); !ok {
 		if err := os.MkdirAll(config.PyenvInstallDir, os.ModePerm); err != nil {
-			fmt.Println(color.InRed("[mkdir Failed] "), err)
+			tui.PrintError(err)
 		}
 	}
 	if runtime.GOOS != utils.Windows {
 		if ok, _ := utils.PathIsExist(config.PyenvCacheDir); !ok {
 			if err := os.MkdirAll(config.PyenvCacheDir, os.ModePerm); err != nil {
-				fmt.Println(color.InRed("[mkdir Failed] "), err)
+				tui.PrintError(err)
 			}
 		}
 		if ok, _ := utils.PathIsExist(config.PythonBinaryPath); !ok {
 			if err := os.MkdirAll(config.PythonBinaryPath, os.ModePerm); err != nil {
-				fmt.Println(color.InRed("[mkdir Failed] "), err)
+				tui.PrintError(err)
 			}
 		}
 		if ok, _ := utils.PathIsExist(config.PyenvVersionsPath); !ok {
 			if err := os.MkdirAll(config.PyenvVersionsPath, os.ModePerm); err != nil {
-				fmt.Println(color.InRed("[mkdir Failed] "), err)
+				tui.PrintError(err)
 			}
 		}
 	}
@@ -154,7 +154,7 @@ func (that *PyVenv) getPyenv(force ...bool) {
 	}
 
 	if !flag && that.getExecutablePath() != "" {
-		fmt.Println("pyenv already installed.")
+		tui.PrintInfo("Pyenv already installed.")
 		return
 	}
 	if runtime.GOOS == utils.Windows {
@@ -173,9 +173,9 @@ func (that *PyVenv) getPyenv(force ...bool) {
 		}
 		if size := that.fetcher.GetAndSaveFile(fPath); size != 0 {
 			if err := archiver.Unarchive(fPath, config.PyenvInstallDir); err != nil {
-				fmt.Println(color.InRed("[unarchive pyenv failed.]"))
 				os.RemoveAll(fPath)
 				os.RemoveAll(config.PyenvInstallDir)
+				tui.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
 				return
 			}
 			that.handlePyenvUntarfile()
@@ -184,7 +184,7 @@ func (that *PyVenv) getPyenv(force ...bool) {
 			if that.pyenvPath != "" {
 				that.setEnv()
 			} else {
-				fmt.Println(color.InRed("[Cannot set env for Pyenv]"))
+				tui.PrintError("Cannot set env for Pyenv.")
 			}
 			that.modifyAccelertion(pDir)
 		}
@@ -209,16 +209,15 @@ func (that *PyVenv) getExecutablePath() (exePath string) {
 
 func (that *PyVenv) UpdatePyenv() {
 	if runtime.GOOS == utils.Windows {
-		fmt.Println(color.InYellow("This would delete the python versions you have installed, still continue? [Y/N]"))
-		var r string
-		fmt.Scan(&r)
-		r = strings.ToLower(r)
-		if r != "y" && r != "yes" {
-			fmt.Println(color.InGreen("Aborted."))
-			return
+		if ok, _ := pterm.DefaultInteractiveConfirm.Show("This would delete the python versions you have installed, still continue?"); ok {
+			tui.PrintInfo("Updating pyenv...")
+			that.getPyenv(true)
+		} else {
+			tui.PrintInfo("Aborted.")
 		}
+		return
 	}
-	fmt.Println(color.InYellow("Update pyenv..."))
+	tui.PrintInfo("Updating pyenv...")
 	that.getPyenv(true)
 }
 
@@ -314,7 +313,7 @@ func (that *PyVenv) getInstallNeededForWin(version string) {
 			if err := archiver.Unarchive(fpath, untarfilePath); err != nil {
 				utils.ClearDir(untarfilePath)
 				os.Remove(fpath)
-				fmt.Println(color.InRed("[Unarchive failed] "), err)
+				tui.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
 				return
 			}
 		}
@@ -327,35 +326,34 @@ func (that *PyVenv) InstallVersion(version string, useDefault bool) {
 	if !that.isInstalled(version) {
 		if runtime.GOOS != utils.Windows && os.Getenv("PYENV_PRE_CACHE") != "" {
 			cUrl := that.Conf.Python.PyBuildUrls[0]
-			fmt.Println(color.InGreen(fmt.Sprintf("[**] Download cache file from %s", cUrl)))
+			tui.PrintInfo(fmt.Sprintf("Download cache file from %s", cUrl))
 			that.downloadCache(version, cUrl)
 		}
 		that.getReadlineForUnix()
 		if useDefault {
 			that.getInstallNeededForWin(version)
 		}
-		utils.ExecuteCommand(that.getExecutablePath(), "install", version)
+		utils.ExecuteSysCommand(false, that.getExecutablePath(), "install", version)
 	}
-	utils.ExecuteCommand(that.getExecutablePath(), "global", version)
+	utils.ExecuteSysCommand(false, that.getExecutablePath(), "global", version)
 	that.setPipAcceleration()
-	// that.env.HintsForWin()
 }
 
 func (that *PyVenv) RemoveVersion(version string) {
 	that.getPyenv()
 	that.setTempEnvs()
-	utils.ExecuteCommand(that.getExecutablePath(), "uninstall", version)
+	utils.ExecuteSysCommand(false, that.getExecutablePath(), "uninstall", version)
 }
 
 func (that *PyVenv) ShowInstalled() {
 	that.getPyenv()
 	that.setTempEnvs()
-	utils.ExecuteCommand(that.getExecutablePath(), "versions")
+	utils.ExecuteSysCommand(false, that.getExecutablePath(), "versions")
 }
 
 func (that *PyVenv) ShowVersionPath() {
-	fmt.Println(color.InGreen("Python versions are installed in: "))
-	fmt.Println(color.InYellow(config.PyenvVersionsPath))
+	fc := tui.NewFadeColors(fmt.Sprintf("Python versions are installed in: %s", config.PyenvVersionsPath))
+	fc.Println()
 }
 
 func (that *PyVenv) setPipAcceleration() {
@@ -364,7 +362,7 @@ func (that *PyVenv) setPipAcceleration() {
 	if ok, _ := utils.PathIsExist(p); !ok {
 		if ok, _ := utils.PathIsExist(pDir); !ok {
 			if err := os.MkdirAll(pDir, os.ModePerm); err != nil {
-				fmt.Println(color.InRed("[mkdir Failed] "), err)
+				tui.PrintError(err)
 				return
 			}
 		}

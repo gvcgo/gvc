@@ -13,11 +13,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/TwiN/go-color"
 	"github.com/go-resty/resty/v2"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
+	"github.com/moqsien/gvc/pkgs/utils/tui"
 )
 
 const (
@@ -106,7 +106,7 @@ func (that *Hosts) GetHosts() {
 			content, err := io.ReadAll(r.RawBody())
 			r.RawBody().Close()
 			if err != nil {
-				fmt.Println(color.InRed("[Read Body Errored] "), err)
+				tui.PrintError(err)
 				return
 			}
 			that.ParseHosts(content)
@@ -136,7 +136,7 @@ func (that *Hosts) ReadAndBackupHosts(hPath, hBackupPath string) (content []byte
 		err = utils.CopyFileOnUnixSudo(hPath, hBackupPath)
 	}
 	if err != nil {
-		fmt.Println(color.InRed("Hosts file backup failed: "), err)
+		tui.PrintError(fmt.Sprintf("Hosts file backup failed: %+v", err))
 		return
 	}
 	return
@@ -182,10 +182,10 @@ func (that *Hosts) FormatAndSaveHosts(oldContent []byte) {
 			}
 		}
 		if err != nil {
-			fmt.Println(color.InRed("Write file errored: "), err)
+			tui.PrintError(fmt.Sprintf("Write file errored: %+v", err))
 			return
 		}
-		fmt.Println(color.InGreen("Succeeded!"))
+		tui.PrintSuccess("Hosts file modifications succeeded!")
 	}
 }
 
@@ -221,11 +221,11 @@ func (that *Hosts) WinRunAsAdmin() {
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	if err := cmd.Run(); err != nil {
-		fmt.Println(color.InRed("[update hosts file failed] "), err)
+		tui.PrintError(fmt.Sprintf("Modification failed: %+v", err))
 	}
-	fmt.Println(color.InGreen("Succeeded!"))
+	tui.PrintSuccess("Hosts file modifications succeeded!")
 }
 
 func (that *Hosts) ShowFilePath() {
-	fmt.Println(color.InGreen(fmt.Sprintf("HostsFile: %s", config.GetHostsFilePath())))
+	tui.PrintInfo(fmt.Sprintf("HostsFile: %s", config.GetHostsFilePath()))
 }

@@ -141,7 +141,7 @@ func (that *Code) Unarchive(fPath string) {
 	if fPath != "" {
 		if err := archiver.Unarchive(fPath, config.CodeUntarFile); err != nil {
 			os.RemoveAll(config.CodeUntarFile)
-			tui.PrintError(fmt.Sprintf("Unarchive failed: %s", err.Error()))
+			tui.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
 			return
 		}
 	}
@@ -181,7 +181,7 @@ func (that *Code) InstallForMac() {
 				source := filepath.Join(config.CodeUntarFile, file.Name())
 				if ok, _ := utils.PathIsExist(config.CodeMacCmdBinaryDir); !ok {
 					if err := utils.CopyFileOnUnixSudo(source, config.CodeMacInstallDir); err != nil {
-						tui.PrintError(fmt.Sprintf("Install vscode failed: %s", err.Error()))
+						tui.PrintError(fmt.Sprintf("Install vscode failed: %+v", err))
 					} else {
 						os.RemoveAll(config.CodeUntarFile)
 					}

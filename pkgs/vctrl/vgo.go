@@ -86,7 +86,7 @@ func (that *GoVersion) getDoc() {
 			var err error
 			that.Doc, err = goquery.NewDocumentFromReader(resp.RawBody())
 			if err != nil {
-				tui.PrintError(fmt.Sprintf("Parse page errored: %s", err.Error()))
+				tui.PrintError(fmt.Sprintf("Parse page errored: %+v", err))
 			}
 			if that.Doc == nil {
 				tui.PrintError(fmt.Sprintf("Cannot parse html for %s", that.fetcher.Url))
@@ -336,7 +336,7 @@ func (that *GoVersion) UseVersion(version string) {
 		if tarfile := that.download(version); tarfile != "" {
 			if err := archiver.Unarchive(tarfile, untarfile); err != nil {
 				os.RemoveAll(untarfile)
-				tui.PrintError(fmt.Sprintf("Unarchive failed: %s.", err.Error()))
+				tui.PrintError(fmt.Sprintf("Unarchive failed: %+v.", err))
 				return
 			}
 		} else {
@@ -349,7 +349,7 @@ func (that *GoVersion) UseVersion(version string) {
 		os.RemoveAll(config.DefaultGoRoot)
 	}
 	if err := utils.MkSymLink(filepath.Join(untarfile, "go"), config.DefaultGoRoot); err != nil {
-		tui.PrintError(fmt.Sprintf("Create link failed: %s.", err.Error()))
+		tui.PrintError(fmt.Sprintf("Create link failed: %+v.", err))
 		return
 	}
 	if !that.env.DoesEnvExist(utils.SUB_GO) {
@@ -372,7 +372,7 @@ func (that *GoVersion) ShowInstalled() {
 	current := that.getCurrent()
 	installedList, err := os.ReadDir(config.GoUnTarFilesPath)
 	if err != nil {
-		tui.PrintError(fmt.Sprintf("Read dir failed: %s", err.Error()))
+		tui.PrintError(fmt.Sprintf("Read dir failed: %+v", err))
 		return
 	}
 	for _, v := range installedList {
@@ -398,7 +398,7 @@ func (that *GoVersion) RemoveUnused() {
 	current := that.getCurrent()
 	installedList, err := os.ReadDir(config.GoUnTarFilesPath)
 	if err != nil {
-		tui.PrintError(fmt.Sprintf("Read dir failed: %s", err.Error()))
+		tui.PrintError(fmt.Sprintf("Read dir failed: %+v", err))
 		return
 	}
 	tarFiles, _ := os.ReadDir(config.GoTarFilesPath)

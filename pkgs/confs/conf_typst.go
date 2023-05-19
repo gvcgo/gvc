@@ -1,10 +1,10 @@
 package confs
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/moqsien/gvc/pkgs/utils"
+	"github.com/moqsien/gvc/pkgs/utils/tui"
 )
 
 type TypstConf struct {
@@ -24,7 +24,7 @@ func NewTypstConf() (r *TypstConf) {
 func (that *TypstConf) setup() {
 	if ok, _ := utils.PathIsExist(that.path); !ok {
 		if err := os.MkdirAll(that.path, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", that.path)
+			tui.PrintError(err)
 		}
 	}
 }

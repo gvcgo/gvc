@@ -1,11 +1,11 @@
 package confs
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 
 	"github.com/moqsien/gvc/pkgs/utils"
+	"github.com/moqsien/gvc/pkgs/utils/tui"
 )
 
 /*
@@ -46,7 +46,7 @@ func NewXtrayConf() (r *XtrayConf) {
 func (that *XtrayConf) setup() {
 	if ok, _ := utils.PathIsExist(that.path); !ok {
 		if err := os.MkdirAll(that.path, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", that.path)
+			tui.PrintError(err)
 		}
 	}
 }

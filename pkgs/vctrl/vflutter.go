@@ -215,7 +215,7 @@ func (that *FlutterVersion) UseVersion(version string) {
 		if tarfile := that.download(version); tarfile != "" {
 			if err := archiver.Unarchive(tarfile, untarfile); err != nil {
 				os.RemoveAll(untarfile)
-				tui.PrintError(fmt.Sprintf("Unarchive failed: %s", err.Error()))
+				tui.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
 				return
 			}
 		}
@@ -227,7 +227,7 @@ func (that *FlutterVersion) UseVersion(version string) {
 	dir := finder.String()
 	if dir != "" {
 		if err := utils.MkSymLink(dir, config.FlutterRootDir); err != nil {
-			tui.PrintError(fmt.Sprintf("Create link failed: %s", err.Error()))
+			tui.PrintError(fmt.Sprintf("Create link failed: %+v", err))
 			return
 		}
 		if !that.env.DoesEnvExist(utils.SUB_FLUTTER) {

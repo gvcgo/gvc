@@ -84,7 +84,7 @@ func (that *GhDownloader) OpenByBrowser(chosen int) {
 			return
 		}
 		if err := cmd.Run(); err != nil {
-			tui.PrintError(fmt.Sprintf("Execution failed: %s", err.Error()))
+			tui.PrintError(fmt.Sprintf("Execution failed: %+v", err))
 		}
 	}
 }

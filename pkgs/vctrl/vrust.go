@@ -9,10 +9,10 @@ import (
 	"strings"
 	"time"
 
-	color "github.com/TwiN/go-color"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
+	"github.com/moqsien/gvc/pkgs/utils/tui"
 )
 
 type RustInstaller struct {
@@ -85,8 +85,7 @@ func (that *RustInstaller) Install() {
 		c.Stdin = os.Stdin
 		c.Stdout = os.Stdout
 		if err := c.Run(); err != nil {
-			fmt.Println("[Rust installer path] You can install rust by running rustup-init.exe @ ", color.InYellow(iPath))
-			fmt.Printf("请切换到目录@ %s, 然后执行rustup-init.exe即可开始安装。", color.InYellow(iPath))
+			tui.PrintInfo(fmt.Sprintf("You can install rust by running rustup-init.exe in %s.", iPath))
 		}
 	} else {
 		cmd := exec.Command("sh", iPath)
@@ -95,7 +94,7 @@ func (that *RustInstaller) Install() {
 		cmd.Stdout = os.Stdout
 		cmd.Stdin = os.Stdin
 		if err := cmd.Run(); err != nil {
-			fmt.Println(color.InRed("[Execute installer errored] "), err)
+			tui.PrintError(fmt.Sprintf("Execute installer failed: %+v", err))
 		}
 	}
 }

@@ -1,18 +1,18 @@
 package confs
 
 import (
-	"fmt"
 	"os"
-	"strings"
 
 	"github.com/moqsien/gvc/pkgs/utils"
+	"github.com/moqsien/gvc/pkgs/utils/tui"
 	xutils "github.com/moqsien/xtray/pkgs/utils"
+	"github.com/pterm/pterm"
 )
 
 func init() {
 	if ok, _ := utils.PathIsExist(GVCWorkDir); !ok {
 		if err := os.MkdirAll(GVCWorkDir, os.ModePerm); err != nil {
-			fmt.Println("[mkdir Failed] ", GVCWorkDir, err)
+			tui.PrintError(err)
 		}
 	}
 }
@@ -78,12 +78,8 @@ func (that *GVConfig) initiate() {
 	if ok, _ := utils.PathIsExist(that.path); ok {
 		that.Reload()
 	} else {
-		fmt.Println("[Cannot find default config files!]")
-		fmt.Println("Do you want to use the default config files?[yes/N]")
-		var r string
-		fmt.Scan(&r)
-		r = strings.ToLower(r)
-		if r == "yes" || r == "y" {
+		tui.PrintWarning("Cannot find default config files.")
+		if ok, _ := pterm.DefaultInteractiveConfirm.Show("Use the default config files now?"); ok {
 			that.Reset()
 		}
 	}

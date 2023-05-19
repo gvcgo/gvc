@@ -20,8 +20,8 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/TwiN/go-color"
 	"github.com/gogf/gf/os/genv"
+	"github.com/moqsien/gvc/pkgs/utils/tui"
 )
 
 func VerifyUrls(rawUrl string) (r bool) {
@@ -66,7 +66,7 @@ func GetShellRcFile() (rc string) {
 func GetHomeDir() (homeDir string) {
 	u, err := user.Current()
 	if err != nil {
-		fmt.Println("[CurrentUser]", err)
+		tui.PrintError("Cannot find current user.")
 		return
 	}
 	return u.HomeDir
@@ -96,14 +96,14 @@ func CopyFile(src, dst string) (written int64, err error) {
 	srcFile, err := os.Open(src)
 
 	if err != nil {
-		fmt.Printf("open file err = %v\n", err)
+		tui.PrintError(fmt.Sprintf("Cannot open file: %+v", err))
 		return
 	}
 	defer srcFile.Close()
 
 	dstFile, err := os.OpenFile(dst, os.O_WRONLY|os.O_CREATE, os.ModePerm)
 	if err != nil {
-		fmt.Printf("open file err = %v\n", err)
+		tui.PrintError(fmt.Sprintf("Cannot open file: %+v", err))
 		return
 	}
 	defer dstFile.Close()
@@ -144,64 +144,6 @@ func GetPathForWindows() string {
 	return strings.ReplaceAll(content, ";;", ";")
 }
 
-func FormatPathForWindows(newPath string) string {
-	l := []string{}
-	old := GetPathForWindows()
-	for _, v := range strings.Split(newPath, ";") {
-		if !strings.Contains(old, v) {
-			l = append(l, v)
-		}
-	}
-	return fmt.Sprintf("%s;%s", old, strings.Join(l, ";"))
-}
-
-func SetWinEnv(key, value string, isSys ...bool) (err error) {
-	if runtime.GOOS == Windows {
-		// handle path for windows.
-		k := strings.ToLower(key)
-		if k == "path" {
-			value = FormatPathForWindows(value)
-		}
-		var c *exec.Cmd
-		if len(isSys) > 0 && isSys[0] {
-			c = exec.Command("setx", key, value, "/m")
-		} else {
-			c = exec.Command("setx", key, value)
-		}
-		c.Env = os.Environ()
-		err = c.Run()
-		if k == "path" {
-			fmt.Println("!!!Close current window to make envs valid!!!")
-		}
-	}
-	return
-}
-
-func WinCmdExit() {
-	if runtime.GOOS == Windows {
-		exec.Command("exit()").Run()
-	}
-}
-
-func SetUnixEnv(envars string) {
-	shellrc := GetShellRcFile()
-	if file, err := os.Open(shellrc); err == nil {
-		defer file.Close()
-		content, err := io.ReadAll(file)
-		if err == nil {
-			c := string(content)
-			os.WriteFile(fmt.Sprintf("%s.backup", shellrc), content, 0644)
-			flag := strings.Split(envars, "\n")[0]
-			if strings.Contains(c, flag) {
-				return
-			}
-			s := fmt.Sprintf("%v\n%s", c, envars)
-			os.WriteFile(shellrc, []byte(strings.ReplaceAll(s, GetHomeDir(), "$HOME")), 0644)
-		}
-	}
-	FlushPathEnvForUnix()
-}
-
 func GetExt(filename string) (ext string) {
 	if strings.Contains(filename, ".tar.gz") {
 		return ".tar.gz"
@@ -222,7 +164,7 @@ func GetExt(filename string) (ext string) {
 func CheckFile(fpath, cType, cSum string) (r bool) {
 	f, err := os.Open(fpath)
 	if err != nil {
-		fmt.Println(color.InRed("[Open file failed] "), err)
+		tui.PrintError(fmt.Sprintf("Open file failed: %+v", err))
 		return false
 	}
 	defer f.Close()
@@ -236,20 +178,20 @@ func CheckFile(fpath, cType, cSum string) (r bool) {
 	case "sha512":
 		h = sha512.New()
 	default:
-		fmt.Println(color.InRed(fmt.Sprintf("[Crypto] %s  not supported.", cType)))
+		tui.PrintError(fmt.Sprintf("[Crypto] %s is not supported.", cType))
 		return
 	}
 
 	if _, err = io.Copy(h, f); err != nil {
-		fmt.Println(color.InRed("[Copy file failed] "), err)
+		tui.PrintError(fmt.Sprintf("Copy file failed: %+v", err))
 		return
 	}
 
 	if cSum != hex.EncodeToString(h.Sum(nil)) {
-		fmt.Println(color.InRed("Checksum failed."))
+		tui.PrintError("Checksum failed.")
 		return
 	}
-	fmt.Println(color.InGreen("Checksum succeeded."))
+	tui.PrintSuccess("Checksum succeeded.")
 	return true
 }
 
@@ -270,22 +212,6 @@ func FlushPathEnvForUnix() (err error) {
 		return exec.Command("source", GetShellRcFile()).Run()
 	}
 	return
-}
-
-func ExecuteCommand(args ...string) error {
-	var cmd *exec.Cmd
-	if runtime.GOOS == Windows {
-		args = append([]string{"/c"}, args...)
-		cmd = exec.Command("cmd", args...)
-	} else {
-		FlushPathEnvForUnix()
-		cmd = exec.Command(args[0], args[1:]...)
-	}
-	cmd.Env = os.Environ()
-	cmd.Stderr = os.Stderr
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	return cmd.Run()
 }
 
 func ExecuteSysCommand(collectOutput bool, args ...string) (*bytes.Buffer, error) {
