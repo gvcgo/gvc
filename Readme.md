@@ -119,6 +119,9 @@
 ### Show available versions of compiler/interpreter for other languages.
 ![](https://github.com/moqsien/gvc/blob/main/docs/pyNodeFlutterJulia.png)
 
+### How to use xtray?
+![](https://github.com/moqsien/gvc/blob/main/docs/xtrayShell.png)
+
 ---------
 ## Something nice about [gvc](https://github.com/moqsien/gvc).
 
@@ -330,3 +333,4 @@ GLOBAL OPTIONS:
 - [vcpkg-tool](https://github.com/microsoft/vcpkg-tool)
 - [gf](https://github.com/gogf/gf)
 - [cli](https://github.com/urfave/cli)
+- [pterm](https://github.com/pterm/pterm)
