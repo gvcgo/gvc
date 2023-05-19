@@ -2,6 +2,7 @@ package tui
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/gogf/gf/v2/util/gconv"
@@ -12,6 +13,7 @@ type InputItem struct {
 	Title   string
 	Value   string
 	Default string
+	Must    bool
 }
 
 func (that *InputItem) String() string {
@@ -53,6 +55,10 @@ func (that *Input) Render() {
 			item.Value, _ = iput.WithDefaultText(item.Default).Show(item.Title)
 		} else {
 			item.Value, _ = iput.WithMask("*").WithDefaultText(item.Default).Show(item.Title)
+		}
+		if item.Must && item.Value == "" && item.Default == "" {
+			fmt.Println(pterm.Red(fmt.Sprintf("%s cannot be empty.", item.Title)))
+			os.Exit(1)
 		}
 	}
 }

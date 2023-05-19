@@ -118,10 +118,10 @@ func (that *GVCWebdav) SetWebdavAccount() {
 		wEncrypter string = "Encrypt Password"
 	)
 	inputItems := []*tui.InputItem{
-		{Title: wHost, Default: "https://dav.jianguoyun.com/dav/"},
-		{Title: wUname},
-		{Title: wPass},
-		{Title: wEncrypter},
+		{Title: wHost, Default: "https://dav.jianguoyun.com/dav/", Must: true},
+		{Title: wUname, Must: true},
+		{Title: wPass, Must: true},
+		{Title: wEncrypter, Must: true},
 	}
 
 	iput := tui.NewInput(inputItems)
@@ -140,10 +140,6 @@ func (that *GVCWebdav) SetWebdavAccount() {
 			that.DavConf.EncryptPass = v
 		default:
 			fmt.Println(pterm.Yellow("unknown input"))
-		}
-		if v == "" {
-			fmt.Println(pterm.Red(fmt.Sprintf("Invalid [%s] input.", item.Title)))
-			os.Exit(1)
 		}
 	}
 
