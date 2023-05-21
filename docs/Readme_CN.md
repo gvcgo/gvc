@@ -114,6 +114,12 @@
 ### 通过关键字搜索go的第三方库
 ![](https://github.com/moqsien/gvc/blob/main/docs/goSearch.png)
 
+### gvc的go build增强版
+![beforeBuild](https://github.com/moqsien/gvc/blob/main/docs/beforebuild.png)
+![chooseOptionsForBuild](https://github.com/moqsien/gvc/blob/main/docs/gobuild.png)
+![chooseWethertoCompress](https://github.com/moqsien/gvc/blob/main/docs/compressOrNot.png)
+![startBuild](https://github.com/moqsien/gvc/blob/main/docs/compiling.png)
+
 ### 其他语言的编译器或解释器的可获取的版本
 ![](https://github.com/moqsien/gvc/blob/main/docs/pyNodeFlutterJulia.png)
 

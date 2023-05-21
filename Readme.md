@@ -119,6 +119,12 @@
 ### Show available versions of compiler/interpreter for other languages.
 ![](https://github.com/moqsien/gvc/blob/main/docs/pyNodeFlutterJulia.png)
 
+### "go build" enhancement from gvc.
+![beforeBuild](https://github.com/moqsien/gvc/blob/main/docs/beforebuild.png)
+![chooseOptionsForBuild](https://github.com/moqsien/gvc/blob/main/docs/gobuild.png)
+![chooseWethertoCompress](https://github.com/moqsien/gvc/blob/main/docs/compressOrNot.png)
+![startBuild](https://github.com/moqsien/gvc/blob/main/docs/compiling.png)
+
 ### How to use xtray?
 ![](https://github.com/moqsien/gvc/blob/main/docs/xtrayShell.png)
 
