@@ -1,7 +1,7 @@
 package vctrl
 
 import (
-	"compress/gzip"
+	"archive/zip"
 	"fmt"
 	"io"
 	"net/url"
@@ -516,7 +516,7 @@ func (that *GoVersion) getGoDistlist() []string {
 	otherList := []string{}
 	archOSList := strings.Split(out.String(), "\n")
 	for _, v := range archOSList {
-		v = strings.Trim(v, "\r")
+		v = strings.ReplaceAll(strings.Trim(v, "\r"), " ", "")
 		if _, ok := commonlyUsed[v]; ok {
 			commonlyUsedList = append(commonlyUsedList, v)
 		} else {
@@ -532,23 +532,40 @@ func (that *GoVersion) ShowGoDistlist() {
 	fc.Println()
 }
 
-func (that *GoVersion) gzip(src, dst string) (err error) {
+func (that *GoVersion) zip(src, dst, binName string) (err error) {
 	fr, err := os.Open(src)
 	if err != nil {
 		return
 	}
 	defer fr.Close()
 
+	info, err := fr.Stat()
+	if err != nil || info.IsDir() {
+		return err
+	}
+	header, err := zip.FileInfoHeader(info)
+	if err != nil {
+		return err
+	}
+
 	fw, err := os.Create(dst)
 	if err != nil {
 		return
 	}
 	defer fw.Close()
+	header.Name = binName
+	header.Method = zip.Deflate
+	zw := zip.NewWriter(fw)
+	writer, err := zw.CreateHeader(header)
+	if err != nil {
+		return
+	}
+	defer zw.Close()
 
-	w := gzip.NewWriter(fw)
-	defer w.Close()
-	_, err = io.Copy(w, fr)
-	return
+	if _, err = io.Copy(writer, fr); err != nil {
+		return
+	}
+	return nil
 }
 
 func (that *GoVersion) findCompiledBinary(binaryStoreDir string) (bPath string) {
@@ -563,6 +580,7 @@ func (that *GoVersion) findCompiledBinary(binaryStoreDir string) (bPath string) 
 }
 
 func (that *GoVersion) build(buildBaseDir, archOS string, toGzip bool) {
+	tui.PrintInfo(fmt.Sprintf("Compiling for %s...", archOS))
 	dirName := strings.ReplaceAll(archOS, "/", "-")
 	infoList := strings.Split(archOS, "/")
 	if len(infoList) == 2 {
@@ -576,20 +594,24 @@ func (that *GoVersion) build(buildBaseDir, archOS string, toGzip bool) {
 		}
 		os.Setenv("GOOS", pOs)
 		os.Setenv("GOARCH", pArch)
-		// go build -ldflags "-s -w" -o xxx
-		if _, err := utils.ExecuteSysCommand(false, "go", "build", `-ldflags "-s -w"`, "-o", binaryStoreDir); err != nil {
+		if _, err := utils.ExecuteSysCommand(false, "go", "build", "-ldflags", `-s -w`, "-o", binaryStoreDir); err != nil {
 			tui.PrintError(err)
 		} else if toGzip {
+			tui.PrintSuccess(fmt.Sprintf("Compilation for %s succeeded.", archOS))
 			binPath := that.findCompiledBinary(binaryStoreDir)
-			binName := path.Base(binPath)
-			binSuffix := path.Ext(binName)
-			binName = strings.TrimSuffix(binName, binSuffix)
-			tarFilePath := filepath.Join(binaryStoreDir, fmt.Sprintf("%s-%s", binName, dirName))
+			nList := strings.Split(binPath, string(filepath.Separator))
+			binName := nList[len(nList)-1]
+			binSuffix := path.Ext(binPath)
+			name := strings.TrimSuffix(binName, binSuffix)
+			tarFilePath := strings.Join([]string{buildBaseDir, fmt.Sprintf(`%s_%s.zip`, name, dirName)}, string(filepath.Separator))
 			if ok, _ := utils.PathIsExist(tarFilePath); ok {
 				os.RemoveAll(tarFilePath)
 			}
-			if err := that.gzip(binPath, tarFilePath); err != nil {
+
+			if err := that.zip(binPath, tarFilePath, binName); err != nil {
 				tui.PrintError(err)
+			} else {
+				tui.PrintSuccess(fmt.Sprintf("Compression for %s succeeded.", archOS))
 			}
 		}
 	} else {
@@ -604,10 +626,12 @@ func (that *GoVersion) Build() {
 		tui.PrintInfo(`You can install a go compiler using gvc. See help info by "gvc go help".`)
 		return
 	}
-	if ok, _ := utils.PathIsExist("go.mod"); ok {
+
+	if ok, _ := utils.PathIsExist("go.mod"); !ok {
 		tui.PrintError("Cannot find go.mod file. Please check your present working directory.")
 		return
 	}
+
 	buildDir := "build"
 	if ok, _ := utils.PathIsExist(buildDir); !ok {
 		if err := os.MkdirAll(buildDir, 0666); err != nil {

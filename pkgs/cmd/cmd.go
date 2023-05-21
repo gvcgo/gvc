@@ -250,6 +250,18 @@ func (that *Cmder) vgo() {
 	}
 	command.Subcommands = append(command.Subcommands, gbuild)
 
+	gdist := &cli.Command{
+		Name:    "list-distributions",
+		Aliases: []string{"list-dist", "dist", "ld"},
+		Usage:   "Compiles go code for multi-platforms .",
+		Action: func(ctx *cli.Context) error {
+			gv := vctrl.NewGoVersion()
+			gv.ShowGoDistlist()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, gdist)
+
 	that.Commands = append(that.Commands, command)
 }
 

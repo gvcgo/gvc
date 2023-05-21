@@ -33,7 +33,8 @@ func main() {
 		// browser.Save("firefox", true)
 		// cpp := vctrl.NewCppManager()
 		// cpp.InstallVCPkg()
-		fmt.Println(os.Environ()[0])
+		// fmt.Println(os.Environ()[0])
+		fmt.Println(os.Getwd())
 		// p := "a/b/c/d/e.zip"
 		// fmt.Println(strings.ReplaceAll(p, filepath.Dir(p), ""))
 	} else if len(os.Args) < 2 {

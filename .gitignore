@@ -33,3 +33,5 @@ firefoxKey4
 firefoxLocalStorage
 storage.db
 *tar.gz
+*.gz
+*.zip
