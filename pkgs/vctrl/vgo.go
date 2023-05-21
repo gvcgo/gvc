@@ -1,9 +1,12 @@
 package vctrl
 
 import (
+	"compress/gzip"
 	"fmt"
+	"io"
 	"net/url"
 	"os"
+	"path"
 	"path/filepath"
 	"runtime"
 	"strconv"
@@ -19,6 +22,7 @@ import (
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
 	"github.com/moqsien/gvc/pkgs/utils/tui"
+	xutils "github.com/moqsien/xtray/pkgs/utils"
 	"github.com/pterm/pterm"
 )
 
@@ -490,13 +494,170 @@ OUTTER:
 	}
 }
 
+/*
+build programs in go for multi-platforms
+*/
+type GoBuildArchOS struct {
+	ArchOSList []string `koanf:"arch_os_list"`
+	Compress   bool     `koanf:"compress"`
+}
+
 func (that *GoVersion) getGoDistlist() []string {
 	out, _ := utils.ExecuteSysCommand(true, "go", "tool", "dist", "list")
-	return strings.Split(out.String(), "\n")
+	commonlyUsed := map[string]struct{}{
+		"darwin/amd64":  {},
+		"darwin/arm64":  {},
+		"linux/amd64":   {},
+		"linux/arm64":   {},
+		"windows/amd64": {},
+		"windows/arm64": {},
+	}
+	commonlyUsedList := []string{}
+	otherList := []string{}
+	archOSList := strings.Split(out.String(), "\n")
+	for _, v := range archOSList {
+		v = strings.Trim(v, "\r")
+		if _, ok := commonlyUsed[v]; ok {
+			commonlyUsedList = append(commonlyUsedList, v)
+		} else {
+			otherList = append(otherList, v)
+		}
+	}
+	return append(commonlyUsedList, otherList...)
 }
 
 func (that *GoVersion) ShowGoDistlist() {
 	result := that.getGoDistlist()
 	fc := tui.NewFadeColors(result)
 	fc.Println()
+}
+
+func (that *GoVersion) gzip(src, dst string) (err error) {
+	fr, err := os.Open(src)
+	if err != nil {
+		return
+	}
+	defer fr.Close()
+
+	fw, err := os.Create(dst)
+	if err != nil {
+		return
+	}
+	defer fw.Close()
+
+	w := gzip.NewWriter(fw)
+	defer w.Close()
+	_, err = io.Copy(w, fr)
+	return
+}
+
+func (that *GoVersion) findCompiledBinary(binaryStoreDir string) (bPath string) {
+	if fList, err := os.ReadDir(binaryStoreDir); err == nil {
+		for _, f := range fList {
+			if !f.IsDir() {
+				return filepath.Join(binaryStoreDir, f.Name())
+			}
+		}
+	}
+	return
+}
+
+func (that *GoVersion) build(buildBaseDir, archOS string, toGzip bool) {
+	dirName := strings.ReplaceAll(archOS, "/", "-")
+	infoList := strings.Split(archOS, "/")
+	if len(infoList) == 2 {
+		pOs, pArch := infoList[0], infoList[1]
+		binaryStoreDir := filepath.Join(buildBaseDir, dirName)
+		if ok, _ := utils.PathIsExist(binaryStoreDir); !ok {
+			if err := os.MkdirAll(binaryStoreDir, 0666); err != nil {
+				tui.PrintError(err)
+				return
+			}
+		}
+		os.Setenv("GOOS", pOs)
+		os.Setenv("GOARCH", pArch)
+		// go build -ldflags "-s -w" -o xxx
+		if _, err := utils.ExecuteSysCommand(false, "go", "build", `-ldflags "-s -w"`, "-o", binaryStoreDir); err != nil {
+			tui.PrintError(err)
+		} else if toGzip {
+			binPath := that.findCompiledBinary(binaryStoreDir)
+			binName := path.Base(binPath)
+			binSuffix := path.Ext(binName)
+			binName = strings.TrimSuffix(binName, binSuffix)
+			tarFilePath := filepath.Join(binaryStoreDir, fmt.Sprintf("%s-%s", binName, dirName))
+			if ok, _ := utils.PathIsExist(tarFilePath); ok {
+				os.RemoveAll(tarFilePath)
+			}
+			if err := that.gzip(binPath, tarFilePath); err != nil {
+				tui.PrintError(err)
+			}
+		}
+	} else {
+		tui.PrintError(archOS)
+	}
+}
+
+func (that *GoVersion) Build() {
+	goPath := os.Getenv("GOPATH")
+	if ok, _ := utils.PathIsExist(goPath); !ok {
+		tui.PrintError("Cannot find a go compiler.")
+		tui.PrintInfo(`You can install a go compiler using gvc. See help info by "gvc go help".`)
+		return
+	}
+	if ok, _ := utils.PathIsExist("go.mod"); ok {
+		tui.PrintError("Cannot find go.mod file. Please check your present working directory.")
+		return
+	}
+	buildDir := "build"
+	if ok, _ := utils.PathIsExist(buildDir); !ok {
+		if err := os.MkdirAll(buildDir, 0666); err != nil {
+			tui.PrintError(err)
+			return
+		}
+	}
+
+	buildConfig := filepath.Join(buildDir, "build.json")
+	koanfer := xutils.NewKoanfer(buildConfig)
+	bConf := &GoBuildArchOS{}
+	if ok, _ := utils.PathIsExist(buildConfig); ok {
+		koanfer.Load(bConf)
+	} else {
+		selector := pterm.DefaultInteractiveSelect
+		selector.DefaultText = "Choose arch and os for compilation:"
+		optionList := []string{
+			"Only for current platform",
+			"Commanly used pc platforms[Mac|Win|Linux-amd64|arm64]",
+		}
+		optionList = append(optionList, that.getGoDistlist()...)
+		selectedOptions, _ := pterm.DefaultInteractiveMultiselect.WithOptions(optionList).Show()
+		archOSList := []string{}
+		for _, v := range selectedOptions {
+			if v == optionList[0] {
+				archOSList = append(archOSList, fmt.Sprintf("%s/%s", runtime.GOOS, runtime.GOARCH))
+			} else if v == optionList[1] {
+				archOSList = append(archOSList, []string{"darwin/amd64", "darwin/arm64",
+					"linux/amd64", "linux/arm64", "windows/amd64", "windows/arm64"}...)
+			} else {
+				archOSList = append(archOSList, v)
+			}
+		}
+		bConf.ArchOSList = archOSList
+
+		confirmPrinter := pterm.DefaultInteractiveConfirm
+		confirmPrinter.DefaultText = "To compress binaries or not. "
+		confirmPrinter.TextStyle = &pterm.Style{pterm.FgRed}
+		if result, _ := confirmPrinter.Show(); result {
+			bConf.Compress = result
+		}
+		koanfer.Save(bConf)
+	}
+
+	alreadyBuilt := map[string]struct{}{}
+	for _, archOS := range bConf.ArchOSList {
+		if _, ok := alreadyBuilt[archOS]; ok {
+			continue
+		}
+		that.build(buildDir, archOS, bConf.Compress)
+		alreadyBuilt[archOS] = struct{}{}
+	}
 }

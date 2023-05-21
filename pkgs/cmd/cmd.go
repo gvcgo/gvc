@@ -238,6 +238,18 @@ func (that *Cmder) vgo() {
 	}
 	command.Subcommands = append(command.Subcommands, vsearch)
 
+	gbuild := &cli.Command{
+		Name:    "build",
+		Aliases: []string{"bui", "b"},
+		Usage:   "Compiles go code for multi-platforms .",
+		Action: func(ctx *cli.Context) error {
+			gv := vctrl.NewGoVersion()
+			gv.Build()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, gbuild)
+
 	that.Commands = append(that.Commands, command)
 }
 

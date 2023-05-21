@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
@@ -32,8 +33,7 @@ func main() {
 		// browser.Save("firefox", true)
 		// cpp := vctrl.NewCppManager()
 		// cpp.InstallVCPkg()
-		gv := vctrl.NewGoVersion()
-		gv.ShowGoDistlist()
+		fmt.Println(os.Environ()[0])
 		// p := "a/b/c/d/e.zip"
 		// fmt.Println(strings.ReplaceAll(p, filepath.Dir(p), ""))
 	} else if len(os.Args) < 2 {
