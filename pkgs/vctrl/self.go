@@ -106,7 +106,7 @@ func (that *Self) ShowPath() {
 			pterm.Cyan("Installation Dir"), pterm.Green(config.GVCWorkDir),
 			pterm.Cyan("GVC Config Path"), pterm.Green(config.GVConfigPath),
 			pterm.Cyan("GVC Webdav Config Path"), pterm.Green(config.GVCWebdavConfigPath))
-	fmt.Println(str)
+	pterm.DefaultCenter.Println(str)
 }
 
 const (
@@ -114,10 +114,12 @@ const (
 )
 
 func (that *Self) ShowVersion() {
-	pterm.DefaultBigText.WithLetters(
+	name, _ := pterm.DefaultBigText.WithLetters(
 		putils.LettersFromStringWithStyle("G", pterm.FgCyan.ToStyle()),
-		putils.LettersFromStringWithStyle("VC", pterm.FgLightMagenta.ToStyle())).Render()
+		putils.LettersFromStringWithStyle("VC", pterm.FgLightMagenta.ToStyle()),
+	).Srender()
 
+	pterm.DefaultCenter.Println(name)
 	str := pterm.DefaultBox.
 		WithRightPadding(2).
 		WithLeftPadding(2).
@@ -130,5 +132,5 @@ func (that *Self) ShowVersion() {
 			pterm.LightCyan("   Gitee:       ")+pterm.LightYellow("https://gitee.com/moqsien/gvc_tools"),
 			pterm.LightCyan("   Email:       ")+pterm.LightYellow("moqsien@foxmail.com"),
 		)
-	fmt.Println(str)
+	pterm.DefaultCenter.Println(str)
 }
