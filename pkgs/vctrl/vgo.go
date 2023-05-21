@@ -460,7 +460,8 @@ func (that *GoVersion) SearchLibs(name string, sortby int) {
 	l := len(result)
 	totalPage := l / 25
 	currentPage := 0
-	var op string
+
+OUTTER:
 	for {
 		t := table.New(os.Stdout)
 		t.SetAlignment(table.AlignLeft, table.AlignCenter, table.AlignCenter, table.AlignCenter)
@@ -472,21 +473,30 @@ func (that *GoVersion) SearchLibs(name string, sortby int) {
 		t.Render()
 		currentPage += 1
 
-		tui.PrintInfo("Choose what to do next: ")
-		pterm.DefaultBulletList.WithItems([]pterm.BulletListItem{
-			{Level: 0, Text: "Enter <n> to show next page.", TextStyle: pterm.NewStyle(pterm.FgCyan), Bullet: "1)", BulletStyle: pterm.NewStyle(pterm.FgYellow)},
-			{Level: 0, Text: "Enter <any other key> to exit.", TextStyle: pterm.NewStyle(pterm.FgCyan), Bullet: "2)", BulletStyle: pterm.NewStyle(pterm.FgYellow)},
-		}).Render()
-		fmt.Print(pterm.Cyan(">> "))
-		fmt.Scan(&op)
-		op = strings.TrimSpace(op)
-		if op == "n" {
+		optionsList := []string{
+			"continue.",
+			"exit.",
+		}
+		selectedOption, _ := pterm.DefaultInteractiveSelect.WithOptions(optionsList).Show()
+		switch selectedOption {
+		case optionsList[0]:
 			if currentPage >= totalPage-1 {
-				break
+				break OUTTER
 			}
 			continue
-		} else {
-			break
+		default:
+			break OUTTER
 		}
 	}
+}
+
+func (that *GoVersion) getGoDistlist() []string {
+	out, _ := utils.ExecuteSysCommand(true, "go", "tool", "dist", "list")
+	return strings.Split(out.String(), "\n")
+}
+
+func (that *GoVersion) ShowGoDistlist() {
+	result := that.getGoDistlist()
+	fc := tui.NewFadeColors(result)
+	fc.Println()
 }

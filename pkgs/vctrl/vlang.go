@@ -5,7 +5,6 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"strings"
 
 	"github.com/mholt/archiver/v3"
 	config "github.com/moqsien/gvc/pkgs/confs"
@@ -32,19 +31,20 @@ func NewVlang() (vl *Vlang) {
 }
 
 func (that *Vlang) download(force bool) string {
-	vUrls := that.Conf.Vlang.VlangGiteeUrls
+	selector := pterm.DefaultInteractiveSelect
+	selector.DefaultText = "Choose your download URL"
+	optionList := []string{
+		"From Gitee[Default]",
+		"From Github",
+	}
+	selectedOption, _ := pterm.DefaultInteractiveSelect.WithOptions(optionList).Show()
 
-	tui.PrintInfo("Choose your URL to download: ")
-	pterm.DefaultBulletList.WithItems([]pterm.BulletListItem{
-		{Level: 0, Text: "From Gitee (by default & fast in China).", TextStyle: pterm.NewStyle(pterm.FgCyan), Bullet: "1)", BulletStyle: pterm.NewStyle(pterm.FgYellow)},
-		{Level: 0, Text: "From Github.", TextStyle: pterm.NewStyle(pterm.FgCyan), Bullet: "2)", BulletStyle: pterm.NewStyle(pterm.FgYellow)},
-	}).Render()
-	fmt.Print(pterm.Cyan("Input>>"))
-	var choice string
-	fmt.Scan(&choice)
-	choice = strings.TrimSpace(choice)
-	if choice == "2" {
+	var vUrls map[string]string
+	switch selectedOption {
+	case optionList[1]:
 		vUrls = that.Conf.Vlang.VlangUrls
+	default:
+		vUrls = that.Conf.Vlang.VlangGiteeUrls
 	}
 	that.fetcher.Url = vUrls[runtime.GOOS]
 	if that.fetcher.Url != "" {

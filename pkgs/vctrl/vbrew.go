@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"path/filepath"
 	"runtime"
-	"strings"
 
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/query"
@@ -42,26 +41,16 @@ func (that *Homebrew) getShellScript() string {
 }
 
 func (that *Homebrew) SetEnv() {
-	mirror := ""
-	tui.PrintInfo("Choose a Mirror Site in China: ")
-	pterm.DefaultBulletList.WithItems([]pterm.BulletListItem{
-		{Level: 0, Text: "TsingHua.", TextStyle: pterm.NewStyle(pterm.FgCyan), Bullet: "1)", BulletStyle: pterm.NewStyle(pterm.FgYellow)},
-		{Level: 0, Text: "USTC.", TextStyle: pterm.NewStyle(pterm.FgCyan), Bullet: "2)", BulletStyle: pterm.NewStyle(pterm.FgYellow)},
-	}).Render()
-	fmt.Print(pterm.Cyan("Input>> "))
-	fmt.Scan(&mirror)
-	mirror = strings.TrimSpace(mirror)
-	switch mirror {
-	case "1":
-		envMap := that.Conf.Homebrew.TsingHua
-		envars := fmt.Sprintf(utils.HOMEbrewEnv,
-			envMap["HOMEBREW_API_DOMAIN"],
-			envMap["HOMEBREW_BOTTLE_DOMAIN"],
-			envMap["HOMEBREW_BREW_GIT_REMOTE"],
-			envMap["HOMEBREW_CORE_GIT_REMOTE"],
-			envMap["HOMEBREW_PIP_INDEX_URL"])
-		that.envs.UpdateSub(utils.SUB_BREW, envars)
-	case "2":
+	selector := pterm.DefaultInteractiveSelect
+	selector.DefaultText = "Choose a Mirror Site in China"
+	optionList := []string{
+		"TsingHua[Default]",
+		"USTC",
+	}
+	selectedOption, _ := pterm.DefaultInteractiveSelect.WithOptions(optionList).Show()
+
+	switch selectedOption {
+	case optionList[1]:
 		envMap := that.Conf.Homebrew.USTC
 		envars := fmt.Sprintf(utils.HOMEbrewEnv,
 			envMap["HOMEBREW_API_DOMAIN"],
@@ -71,7 +60,14 @@ func (that *Homebrew) SetEnv() {
 			envMap["HOMEBREW_PIP_INDEX_URL"])
 		that.envs.UpdateSub(utils.SUB_BREW, envars)
 	default:
-		tui.PrintError("Unknown Mirror Choice.")
+		envMap := that.Conf.Homebrew.TsingHua
+		envars := fmt.Sprintf(utils.HOMEbrewEnv,
+			envMap["HOMEBREW_API_DOMAIN"],
+			envMap["HOMEBREW_BOTTLE_DOMAIN"],
+			envMap["HOMEBREW_BREW_GIT_REMOTE"],
+			envMap["HOMEBREW_CORE_GIT_REMOTE"],
+			envMap["HOMEBREW_PIP_INDEX_URL"])
+		that.envs.UpdateSub(utils.SUB_BREW, envars)
 	}
 }
 

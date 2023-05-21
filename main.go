@@ -1,13 +1,11 @@
 package main
 
 import (
-	"errors"
 	"os"
 	"strings"
 
 	"github.com/moqsien/gvc/pkgs/cmd"
 	"github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/utils/tui"
 	"github.com/moqsien/gvc/pkgs/vctrl"
 )
 
@@ -34,9 +32,8 @@ func main() {
 		// browser.Save("firefox", true)
 		// cpp := vctrl.NewCppManager()
 		// cpp.InstallVCPkg()
-		err := errors.New("failed")
-		l := tui.NewLog(err)
-		l.Error()
+		gv := vctrl.NewGoVersion()
+		gv.ShowGoDistlist()
 		// p := "a/b/c/d/e.zip"
 		// fmt.Println(strings.ReplaceAll(p, filepath.Dir(p), ""))
 	} else if len(os.Args) < 2 {

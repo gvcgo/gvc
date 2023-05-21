@@ -32,19 +32,20 @@ func NewTypstVersion() (tv *Typst) {
 }
 
 func (that *Typst) download(force bool) string {
-	vUrls := that.Conf.Typst.GiteeUrls
+	selector := pterm.DefaultInteractiveSelect
+	selector.DefaultText = "Choose your download URL"
+	optionList := []string{
+		"From Gitee[Default]",
+		"From Github",
+	}
+	selectedOption, _ := pterm.DefaultInteractiveSelect.WithOptions(optionList).Show()
 
-	tui.PrintInfo("Choose your URL to download: ")
-	pterm.DefaultBulletList.WithItems([]pterm.BulletListItem{
-		{Level: 0, Text: "From Gitee (by default & fast in China).", TextStyle: pterm.NewStyle(pterm.FgCyan), Bullet: "1)", BulletStyle: pterm.NewStyle(pterm.FgYellow)},
-		{Level: 0, Text: "From Github.", TextStyle: pterm.NewStyle(pterm.FgCyan), Bullet: "2)", BulletStyle: pterm.NewStyle(pterm.FgYellow)},
-	}).Render()
-	fmt.Print(pterm.Cyan("Input>> "))
-	var choice string
-	fmt.Scan(&choice)
-	choice = strings.TrimSpace(choice)
-	if choice == "2" {
+	var vUrls map[string]string
+	switch selectedOption {
+	case optionList[1]:
 		vUrls = that.Conf.Typst.GithubUrls
+	default:
+		vUrls = that.Conf.Typst.GiteeUrls
 	}
 	that.fetcher.Url = vUrls[runtime.GOOS]
 	suffix := utils.GetExt(that.fetcher.Url)
