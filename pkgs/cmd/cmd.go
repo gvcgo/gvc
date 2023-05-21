@@ -253,7 +253,7 @@ func (that *Cmder) vgo() {
 	gdist := &cli.Command{
 		Name:    "list-distributions",
 		Aliases: []string{"list-dist", "dist", "ld"},
-		Usage:   "Compiles go code for multi-platforms .",
+		Usage:   "List the platforms supported by go compilers.",
 		Action: func(ctx *cli.Context) error {
 			gv := vctrl.NewGoVersion()
 			gv.ShowGoDistlist()
