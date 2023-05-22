@@ -343,3 +343,13 @@ func Closeq(v interface{}) {
 }
 
 func silently(_ ...interface{}) {}
+
+func MakeDirs(dirs ...string) {
+	for _, d := range dirs {
+		if ok, _ := PathIsExist(d); !ok {
+			if err := os.MkdirAll(d, os.ModePerm); err != nil {
+				tui.PrintError(fmt.Sprintf("Make dir [%s] failed: %+v", d, err))
+			}
+		}
+	}
+}

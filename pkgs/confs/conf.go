@@ -10,11 +10,7 @@ import (
 )
 
 func init() {
-	if ok, _ := utils.PathIsExist(GVCWorkDir); !ok {
-		if err := os.MkdirAll(GVCWorkDir, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
+	utils.MakeDirs(GVCWorkDir)
 }
 
 type GVConfig struct {

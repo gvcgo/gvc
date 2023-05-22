@@ -37,11 +37,7 @@ func NewNVim() (nv *NVim) {
 }
 
 func (that *NVim) setup() {
-	if ok, _ := utils.PathIsExist(config.NVimFileDir); !ok {
-		if err := os.MkdirAll(config.NVimFileDir, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
+	utils.MakeDirs(config.NVimFileDir)
 }
 
 func (that *NVim) getChecksum() {

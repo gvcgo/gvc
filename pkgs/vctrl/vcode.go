@@ -58,16 +58,7 @@ func NewCode() (co *Code) {
 }
 
 func (that *Code) initeDirs() {
-	if ok, _ := utils.PathIsExist(config.CodeFileDir); !ok {
-		if err := os.MkdirAll(config.CodeFileDir, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
-	if ok, _ := utils.PathIsExist(config.CodeTarFileDir); !ok {
-		if err := os.MkdirAll(config.CodeTarFileDir, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
+	utils.MakeDirs(config.CodeFileDir, config.CodeTarFileDir)
 }
 
 func (that *Code) getPackages() (r string) {

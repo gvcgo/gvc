@@ -49,22 +49,7 @@ func NewJuliaVersion() (jv *JuliaVersion) {
 }
 
 func (that *JuliaVersion) initeDirs() {
-	if ok, _ := utils.PathIsExist(config.JuliaRootDir); !ok {
-		os.RemoveAll(config.JuliaRootDir)
-		if err := os.MkdirAll(config.JuliaRootDir, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
-	if ok, _ := utils.PathIsExist(config.JuliaTarFilePath); !ok {
-		if err := os.MkdirAll(config.JuliaTarFilePath, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
-	if ok, _ := utils.PathIsExist(config.JuliaUntarFilePath); !ok {
-		if err := os.MkdirAll(config.JuliaUntarFilePath, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
+	utils.MakeDirs(config.JuliaRootDir, config.JuliaTarFilePath, config.JuliaUntarFilePath)
 }
 
 func (that *JuliaVersion) getJson() {

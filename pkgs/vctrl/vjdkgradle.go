@@ -48,27 +48,7 @@ func NewGradleVersion() (gv *GradleVersion) {
 }
 
 func (that *GradleVersion) initeDirs() {
-	if ok, _ := utils.PathIsExist(config.GradleRoot); !ok {
-		os.RemoveAll(config.GradleRoot)
-		if err := os.MkdirAll(config.GradleRoot, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
-	if ok, _ := utils.PathIsExist(config.GradleTarFilePath); !ok {
-		if err := os.MkdirAll(config.GradleTarFilePath, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
-	if ok, _ := utils.PathIsExist(config.GradleUntarFilePath); !ok {
-		if err := os.MkdirAll(config.GradleUntarFilePath, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
-	if ok, _ := utils.PathIsExist(config.GradleInitFilePath); !ok {
-		if err := os.MkdirAll(config.GradleInitFilePath, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
+	utils.MakeDirs(config.GradleRoot, config.GradleTarFilePath, config.GradleUntarFilePath, config.GradleInitFilePath)
 }
 
 func (that *GradleVersion) getDoc() {

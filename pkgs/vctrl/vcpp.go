@@ -50,31 +50,7 @@ func NewCppManager() (cm *CppManager) {
 }
 
 func (that *CppManager) initDirs() {
-	if ok, _ := utils.PathIsExist(config.CppFilesDir); !ok {
-		if err := os.MkdirAll(config.CppFilesDir, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
-	if ok, _ := utils.PathIsExist(config.Msys2Dir); !ok {
-		if err := os.MkdirAll(config.Msys2Dir, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
-	if ok, _ := utils.PathIsExist(config.VCpkgDir); !ok {
-		if err := os.MkdirAll(config.VCpkgDir, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
-	if ok, _ := utils.PathIsExist(config.CppDownloadDir); !ok {
-		if err := os.MkdirAll(config.CppDownloadDir, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
-	if ok, _ := utils.PathIsExist(config.CygwinRootDir); !ok {
-		if err := os.MkdirAll(config.CygwinRootDir, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
+	utils.MakeDirs(config.CppFilesDir, config.Msys2Dir, config.VCpkgDir, config.CppDownloadDir, config.CygwinRootDir)
 }
 
 func (that *CppManager) getDoc() {

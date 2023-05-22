@@ -51,22 +51,7 @@ func NewFlutterVersion() (fv *FlutterVersion) {
 }
 
 func (that *FlutterVersion) initeDirs() {
-	if ok, _ := utils.PathIsExist(config.FlutterRootDir); !ok {
-		os.RemoveAll(config.FlutterRootDir)
-		if err := os.MkdirAll(config.FlutterRootDir, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
-	if ok, _ := utils.PathIsExist(config.FlutterTarFilePath); !ok {
-		if err := os.MkdirAll(config.FlutterTarFilePath, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
-	if ok, _ := utils.PathIsExist(config.FlutterUntarFilePath); !ok {
-		if err := os.MkdirAll(config.FlutterUntarFilePath, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
+	utils.MakeDirs(config.FlutterRootDir, config.FlutterTarFilePath, config.FlutterUntarFilePath)
 }
 
 func (that *FlutterVersion) getJson() {

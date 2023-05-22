@@ -47,27 +47,7 @@ func NewMavenVersion() (mv *MavenVersion) {
 }
 
 func (that *MavenVersion) initeDirs() {
-	if ok, _ := utils.PathIsExist(config.MavenRoot); !ok {
-		os.RemoveAll(config.MavenRoot)
-		if err := os.MkdirAll(config.MavenRoot, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
-	if ok, _ := utils.PathIsExist(config.MavenTarFilePath); !ok {
-		if err := os.MkdirAll(config.MavenTarFilePath, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
-	if ok, _ := utils.PathIsExist(config.MavenUntarFilePath); !ok {
-		if err := os.MkdirAll(config.MavenUntarFilePath, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
-	if ok, _ := utils.PathIsExist(config.JavaLocalRepoPath); !ok {
-		if err := os.MkdirAll(config.JavaLocalRepoPath, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
+	utils.MakeDirs(config.MavenRoot, config.MavenTarFilePath, config.MavenUntarFilePath, config.JavaLocalRepoPath)
 }
 
 func (that *MavenVersion) getVs(vn string) {

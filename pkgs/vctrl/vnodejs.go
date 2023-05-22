@@ -69,21 +69,7 @@ func NewNodeVersion() (nv *NodeVersion) {
 }
 
 func (that *NodeVersion) initeDirs() {
-	if ok, _ := utils.PathIsExist(config.NodejsRoot); !ok {
-		if err := os.MkdirAll(config.NodejsRoot, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
-	if ok, _ := utils.PathIsExist(config.NodejsTarFiles); !ok {
-		if err := os.MkdirAll(config.NodejsTarFiles, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
-	if ok, _ := utils.PathIsExist(config.NodejsUntarFiles); !ok {
-		if err := os.MkdirAll(config.NodejsUntarFiles, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
+	utils.MakeDirs(config.NodejsRoot, config.NodejsTarFiles, config.NodejsUntarFiles)
 }
 
 func (that *NodeVersion) getSuffix() string {

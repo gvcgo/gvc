@@ -68,11 +68,7 @@ func NewGVCWebdav() (gw *GVCWebdav) {
 }
 
 func (that *GVCWebdav) initeDirs() {
-	if ok, _ := utils.PathIsExist(config.GVCBackupDir); config.GVCBackupDir != "" && !ok {
-		if err := os.MkdirAll(config.GVCBackupDir, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
+	utils.MakeDirs(config.GVCBackupDir)
 	that.Reload()
 }
 

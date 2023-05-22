@@ -60,21 +60,7 @@ func NewGoVersion() (gv *GoVersion) {
 }
 
 func (that *GoVersion) initeDirs() {
-	if ok, _ := utils.PathIsExist(config.DefaultGoRoot); !ok {
-		if err := os.MkdirAll(config.DefaultGoRoot, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
-	if ok, _ := utils.PathIsExist(config.GoTarFilesPath); !ok {
-		if err := os.MkdirAll(config.GoTarFilesPath, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
-	if ok, _ := utils.PathIsExist(config.GoUnTarFilesPath); !ok {
-		if err := os.MkdirAll(config.GoUnTarFilesPath, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
+	utils.MakeDirs(config.DefaultGoRoot, config.GoTarFilesPath, config.GoUnTarFilesPath)
 }
 
 func (that *GoVersion) getDoc() {

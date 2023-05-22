@@ -56,22 +56,7 @@ func NewJDKVersion() (jv *JDKVersion) {
 }
 
 func (that *JDKVersion) initeDirs() {
-	if ok, _ := utils.PathIsExist(config.DefaultJavaRoot); !ok {
-		os.RemoveAll(config.DefaultJavaRoot)
-		if err := os.MkdirAll(config.DefaultJavaRoot, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
-	if ok, _ := utils.PathIsExist(config.JavaTarFilesPath); !ok {
-		if err := os.MkdirAll(config.JavaTarFilesPath, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
-	if ok, _ := utils.PathIsExist(config.JavaUnTarFilesPath); !ok {
-		if err := os.MkdirAll(config.JavaUnTarFilesPath, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
+	utils.MakeDirs(config.DefaultJavaRoot, config.JavaTarFilesPath, config.JavaUnTarFilesPath)
 }
 
 func (that *JDKVersion) getDoc(isOfficial bool) {

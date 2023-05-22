@@ -37,32 +37,9 @@ func NewPyVenv() (py *PyVenv) {
 }
 
 func (that *PyVenv) initeDirs() {
-	if ok, _ := utils.PathIsExist(config.PythonToolsPath); !ok {
-		if err := os.MkdirAll(config.PythonToolsPath, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
-	if ok, _ := utils.PathIsExist(config.PyenvInstallDir); !ok {
-		if err := os.MkdirAll(config.PyenvInstallDir, os.ModePerm); err != nil {
-			tui.PrintError(err)
-		}
-	}
+	utils.MakeDirs(config.PythonToolsPath, config.PyenvInstallDir)
 	if runtime.GOOS != utils.Windows {
-		if ok, _ := utils.PathIsExist(config.PyenvCacheDir); !ok {
-			if err := os.MkdirAll(config.PyenvCacheDir, os.ModePerm); err != nil {
-				tui.PrintError(err)
-			}
-		}
-		if ok, _ := utils.PathIsExist(config.PythonBinaryPath); !ok {
-			if err := os.MkdirAll(config.PythonBinaryPath, os.ModePerm); err != nil {
-				tui.PrintError(err)
-			}
-		}
-		if ok, _ := utils.PathIsExist(config.PyenvVersionsPath); !ok {
-			if err := os.MkdirAll(config.PyenvVersionsPath, os.ModePerm); err != nil {
-				tui.PrintError(err)
-			}
-		}
+		utils.MakeDirs(config.PyenvCacheDir, config.PythonBinaryPath, config.PyenvVersionsPath)
 	}
 }
 
