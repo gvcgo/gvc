@@ -566,13 +566,20 @@ func (that *GoVersion) findCompiledBinary(binaryStoreDir string) (bPath string) 
 	return
 }
 
-func (that *GoVersion) buildArgsHasOutput(buildArgs []string) bool {
+func (that *GoVersion) getBuildArgs(buildArgs []string, binaryStoreDir string) (r []string) {
+	hasOuput := false
 	for _, v := range buildArgs {
-		if strings.TrimSpace(v) == "-o" {
-			return true
+		if v == "-o" {
+			hasOuput = true
+		} else if v == "." {
+			continue
 		}
+		r = append(r, v)
 	}
-	return false
+	if !hasOuput {
+		r = append(r, "-o", binaryStoreDir)
+	}
+	return
 }
 
 func (that *GoVersion) build(buildArgs []string, buildBaseDir, archOS string, toGzip bool) {
@@ -591,12 +598,8 @@ func (that *GoVersion) build(buildArgs []string, buildBaseDir, archOS string, to
 		os.Setenv("GOOS", pOs)
 		os.Setenv("GOARCH", pArch)
 		cmdArgs := []string{"go", "build", "-ldflags", `-s -w`}
-		if len(buildArgs) > 0 {
-			cmdArgs = append(cmdArgs, buildArgs...)
-			if !that.buildArgsHasOutput(buildArgs) {
-				cmdArgs = append(cmdArgs, "-o", binaryStoreDir)
-			}
-		}
+		bArgs := that.getBuildArgs(buildArgs, binaryStoreDir)
+		cmdArgs = append(cmdArgs, bArgs...)
 
 		if _, err := utils.ExecuteSysCommand(false, cmdArgs...); err != nil {
 			tui.PrintError(err)
