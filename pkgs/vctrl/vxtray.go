@@ -67,7 +67,7 @@ type XtrayExa struct {
 	Keeper *ctrl.XKeeper
 }
 
-// TODO: Add log files for xtray
+// TODO: Add log files for xtray && add github/gitlab resources.
 func NewXtrayExa() *XtrayExa {
 	xe := &XtrayExa{
 		GVConf: config.New(),

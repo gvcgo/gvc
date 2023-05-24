@@ -53,7 +53,8 @@ func (that *XtrayConf) setup() {
 
 func (that *XtrayConf) Reset() {
 	that.WorkDir = that.path
-	that.FetcherUrl = "https://gitee.com/moqsien/test/raw/master/conf.txt"
+	// that.FetcherUrl = "https://gitee.com/moqsien/test/raw/master/conf.txt"
+	that.FetcherUrl = "https://gitlab.com/moqsien/xtray_resources/-/raw/main/conf.txt"
 	that.RawProxyFile = filepath.Join(that.WorkDir, "raw_proxy.json")
 	that.PorxyFile = filepath.Join(that.WorkDir, "latest.json")
 	that.PortRange = &VPortRange{2020, 2075}
