@@ -67,6 +67,7 @@ type XtrayExa struct {
 	Keeper *ctrl.XKeeper
 }
 
+// TODO: Add log files for xtray
 func NewXtrayExa() *XtrayExa {
 	xe := &XtrayExa{
 		GVConf: config.New(),

@@ -14,7 +14,7 @@ require (
 	github.com/knadh/koanf v1.5.0
 	github.com/mholt/archiver/v3 v3.5.1
 	github.com/moqsien/hackbrowser v1.0.3
-	github.com/moqsien/xtray v1.0.8
+	github.com/moqsien/xtray v1.0.9
 	github.com/pterm/pterm v0.12.61
 	github.com/sashabaranov/go-openai v1.9.0
 	github.com/studio-b12/gowebdav v0.0.0-20230203202212-3282f94193f2
