@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"os"
 	"runtime"
 	"strconv"
 
@@ -244,7 +245,11 @@ func (that *Cmder) vgo() {
 		Usage:   "Compiles go code for multi-platforms .",
 		Action: func(ctx *cli.Context) error {
 			gv := vctrl.NewGoVersion()
-			gv.Build()
+			args := []string{}
+			if len(os.Args) > 3 {
+				args = os.Args[3:]
+			}
+			gv.Build(args...)
 			return nil
 		},
 	}

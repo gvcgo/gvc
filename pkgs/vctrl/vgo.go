@@ -486,6 +486,7 @@ build programs in go for multi-platforms
 type GoBuildArchOS struct {
 	ArchOSList []string `koanf:"arch_os_list"`
 	Compress   bool     `koanf:"compress"`
+	BuildArgs  []string `koanf:"build_args"`
 }
 
 func (that *GoVersion) getGoDistlist() []string {
@@ -565,7 +566,16 @@ func (that *GoVersion) findCompiledBinary(binaryStoreDir string) (bPath string) 
 	return
 }
 
-func (that *GoVersion) build(buildBaseDir, archOS string, toGzip bool) {
+func (that *GoVersion) buildArgsHasOutput(buildArgs []string) bool {
+	for _, v := range buildArgs {
+		if strings.TrimSpace(v) == "-o" {
+			return true
+		}
+	}
+	return false
+}
+
+func (that *GoVersion) build(buildArgs []string, buildBaseDir, archOS string, toGzip bool) {
 	tui.PrintInfo(fmt.Sprintf("Compiling for %s...", archOS))
 	dirName := strings.ReplaceAll(archOS, "/", "-")
 	infoList := strings.Split(archOS, "/")
@@ -580,7 +590,15 @@ func (that *GoVersion) build(buildBaseDir, archOS string, toGzip bool) {
 		}
 		os.Setenv("GOOS", pOs)
 		os.Setenv("GOARCH", pArch)
-		if _, err := utils.ExecuteSysCommand(false, "go", "build", "-ldflags", `-s -w`, "-o", binaryStoreDir); err != nil {
+		cmdArgs := []string{"go", "build", "-ldflags", `-s -w`}
+		if len(buildArgs) > 0 {
+			cmdArgs = append(cmdArgs, buildArgs...)
+			if !that.buildArgsHasOutput(buildArgs) {
+				cmdArgs = append(cmdArgs, "-o", binaryStoreDir)
+			}
+		}
+
+		if _, err := utils.ExecuteSysCommand(false, cmdArgs...); err != nil {
 			tui.PrintError(err)
 		} else if toGzip {
 			tui.PrintSuccess(fmt.Sprintf("Compilation for %s succeeded.", archOS))
@@ -605,7 +623,7 @@ func (that *GoVersion) build(buildBaseDir, archOS string, toGzip bool) {
 	}
 }
 
-func (that *GoVersion) Build() {
+func (that *GoVersion) Build(args ...string) {
 	goPath := os.Getenv("GOPATH")
 	if ok, _ := utils.PathIsExist(goPath); !ok {
 		tui.PrintError("Cannot find a go compiler.")
@@ -629,8 +647,15 @@ func (that *GoVersion) Build() {
 	buildConfig := filepath.Join(buildDir, "build.json")
 	koanfer := xutils.NewKoanfer(buildConfig)
 	bConf := &GoBuildArchOS{}
+	if len(args) > 0 {
+		bConf.BuildArgs = args
+	}
 	if ok, _ := utils.PathIsExist(buildConfig); ok {
 		koanfer.Load(bConf)
+		if len(args) > 0 && len(bConf.BuildArgs) == 0 {
+			bConf.BuildArgs = args
+		}
+		koanfer.Save(bConf)
 	} else {
 		selector := pterm.DefaultInteractiveSelect
 		selector.DefaultText = "Choose arch and os for compilation:"
@@ -667,7 +692,7 @@ func (that *GoVersion) Build() {
 		if _, ok := alreadyBuilt[archOS]; ok {
 			continue
 		}
-		that.build(buildDir, archOS, bConf.Compress)
+		that.build(bConf.BuildArgs, buildDir, archOS, bConf.Compress)
 		alreadyBuilt[archOS] = struct{}{}
 	}
 }
