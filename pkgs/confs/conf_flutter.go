@@ -3,8 +3,8 @@ package confs
 import (
 	"os"
 
+	tui "github.com/moqsien/goutils/pkgs/gtui"
 	"github.com/moqsien/gvc/pkgs/utils"
-	"github.com/moqsien/gvc/pkgs/utils/tui"
 )
 
 type FlutterConf struct {

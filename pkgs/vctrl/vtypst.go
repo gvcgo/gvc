@@ -8,23 +8,23 @@ import (
 	"strings"
 
 	"github.com/mholt/archiver/v3"
+	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
-	"github.com/moqsien/gvc/pkgs/utils/tui"
 	"github.com/pterm/pterm"
 )
 
 type Typst struct {
 	Conf    *config.GVConfig
-	fetcher *query.Fetcher
+	fetcher *request.Fetcher
 	env     *utils.EnvsHandler
 }
 
 func NewTypstVersion() (tv *Typst) {
 	tv = &Typst{
 		Conf:    config.New(),
-		fetcher: query.NewFetcher(),
+		fetcher: request.NewFetcher(),
 		env:     utils.NewEnvsHandler(),
 	}
 	tv.env.SetWinWorkDir(config.GVCWorkDir)

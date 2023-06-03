@@ -12,11 +12,11 @@ import (
 
 	"github.com/gogf/gf/encoding/gjson"
 	"github.com/mholt/archiver/v3"
+	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
-	"github.com/moqsien/gvc/pkgs/utils/tui"
 	"github.com/pterm/pterm"
 )
 
@@ -32,7 +32,7 @@ type JuliaVersion struct {
 	Versions map[string][]*JuliaPackage
 	Json     *gjson.Json
 	Conf     *config.GVConfig
-	fetcher  *query.Fetcher
+	fetcher  *request.Fetcher
 	env      *utils.EnvsHandler
 }
 
@@ -40,7 +40,7 @@ func NewJuliaVersion() (jv *JuliaVersion) {
 	jv = &JuliaVersion{
 		Versions: make(map[string][]*JuliaPackage, 500),
 		Conf:     config.New(),
-		fetcher:  query.NewFetcher(),
+		fetcher:  request.NewFetcher(),
 		env:      utils.NewEnvsHandler(),
 	}
 	jv.initeDirs()

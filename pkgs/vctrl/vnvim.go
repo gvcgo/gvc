@@ -9,10 +9,10 @@ import (
 	"time"
 
 	"github.com/mholt/archiver/v3"
+	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
-	"github.com/moqsien/gvc/pkgs/utils/tui"
 )
 
 type NVim struct {
@@ -20,12 +20,12 @@ type NVim struct {
 	checksum  string
 	checktype string
 	env       *utils.EnvsHandler
-	fetcher   *query.Fetcher
+	fetcher   *request.Fetcher
 }
 
 func NewNVim() (nv *NVim) {
 	nv = &NVim{
-		fetcher:   query.NewFetcher(),
+		fetcher:   request.NewFetcher(),
 		Conf:      config.New(),
 		checksum:  "",
 		checktype: "sha256",

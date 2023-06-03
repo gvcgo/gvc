@@ -5,10 +5,10 @@ import (
 	"os"
 	"path/filepath"
 
+	tui "github.com/moqsien/goutils/pkgs/gtui"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/bkm"
-	"github.com/moqsien/gvc/pkgs/utils/tui"
 	"github.com/moqsien/hackbrowser/browser"
 	"github.com/moqsien/hackbrowser/item"
 )

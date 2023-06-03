@@ -5,23 +5,23 @@ import (
 	"path/filepath"
 	"runtime"
 
+	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
-	"github.com/moqsien/gvc/pkgs/utils/tui"
 	"github.com/pterm/pterm"
 )
 
 type Homebrew struct {
 	Conf    *config.GVConfig
 	envs    *utils.EnvsHandler
-	fetcher *query.Fetcher
+	fetcher *request.Fetcher
 }
 
 func NewHomebrew() (hb *Homebrew) {
 	hb = &Homebrew{
 		Conf:    config.New(),
-		fetcher: query.NewFetcher(),
+		fetcher: request.NewFetcher(),
 		envs:    utils.NewEnvsHandler(),
 	}
 	hb.envs.SetWinWorkDir(config.GVCWorkDir)

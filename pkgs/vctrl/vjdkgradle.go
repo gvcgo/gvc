@@ -10,11 +10,11 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/mholt/archiver/v3"
+	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
-	"github.com/moqsien/gvc/pkgs/utils/tui"
 	"github.com/pterm/pterm"
 )
 
@@ -30,7 +30,7 @@ type GradleVersion struct {
 	sha      map[string]string
 	Doc      *goquery.Document
 	Conf     *config.GVConfig
-	fetcher  *query.Fetcher
+	fetcher  *request.Fetcher
 	env      *utils.EnvsHandler
 }
 
@@ -39,7 +39,7 @@ func NewGradleVersion() (gv *GradleVersion) {
 		Versions: make(map[string]*GradlePackage, 100),
 		sha:      make(map[string]string, 100),
 		Conf:     config.New(),
-		fetcher:  query.NewFetcher(),
+		fetcher:  request.NewFetcher(),
 		env:      utils.NewEnvsHandler(),
 	}
 	gv.initeDirs()

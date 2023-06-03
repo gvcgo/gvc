@@ -12,11 +12,11 @@ import (
 
 	"github.com/gogf/gf/encoding/gjson"
 	"github.com/mholt/archiver/v3"
+	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
-	"github.com/moqsien/gvc/pkgs/utils/tui"
 	"github.com/pterm/pterm"
 )
 
@@ -33,7 +33,7 @@ type FlutterVersion struct {
 	Versions map[string][]*FlutterPackage
 	Json     *gjson.Json
 	Conf     *config.GVConfig
-	fetcher  *query.Fetcher
+	fetcher  *request.Fetcher
 	env      *utils.EnvsHandler
 	baseUrl  string
 }
@@ -42,7 +42,7 @@ func NewFlutterVersion() (fv *FlutterVersion) {
 	fv = &FlutterVersion{
 		Versions: make(map[string][]*FlutterPackage, 500),
 		Conf:     config.New(),
-		fetcher:  query.NewFetcher(),
+		fetcher:  request.NewFetcher(),
 		env:      utils.NewEnvsHandler(),
 	}
 	fv.initeDirs()

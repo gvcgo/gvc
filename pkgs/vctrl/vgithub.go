@@ -7,11 +7,10 @@ import (
 	"runtime"
 	"strings"
 
-	color "github.com/TwiN/go-color"
+	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
-	"github.com/moqsien/gvc/pkgs/utils/tui"
 )
 
 type GhDownloader struct {
@@ -19,7 +18,7 @@ type GhDownloader struct {
 	UrlGhProxy string
 	Conf       *config.GVConfig
 	path       string
-	fetcher    *query.Fetcher
+	fetcher    *request.Fetcher
 }
 
 func NewGhDownloader() (gd *GhDownloader) {
@@ -27,7 +26,7 @@ func NewGhDownloader() (gd *GhDownloader) {
 		UrlSerctl:  "https://d.serctl.com/api.rb?dl_start",
 		UrlGhProxy: "https://ghproxy.com/%s",
 		path:       filepath.Join(utils.GetHomeDir(), "Downloads"),
-		fetcher:    query.NewFetcher(),
+		fetcher:    request.NewFetcher(),
 		Conf:       config.New(),
 	}
 	return
@@ -63,7 +62,7 @@ func (that *GhDownloader) Download(zipUrl string) {
 func (that *GhDownloader) OpenByBrowser(chosen int) {
 	urlList := that.Conf.Github.AccelUrls
 	if len(urlList) == 0 {
-		fmt.Println(color.InRed("No github download acceleration available."))
+		tui.PrintError("No github download acceleration available.")
 		return
 	}
 	var gUrl string

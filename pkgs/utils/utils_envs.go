@@ -9,8 +9,8 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/moqsien/gvc/pkgs/utils/tui"
-	xutils "github.com/moqsien/xtray/pkgs/utils"
+	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/koanfer"
 )
 
 /*
@@ -166,7 +166,7 @@ type EnvsHandler struct {
 	rcFilePath  string
 	oldContent  []byte
 	winPathTemp *WinPathEnvTemp
-	koanfer     *xutils.Koanfer
+	koanfer     *koanfer.JsonKoanfer
 	winWorkdir  string
 }
 
@@ -334,7 +334,7 @@ func (that *EnvsHandler) loadTemp() {
 			that.saveTemp()
 		}
 		if that.koanfer == nil {
-			that.koanfer = xutils.NewKoanfer(fPath)
+			that.koanfer, _ = koanfer.NewKoanfer(fPath)
 		}
 		if that.koanfer != nil {
 			that.koanfer.Load(that.winPathTemp)
@@ -346,7 +346,7 @@ func (that *EnvsHandler) saveTemp() {
 	if ok, _ := PathIsExist(that.winWorkdir); ok {
 		fPath := filepath.Join(that.winWorkdir, TempName)
 		if that.koanfer == nil {
-			that.koanfer = xutils.NewKoanfer(fPath)
+			that.koanfer, _ = koanfer.NewKoanfer(fPath)
 		}
 		if that.koanfer != nil {
 			that.koanfer.Save(*that.winPathTemp)

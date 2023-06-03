@@ -9,21 +9,21 @@ import (
 	"strings"
 	"time"
 
+	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
-	"github.com/moqsien/gvc/pkgs/utils/tui"
 )
 
 type RustInstaller struct {
 	Conf    *config.GVConfig
 	env     *utils.EnvsHandler
-	fetcher *query.Fetcher
+	fetcher *request.Fetcher
 }
 
 func NewRustInstaller() (ri *RustInstaller) {
 	ri = &RustInstaller{
-		fetcher: query.NewFetcher(),
+		fetcher: request.NewFetcher(),
 		Conf:    config.New(),
 		env:     utils.NewEnvsHandler(),
 	}

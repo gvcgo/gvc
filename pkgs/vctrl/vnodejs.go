@@ -14,10 +14,10 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/mholt/archiver/v3"
+	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
-	"github.com/moqsien/gvc/pkgs/utils/tui"
 	"github.com/pterm/pterm"
 )
 
@@ -46,7 +46,7 @@ type nV struct {
 }
 
 type NodeVersion struct {
-	fetcher  *query.Fetcher
+	fetcher  *request.Fetcher
 	dir      string
 	env      *utils.EnvsHandler
 	Versions map[string]*NodePackage
@@ -60,7 +60,7 @@ func NewNodeVersion() (nv *NodeVersion) {
 		Versions: make(map[string]*NodePackage, 50),
 		Conf:     config.New(),
 		vList:    []*nV{},
-		fetcher:  query.NewFetcher(),
+		fetcher:  request.NewFetcher(),
 		env:      utils.NewEnvsHandler(),
 	}
 	nv.initeDirs()

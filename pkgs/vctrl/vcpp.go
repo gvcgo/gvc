@@ -11,12 +11,11 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	color "github.com/TwiN/go-color"
 	"github.com/mholt/archiver/v3"
+	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
-	"github.com/moqsien/gvc/pkgs/utils/tui"
 )
 
 var (
@@ -35,12 +34,12 @@ type CppManager struct {
 	Conf    *config.GVConfig
 	Doc     *goquery.Document
 	env     *utils.EnvsHandler
-	fetcher *query.Fetcher
+	fetcher *request.Fetcher
 }
 
 func NewCppManager() (cm *CppManager) {
 	cm = &CppManager{
-		fetcher: query.NewFetcher(),
+		fetcher: request.NewFetcher(),
 		Conf:    config.New(),
 		env:     utils.NewEnvsHandler(),
 	}
@@ -297,10 +296,10 @@ func (that *CppManager) checkVcpkgCompilationEnv() (hasCompiler, hasCmake bool) 
 		hasCmake = true
 	}
 	if !hasCompiler {
-		fmt.Println(color.InYellow("Please install g++ compiler."))
+		tui.Yellow("Please install g++ compiler.")
 	}
 	if !hasCmake {
-		fmt.Println(color.InYellow("Please install cmake."))
+		tui.Yellow("Please install cmake.")
 	}
 	return
 }

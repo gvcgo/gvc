@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"os"
+	"os/exec"
 	"runtime"
 	"strconv"
 
@@ -25,6 +26,11 @@ func New() *Cmder {
 	}
 	c.initiate()
 	return c
+}
+
+func (c *Cmder) RunApp() {
+	args := HandleArgs(os.Args...)
+	c.Run(args)
 }
 
 func (that *Cmder) uninstall() {
@@ -249,7 +255,7 @@ func (that *Cmder) vgo() {
 			if len(os.Args) > 3 {
 				args = os.Args[3:]
 			}
-			gv.Build(args...)
+			gv.Build(RecoverArgs(args...)...)
 			return nil
 		},
 	}
@@ -1157,38 +1163,42 @@ func (that *Cmder) vtypst() {
 	that.Commands = append(that.Commands, command)
 }
 
-func (that *Cmder) vxtray() {
+func (that *Cmder) vneobox() {
+	const (
+		neoRunner string = "neobox-runner"
+		neoKeeper string = "neobox-keeper"
+	)
+	binPath, _ := os.Executable()
+	neobox := vctrl.NewBox(exec.Command(binPath, neoRunner), exec.Command(binPath, neoKeeper))
+
 	commands := &cli.Command{
-		Name:    "xtray-shell",
-		Aliases: []string{"xshell", "xs", "x"},
-		Usage:   "Start an xtray shell.",
+		Name:    "neobox-shell",
+		Aliases: []string{"shell", "box", "ns"},
+		Usage:   "Start a neobox shell.",
 		Action: func(ctx *cli.Context) error {
-			xe := vctrl.NewXtrayExa()
-			xe.Runner.CtrlShell()
+			neobox.StartShell()
 			return nil
 		},
 	}
 	that.Commands = append(that.Commands, commands)
 
 	commandr := &cli.Command{
-		Name:    vctrl.XtrayStarterCmd,
-		Aliases: []string{"xrunner", "xr"},
-		Usage:   "Start an xtray client.",
+		Name:    neoRunner,
+		Aliases: []string{"nbrunner", "nbr"},
+		Usage:   "Start a neobox client.",
 		Action: func(ctx *cli.Context) error {
-			xe := vctrl.NewXtrayExa()
-			xe.Runner.Start()
+			neobox.StartClient()
 			return nil
 		},
 	}
 	that.Commands = append(that.Commands, commandr)
 
 	commandk := &cli.Command{
-		Name:    vctrl.XtrayKeeperCmd,
-		Aliases: []string{"xkeeper", "xk"},
-		Usage:   "Start an xtray keeper.",
+		Name:    neoKeeper,
+		Aliases: []string{"nbkeeper", "nbk"},
+		Usage:   "Start a neobox keeper.",
 		Action: func(ctx *cli.Context) error {
-			xe := vctrl.NewXtrayExa()
-			xe.Keeper.Run()
+			neobox.StartKeeper()
 			return nil
 		},
 	}
@@ -1350,7 +1360,7 @@ func (that *Cmder) initiate() {
 
 	that.vscode()
 	that.vnvim()
-	that.vxtray()
+	that.vneobox()
 	that.vbrowser()
 	that.vhomebrew()
 	that.vhost()

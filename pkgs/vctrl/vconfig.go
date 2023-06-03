@@ -14,10 +14,10 @@ import (
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/file"
 	"github.com/knadh/koanf/providers/structs"
+	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/koanfer"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
-	"github.com/moqsien/gvc/pkgs/utils/tui"
-	xutils "github.com/moqsien/xtray/pkgs/utils"
 	"github.com/pterm/pterm"
 	"github.com/studio-b12/gowebdav"
 )
@@ -46,19 +46,20 @@ type GVCWebdav struct {
 	conf       *config.GVConfig
 	vscodeExts *VSCodeExtIds
 	client     *gowebdav.Client
-	koanfer    *xutils.Koanfer
+	koanfer    *koanfer.JsonKoanfer
 	k          *koanf.Koanf
 	parser     *yaml.YAML
 }
 
 func NewGVCWebdav() (gw *GVCWebdav) {
+	kfer, _ := koanfer.NewKoanfer(config.GVCWebdavConfigPath)
 	gw = &GVCWebdav{
 		DavConf: &WebdavConf{
 			LocalDir: config.GVCBackupDir,
 		},
 		conf:       config.New(),
 		vscodeExts: &VSCodeExtIds{},
-		koanfer:    xutils.NewKoanfer(config.GVCWebdavConfigPath),
+		koanfer:    kfer,
 		k:          koanf.New("."),
 		parser:     yaml.Parser(),
 	}

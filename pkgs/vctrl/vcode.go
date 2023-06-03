@@ -11,10 +11,10 @@ import (
 	"time"
 
 	"github.com/mholt/archiver/v3"
+	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
-	"github.com/moqsien/gvc/pkgs/utils/tui"
 	"github.com/tidwall/gjson"
 )
 
@@ -30,7 +30,7 @@ type Code struct {
 	Packages map[string]*CodePackage
 	Conf     *config.GVConfig
 	env      *utils.EnvsHandler
-	fetcher  *query.Fetcher
+	fetcher  *request.Fetcher
 }
 
 type typeMap map[string]string
@@ -48,7 +48,7 @@ func NewCode() (co *Code) {
 	co = &Code{
 		Packages: make(map[string]*CodePackage),
 		Conf:     config.New(),
-		fetcher:  query.NewFetcher(),
+		fetcher:  request.NewFetcher(),
 		env:      utils.NewEnvsHandler(),
 	}
 	co.fetcher.NoRedirect = true

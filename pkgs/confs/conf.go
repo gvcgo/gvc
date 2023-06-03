@@ -3,9 +3,9 @@ package confs
 import (
 	"os"
 
+	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/koanfer"
 	"github.com/moqsien/gvc/pkgs/utils"
-	"github.com/moqsien/gvc/pkgs/utils/tui"
-	xutils "github.com/moqsien/xtray/pkgs/utils"
 	"github.com/pterm/pterm"
 )
 
@@ -24,7 +24,7 @@ type GVConfig struct {
 	Nodejs   *NodejsConf   `koanf:"nodejs"`
 	Python   *PyConf       `koanf:"python"`
 	NVim     *NVimConf     `koanf:"nvim"`
-	Xtray    *XtrayConf    `koanf:"xtray"`
+	NeoBox   *NeoboxConf   `koanf:"neobox"`
 	Github   *GithubConf   `koanf:"github"`
 	Cpp      *CppConf      `koanf:"cpp"`
 	Homebrew *HomebrewConf `koanf:"homebrew"`
@@ -35,10 +35,11 @@ type GVConfig struct {
 	Chatgpt  *ChatgptConf  `koanf:"chatgpt"`
 	Webdav   *DavConf      `koanf:"dav"`
 	path     string
-	koanfer  *xutils.Koanfer
+	koanfer  *koanfer.JsonKoanfer
 }
 
 func New() (r *GVConfig) {
+	kfer, _ := koanfer.NewKoanfer(GVConfigPath)
 	r = &GVConfig{
 		Hosts:    NewHostsConf(),
 		Go:       NewGoConf(),
@@ -49,7 +50,7 @@ func New() (r *GVConfig) {
 		Code:     NewCodeConf(),
 		Nodejs:   NewNodejsConf(),
 		Python:   NewPyConf(),
-		Xtray:    NewXtrayConf(),
+		NeoBox:   NewNeoboxConf(),
 		Github:   NewGithubConf(),
 		Cpp:      NewCppConf(),
 		Homebrew: NewHomebrewConf(),
@@ -60,7 +61,7 @@ func New() (r *GVConfig) {
 		Chatgpt:  NewGptConf(),
 		Webdav:   NewDavConf(),
 		path:     GVConfigPath,
-		koanfer:  xutils.NewKoanfer(GVConfigPath),
+		koanfer:  kfer,
 	}
 	r.initiate()
 	return
@@ -102,8 +103,8 @@ func (that *GVConfig) SetDefault() {
 	that.Python.Reset()
 	that.NVim = NewNVimConf()
 	that.NVim.Reset()
-	that.Xtray = NewXtrayConf()
-	that.Xtray.Reset()
+	that.NeoBox = NewNeoboxConf()
+	that.NeoBox.Reset()
 	that.Github = NewGithubConf()
 	that.Github.Reset()
 	that.Cpp = NewCppConf()

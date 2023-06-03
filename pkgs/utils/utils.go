@@ -21,7 +21,7 @@ import (
 	"unicode"
 
 	"github.com/gogf/gf/os/genv"
-	"github.com/moqsien/gvc/pkgs/utils/tui"
+	tui "github.com/moqsien/goutils/pkgs/gtui"
 )
 
 func VerifyUrls(rawUrl string) (r bool) {

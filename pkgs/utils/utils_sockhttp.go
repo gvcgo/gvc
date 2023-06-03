@@ -12,7 +12,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gogf/gf/os/gfile"
-	"github.com/moqsien/gvc/pkgs/utils/tui"
+	tui "github.com/moqsien/goutils/pkgs/gtui"
 )
 
 /*

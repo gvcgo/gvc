@@ -11,11 +11,11 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/mholt/archiver/v3"
+	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
-	"github.com/moqsien/gvc/pkgs/utils/tui"
 	"github.com/pterm/pterm"
 )
 
@@ -30,7 +30,7 @@ type MavenVersion struct {
 	Versions map[string]*MavenPackage
 	Doc      *goquery.Document
 	Conf     *config.GVConfig
-	fetcher  *query.Fetcher
+	fetcher  *request.Fetcher
 	env      *utils.EnvsHandler
 }
 
@@ -38,7 +38,7 @@ func NewMavenVersion() (mv *MavenVersion) {
 	mv = &MavenVersion{
 		Versions: make(map[string]*MavenPackage, 20),
 		Conf:     config.New(),
-		fetcher:  query.NewFetcher(),
+		fetcher:  request.NewFetcher(),
 		env:      utils.NewEnvsHandler(),
 	}
 	mv.initeDirs()

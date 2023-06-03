@@ -14,10 +14,10 @@ import (
 	"time"
 
 	"github.com/go-resty/resty/v2"
+	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
-	"github.com/moqsien/gvc/pkgs/utils/tui"
 )
 
 const (
@@ -43,7 +43,7 @@ type Hosts struct {
 	hostReg  *regexp.Regexp
 	lock     *sync.Mutex
 	wg       sync.WaitGroup
-	fetcher  *query.Fetcher
+	fetcher  *request.Fetcher
 }
 
 func NewHosts() *Hosts {
@@ -59,7 +59,7 @@ func NewHosts() *Hosts {
 		hostReg:  regexp.MustCompile(hostsReg),
 		lock:     &sync.Mutex{},
 		wg:       sync.WaitGroup{},
-		fetcher:  query.NewFetcher(),
+		fetcher:  request.NewFetcher(),
 	}
 }
 

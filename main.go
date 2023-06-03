@@ -42,6 +42,6 @@ func main() {
 		self.Install()
 		self.ShowPath()
 	} else {
-		c.Run(os.Args)
+		c.RunApp()
 	}
 }

@@ -14,15 +14,14 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	color "github.com/TwiN/go-color"
 	"github.com/aquasecurity/table"
 	"github.com/mholt/archiver/v3"
+	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/koanfer"
+	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/query"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
-	"github.com/moqsien/gvc/pkgs/utils/tui"
-	xutils "github.com/moqsien/xtray/pkgs/utils"
 	"github.com/pterm/pterm"
 )
 
@@ -44,7 +43,7 @@ type GoVersion struct {
 	Conf      *config.GVConfig
 	ParsedUrl *url.URL
 	env       *utils.EnvsHandler
-	fetcher   *query.Fetcher
+	fetcher   *request.Fetcher
 }
 
 func NewGoVersion() (gv *GoVersion) {
@@ -52,7 +51,7 @@ func NewGoVersion() (gv *GoVersion) {
 		Versions: make(map[string][]*GoPackage, 50),
 		Conf:     config.New(),
 		env:      utils.NewEnvsHandler(),
-		fetcher:  query.NewFetcher(),
+		fetcher:  request.NewFetcher(),
 	}
 	gv.initeDirs()
 	gv.env.SetWinWorkDir(config.GVCWorkDir)
@@ -458,7 +457,7 @@ OUTTER:
 		t.SetHeaders("Url", "Version", "ImportedBy", "UpdateAt")
 		for i := l - 1 - currentPage*25; i >= l-1-(currentPage+1)*25 && currentPage < totalPage && i > 0; i-- {
 			v := result[i]
-			t.AddRow(color.InCyan(v.Name), color.InGreen(v.Version), color.InYellow(strconv.Itoa(v.Imported)), v.Update)
+			t.AddRow(pterm.Cyan(v.Name), pterm.Green(v.Version), pterm.Yellow(strconv.Itoa(v.Imported)), v.Update)
 		}
 		t.Render()
 		currentPage += 1
@@ -627,8 +626,8 @@ func (that *GoVersion) build(buildArgs []string, buildBaseDir, archOS string, to
 }
 
 func (that *GoVersion) Build(args ...string) {
-	goPath := os.Getenv("GOPATH")
-	if ok, _ := utils.PathIsExist(goPath); !ok {
+	goRoot := os.Getenv("GOROOT")
+	if ok, _ := utils.PathIsExist(goRoot); !ok {
 		tui.PrintError("Cannot find a go compiler.")
 		tui.PrintInfo(`You can install a go compiler using gvc. See help info by "gvc go help".`)
 		return
@@ -648,17 +647,17 @@ func (that *GoVersion) Build(args ...string) {
 	}
 
 	buildConfig := filepath.Join(buildDir, "build.json")
-	koanfer := xutils.NewKoanfer(buildConfig)
+	kfer, _ := koanfer.NewKoanfer(buildConfig)
 	bConf := &GoBuildArchOS{}
 	if len(args) > 0 {
 		bConf.BuildArgs = args
 	}
 	if ok, _ := utils.PathIsExist(buildConfig); ok {
-		koanfer.Load(bConf)
+		kfer.Load(bConf)
 		if len(args) > 0 && len(bConf.BuildArgs) == 0 {
 			bConf.BuildArgs = args
 		}
-		koanfer.Save(bConf)
+		kfer.Save(bConf)
 	} else {
 		selector := pterm.DefaultInteractiveSelect
 		selector.DefaultText = "Choose arch and os for compilation:"
@@ -687,7 +686,7 @@ func (that *GoVersion) Build(args ...string) {
 		if result, _ := confirmPrinter.Show(); result {
 			bConf.Compress = result
 		}
-		koanfer.Save(bConf)
+		kfer.Save(bConf)
 	}
 
 	alreadyBuilt := map[string]struct{}{}
