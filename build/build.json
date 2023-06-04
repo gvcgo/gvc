@@ -1,0 +1,15 @@
+{
+    "arch_os_list": [
+        "darwin/amd64",
+        "darwin/arm64",
+        "linux/amd64",
+        "linux/arm64",
+        "windows/amd64",
+        "windows/arm64"
+    ],
+    "build_args": [
+        "-tags",
+        "with_wireguard with_shadowsocksr with_utls with_gvisor"
+    ],
+    "compress": true
+}

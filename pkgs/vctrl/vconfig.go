@@ -14,6 +14,7 @@ import (
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/file"
 	"github.com/knadh/koanf/providers/structs"
+	"github.com/moqsien/goutils/pkgs/crypt"
 	tui "github.com/moqsien/goutils/pkgs/gtui"
 	"github.com/moqsien/goutils/pkgs/koanfer"
 	config "github.com/moqsien/gvc/pkgs/confs"
@@ -42,7 +43,7 @@ type VSCodeExtIds struct {
 
 type GVCWebdav struct {
 	DavConf    *WebdavConf
-	AESCrypt   *utils.AesCrypt
+	AESCrypt   *crypt.Crypt
 	conf       *config.GVConfig
 	vscodeExts *VSCodeExtIds
 	client     *gowebdav.Client
@@ -75,10 +76,10 @@ func (that *GVCWebdav) initeDirs() {
 
 func (that *GVCWebdav) initeAES() {
 	if that.DavConf.EncryptPass != "" {
-		that.AESCrypt = utils.NewCrypt(that.DavConf.EncryptPass)
+		that.AESCrypt = crypt.NewCrypt(that.DavConf.EncryptPass)
 	} else {
 		tui.PrintWarning("use default encryption password.")
-		that.AESCrypt = utils.NewCrypt(defaultEncryptPass)
+		that.AESCrypt = crypt.NewCrypt(defaultEncryptPass)
 	}
 }
 

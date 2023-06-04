@@ -10,9 +10,9 @@ require (
 	github.com/gogf/gf v1.16.9
 	github.com/knadh/koanf v1.5.0
 	github.com/mholt/archiver/v3 v3.5.1
-	github.com/moqsien/goutils v0.1.0
+	github.com/moqsien/goutils v0.1.2
 	github.com/moqsien/hackbrowser v1.0.3
-	github.com/moqsien/neobox v0.0.2
+	github.com/moqsien/neobox v0.0.4
 	github.com/pterm/pterm v0.12.62
 	github.com/studio-b12/gowebdav v0.0.0-20230203202212-3282f94193f2
 	github.com/tidwall/gjson v1.14.4
@@ -24,7 +24,6 @@ require (
 	atomicgo.dev/keyboard v0.2.9 // indirect
 	atomicgo.dev/schedule v0.0.2 // indirect
 	berty.tech/go-libtor v1.0.385 // indirect
-	github.com/Asutorufa/yuhaiin v0.3.1-rc.8 // indirect
 	github.com/BurntSushi/toml v1.2.1 // indirect
 	github.com/Dreamacro/clash v1.15.1 // indirect
 	github.com/abiosoft/ishell/v2 v2.0.2 // indirect
@@ -74,7 +73,7 @@ require (
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/mock v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
-	github.com/golang/snappy v0.0.4 // indirect
+	github.com/golang/snappy v0.0.2 // indirect
 	github.com/gomodule/redigo v1.8.9 // indirect
 	github.com/google/btree v1.1.2 // indirect
 	github.com/google/pprof v0.0.0-20230510003242-05f3f57da91a // indirect
@@ -95,7 +94,7 @@ require (
 	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/klauspost/compress v1.16.5 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.4 // indirect
-	github.com/klauspost/pgzip v1.2.6 // indirect
+	github.com/klauspost/pgzip v1.2.5 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
 	github.com/libdns/libdns v0.2.1 // indirect
 	github.com/lithammer/fuzzysearch v1.1.8 // indirect
@@ -112,7 +111,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/moqsien/goktrl v1.3.7 // indirect
 	github.com/moqsien/processes v1.0.3 // indirect
-	github.com/nwaples/rardecode v1.1.3 // indirect
+	github.com/nwaples/rardecode v1.1.0 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/onsi/ginkgo/v2 v2.9.4 // indirect
 	github.com/ooni/go-libtor v1.1.7 // indirect
@@ -120,7 +119,7 @@ require (
 	github.com/otiai10/copy v1.9.0 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.7 // indirect
-	github.com/pierrec/lz4/v4 v4.1.17 // indirect
+	github.com/pierrec/lz4/v4 v4.1.14 // indirect
 	github.com/pires/go-proxyproto v0.7.0 // indirect
 	github.com/ppacher/go-dbus-keyring v1.0.1 // indirect
 	github.com/prometheus-community/pro-bing v0.1.0 // indirect
@@ -161,7 +160,7 @@ require (
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/u-root/uio v0.0.0-20230220225925-ffce2a382923 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
-	github.com/ulikunitz/xz v0.5.11 // indirect
+	github.com/ulikunitz/xz v0.5.9 // indirect
 	github.com/v2fly/ss-bloomring v0.0.0-20210312155135-28617310f63e // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/vishvananda/netns v0.0.0-20211101163701-50045581ed74 // indirect
@@ -198,7 +197,7 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gorm.io/gorm v1.25.1 // indirect
-	gvisor.dev/gvisor v0.0.0-20230506005148-9538f1385f75 // indirect
+	gvisor.dev/gvisor v0.0.0-20220901235040-6ca97ef2ce1c // indirect
 	lukechampine.com/blake3 v1.1.7 // indirect
 	lukechampine.com/uint128 v1.2.0 // indirect
 	modernc.org/cc/v3 v3.40.0 // indirect

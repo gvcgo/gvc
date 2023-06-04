@@ -16,7 +16,8 @@ type NeoboxConf struct {
 
 func NewNeoboxConf() (r *NeoboxConf) {
 	r = &NeoboxConf{
-		path: ProxyFilesDir,
+		path:    ProxyFilesDir,
+		NeoConf: &neoconf.NeoBoxConf{},
 	}
 	r.setup()
 	return
@@ -31,6 +32,9 @@ func (that *NeoboxConf) setup() {
 }
 
 func (that *NeoboxConf) Reset() {
+	if that.NeoConf == nil {
+		that.NeoConf = &neoconf.NeoBoxConf{}
+	}
 	that.NeoConf.NeoWorkDir = that.path
 	that.NeoConf.NeoLogFileDir = filepath.Join(that.path, "neobox_logs")
 	that.NeoConf.AssetDir = that.path

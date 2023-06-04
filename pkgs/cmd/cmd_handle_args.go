@@ -13,7 +13,7 @@ func HandleArgs(args ...string) (aList []string) {
 	// for "gvc go build"
 	if (args[1] == "go" || args[1] == "g") && (args[2] == "build" || args[2] == "bui" || args[2] == "b") {
 		for _, v := range args {
-			if strings.HasPrefix(v, "-") {
+			if strings.HasPrefix(v, "-") && !strings.Contains(v, " ") {
 				aList = append(aList, strings.Replace(v, "-", tempChar, 1))
 			} else {
 				aList = append(aList, v)
