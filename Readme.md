@@ -303,8 +303,8 @@ COMMANDS:
    vscode, vsc, vs, v             VSCode and extensions installation.
    nvim, neovim, nv, n            Neovim installation.
    neobox-shell, shell, box, ns   Start a neobox shell.
-   neobox-runner, nbrunner, nbr   Start a neobox client.
-   neobox-keeper, nbkeeper, nbk   Start a neobox keeper.
+   neobox-runner, nbrunner, nbr   Start a neobox client. # this is used by neobox-shell, users do not need care about.
+   neobox-keeper, nbkeeper, nbk   Start a neobox keeper. # this is used by neobox-shell, users do not need care about.
    browser, br                    Browser data management.
    homebrew, brew, hb             Homebrew installation or update.
    hosts, h, host                 Sytem hosts file management(need admistrator or root).

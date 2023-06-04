@@ -306,8 +306,8 @@ COMMANDS:
    vscode, vsc, vs, v             VSCode and extensions installation.
    nvim, neovim, nv, n            Neovim installation.
    neobox-shell, shell, box, ns   Start a neobox shell.
-   neobox-runner, nbrunner, nbr   Start a neobox client.
-   neobox-keeper, nbkeeper, nbk   Start a neobox keeper.
+   neobox-runner, nbrunner, nbr   Start a neobox client. # 此命令由NeoBox的Shell调用，用户无需关心。只需要在交互式Shell中操作即可。
+   neobox-keeper, nbkeeper, nbk   Start a neobox keeper. # 此命令由NeoBox的Shell调用，用户无需关心。只需要在交互式Shell中操作即可。
    browser, br                    Browser data management.
    homebrew, brew, hb             Homebrew installation or update.
    hosts, h, host                 Sytem hosts file management(need admistrator or root).
