@@ -5,7 +5,6 @@ go 1.20
 require (
 	github.com/PuerkitoBio/goquery v1.8.1
 	github.com/aquasecurity/table v1.8.0
-	github.com/gin-gonic/gin v1.9.0
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/gogf/gf v1.16.9
 	github.com/knadh/koanf v1.5.0
@@ -53,6 +52,7 @@ require (
 	github.com/gaukas/godicttls v0.0.3 // indirect
 	github.com/ghodss/yaml v1.0.1-0.20220118164431-d8423dcdf344 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
+	github.com/gin-gonic/gin v1.9.0 // indirect
 	github.com/go-chi/chi/v5 v5.0.8 // indirect
 	github.com/go-chi/cors v1.2.1 // indirect
 	github.com/go-chi/render v1.0.2 // indirect
