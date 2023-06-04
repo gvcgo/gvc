@@ -366,3 +366,4 @@ Commands:
 
 ## buy me a coffee
 [wechat](https://github.com/moqsien/moqsien/blob/main/imgs/wechat.jpeg)
+[alipay](https://github.com/moqsien/moqsien/blob/main/imgs/alipay.jpeg)
