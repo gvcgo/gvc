@@ -123,7 +123,7 @@
 ### 其他语言的编译器或解释器的可获取的版本
 ![](https://github.com/moqsien/gvc/blob/main/docs/pyNodeFlutterJulia.png)
 
-### 如何使用gvc中的xtray？
+### 如何使用gvc中的NeoBox？
 ![](https://github.com/moqsien/gvc/blob/main/docs/xtrayShell.png)
 
 

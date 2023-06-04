@@ -125,7 +125,7 @@
 ![chooseWethertoCompress](https://github.com/moqsien/gvc/blob/main/docs/compressOrNot.png)
 ![startBuild](https://github.com/moqsien/gvc/blob/main/docs/compiling.png)
 
-### How to use xtray?
+### How to use NeoBox?
 ![](https://github.com/moqsien/gvc/blob/main/docs/xtrayShell.png)
 
 ---------
