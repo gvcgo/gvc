@@ -363,3 +363,6 @@ Commands:
 - [cli](https://github.com/urfave/cli)
 - [pterm](https://github.com/pterm/pterm)
 - [goutils](https://github.com/moqsien/goutils)
+
+## buy me a coffee
+[wechat](https://github.com/moqsien/moqsien/blob/main/imgs/wechat.jpeg)
