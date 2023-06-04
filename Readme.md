@@ -126,7 +126,7 @@
 ![startBuild](https://github.com/moqsien/gvc/blob/main/docs/compiling.png)
 
 ### How to use NeoBox?
-![](https://github.com/moqsien/gvc/blob/main/docs/xtrayShell.png)
+![](https://github.com/moqsien/gvc/blob/main/docs/neobox.png)
 
 ---------
 ## Something nice about [gvc](https://github.com/moqsien/gvc).

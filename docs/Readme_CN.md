@@ -124,7 +124,7 @@
 ![](https://github.com/moqsien/gvc/blob/main/docs/pyNodeFlutterJulia.png)
 
 ### 如何使用gvc中的NeoBox？
-![](https://github.com/moqsien/gvc/blob/main/docs/xtrayShell.png)
+![](https://github.com/moqsien/gvc/blob/main/docs/neobox.png)
 
 
 ---------
