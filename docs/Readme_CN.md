@@ -159,7 +159,7 @@ GVC还能管理你的浏览器数据，很多常见的基于Chromium的浏览器
   </tr>
   <tr>
     <td><font color="Gree"> Go</font></td>
-    <td><font color="LightBlue">自动安装, 卸载, 版本切换, 配置环境变量, 关键词搜索第三方包</font></td>
+    <td><font color="LightBlue">自动安装, 卸载, 版本切换, 配置环境变量, 关键词搜索第三方包, 更强大方便的go编译打包功能</font></td>
     <td bgcolor="PaleVioletRed">gvc go help</td>
   </tr>
   <tr>
@@ -282,10 +282,10 @@ GVC还能管理你的浏览器数据，很多常见的基于Chromium的浏览器
 ### gvc -h(use "g -h" for short)
 ```shell
 NAME:
-   gvc.exe - gvc <Command> <SubCommand>...
+   g.exe - gvc <Command> <SubCommand>...
 
 USAGE:
-   gvc.exe [global options] command [command options] [arguments...]
+   g.exe [global options] command [command options] [arguments...]
 
 DESCRIPTION:
    A productive tool to manage your development environment.
@@ -305,21 +305,43 @@ COMMANDS:
    vlang, vl                      Vlang installation.
    vscode, vsc, vs, v             VSCode and extensions installation.
    nvim, neovim, nv, n            Neovim installation.
-   xtray-shell, xshell, xs, x     Start an xtray shell.
-   xtray-runner, xrunner, xr      Start an xtray client. # 供xtray-shell使用，用户无需关心
-   xtray-keeper, xkeeper, xk      Start an xtray keeper. # 供xtray-shell使用，用户无需关心
+   neobox-shell, shell, box, ns   Start a neobox shell.
+   neobox-runner, nbrunner, nbr   Start a neobox client.
+   neobox-keeper, nbkeeper, nbk   Start a neobox keeper.
    browser, br                    Browser data management.
    homebrew, brew, hb             Homebrew installation or update.
    hosts, h, host                 Sytem hosts file management(need admistrator or root).
    github, gh                     Open github download acceleration websites.
    config, conf, cnf, c           Config file management for gvc.
-   version, vsi                   Show gvc version info.
+   version, ver, vsi              Show gvc version info.
    show, sho, sh                  Show [gvc] installation path and config file path.
-   uninstall, unins, delete, del  [Caution] Delete gvc and softwares installed by gvc!
+   uninstall, unins, delete, del  [Caution] Remove gvc and softwares installed by gvc!
    help, h                        Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
    --help, -h  show help
+```
+
+### NeoBox Shell帮助信息
+### gvc ns
+```bash
+>>> help
+
+Commands:
+  add           Add proxies to neobox mannually.
+  clear         clear the screen
+  exit          exit the program
+  export        Export vpn history list.
+  filter        Filter vpns by verifier.
+  gc            Start GC manually.
+  geoinfo       Install/Update geoip&geosite for sing-box.
+  help          display help
+  parse         Parse raw proxy URIs to human readable ones.
+  pingunix      Setup ping without root for Unix/Linux.
+  restart       Restart the running sing-box client with a chosen vpn. [restart vpn_index]
+  show          Show neobox info.
+  start         Start an sing-box client/keeper.
+  stop          Stop the running sing-box client/keeper.
 ```
 
 ### 子命令帮助文档 (中文)
@@ -330,12 +352,12 @@ GLOBAL OPTIONS:
 ## 感谢
 ---------
 - [xray-core](https://github.com/XTLS/Xray-core)
+- [sing-box](https://github.com/SagerNet/sing-box)
 - [pyenv](https://github.com/pyenv/pyenv)
 - [pyenv-win](https://github.com/pyenv-win/pyenv-win)
 - [g](https://github.com/voidint/g)
 - [gvm](https://github.com/andrewkroh/gvm)
-- [xtray](https://github.com/moqsien/xtray)
-- [free](https://github.com/moqsien/free)
+- [neobox](https://github.com/moqsien/neobox)
 - [HackBrowserData](https://github.com/moonD4rk/HackBrowserData)
 - [cygwin](https://github.com/cygwin/cygwin)
 - [msys2](https://github.com/orgs/msys2/repositories)
@@ -343,3 +365,4 @@ GLOBAL OPTIONS:
 - [gf](https://github.com/gogf/gf)
 - [cli](https://github.com/urfave/cli)
 - [pterm](https://github.com/pterm/pterm)
+- [goutils](https://github.com/moqsien/goutils)
