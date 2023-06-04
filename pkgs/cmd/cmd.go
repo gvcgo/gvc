@@ -248,7 +248,7 @@ func (that *Cmder) vgo() {
 	gbuild := &cli.Command{
 		Name:    "build",
 		Aliases: []string{"bui", "b"},
-		Usage:   "Compiles go code for multi-platforms .",
+		Usage:   `Compiles go code for multi-platforms [with <-ldflags "-s -w"> builtin].`,
 		Action: func(ctx *cli.Context) error {
 			gv := vctrl.NewGoVersion()
 			args := []string{}
