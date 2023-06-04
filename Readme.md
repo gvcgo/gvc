@@ -346,6 +346,9 @@ Commands:
 
 [gitee docs](https://gitee.com/moqsien/gvc_tools/blob/main/docs/commands/command_list_gitee.md)
 
+## special statement
+gvc provides no paid services, so, users should make use of it within the limits permitted by law in his/her country.
+
 ## thanks to
 ---------
 - [xray-core](https://github.com/XTLS/Xray-core)

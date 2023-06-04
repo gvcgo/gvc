@@ -349,6 +349,9 @@ Commands:
 
 [gitee docs](https://gitee.com/moqsien/gvc_tools/blob/main/docs/commands/command_list_gitee.md)
 
+## 特别申明
+本项目不提供任何收费服务，请任何使用者自觉遵守本国法律法规。
+
 ## 感谢
 ---------
 - [xray-core](https://github.com/XTLS/Xray-core)
