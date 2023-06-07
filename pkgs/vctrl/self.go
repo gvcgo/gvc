@@ -70,8 +70,9 @@ func (that *Self) Install() {
 		that.Conf.SetDefault()
 		that.Conf.Restore()
 	}
-	if ok, _ := utils.PathIsExist(".neobox_encrypt_key.json"); ok {
-		os.RemoveAll(".neobox_encrypt_key.json")
+	nPath := filepath.Join(filepath.Dir(ePath), ".neobox_encrypt_key.json")
+	if ok, _ := utils.PathIsExist(nPath); ok {
+		os.RemoveAll(nPath)
 	}
 }
 
