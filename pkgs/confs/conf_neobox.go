@@ -40,7 +40,7 @@ func (that *NeoboxConf) Reset() {
 	that.NeoConf.AssetDir = that.path
 	that.NeoConf.XLogFileName = "neobox_client.log"
 	that.NeoConf.SockFilesDir = that.path
-	that.NeoConf.RawUriURL = "https://gitlab.com/moqsien/xtray_resources/-/raw/main/conf.txt"
+	that.NeoConf.RawUriURL = "https://gitlab.com/moqsien/neobox_resources/-/raw/main/conf.txt"
 	that.NeoConf.RawUriFileName = "neobox_raw_proxies.json"
 	that.NeoConf.ParsedFileName = "neobox_parsed_proxies.json"
 	that.NeoConf.PingedFileName = "neobox_pinged_proxies.json"
@@ -56,10 +56,10 @@ func (that *NeoboxConf) Reset() {
 	that.NeoConf.VerificationCron = "@every 2h"
 	that.NeoConf.NeoBoxClientInPort = 2019
 	that.NeoConf.GeoInfoUrls = map[string]string{
-		"geoip.dat":   "https://gitlab.com/moqsien/xtray_resources/-/raw/main/geoip.dat",
-		"geosite.dat": "https://gitlab.com/moqsien/xtray_resources/-/raw/main/geosite.dat",
-		"geoip.db":    "https://gitlab.com/moqsien/xtray_resources/-/raw/main/geoip.db",
-		"geosite.db":  "https://gitlab.com/moqsien/xtray_resources/-/raw/main/geosite.db",
+		"geoip.dat":   "https://gitlab.com/moqsien/neobox_resources/-/raw/main/geoip.dat",
+		"geosite.dat": "https://gitlab.com/moqsien/neobox_resources/-/raw/main/geosite.dat",
+		"geoip.db":    "https://gitlab.com/moqsien/neobox_resources/-/raw/main/geoip.db",
+		"geosite.db":  "https://gitlab.com/moqsien/neobox_resources/-/raw/main/geosite.db",
 	}
 	that.NeoConf.NeoBoxKeeperCron = "@every 3m"
 	that.NeoConf.HistoryVpnsFileDir = GVCBackupDir
