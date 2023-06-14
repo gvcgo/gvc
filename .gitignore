@@ -36,3 +36,4 @@ storage.db
 *.gz
 *.zip
 .neobox_encrypt_key.json
+test.json

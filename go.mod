@@ -11,7 +11,7 @@ require (
 	github.com/mholt/archiver/v3 v3.5.1
 	github.com/moqsien/goutils v0.1.4
 	github.com/moqsien/hackbrowser v1.0.3
-	github.com/moqsien/neobox v0.1.5
+	github.com/moqsien/neobox v0.2.0-beta2
 	github.com/pterm/pterm v0.12.62
 	github.com/studio-b12/gowebdav v0.0.0-20230203202212-3282f94193f2
 	github.com/tidwall/gjson v1.14.4
@@ -111,6 +111,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/moqsien/goktrl v1.3.7 // indirect
 	github.com/moqsien/processes v1.0.3 // indirect
+	github.com/moqsien/wgcf v0.0.0-20230611033011-c542434e2ad6 // indirect
 	github.com/nwaples/rardecode v1.1.0 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/onsi/ginkgo/v2 v2.9.4 // indirect
@@ -121,6 +122,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.0.7 // indirect
 	github.com/pierrec/lz4/v4 v4.1.14 // indirect
 	github.com/pires/go-proxyproto v0.7.0 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/ppacher/go-dbus-keyring v1.0.1 // indirect
 	github.com/prometheus-community/pro-bing v0.1.0 // indirect
 	github.com/quic-go/qpack v0.4.0 // indirect
@@ -184,6 +186,7 @@ require (
 	golang.org/x/exp v0.0.0-20230515195305-f3d0a9c9a5cc // indirect
 	golang.org/x/mod v0.10.0 // indirect
 	golang.org/x/net v0.10.0 // indirect
+	golang.org/x/oauth2 v0.6.0 // indirect
 	golang.org/x/sync v0.2.0 // indirect
 	golang.org/x/sys v0.8.0 // indirect
 	golang.org/x/term v0.8.0 // indirect

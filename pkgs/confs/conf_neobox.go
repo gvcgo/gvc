@@ -63,4 +63,7 @@ func (that *NeoboxConf) Reset() {
 	}
 	that.NeoConf.NeoBoxKeeperCron = "@every 3m"
 	that.NeoConf.HistoryVpnsFileDir = GVCBackupDir
+	that.NeoConf.WireGuardConfDir = filepath.Join(that.NeoConf.NeoWorkDir, "wireguard")
+	that.NeoConf.WireGuardIPUrl = "https://gitlab.com/moqsien/neobox_resources/-/raw/main/cloudflare_ips/result.csv"
+	that.NeoConf.WireGuardIPV4FileName = "wireguard_ipv4_verified.json"
 }
