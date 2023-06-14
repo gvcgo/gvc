@@ -47,6 +47,7 @@ func (that *NeoboxConf) Reset() {
 	that.NeoConf.MaxPingers = 100
 	that.NeoConf.MaxAvgRTT = 600
 	that.NeoConf.VerifiedFileName = "neobox_verified_proxies.json"
+	that.NeoConf.VerifiedLocationFileName = "neobox_verified_locations.json"
 	that.NeoConf.VerifierPortRange = &neoconf.PortRange{
 		Min: 4000,
 		Max: 4050,
