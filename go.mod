@@ -11,7 +11,7 @@ require (
 	github.com/mholt/archiver/v3 v3.5.1
 	github.com/moqsien/goutils v0.1.4
 	github.com/moqsien/hackbrowser v1.0.3
-	github.com/moqsien/neobox v0.2.5
+	github.com/moqsien/neobox v0.2.6
 	github.com/pterm/pterm v0.12.62
 	github.com/studio-b12/gowebdav v0.0.0-20230203202212-3282f94193f2
 	github.com/tidwall/gjson v1.14.4
