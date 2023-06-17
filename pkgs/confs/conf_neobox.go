@@ -67,4 +67,5 @@ func (that *NeoboxConf) Reset() {
 	that.NeoConf.WireGuardConfDir = filepath.Join(that.NeoConf.NeoWorkDir, "wireguard")
 	that.NeoConf.WireGuardIPUrl = "https://gitlab.com/moqsien/neobox_resources/-/raw/main/cloudflare_ips/result.csv"
 	that.NeoConf.WireGuardIPV4FileName = "wireguard_ipv4_verified.json"
+	that.NeoConf.ExtraVPNsDir = filepath.Join(that.NeoConf.NeoWorkDir, "extra_vpns")
 }
