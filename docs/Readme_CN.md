@@ -195,7 +195,7 @@ COMMANDS:
 OPTIONS:
    --help, -h  show help
 ```
-以此类推，如果有三级子命令，也可以用相应的help命令常看帮助文档。
+以此类推，如果有三级子命令，也可以用相应的help命令常看帮助文档。<br/>
 **如何使用免费梯子？**
 - 使用g neobox-shell(或者使用简写命令，例如g ns等)，打开neobox的shell；
 进入neobox的shell之后，有">>>"提示符，例如：
