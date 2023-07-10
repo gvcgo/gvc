@@ -1,3 +1,6 @@
+/*
+a dev tool for multi-platforms
+*/
 package main
 
 import (
