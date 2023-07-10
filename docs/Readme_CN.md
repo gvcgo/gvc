@@ -1,5 +1,6 @@
 ## [En](https://github.com/moqsien/gvc)
 ---------
+![logo](https://github.com/moqsien/gvc/blob/main/docs/logo.png)
 
 ### gvc支持哪些语言或应用？
 
@@ -102,57 +103,31 @@
 
 ---------
 ## 主要功能
-- 各种语言编译器/解释器自动安装，多版本管理，自动配置国内资源加速；
+- 各种语言的编译器/解释器的自动安装，多版本管理，环境变量配置，自动配置国内资源加速等；
 - vscode自动安装/更新，配置/插件信息同步到webdav网盘
 - neovim自动安装，配置信息同步到webdav网盘
 - github hosts加速
 - homebrew一键安装
-- 浏览器数据管理(各种常见浏览器的书签、插件、本地密码)，加密后同步到webdav网盘
+- 浏览器数据管理(各种常见浏览器的书签、插件、本地密码)，数据加密后同步到webdav网盘
 - 可用性较高的免费梯子
 
----------
-## 演示(以windows下的Powershell为例)
-
-### 帮助信息
-![](https://github.com/moqsien/gvc/blob/main/docs/ghelp.png)
-
-### Go语言相关帮助信息
-![](https://github.com/moqsien/gvc/blob/main/docs/goRemote.png)
-
-### 显示目前可以获取的go编译器版本
-![](https://github.com/moqsien/gvc/blob/main/docs/goRemoteShow.png)
-
-### 自动安装go编译器并配置环境变量
-![](https://github.com/moqsien/gvc/blob/main/docs/goInstall.png)
-![](https://github.com/moqsien/gvc/blob/main/docs/goInstallationFinished.png)
-
-### 通过关键字搜索go的第三方库
-![](https://github.com/moqsien/gvc/blob/main/docs/goSearch.png)
-
-### gvc的go build增强版
-![beforeBuild](https://github.com/moqsien/gvc/blob/main/docs/beforebuild.png)
-![chooseOptionsForBuild](https://github.com/moqsien/gvc/blob/main/docs/gobuild.png)
-![chooseWethertoCompress](https://github.com/moqsien/gvc/blob/main/docs/compressOrNot.png)
-![startBuild](https://github.com/moqsien/gvc/blob/main/docs/compiling.png)
-
-### 其他语言的编译器或解释器的可获取的版本
-![](https://github.com/moqsien/gvc/blob/main/docs/pyNodeFlutterJulia.png)
-
-### 如何使用gvc中的NeoBox？
-![](https://github.com/moqsien/gvc/blob/main/docs/neobox.png)
-
+有了gvc，你基本可以不需要再关心去哪里下载编译器/解释器，如何配置环境变量等等。<br/>
+有了gvc，你可以把自己本地的开发环境的配置同步到任何支持webdav的网盘，然后在新的机器上一键重建自己熟悉的开发环境。<br/>
+有了gvc，你可以轻松尝试某个语言的不同版本，进行多版本来回切换，目前支持多版本管理的有go，java，python，nodejs，julia，flutter(dart)。<br/>
+有了gvc，你可以轻松重建vscode，包括配置和习惯使用的插件，这些都能保存在webdav。<br/>
+有了gvc，你可以拥有可用性较高的免费梯子，平时google查资料，github浏览可以无忧。<br/>
+有了gvc，你的常见浏览器的数据可以同步到webdav网盘，在没有代理或者没有google账号的情况下，你也可以把浏览器同步到webdav网盘，从而实现书签、密码、插件信息的备份，而且密码数据会自动加密，提升安全性。<br/>
+总之，gvc存在的目标就是为了搞定那些开发过程中的各种环境配置之类的琐事，尤其是如果你喜欢尝鲜各种操作系统或者新的机器，那么gvc能帮你节省很多时间。<br/>
+gvc天生比较适合爱折腾，持续学习，喜欢尝试新事物的程序猿。反之，绕行即可。<br/>
+<br/>
+gvc是个命令行工具，别问为啥没有gui，因为确实没必要！
 
 ---------
-
-![logo](https://github.com/moqsien/gvc/blob/main/docs/logo.png)
-## 关于[gvc](https://github.com/moqsien/gvc)的一些美好的事情
-
-## gvc具体功能展示
----------
-## gvc Help Info
----------
-### gvc -h(use "g -h" for short)
-```shell
+## 具体功能
+安装成功之后，**打开一个新的终端或者PowerShell**，可以执行g help命令，就能看到gvc的帮助信息。
+例如，Windows下，在PowerShell中，就能得到类似于如下的信息：
+```bash
+PS C:\Users\moqsien> g help
 NAME:
    g.exe - gvc <Command> <SubCommand>...
 
@@ -178,8 +153,8 @@ COMMANDS:
    vscode, vsc, vs, v             VSCode and extensions installation.
    nvim, neovim, nv, n            Neovim installation.
    neobox-shell, shell, box, ns   Start a neobox shell.
-   neobox-runner, nbrunner, nbr   Start a neobox client. # 此命令由NeoBox的Shell调用，用户无需关心。只需要在交互式Shell中操作即可。
-   neobox-keeper, nbkeeper, nbk   Start a neobox keeper. # 此命令由NeoBox的Shell调用，用户无需关心。只需要在交互式Shell中操作即可。
+   neobox-runner, nbrunner, nbr   Start a neobox client.
+   neobox-keeper, nbkeeper, nbk   Start a neobox keeper.
    browser, br                    Browser data management.
    homebrew, brew, hb             Homebrew installation or update.
    hosts, h, host                 Sytem hosts file management(need admistrator or root).
@@ -194,33 +169,74 @@ GLOBAL OPTIONS:
    --help, -h  show help
 ```
 
-### NeoBox Shell帮助信息
-### gvc ns
+以上为gvc的所有一级子命令的帮助信息。
+如果要查看某个一级子命令的二级子命令的帮助信息，例如, 如果要查看go子命令的帮助信息，则可以使用g go help命令。
+Windows下，执行g go help，就能得到类似于如下的信息：
 ```bash
+PS C:\Users\moqsien> g go help
+NAME:
+   g.exe go - Go version management.
+
+USAGE:
+   g.exe go command [command options] [arguments...]
+
+COMMANDS:
+   remote, r                                Show remote versions.
+   use, u                                   Download and use version.
+   local, l                                 Show installed versions.
+   remove-unused, ru                        Remove unused versions.
+   remove-version, rm                       Remove a version.
+   add-envs, env, e, ae                     Add envs for go.
+   search-package, sp, search               Search for third-party packages.
+   build, bui, b                            Compiles go code for multi-platforms [with <-ldflags "-s -w"> builtin].
+   list-distributions, list-dist, dist, ld  List the platforms supported by go compilers.
+   help, h                                  Shows a list of commands or help for one command
+
+OPTIONS:
+   --help, -h  show help
+```
+以此类推，如果有三级子命令，也可以用相应的help命令常看帮助文档。
+**如何使用免费梯子？**
+- 使用g neobox-shell(或者使用简写命令，例如g ns等)，打开neobox的shell；
+进入neobox的shell之后，有">>>"提示符，例如：
+```bash
+PS C:\Users\moqsien> g ns
+>>>
+```
+- 在shell中，输入help，回车，查看shell的帮助，看看shell提供了哪些可用的命令；
+neobox shell提供的命令类似如下：
+```bash
+PS C:\Users\moqsien> g ns
 >>> help
 
 Commands:
-  add           Add proxies to neobox mannually.
-  clear         clear the screen
-  exit          exit the program
-  export        Export vpn history list.
-  filter        Filter vpns by verifier.
-  gc            Start GC manually.
-  geoinfo       Install/Update geoip&geosite for sing-box.
-  help          display help
-  parse         Parse raw proxy URIs to human readable ones.
-  pingunix      Setup ping without root for Unix/Linux.
-  restart       Restart the running sing-box client with a chosen vpn. [restart vpn_index]
-  show          Show neobox info.
-  start         Start an sing-box client/keeper.
-  stop          Stop the running sing-box client/keeper.
+  add            Add proxies to neobox mannually.
+  cfips          download/update valid cloudflare ips.
+  clear          clear the screen
+  exit           exit the program
+  export         Export vpn history list.
+  filter         Filter vpns by verifier.
+  gc             Start GC manually.
+  geoinfo        Install/Update geoip&geosite for sing-box.
+  help           display help
+  parse          Parse raw proxy URIs to human readable ones.
+  pingunix       Setup ping without root for Unix-like OS.
+  restart        Restart the running sing-box client with a chosen vpn. [restart vpn_index]
+  setkey         Setup rawlist encrytion key for neobox. [With no args will set key to default value]
+  show           Show neobox info.
+  start          Start an sing-box client/keeper.
+  stop           Stop the running sing-box client/keeper.
+  system         enable current vpn as system proxy. [disable when an arg is provided]
+  wireguard      register wireguard account and update licenseKey to warp plus [if a licenseKey is specified].
+
+
+>>>
 ```
+具体使用方法，可以查看[neobox](https://github.com/moqsien/neobox)文档。文档中，包括了如何获取aes-key(**必须**，否则无法使用)等注意事项。
 
-### 子命令帮助文档 (中文)
-[github docs](https://github.com/moqsien/gvc/blob/main/docs/commands/command_list_github.md)
+**注意**：neobox-runner和neobox-keeper两个子命令，用户无需关心，它们仅仅是给neobox-shell使用的。neobox-shell中的命令已经提供了交互式操作，用于控制在后台运行的neobox。
 
-[gitee docs](https://gitee.com/moqsien/gvc_tools/blob/main/docs/commands/command_list_gitee.md)
-
+---------
 ## 特别申明
 本项目不提供任何收费服务，请任何使用者自觉遵守本国法律法规。
 
@@ -244,4 +260,5 @@ Commands:
 
 ## 送我一杯咖啡~~~
 [wechat](https://github.com/moqsien/moqsien/blob/main/imgs/wechat.jpeg)
+
 [alipay](https://github.com/moqsien/moqsien/blob/main/imgs/alipay.jpeg)
