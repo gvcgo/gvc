@@ -237,6 +237,14 @@ Commands:
 **注意**：neobox-runner和neobox-keeper两个子命令，用户无需关心，它们仅仅是给neobox-shell使用的。neobox-shell中的命令已经提供了交互式操作，用于控制在后台运行的neobox。
 
 ---------
+## 一些演示
+- go自动安装和多版本管理.
+[![asciicast](https://asciinema.org/a/2YY5Tk7YhJeKiccxjaWjA6mqE.svg)](https://asciinema.org/a/2YY5Tk7YhJeKiccxjaWjA6mqE)
+
+- neobox免费vpn.
+[![asciicast](https://asciinema.org/a/Wy5S9kxZU1tL68Xz8Wlj8EJjc.svg)](https://asciinema.org/a/Wy5S9kxZU1tL68Xz8Wlj8EJjc)
+
+---------
 ## 特别申明
 本项目不提供任何收费服务，请任何使用者自觉遵守本国法律法规。
 
