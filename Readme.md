@@ -227,6 +227,9 @@ Commands:
 - neobox free vpns.
 [![asciicast](https://asciinema.org/a/Wy5S9kxZU1tL68Xz8Wlj8EJjc.svg)](https://asciinema.org/a/Wy5S9kxZU1tL68Xz8Wlj8EJjc)
 
+- vscode installation, and vscode extensions installation
+[![asciicast](https://asciinema.org/a/eTecjmXlHSpVZPC14OaDQk2e3.svg)](https://asciinema.org/a/eTecjmXlHSpVZPC14OaDQk2e3)
+
 ---------
 ## special statement
 gvc provides no paid services, so, users should make use of it within the limits permitted by law in his/her country.

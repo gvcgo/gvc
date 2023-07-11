@@ -244,6 +244,9 @@ Commands:
 - neobox免费vpn.
 [![asciicast](https://asciinema.org/a/Wy5S9kxZU1tL68Xz8Wlj8EJjc.svg)](https://asciinema.org/a/Wy5S9kxZU1tL68Xz8Wlj8EJjc)
 
+- vscode安装/更新，以及vscode插件信息同步，自动根据同步的信息安装插件
+[![asciicast](https://asciinema.org/a/eTecjmXlHSpVZPC14OaDQk2e3.svg)](https://asciinema.org/a/eTecjmXlHSpVZPC14OaDQk2e3)
+
 ---------
 ## 特别申明
 本项目不提供任何收费服务，请任何使用者自觉遵守本国法律法规。
