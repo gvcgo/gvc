@@ -244,7 +244,7 @@ Commands:
 - go自动安装和多版本管理.
 [![asciicast](https://asciinema.org/a/2YY5Tk7YhJeKiccxjaWjA6mqE.svg)](https://asciinema.org/a/2YY5Tk7YhJeKiccxjaWjA6mqE)
 
-- neobox免费vpn.
+- [neobox](https://github.com/moqsien/neobox)免费vpn.
 [![asciicast](https://asciinema.org/a/Wy5S9kxZU1tL68Xz8Wlj8EJjc.svg)](https://asciinema.org/a/Wy5S9kxZU1tL68Xz8Wlj8EJjc)
 
 - vscode安装/更新，以及vscode插件信息同步，自动根据同步的信息安装插件

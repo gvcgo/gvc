@@ -227,7 +227,7 @@ Commands:
 - go version management.
 [![asciicast](https://asciinema.org/a/2YY5Tk7YhJeKiccxjaWjA6mqE.svg)](https://asciinema.org/a/2YY5Tk7YhJeKiccxjaWjA6mqE)
 
-- neobox free vpns.
+- [neobox](https://github.com/moqsien/neobox) free vpns.
 [![asciicast](https://asciinema.org/a/Wy5S9kxZU1tL68Xz8Wlj8EJjc.svg)](https://asciinema.org/a/Wy5S9kxZU1tL68Xz8Wlj8EJjc)
 
 - vscode installation, and vscode extensions installation
