@@ -221,6 +221,9 @@ Commands:
 
 ---------
 ## Demo
+- gvc installation
+[![asciicast](https://asciinema.org/a/gzILqlGMUpoNiyrfRdvnJ3eMz.svg)](https://asciinema.org/a/gzILqlGMUpoNiyrfRdvnJ3eMz)
+
 - go version management.
 [![asciicast](https://asciinema.org/a/2YY5Tk7YhJeKiccxjaWjA6mqE.svg)](https://asciinema.org/a/2YY5Tk7YhJeKiccxjaWjA6mqE)
 

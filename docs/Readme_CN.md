@@ -238,6 +238,9 @@ Commands:
 
 ---------
 ## 一些演示
+- gvc 安装；查看安装目录和配置文件存放目录
+[![asciicast](https://asciinema.org/a/gzILqlGMUpoNiyrfRdvnJ3eMz.svg)](https://asciinema.org/a/gzILqlGMUpoNiyrfRdvnJ3eMz)
+
 - go自动安装和多版本管理.
 [![asciicast](https://asciinema.org/a/2YY5Tk7YhJeKiccxjaWjA6mqE.svg)](https://asciinema.org/a/2YY5Tk7YhJeKiccxjaWjA6mqE)
 
