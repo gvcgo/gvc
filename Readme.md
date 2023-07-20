@@ -1,8 +1,21 @@
 ## [中文](https://github.com/moqsien/gvc/blob/main/docs/Readme_CN.md)
----------
-
 ![logo](https://github.com/moqsien/gvc/blob/main/docs/logo.png)
 
+---------
+## Demo
+- gvc installation
+[![asciicast](https://asciinema.org/a/597749.svg)](https://asciinema.org/a/597749)
+
+- go version management.
+[![asciicast](https://asciinema.org/a/597750.svg)](https://asciinema.org/a/597750)
+
+- [neobox](https://github.com/moqsien/neobox) free vpns.
+[![asciicast](https://asciinema.org/a/597753.svg)](https://asciinema.org/a/597753)
+
+- vscode installation, and vscode extensions installation
+[![asciicast](https://asciinema.org/a/597755.svg)](https://asciinema.org/a/597755)
+
+---------
 ### What's supported?
 
 <table>
@@ -218,20 +231,6 @@ Commands:
 >>>
 ```
 **See** [neobox docs](https://github.com/moqsien/neobox).
-
----------
-## Demo
-- gvc installation
-[![asciicast](https://asciinema.org/a/gzILqlGMUpoNiyrfRdvnJ3eMz.svg)](https://asciinema.org/a/gzILqlGMUpoNiyrfRdvnJ3eMz)
-
-- go version management.
-[![asciicast](https://asciinema.org/a/2YY5Tk7YhJeKiccxjaWjA6mqE.svg)](https://asciinema.org/a/2YY5Tk7YhJeKiccxjaWjA6mqE)
-
-- [neobox](https://github.com/moqsien/neobox) free vpns.
-[![asciicast](https://asciinema.org/a/Wy5S9kxZU1tL68Xz8Wlj8EJjc.svg)](https://asciinema.org/a/Wy5S9kxZU1tL68Xz8Wlj8EJjc)
-
-- vscode installation, and vscode extensions installation
-[![asciicast](https://asciinema.org/a/eTecjmXlHSpVZPC14OaDQk2e3.svg)](https://asciinema.org/a/eTecjmXlHSpVZPC14OaDQk2e3)
 
 ---------
 ## special statement

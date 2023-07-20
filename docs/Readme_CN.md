@@ -1,7 +1,21 @@
 ## [En](https://github.com/moqsien/gvc)
----------
 ![logo](https://github.com/moqsien/gvc/blob/main/docs/logo.png)
 
+---------
+## Demo
+- gvc 安装
+[![asciicast](https://asciinema.org/a/597749.svg)](https://asciinema.org/a/597749)
+
+- go自动安装和多版本管理.
+[![asciicast](https://asciinema.org/a/597750.svg)](https://asciinema.org/a/597750)
+
+- [neobox](https://github.com/moqsien/neobox)免费vpn.
+[![asciicast](https://asciinema.org/a/597753.svg)](https://asciinema.org/a/597753)
+
+- vscode安装/更新，以及vscode插件信息同步，自动根据同步的信息安装插件
+[![asciicast](https://asciinema.org/a/597755.svg)](https://asciinema.org/a/597755)
+
+---------
 ### gvc支持哪些语言或应用？
 
 <table>
@@ -235,20 +249,6 @@ Commands:
 具体使用方法，可以查看[neobox](https://github.com/moqsien/neobox)文档。文档中，包括了如何获取aes-key(**必须**，否则无法使用)等注意事项。
 
 **注意**：neobox-runner和neobox-keeper两个子命令，用户无需关心，它们仅仅是给neobox-shell使用的。neobox-shell中的命令已经提供了交互式操作，用于控制在后台运行的neobox。
-
----------
-## 一些演示
-- gvc 安装；查看安装目录和配置文件存放目录
-[![asciicast](https://asciinema.org/a/gzILqlGMUpoNiyrfRdvnJ3eMz.svg)](https://asciinema.org/a/gzILqlGMUpoNiyrfRdvnJ3eMz)
-
-- go自动安装和多版本管理.
-[![asciicast](https://asciinema.org/a/2YY5Tk7YhJeKiccxjaWjA6mqE.svg)](https://asciinema.org/a/2YY5Tk7YhJeKiccxjaWjA6mqE)
-
-- [neobox](https://github.com/moqsien/neobox)免费vpn.
-[![asciicast](https://asciinema.org/a/Wy5S9kxZU1tL68Xz8Wlj8EJjc.svg)](https://asciinema.org/a/Wy5S9kxZU1tL68Xz8Wlj8EJjc)
-
-- vscode安装/更新，以及vscode插件信息同步，自动根据同步的信息安装插件
-[![asciicast](https://asciinema.org/a/eTecjmXlHSpVZPC14OaDQk2e3.svg)](https://asciinema.org/a/eTecjmXlHSpVZPC14OaDQk2e3)
 
 ---------
 ## 特别申明
