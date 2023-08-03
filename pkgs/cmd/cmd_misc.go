@@ -174,23 +174,6 @@ func (that *Cmder) vbrowser() {
 	that.Commands = append(that.Commands, command)
 }
 
-/*
-	type CmdOptions struct {
-		ByFile         bool   `long:"by-file" description:"report results for every encountered source file"`
-		SortTag        string `long:"sort" default:"code" description:"sort based on a certain column" choice:"name" choice:"files" choice:"blank" choice:"comment" choice:"code"`
-		OutputType     string `long:"output-type" default:"default" description:"output type [values: default,cloc-xml,sloccount,json]"`
-		ExcludeExt     string `long:"exclude-ext" description:"exclude file name extensions (separated commas)"`
-		IncludeLang    string `long:"include-lang" description:"include language name (separated commas)"`
-		Match          string `long:"match" description:"include file name (regex)"`
-		NotMatch       string `long:"not-match" description:"exclude file name (regex)"`
-		MatchDir       string `long:"match-d" description:"include dir name (regex)"`
-		NotMatchDir    string `long:"not-match-d" description:"exclude dir name (regex)"`
-		Debug          bool   `long:"debug" description:"dump debug log for developer"`
-		SkipDuplicated bool   `long:"skip-duplicated" description:"skip duplicated files"`
-		ShowLang       bool   `long:"show-lang" description:"print about all languages and extensions"`
-		ShowVersion    bool   `long:"version" description:"print version info"`
-	}
-*/
 func (that *Cmder) vcloc() {
 	command := &cli.Command{
 		Name:    "cloc",
@@ -270,6 +253,67 @@ func (that *Cmder) vcloc() {
 			return nil
 		},
 	}
+
+	that.Commands = append(that.Commands, command)
+}
+
+func (that *Cmder) asciinema() {
+	command := &cli.Command{
+		Name:        "asciinema",
+		Aliases:     []string{"ascii", "asc"},
+		Usage:       "Asciinema terminal recorder.",
+		Subcommands: []*cli.Command{},
+	}
+	vrec := &cli.Command{
+		Name:      "record",
+		Aliases:   []string{"rec", "r"},
+		Usage:     "Record terminal operations.",
+		ArgsUsage: "gvc asciinema record xxx",
+		Action: func(ctx *cli.Context) error {
+			a := vctrl.NewAsciiCast()
+			a.Rec(ctx.Args().First())
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vrec)
+
+	vplay := &cli.Command{
+		Name:      "play",
+		Aliases:   []string{"pl", "p"},
+		Usage:     "Play local asciinema file.",
+		ArgsUsage: "gvc asciinema play xxx",
+		Action: func(ctx *cli.Context) error {
+			a := vctrl.NewAsciiCast()
+			a.Play(ctx.Args().First())
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vplay)
+
+	vauth := &cli.Command{
+		Name:    "auth",
+		Aliases: []string{"au", "a"},
+		Usage:   "Bind local install-id to your asciinem.org account.",
+		Action: func(ctx *cli.Context) error {
+			a := vctrl.NewAsciiCast()
+			a.Auth()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vauth)
+
+	vup := &cli.Command{
+		Name:      "upload",
+		Aliases:   []string{"up", "u"},
+		Usage:     "Upload local asciinema file to asciinema.org.",
+		ArgsUsage: "gvc asciinema upload xxx",
+		Action: func(ctx *cli.Context) error {
+			a := vctrl.NewAsciiCast()
+			a.Upload(ctx.Args().First())
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vup)
 
 	that.Commands = append(that.Commands, command)
 }

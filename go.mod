@@ -10,6 +10,7 @@ require (
 	github.com/hhatto/gocloc v0.5.1
 	github.com/knadh/koanf v1.5.0
 	github.com/mholt/archiver/v3 v3.5.1
+	github.com/moqsien/asciinema v0.3.0
 	github.com/moqsien/goutils v0.1.4
 	github.com/moqsien/hackbrowser v1.0.3
 	github.com/moqsien/neobox v0.2.8
@@ -41,6 +42,8 @@ require (
 	github.com/cloudflare/circl v1.2.1-0.20221019164342-6ab4dfed8f3c // indirect
 	github.com/containerd/console v1.0.3 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
+	github.com/creack/pty v1.1.15 // indirect
+	github.com/creack/termios v0.0.0-20160714173321-88d0029e36a1 // indirect
 	github.com/cretz/bine v0.2.0 // indirect
 	github.com/dgryski/go-metro v0.0.0-20211217172704-adc40b04c140 // indirect
 	github.com/dsnet/compress v0.0.2-0.20210315054119-f66993602bf5 // indirect
@@ -98,6 +101,7 @@ require (
 	github.com/klauspost/compress v1.16.5 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.4 // indirect
 	github.com/klauspost/pgzip v1.2.5 // indirect
+	github.com/kr/pty v1.1.8 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
 	github.com/libdns/libdns v0.2.1 // indirect
 	github.com/lithammer/fuzzysearch v1.1.8 // indirect
@@ -117,6 +121,7 @@ require (
 	github.com/moqsien/wgcf v0.0.0-20230611033011-c542434e2ad6 // indirect
 	github.com/nwaples/rardecode v1.1.0 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
+	github.com/olivere/ndjson v0.1.3 // indirect
 	github.com/onsi/ginkgo/v2 v2.9.4 // indirect
 	github.com/ooni/go-libtor v1.1.7 // indirect
 	github.com/oschwald/maxminddb-golang v1.10.0 // indirect
@@ -200,6 +205,8 @@ require (
 	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1 // indirect
 	google.golang.org/grpc v1.55.0 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
+	gopkg.in/gcfg.v1 v1.2.3 // indirect
+	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gorm.io/gorm v1.25.1 // indirect

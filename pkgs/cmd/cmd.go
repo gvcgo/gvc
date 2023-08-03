@@ -49,6 +49,7 @@ func (that *Cmder) initiate() {
 	that.vhost()
 	that.vgithub()
 	that.vcloc()
+	that.asciinema()
 
 	that.vconf()
 	that.version()
