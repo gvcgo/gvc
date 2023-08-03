@@ -106,6 +106,14 @@
       <td><a href="https://gitlab.com/ineo6/hosts/-/raw/master/next-hosts">github hosts file</a></td>
       <td><a href="https://github.com/jianboy/github-host/raw/master/hosts">github hosts file</a></td>
     </tr>
+    <tr>
+      <td><a href="https://asciinema.org/">asciinema</a></td>
+      <td><a href="https://github.com/moqsien/asciinema">asciinema for full-platform</a></td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/hhatto/gocloc">count lines of code(cloc)</a></td>
+      <td><a href="https://github.com/hhatto/gocloc">cloc</a></td>
+    </tr>
   </tbody>
 </table>
 
@@ -127,6 +135,8 @@
 - Homebrew installation and setup.
 - Browser data management. Bookmarks, plugins, local password synchronization to WebDAV.
 - Free VPNs.
+- Count lines of code(cloc).
+- asciinema full-platform support.
 
 ## Help Info
 ---------

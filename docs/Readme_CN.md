@@ -106,6 +106,14 @@
       <td><a href="https://gitlab.com/ineo6/hosts/-/raw/master/next-hosts">github hosts加速</a></td>
       <td><a href="https://github.com/jianboy/github-host/raw/master/hosts">github hosts加速</a></td>
     </tr>
+    <tr>
+      <td><a href="https://asciinema.org/">asciinema终端录频</a></td>
+      <td><a href="https://github.com/moqsien/asciinema">全平台支持</a></td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/hhatto/gocloc">项目代码统计功能</a></td>
+      <td><a href="https://github.com/hhatto/gocloc">支持各种语言</a></td>
+    </tr>
   </tbody>
 </table>
 
@@ -117,13 +125,15 @@
 
 ---------
 ## 主要功能
-- 各种语言的编译器/解释器的自动安装，多版本管理，环境变量配置，自动配置国内资源加速等；
+- 各种语言的编译器/解释器的自动安装，多版本管理，环境变量配置，自动配置国内资源加速等
 - vscode自动安装/更新，配置/插件信息同步到webdav网盘
 - neovim自动安装，配置信息同步到webdav网盘
 - github hosts加速
 - homebrew一键安装
 - 浏览器数据管理(各种常见浏览器的书签、插件、本地密码)，数据加密后同步到webdav网盘
 - 可用性较高的免费梯子
+- 项目代码统计功能(支持各种语言)
+- asciinema终端录屏功能，支持全平台(windows下使用powershell)
 
 有了gvc，你基本可以不需要再关心去哪里下载编译器/解释器，如何配置环境变量等等。<br/>
 有了gvc，你可以把自己本地的开发环境的配置同步到任何支持webdav的网盘，然后在新的机器上一键重建自己熟悉的开发环境。<br/>
