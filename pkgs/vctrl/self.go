@@ -112,7 +112,7 @@ func (that *Self) ShowPath() {
 }
 
 const (
-	VERSION = "1.2.x"
+	VERSION = "1.3.x"
 )
 
 func (that *Self) ShowVersion() {
