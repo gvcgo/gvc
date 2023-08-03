@@ -142,7 +142,6 @@
 ---------
 GVC is a command line tool. 
 ```bash
-PS C:\Users\moqsien> g help
 NAME:
    g.exe - gvc <Command> <SubCommand>...
 
@@ -174,6 +173,8 @@ COMMANDS:
    homebrew, brew, hb             Homebrew installation or update.
    hosts, h, host                 Sytem hosts file management(need admistrator or root).
    github, gh                     Open github download acceleration websites.
+   cloc, cl                       Count lines of code.
+   asciinema, ascii, asc          Asciinema terminal recorder.
    config, conf, cnf, c           Config file management for gvc.
    version, ver, vsi              Show gvc version info.
    show, sho, sh                  Show [gvc] installation path and config file path.

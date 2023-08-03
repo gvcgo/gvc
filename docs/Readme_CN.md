@@ -151,7 +151,6 @@ gvc是个命令行工具，别问为啥没有GUI，因为确实没必要！
 安装成功之后，**打开一个新的终端或者PowerShell**，可以执行g help命令，就能看到gvc的帮助信息。
 例如，Windows下，在PowerShell中，就能得到类似于如下的信息：
 ```bash
-PS C:\Users\moqsien> g help
 NAME:
    g.exe - gvc <Command> <SubCommand>...
 
@@ -183,6 +182,8 @@ COMMANDS:
    homebrew, brew, hb             Homebrew installation or update.
    hosts, h, host                 Sytem hosts file management(need admistrator or root).
    github, gh                     Open github download acceleration websites.
+   cloc, cl                       Count lines of code.
+   asciinema, ascii, asc          Asciinema terminal recorder.
    config, conf, cnf, c           Config file management for gvc.
    version, ver, vsi              Show gvc version info.
    show, sho, sh                  Show [gvc] installation path and config file path.
