@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
 
 	"github.com/moqsien/asciinema/cmd"
 	"github.com/moqsien/asciinema/util"
@@ -14,16 +15,23 @@ import (
 	"github.com/moqsien/gvc/pkgs/utils"
 )
 
-func handleFilePath(fpath string) (result string) {
+func getName(base string) string {
+	if base == "" {
+		return base
+	}
+	return strings.Split(base, ".")[0]
+}
+
+func handleFilePath(fpath string) (title, result string) {
 	cwd, _ := os.Getwd()
 	if fpath == "" {
-		return filepath.Join(cwd, "default.cast")
+		return "default_cast", filepath.Join(cwd, "default.cast")
 	}
 	base := filepath.Base(fpath)
 	if base == fpath {
-		return filepath.Join(cwd, base)
+		return getName(base), filepath.Join(cwd, base)
 	}
-	return fpath
+	return getName(base), fpath
 }
 
 // asciinema
@@ -39,12 +47,12 @@ func NewAsciiCast() *AsciiCast {
 }
 
 func (that *AsciiCast) Rec(fPath string) {
-	that.runner.FilePath = handleFilePath(fPath)
+	that.runner.FilePath, that.runner.Title = handleFilePath(fPath)
 	that.runner.Rec()
 }
 
 func (that *AsciiCast) Play(fPath string) {
-	that.runner.FilePath = handleFilePath(fPath)
+	that.runner.FilePath, that.runner.Title = handleFilePath(fPath)
 	that.runner.Play()
 }
 
@@ -67,7 +75,7 @@ func (that *AsciiCast) Auth() {
 }
 
 func (that *AsciiCast) Upload(fPath string) {
-	that.runner.FilePath = handleFilePath(fPath)
+	that.runner.FilePath, that.runner.Title = handleFilePath(fPath)
 	if respStr, err := that.runner.Upload(); err == nil {
 		tui.PrintInfo(respStr)
 	}
