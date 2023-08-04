@@ -282,6 +282,10 @@ Commands:
 - [cli](https://github.com/urfave/cli)
 - [pterm](https://github.com/pterm/pterm)
 - [goutils](https://github.com/moqsien/goutils)
+- [asciinema](https://github.com/securisec/asciinema)
+- [PowerSession-rs](https://github.com/Watfaq/PowerSession-rs)
+- [conpty-go](https://github.com/qsocket/conpty-go)
+- [gocloc](https://github.com/hhatto/gocloc)
 
 ## 送我一杯咖啡~~~
 [wechat](https://github.com/moqsien/moqsien/blob/main/imgs/wechat.jpeg)

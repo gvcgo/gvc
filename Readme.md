@@ -264,6 +264,10 @@ gvc provides no paid services, so, users should make use of it within the limits
 - [cli](https://github.com/urfave/cli)
 - [pterm](https://github.com/pterm/pterm)
 - [goutils](https://github.com/moqsien/goutils)
+- [asciinema](https://github.com/securisec/asciinema)
+- [PowerSession-rs](https://github.com/Watfaq/PowerSession-rs)
+- [conpty-go](https://github.com/qsocket/conpty-go)
+- [gocloc](https://github.com/hhatto/gocloc)
 
 ## buy me a coffee
 [wechat](https://github.com/moqsien/moqsien/blob/main/imgs/wechat.jpeg)
