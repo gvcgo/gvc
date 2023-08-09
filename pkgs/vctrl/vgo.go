@@ -366,7 +366,7 @@ func (that *GoVersion) ShowInstalled() {
 	}
 	for _, v := range installedList {
 		if v.IsDir() {
-			if current == v.Name() {
+			if strings.Contains(current, v.Name()) {
 				fmt.Println(pterm.Yellow(fmt.Sprintf("%s <Current>", v.Name())))
 				continue
 			}
@@ -392,7 +392,7 @@ func (that *GoVersion) RemoveUnused() {
 	}
 	tarFiles, _ := os.ReadDir(config.GoTarFilesPath)
 	for _, v := range installedList {
-		if current == v.Name() {
+		if strings.Contains(current, v.Name()) {
 			continue
 		}
 		os.RemoveAll(filepath.Join(config.GoUnTarFilesPath, v.Name()))
@@ -406,7 +406,7 @@ func (that *GoVersion) RemoveUnused() {
 
 func (that *GoVersion) RemoveVersion(version string) {
 	current := that.getCurrent()
-	if current != version {
+	if !strings.Contains(current, version) {
 		tarFiles, _ := os.ReadDir(config.GoTarFilesPath)
 		os.RemoveAll(filepath.Join(config.GoUnTarFilesPath, version))
 		for _, vInfo := range tarFiles {
