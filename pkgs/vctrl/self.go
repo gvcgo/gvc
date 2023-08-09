@@ -128,10 +128,9 @@ func (that *Self) ShowVersion() {
 		WithTopPadding(2).
 		WithBottomPadding(2).
 		Sprintf(
-			"%s\n%s\n%s\n%s",
+			"%s\n%s\n%s",
 			pterm.LightCyan("   Version:     ")+pterm.LightYellow("v"+VERSION),
 			pterm.LightCyan("   Github:      ")+pterm.LightYellow("https://github.com/moqsien/gvc"),
-			pterm.LightCyan("   Gitee:       ")+pterm.LightYellow("https://gitee.com/moqsien/gvc_tools"),
 			pterm.LightCyan("   Email:       ")+pterm.LightYellow("moqsien@foxmail.com"),
 		)
 	pterm.Println(str)
