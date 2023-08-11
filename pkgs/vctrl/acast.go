@@ -47,12 +47,12 @@ func NewAsciiCast() *AsciiCast {
 }
 
 func (that *AsciiCast) Rec(fPath string) {
-	that.runner.FilePath, that.runner.Title = handleFilePath(fPath)
+	that.runner.Title, that.runner.FilePath = handleFilePath(fPath)
 	that.runner.Rec()
 }
 
 func (that *AsciiCast) Play(fPath string) {
-	that.runner.FilePath, that.runner.Title = handleFilePath(fPath)
+	that.runner.Title, that.runner.FilePath = handleFilePath(fPath)
 	that.runner.Play()
 }
 
@@ -75,7 +75,7 @@ func (that *AsciiCast) Auth() {
 }
 
 func (that *AsciiCast) Upload(fPath string) {
-	that.runner.FilePath, that.runner.Title = handleFilePath(fPath)
+	that.runner.Title, that.runner.FilePath = handleFilePath(fPath)
 	if respStr, err := that.runner.Upload(); err == nil {
 		tui.PrintInfo(respStr)
 	}
