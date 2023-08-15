@@ -122,6 +122,7 @@ func (that *MavenVersion) download(version string) (r string) {
 	if p, ok := that.Versions[version]; ok {
 		that.fetcher.Url = p.Url
 		that.fetcher.Timeout = 900 * time.Minute
+		that.fetcher.SetThreadNum(8)
 		fpath := filepath.Join(config.MavenTarFilePath, p.FileName)
 		if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 			if ok := utils.CheckFile(fpath, "sha512", that.getSha(p)); ok {

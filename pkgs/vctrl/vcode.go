@@ -105,6 +105,7 @@ func (that *Code) download() (r string) {
 		fpath := filepath.Join(config.CodeTarFileDir, fmt.Sprintf("%s-%s%s", key, that.Version, suffix))
 		that.fetcher.Url = strings.Replace(p.Url, that.Conf.Code.StableUrl, that.Conf.Code.CdnUrl, -1)
 		that.fetcher.Timeout = 600 * time.Second
+		that.fetcher.SetThreadNum(8)
 		if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 			if ok := utils.CheckFile(fpath, p.CheckType, p.CheckSum); ok {
 				r = fpath

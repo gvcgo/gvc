@@ -155,6 +155,7 @@ func (that *FlutterVersion) download(version string) (r string) {
 			return
 		}
 		that.fetcher.Timeout = 100 * time.Minute
+		// that.fetcher.SetThreadNum(2)
 		fpath := filepath.Join(config.FlutterTarFilePath, p.FileName)
 		if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 			if p.Checksum != "" {

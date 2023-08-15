@@ -11,7 +11,7 @@ require (
 	github.com/knadh/koanf v1.5.0
 	github.com/mholt/archiver/v3 v3.5.1
 	github.com/moqsien/asciinema v0.3.0
-	github.com/moqsien/goutils v0.1.6
+	github.com/moqsien/goutils v0.1.9
 	github.com/moqsien/hackbrowser v1.0.3
 	github.com/moqsien/neobox v0.2.9
 	github.com/pterm/pterm v0.12.62

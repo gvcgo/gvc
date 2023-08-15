@@ -141,6 +141,7 @@ func (that *GradleVersion) download(version string) (r string) {
 	if p, ok := that.Versions[version]; ok {
 		that.fetcher.Url = p.Url
 		that.fetcher.Timeout = 600 * time.Minute
+		that.fetcher.SetThreadNum(8)
 		fpath := filepath.Join(config.GradleTarFilePath, p.FileName)
 		if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 			if ok := utils.CheckFile(fpath, "sha256", p.Checksum); ok {

@@ -175,6 +175,7 @@ func (that *NodeVersion) download(version string) string {
 				that.fetcher.Url = v.Url
 				that.fetcher.Timeout = 100 * time.Minute
 				fpath := filepath.Join(config.NodejsTarFiles, v.FileName)
+				that.fetcher.SetThreadNum(8)
 				if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 					if ok := utils.CheckFile(fpath, "sha256", v.Checksum); ok {
 						return fpath

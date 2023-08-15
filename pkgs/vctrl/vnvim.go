@@ -66,6 +66,7 @@ func (that *NVim) download() (r string) {
 		utils.ClearDir(config.NVimFileDir)
 		that.fetcher.Url = nurl.Url
 		that.fetcher.Timeout = 120 * time.Second
+		that.fetcher.SetThreadNum(2)
 		fpath := filepath.Join(config.NVimFileDir, fmt.Sprintf("%s%s", nurl.Name, nurl.Ext))
 		if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 			if ok := utils.CheckFile(fpath, that.checktype, that.checksum); ok {

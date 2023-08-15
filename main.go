@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 
+	utils "github.com/moqsien/goutils/pkgs/gutils"
 	"github.com/moqsien/gvc/pkgs/cmd"
 	"github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/vctrl"
@@ -45,6 +46,8 @@ func main() {
 		self.Install()
 		self.ShowPath()
 	} else {
+		s := &utils.CtrlCSignal{}
+		s.ListenSignal()
 		c.RunApp()
 	}
 }

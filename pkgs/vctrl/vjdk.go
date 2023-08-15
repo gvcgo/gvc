@@ -235,6 +235,7 @@ func (that *JDKVersion) download(version string, isOfficial bool) (r string) {
 	if p := that.findVersion(version); p != nil {
 		that.fetcher.Url = p.Url
 		that.fetcher.Timeout = 100 * time.Minute
+		that.fetcher.SetThreadNum(8)
 		fpath := filepath.Join(config.JavaTarFilesPath, p.FileName)
 		if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 			if p.Checksum != "" {
@@ -339,7 +340,7 @@ func (that *JDKVersion) ShowInstalled() {
 		if !strings.Contains(d.Name(), "jdk") {
 			continue
 		}
-		if current == strings.TrimSpace(d.Name()) {
+		if strings.Contains(d.Name(), current) {
 			fmt.Println(pterm.Yellow(fmt.Sprintf("%s <Current>", d.Name())))
 		} else {
 			fmt.Println(pterm.Cyan(d.Name()))
@@ -363,7 +364,7 @@ func (that *JDKVersion) RemoveVersion(version string) {
 		version = fmt.Sprintf("jdk%s", version)
 	}
 	current := that.getCurrent()
-	if version != current {
+	if !strings.Contains(version, current) {
 		os.RemoveAll(filepath.Join(config.JavaUnTarFilesPath, version))
 		that.removeTarFile(version)
 	}
@@ -373,8 +374,7 @@ func (that *JDKVersion) RemoveUnused() {
 	current := that.getCurrent()
 	dList, _ := os.ReadDir(config.JavaUnTarFilesPath)
 	for _, d := range dList {
-		fmt.Println(d.Name())
-		if current != d.Name() && strings.Contains(d.Name(), "jdk") {
+		if !strings.Contains(d.Name(), current) && strings.Contains(d.Name(), "jdk") {
 			os.RemoveAll(filepath.Join(config.JavaUnTarFilesPath, d.Name()))
 			that.removeTarFile(d.Name())
 		}

@@ -54,6 +54,7 @@ func (that *Typst) download(force bool) string {
 		if force {
 			os.RemoveAll(fpath)
 		}
+		that.fetcher.SetThreadNum(2)
 		if ok, _ := utils.PathIsExist(fpath); !ok || force {
 			if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 				return fpath

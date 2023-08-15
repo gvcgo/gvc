@@ -140,6 +140,7 @@ func (that *JuliaVersion) download(version string) (r string) {
 			return
 		}
 		that.fetcher.Timeout = 100 * time.Minute
+		that.fetcher.SetThreadNum(8)
 		fpath := filepath.Join(config.JuliaTarFilePath, p.FileName)
 		if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 			if p.Checksum != "" {
