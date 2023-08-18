@@ -4,7 +4,6 @@ a dev tool for multi-platforms
 package main
 
 import (
-	"fmt"
 	"os"
 	"strings"
 
@@ -38,7 +37,9 @@ func main() {
 		// cpp := vctrl.NewCppManager()
 		// cpp.InstallVCPkg()
 		// fmt.Println(os.Environ()[0])
-		fmt.Println(os.Getwd())
+		// fmt.Println(os.Getwd())
+		gh := vctrl.NewGhDownloader()
+		gh.Download("https://github.com/moqsien/gvc/", false)
 		// p := "a/b/c/d/e.zip"
 		// fmt.Println(strings.ReplaceAll(p, filepath.Dir(p), ""))
 	} else if len(os.Args) < 2 {
