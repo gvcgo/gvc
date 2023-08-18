@@ -5,7 +5,6 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"strings"
 	"time"
 
 	"github.com/mholt/archiver/v3"
@@ -21,6 +20,7 @@ type NVim struct {
 	checktype string
 	env       *utils.EnvsHandler
 	fetcher   *request.Fetcher
+	checker   *SumChecker
 }
 
 func NewNVim() (nv *NVim) {
@@ -31,6 +31,7 @@ func NewNVim() (nv *NVim) {
 		checktype: "sha256",
 		env:       utils.NewEnvsHandler(),
 	}
+	nv.checker = NewSumChecker(nv.Conf)
 	nv.setup()
 	nv.env.SetWinWorkDir(config.GVCWorkDir)
 	return
@@ -38,26 +39,6 @@ func NewNVim() (nv *NVim) {
 
 func (that *NVim) setup() {
 	utils.MakeDirs(config.NVimFileDir)
-}
-
-func (that *NVim) getChecksum() {
-	that.fetcher.Url = that.Conf.NVim.ChecksumUrl
-	that.fetcher.Timeout = 10 * time.Second
-	fpath := filepath.Join(config.NVimFileDir, "checksum.txt")
-
-	if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
-		if ok, _ := utils.PathIsExist(fpath); ok {
-			if b, err := os.ReadFile(fpath); err == nil && len(b) > 0 {
-				c := string(b)
-				for _, item := range strings.Split(c, "\n") {
-					if strings.Contains(item, runtime.GOOS) {
-						that.checksum = strings.Split(item, " ")[0]
-					}
-				}
-			}
-			os.Remove(fpath)
-		}
-	}
 }
 
 func (that *NVim) download() (r string) {
@@ -68,12 +49,13 @@ func (that *NVim) download() (r string) {
 		that.fetcher.Timeout = 120 * time.Second
 		that.fetcher.SetThreadNum(2)
 		fpath := filepath.Join(config.NVimFileDir, fmt.Sprintf("%s%s", nurl.Name, nurl.Ext))
+		if !that.checker.IsUpdated(fpath, that.fetcher.Url) {
+			tui.PrintInfo("Current version is already the latest.")
+			r = fpath
+			return
+		}
 		if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
-			if ok := utils.CheckFile(fpath, that.checktype, that.checksum); ok {
-				r = fpath
-			} else {
-				os.RemoveAll(fpath)
-			}
+			r = fpath
 		}
 	} else {
 		tui.PrintError(fmt.Sprintf("Cannot find nvim package for %s", runtime.GOOS))
@@ -156,6 +138,5 @@ func (that *NVim) initiatePlugins() {
 }
 
 func (that *NVim) Install() {
-	that.getChecksum()
 	that.download()
 }

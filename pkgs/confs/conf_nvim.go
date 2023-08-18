@@ -40,18 +40,18 @@ func (that *NVimConf) setup() {
 func (that *NVimConf) Reset() {
 	that.Urls = map[string]*NUrl{
 		"darwin": {
-			"https://gitee.com/moqsien/gvc/releases/download/v1/nvim-macos.tar.gz",
-			"nvim-macos",
+			"https://gitlab.com/moqsien/gvc_resources/-/raw/main/nvim_macos.tar.gz",
+			"nvim_macos",
 			".tar.gz",
 		},
 		"linux": {
-			"https://gitee.com/moqsien/gvc/releases/download/v1/nvim-linux64.tar.gz",
-			"nvim-linux64",
+			"https://gitlab.com/moqsien/gvc_resources/-/raw/main/nvim_linux64.tar.gz",
+			"nvim_linux64",
 			".tar.gz",
 		},
 		"windows": {
-			"https://gitee.com/moqsien/gvc/releases/download/v1/nvim-win64.zip",
-			"nvim-win64",
+			"https://gitlab.com/moqsien/gvc_resources/-/raw/main/nvim_win64.zip",
+			"nvim_win64",
 			".zip",
 		},
 	}
