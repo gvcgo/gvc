@@ -31,9 +31,9 @@ func (that *VlangConf) setup() {
 
 func (that *VlangConf) Reset() {
 	that.VlangGiteeUrls = map[string]string{
-		utils.MacOS:   "https://gitee.com/moqsien/gvc/releases/download/v1/v-macos.zip",
-		utils.Linux:   "https://gitee.com/moqsien/gvc/releases/download/v1/v-linux.zip",
-		utils.Windows: "https://gitee.com/moqsien/gvc/releases/download/v1/v-windows.zip",
+		utils.MacOS:   "https://gitlab.com/moqsien/gvc_resources/-/raw/main/vlang_macos.zip",
+		utils.Linux:   "https://gitlab.com/moqsien/gvc_resources/-/raw/main/vlang_linux.zip",
+		utils.Windows: "https://gitlab.com/moqsien/gvc_resources/-/raw/main/vlang_windows.zip",
 	}
 	that.VlangUrls = map[string]string{
 		utils.MacOS:   "https://github.com/vlang/v/releases/latest/download/v_macos.zip",

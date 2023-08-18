@@ -34,6 +34,7 @@ type GVConfig struct {
 	Typst    *TypstConf    `koanf:"typst"`
 	Chatgpt  *ChatgptConf  `koanf:"chatgpt"`
 	Webdav   *DavConf      `koanf:"dav"`
+	Sum      *SumConf      `koanf:"sum"`
 	path     string
 	koanfer  *koanfer.JsonKoanfer
 }
@@ -60,6 +61,7 @@ func New() (r *GVConfig) {
 		Typst:    NewTypstConf(),
 		Chatgpt:  NewGptConf(),
 		Webdav:   NewDavConf(),
+		Sum:      NewSumConf(),
 		path:     GVConfigPath,
 		koanfer:  kfer,
 	}
@@ -123,6 +125,8 @@ func (that *GVConfig) SetDefault() {
 	that.Chatgpt.Reset()
 	that.Webdav = NewDavConf()
 	that.Webdav.Reset()
+	that.Sum = NewSumConf()
+	that.Sum.Reset()
 }
 
 func (that *GVConfig) Reset() {

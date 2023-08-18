@@ -18,6 +18,7 @@ type Vlang struct {
 	Conf    *config.GVConfig
 	env     *utils.EnvsHandler
 	fetcher *request.Fetcher
+	checker *SumChecker
 }
 
 func NewVlang() (vl *Vlang) {
@@ -26,6 +27,7 @@ func NewVlang() (vl *Vlang) {
 		fetcher: request.NewFetcher(),
 		env:     utils.NewEnvsHandler(),
 	}
+	vl.checker = NewSumChecker(vl.Conf)
 	vl.env.SetWinWorkDir(config.GVCWorkDir)
 	return
 }
@@ -49,6 +51,10 @@ func (that *Vlang) download(force bool) string {
 	that.fetcher.Url = vUrls[runtime.GOOS]
 	if that.fetcher.Url != "" {
 		fpath := filepath.Join(config.VlangFilesDir, "vlang.zip")
+		if !that.checker.IsUpdated(fpath, that.fetcher.Url) {
+			tui.PrintInfo("Current version is already the latest.")
+			return fpath
+		}
 		if force {
 			os.RemoveAll(fpath)
 		}
