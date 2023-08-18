@@ -55,21 +55,19 @@ func (that *GhDownloader) findFileName(dUrl string) (name string) {
 func (that *GhDownloader) downloadArchive(githubProjectUrl string) {
 	// example: https://github.com/moqsien/gvc/archive/refs/heads/main.zip
 	mainZipUrl := githubProjectUrl + "/archive/refs/heads/main.zip"
-	client := resty.New()
-	client.SetTimeout(time.Minute * 3)
-	if resp, err := client.R().SetDoNotParseResponse(true).Head(mainZipUrl); err == nil {
-		dUrl := mainZipUrl
-		if resp.RawResponse.ContentLength <= 0 {
-			dUrl = githubProjectUrl + "/archive/refs/heads/master.zip"
-		}
-		fPath := filepath.Join(that.path, that.findFileName(dUrl))
-		that.fetcher.SetUrl(that.Conf.Github.DownProxy + dUrl)
+	fPath := filepath.Join(that.path, that.findFileName(mainZipUrl))
+	that.fetcher.SetUrl(that.Conf.Github.DownProxy + mainZipUrl)
+	that.fetcher.Timeout = 30 * time.Minute
+	tui.PrintInfo(fmt.Sprintf("[>>>] %s", mainZipUrl))
+	if size := that.fetcher.GetFile(fPath, true); size <= 99 {
+		masterZipUrl := githubProjectUrl + "/archive/refs/heads/master.zip"
+		fPath = filepath.Join(that.path, that.findFileName(masterZipUrl))
+		that.fetcher.SetUrl(that.Conf.Github.DownProxy + masterZipUrl)
 		that.fetcher.Timeout = 30 * time.Minute
-		tui.PrintInfo(fmt.Sprintf("[>>>] %s", dUrl))
 		that.fetcher.GetFile(fPath, true)
-	} else {
-		tui.PrintError(err)
+
 	}
+	tui.PrintSuccess(fPath)
 }
 
 func (that *GhDownloader) getCurrentTag(githubProjectUrl string) (tag string) {
