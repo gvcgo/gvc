@@ -19,6 +19,7 @@ type Typst struct {
 	Conf    *config.GVConfig
 	fetcher *request.Fetcher
 	env     *utils.EnvsHandler
+	checker *SumChecker
 }
 
 func NewTypstVersion() (tv *Typst) {
@@ -28,6 +29,7 @@ func NewTypstVersion() (tv *Typst) {
 		env:     utils.NewEnvsHandler(),
 	}
 	tv.env.SetWinWorkDir(config.GVCWorkDir)
+	tv.checker = NewSumChecker(tv.Conf)
 	return
 }
 
@@ -35,7 +37,7 @@ func (that *Typst) download(force bool) string {
 	selector := pterm.DefaultInteractiveSelect
 	selector.DefaultText = "Choose your download URL"
 	optionList := []string{
-		"From Gitee[Default]",
+		"From Gitlab[Default]",
 		"From Github",
 	}
 	selectedOption, _ := pterm.DefaultInteractiveSelect.WithOptions(optionList).Show()
@@ -47,14 +49,23 @@ func (that *Typst) download(force bool) string {
 	default:
 		vUrls = that.Conf.Typst.GiteeUrls
 	}
-	that.fetcher.Url = vUrls[runtime.GOOS]
+	if runtime.GOOS == utils.Windows {
+		that.fetcher.Url = vUrls[runtime.GOOS]
+	} else {
+		that.fetcher.Url = vUrls[fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)]
+	}
+
 	suffix := utils.GetExt(that.fetcher.Url)
 	if that.fetcher.Url != "" {
 		fpath := filepath.Join(config.TypstFilesDir, fmt.Sprintf("typst%s", suffix))
+		if strings.Contains(that.fetcher.Url, "gitlab.com") && !that.checker.IsUpdated(fpath, that.fetcher.Url) {
+			tui.PrintInfo("Current version is already the latest.")
+			return fpath
+		}
 		if force {
 			os.RemoveAll(fpath)
 		}
-		that.fetcher.SetThreadNum(2)
+		that.fetcher.SetThreadNum(1)
 		if ok, _ := utils.PathIsExist(fpath); !ok || force {
 			if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 				return fpath

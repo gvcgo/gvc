@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 
 	"github.com/mholt/archiver/v3"
 	tui "github.com/moqsien/goutils/pkgs/gtui"
@@ -36,7 +37,7 @@ func (that *Vlang) download(force bool) string {
 	selector := pterm.DefaultInteractiveSelect
 	selector.DefaultText = "Choose your download URL"
 	optionList := []string{
-		"From Gitee[Default]",
+		"From Gitlab[Default]",
 		"From Github",
 	}
 	selectedOption, _ := pterm.DefaultInteractiveSelect.WithOptions(optionList).Show()
@@ -51,7 +52,7 @@ func (that *Vlang) download(force bool) string {
 	that.fetcher.Url = vUrls[runtime.GOOS]
 	if that.fetcher.Url != "" {
 		fpath := filepath.Join(config.VlangFilesDir, "vlang.zip")
-		if !that.checker.IsUpdated(fpath, that.fetcher.Url) {
+		if strings.Contains(that.fetcher.Url, "gitlab.com") && !that.checker.IsUpdated(fpath, that.fetcher.Url) {
 			tui.PrintInfo("Current version is already the latest.")
 			return fpath
 		}
@@ -65,6 +66,8 @@ func (that *Vlang) download(force bool) string {
 			} else {
 				os.RemoveAll(fpath)
 			}
+		} else if ok && !force {
+			return fpath
 		}
 	}
 	return ""

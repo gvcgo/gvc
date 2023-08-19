@@ -31,13 +31,17 @@ func (that *TypstConf) setup() {
 
 func (that *TypstConf) Reset() {
 	that.GiteeUrls = map[string]string{
-		utils.Windows: "https://gitee.com/moqsien/gvc/releases/download/v1/typst-windows.zip",
-		utils.MacOS:   "https://gitee.com/moqsien/gvc/releases/download/v1/typst-darwin.zip",
-		utils.Linux:   "https://gitee.com/moqsien/gvc/releases/download/v1/typst-linux.zip",
+		"windows":      "https://gitlab.com/moqsien/gvc_resources/-/raw/main/typst_x64_windows.zip",
+		"linux_amd64":  "https://gitlab.com/moqsien/gvc_resources/-/raw/main/typst_x64_linux.tar.xz",
+		"linux_arm64":  "https://gitlab.com/moqsien/gvc_resources/-/raw/main/typst_arm_linux.tar.xz",
+		"darwin_amd64": "https://gitlab.com/moqsien/gvc_resources/-/raw/main/typst_x64_macos.tar.xz",
+		"darwin_arm64": "https://gitlab.com/moqsien/gvc_resources/-/raw/main/typst_arm_macos.tar.xz",
 	}
 	that.GithubUrls = map[string]string{
-		utils.Windows: "https://github.com/typst/typst/releases/download/v0.1.0/typst-x86_64-pc-windows-msvc.zip",
-		utils.MacOS:   "https://github.com/typst/typst/releases/download/v0.1.0/typst-x86_64-apple-darwin.tar.gz",
-		utils.Linux:   "https://github.com/typst/typst/releases/download/v0.1.0/typst-x86_64-unknown-linux-gnu.tar.gz",
+		"windows":      "https://github.com/typst/typst/releases/latest/download/typst-x86_64-pc-windows-msvc.zip",
+		"linux_amd64":  "https://github.com/typst/typst/releases/latest/download/typst-x86_64-unknown-linux-musl.tar.xz",
+		"linux_arm64":  "https://github.com/typst/typst/releases/latest/download/typst-aarch64-unknown-linux-musl.tar.xz",
+		"darwin_arm64": "https://github.com/typst/typst/releases/latest/download/typst-aarch64-apple-darwin.tar.xz",
+		"darwin_amd64": "https://github.com/typst/typst/releases/latest/download/typst-x86_64-apple-darwin.tar.xz",
 	}
 }

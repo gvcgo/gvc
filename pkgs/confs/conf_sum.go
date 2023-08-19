@@ -10,5 +10,5 @@ func NewSumConf() (r *SumConf) {
 }
 
 func (that *SumConf) Reset() {
-	that.SumFileUrls = "https://gitlab.com/moqsien/gvc_resources/-/raw/main/files_info.json"
+	that.SumFileUrls = "https://gitlab.com/moqsien/gvc_resources/-/raw/main/files_info.json?ref_type=heads"
 }

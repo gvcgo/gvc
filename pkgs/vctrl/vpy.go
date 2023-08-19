@@ -23,6 +23,7 @@ type PyVenv struct {
 	pyenvPath string
 	env       *utils.EnvsHandler
 	fetcher   *request.Fetcher
+	checker   *SumChecker
 }
 
 func NewPyVenv() (py *PyVenv) {
@@ -33,6 +34,7 @@ func NewPyVenv() (py *PyVenv) {
 	}
 	py.initeDirs()
 	py.env.SetWinWorkDir(config.GVCWorkDir)
+	py.checker = NewSumChecker(py.Conf)
 	return
 }
 
@@ -143,8 +145,12 @@ func (that *PyVenv) getPyenv(force ...bool) {
 		if strings.Contains(that.fetcher.Url, "github.com") {
 			that.fetcher.Url = that.Conf.Github.GetDownUrl(that.fetcher.Url)
 		}
-		that.fetcher.Timeout = 10 * time.Second
+		that.fetcher.Timeout = 20 * time.Minute
 		fPath := filepath.Join(config.PythonToolsPath, "pyenv-master.zip")
+		if strings.Contains(that.fetcher.Url, "gitlab.com") && !that.checker.IsUpdated(fPath, that.fetcher.Url) {
+			tui.PrintInfo("Current version is already the latest.")
+			return
+		}
 		if flag {
 			os.RemoveAll(fPath)
 		}

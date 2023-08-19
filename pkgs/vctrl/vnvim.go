@@ -47,7 +47,7 @@ func (that *NVim) download() (r string) {
 		utils.ClearDir(config.NVimFileDir)
 		that.fetcher.Url = nurl.Url
 		that.fetcher.Timeout = 120 * time.Second
-		that.fetcher.SetThreadNum(2)
+		that.fetcher.SetThreadNum(1)
 		fpath := filepath.Join(config.NVimFileDir, fmt.Sprintf("%s%s", nurl.Name, nurl.Ext))
 		if !that.checker.IsUpdated(fpath, that.fetcher.Url) {
 			tui.PrintInfo("Current version is already the latest.")

@@ -8,8 +8,6 @@ import (
 )
 
 type PyConf struct {
-	WinAmd64       string   `koanf:"win_amd64"`
-	WinArm64       string   `koanf:"win_arm64"`
 	PyenvUnix      string   `koanf:"pyenv_unix"`
 	PyenvReadline  []string `koanf:"pyenv_readline"`
 	PyenvWin       string   `koanf:"pyenv_win"`
@@ -37,14 +35,12 @@ func (that *PyConf) setup() {
 }
 
 func (that *PyConf) Reset() {
-	that.WinAmd64 = "https://gitee.com/moqsien/gvc/releases/download/v1/portable-amd64.zip"
-	that.WinArm64 = "https://gitee.com/moqsien/gvc/releases/download/v1/portable-arm64.zip"
-	that.PyenvWin = "https://gitee.com/moqsien/gvc/releases/download/v1/pyenv-win.zip"
-	that.PyenvWinNeeded = "https://gitee.com/moqsien/gvc/releases/download/v1/pyenv_win_needed.zip"
-	that.PyenvUnix = "https://gitee.com/moqsien/gvc/releases/download/v1/pyenv-unix.zip"
+	that.PyenvWin = "https://gitlab.com/moqsien/gvc_resources/-/raw/main/pyenv_win.zip"
+	that.PyenvWinNeeded = "https://gitlab.com/moqsien/gvc_resources/uploads/45d0ad242f9abb45b5a09b9634d3be73/pyenv_win_needed.zip"
+	that.PyenvUnix = "https://gitlab.com/moqsien/gvc_resources/-/raw/main/pyenv_unix.zip"
 	that.PyenvReadline = []string{
-		"https://gitee.com/moqsien/gvc/releases/download/v1/readline-8.2.tar.gz",
-		"https://gitee.com/moqsien/gvc/releases/download/v1/readline-8.1.tar.gz",
+		"https://gitlab.com/moqsien/gvc_resources/uploads/06845bbd8f73ce5c24e1d4f5761829a1/readline-8.1.tar.gz",
+		"https://gitlab.com/moqsien/gvc_resources/uploads/5ae9516bd13038839b0aa102dada0a14/readline-8.2.tar.gz",
 	}
 	that.PypiProxies = []string{
 		"https://pypi.tuna.tsinghua.edu.cn/simple/",

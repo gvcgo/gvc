@@ -2,6 +2,7 @@ package vctrl
 
 import (
 	"encoding/json"
+	"io"
 	"os"
 	"strings"
 	"time"
@@ -36,8 +37,9 @@ func (that *SumChecker) LoadInfoList() {
 	that.fetcher.SetUrl(that.conf.Sum.SumFileUrls)
 	that.fetcher.Timeout = time.Second * 30
 	if resp := that.fetcher.Get(); resp != nil {
-		if err := json.Unmarshal(resp.Body(), that.InfoList); err != nil {
-			tui.PrintError("Download checksum file failed: ", err)
+		content, _ := io.ReadAll(resp.RawResponse.Body)
+		if err := json.Unmarshal(content, that.InfoList); err != nil {
+			tui.PrintError("Download checksum file failed: ", err, " length: ", len(content))
 			os.Exit(1)
 		}
 	}

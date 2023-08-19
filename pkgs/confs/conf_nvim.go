@@ -15,7 +15,6 @@ type NUrl struct {
 
 type NVimConf struct {
 	Urls        map[string]*NUrl `koanf:"urls"`
-	ChecksumUrl string           `koanf:"checksum_url"`
 	PluginsUrl  string           `koanf:"plugins_url"`
 	GithubProxy string           `koanf:"github_proxy"`
 	path        string
@@ -55,7 +54,6 @@ func (that *NVimConf) Reset() {
 			".zip",
 		},
 	}
-	that.ChecksumUrl = "https://gitee.com/moqsien/gvc/releases/download/v1/nvim-sha256.txt"
-	that.PluginsUrl = "https://gitee.com/moqsien/gvc/releases/download/v1/nvim-plugins.zip"
+	that.PluginsUrl = "https://gitlab.com/moqsien/gvc_resources/uploads/753afef9d38f8f6224d221770d25c9a3/nvim-plugins.zip"
 	that.GithubProxy = "https://ghproxy.com/"
 }
