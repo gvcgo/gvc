@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/mholt/archiver/v3"
 	tui "github.com/moqsien/goutils/pkgs/gtui"
@@ -65,7 +66,8 @@ func (that *Typst) download(force bool) string {
 		if force {
 			os.RemoveAll(fpath)
 		}
-		that.fetcher.SetThreadNum(1)
+		that.fetcher.Timeout = 20 * time.Minute
+		that.fetcher.SetThreadNum(2)
 		if ok, _ := utils.PathIsExist(fpath); !ok || force {
 			if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 				return fpath
