@@ -931,6 +931,18 @@ func (that *Cmder) vlang() {
 	}
 	command.Subcommands = append(command.Subcommands, install)
 
+	installAnalyzer := &cli.Command{
+		Name:    "install-analyzer",
+		Aliases: []string{"insa", "ia"},
+		Usage:   "Install v-analyzer and related extension for vscode.",
+		Action: func(ctx *cli.Context) error {
+			v := vctrl.NewVlang()
+			v.InstallVAnalyzerForVscode()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, installAnalyzer)
+
 	setEnv := &cli.Command{
 		Name:    "setenv",
 		Aliases: []string{"env", "se", "e"},
