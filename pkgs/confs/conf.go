@@ -35,6 +35,7 @@ type GVConfig struct {
 	Chatgpt  *ChatgptConf  `koanf:"chatgpt"`
 	Webdav   *DavConf      `koanf:"dav"`
 	Sum      *SumConf      `koanf:"sum"`
+	Protobuf *ProtobufConf `koanf:"protobuf"`
 	path     string
 	koanfer  *koanfer.JsonKoanfer
 }
@@ -62,6 +63,7 @@ func New() (r *GVConfig) {
 		Chatgpt:  NewGptConf(),
 		Webdav:   NewDavConf(),
 		Sum:      NewSumConf(),
+		Protobuf: NewProtobuf(),
 		path:     GVConfigPath,
 		koanfer:  kfer,
 	}
@@ -127,6 +129,9 @@ func (that *GVConfig) SetDefault() {
 	that.Webdav.Reset()
 	that.Sum = NewSumConf()
 	that.Sum.Reset()
+	that.Protobuf = NewProtobuf()
+	that.Protobuf.Reset()
+
 }
 
 func (that *GVConfig) Reset() {

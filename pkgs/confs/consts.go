@@ -152,6 +152,13 @@ export PATH="%s"
 )
 
 /*
+Protobuf related
+*/
+var (
+	ProtobufDir string = filepath.Join(GoFilesDir, "protobuf_bin")
+)
+
+/*
 Neovim related.
 */
 var (

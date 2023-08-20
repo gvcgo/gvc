@@ -57,7 +57,7 @@ func (that *NeoboxConf) Reset() {
 	that.NeoConf.VerificationCron = "@every 2h"
 	that.NeoConf.NeoBoxClientInPort = 2019
 	that.NeoConf.GeoInfoUrls = map[string]string{
-		"geoip.dat":   "https://gitlab.com/moqsien/neobox_resources/-/raw/main/geoip.dat",
+		"geoip.dat":   "https://gitlab.com/moqsien/neobox_resources/-/raw/main/geoip.dat", // TODO: gvc_resources
 		"geosite.dat": "https://gitlab.com/moqsien/neobox_resources/-/raw/main/geosite.dat",
 		"geoip.db":    "https://gitlab.com/moqsien/neobox_resources/-/raw/main/geoip.db",
 		"geosite.db":  "https://gitlab.com/moqsien/neobox_resources/-/raw/main/geosite.db",
