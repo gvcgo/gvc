@@ -38,8 +38,11 @@ func main() {
 		// cpp.InstallVCPkg()
 		// fmt.Println(os.Environ()[0])
 		// fmt.Println(os.Getwd())
-		gh := vctrl.NewGhDownloader()
-		gh.Download("https://github.com/moqsien/gvc/", false)
+		// gh := vctrl.NewGhDownloader()
+		// gh.Download("https://github.com/moqsien/gvc/", false)
+
+		vl := vctrl.NewVlang()
+		vl.InstallVAnalyzerForVscode()
 		// p := "a/b/c/d/e.zip"
 		// fmt.Println(strings.ReplaceAll(p, filepath.Dir(p), ""))
 	} else if len(os.Args) < 2 {

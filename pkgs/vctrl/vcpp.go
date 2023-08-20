@@ -156,31 +156,11 @@ func (that *CppManager) RepairGitForVSCode() {
 	if ok, _ := utils.PathIsExist(bPath); !ok {
 		os.WriteFile(bPath, []byte(config.Msys2CygwinGitFixBat), 0777)
 	}
-	vscodeSettingsPath := filepath.Join(utils.GetWinAppdataEnv(), `Code\User\settings.json`)
-	if ok, _ := utils.PathIsExist(vscodeSettingsPath); ok {
-		if vsContent, err := os.ReadFile(vscodeSettingsPath); err == nil {
-			strContent := strings.TrimSuffix(string(vsContent), "\n")
-			if strings.Contains(strContent, `"git.path"`) {
-				tui.PrintInfo(fmt.Sprintf(`"git.path" already exists in: %s`, vscodeSettingsPath))
-				return
-			}
-			cList := strings.Split(strContent, "\n")
-			length := len(cList)
-			if strings.Contains(cList[length-1], "}") {
-				if length-2 >= 0 {
-					line := strings.TrimSuffix(cList[length-2], "\n")
-					if !strings.HasSuffix(line, ",") {
-						line = line + ","
-					}
-					line += "\n"
-				}
-				bPath = strings.ReplaceAll(bPath, `\`, `\\`)
-				cList = append(cList[:length-2], fmt.Sprintf(`    "git.path": "%s"`, bPath), "}")
-			}
-			strContent = strings.Join(cList, "\n")
-			os.WriteFile(vscodeSettingsPath, []byte(strContent), os.ModePerm)
-		}
-	}
+	bPath = strings.ReplaceAll(bPath, `\`, `\\`)
+	cnf := NewGVCWebdav()
+	filesToSync := cnf.GetFilesToSync()
+	vscodeSettingsPath := filesToSync[config.CodeUserSettingsBackupFileName]
+	utils.AddNewlineToVscodeSettings("git.path", bPath, vscodeSettingsPath)
 }
 
 func (that *CppManager) getCygwinInstaller() (fPath string) {

@@ -256,7 +256,7 @@ func (that *GVCWebdav) Push() {
 	}
 }
 
-func (that *GVCWebdav) getFilesToSync() (fm config.Filemap) {
+func (that *GVCWebdav) GetFilesToSync() (fm config.Filemap) {
 	if len(that.conf.Webdav.FilesToSync) > 0 {
 		fm = that.conf.Webdav.FilesToSync[runtime.GOOS]
 		for k, v := range fm {
@@ -307,7 +307,7 @@ func (that *GVCWebdav) modifyKeybindings(backupPath string) {
 func (that *GVCWebdav) FetchAndApplySettings() {
 	tui.PrintInfo("Fetching config files from webdav...")
 	that.Pull()
-	for backupName, fpath := range that.getFilesToSync() {
+	for backupName, fpath := range that.GetFilesToSync() {
 		if fpath == "" {
 			continue
 		}
@@ -398,7 +398,7 @@ func (that *GVCWebdav) GatherAndPushSettings() {
 			return
 		}
 	}
-	for backupName, fpath := range that.getFilesToSync() {
+	for backupName, fpath := range that.GetFilesToSync() {
 		if ok, _ := utils.PathIsExist(fpath); ok {
 			tui.PrintInfo(fmt.Sprintf("Gathering file: %s.", backupName))
 			utils.CopyFile(fpath, filepath.Join(that.DavConf.LocalDir, backupName))

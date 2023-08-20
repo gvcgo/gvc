@@ -11,7 +11,7 @@ require (
 	github.com/knadh/koanf v1.5.0
 	github.com/mholt/archiver/v3 v3.5.1
 	github.com/moqsien/asciinema v0.3.0
-	github.com/moqsien/goutils v0.1.9
+	github.com/moqsien/goutils v0.2.5
 	github.com/moqsien/hackbrowser v1.0.3
 	github.com/moqsien/neobox v0.2.9
 	github.com/pterm/pterm v0.12.62
@@ -35,6 +35,9 @@ require (
 	github.com/antchfx/htmlquery v1.3.0 // indirect
 	github.com/antchfx/xmlquery v1.3.15 // indirect
 	github.com/antchfx/xpath v1.2.4 // indirect
+	github.com/bodgit/plumbing v1.3.0 // indirect
+	github.com/bodgit/sevenzip v1.4.2 // indirect
+	github.com/bodgit/windows v1.0.1 // indirect
 	github.com/bytedance/sonic v1.8.8 // indirect
 	github.com/caddyserver/certmagic v0.17.2 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
@@ -90,6 +93,8 @@ require (
 	github.com/gookit/slog v0.4.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/grokify/html-strip-tags-go v0.0.1 // indirect
+	github.com/hashicorp/errwrap v1.1.0 // indirect
+	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/hashicorp/yamux v0.1.1 // indirect
 	github.com/insomniacslk/dhcp v0.0.0-20230516061539-49801966e6cb // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
@@ -97,6 +102,7 @@ require (
 	github.com/josharian/native v1.1.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
+	github.com/kdomanski/iso9660 v0.3.5 // indirect
 	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/klauspost/compress v1.16.5 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.4 // indirect
@@ -119,7 +125,8 @@ require (
 	github.com/moqsien/goktrl v1.3.7 // indirect
 	github.com/moqsien/processes v1.0.3 // indirect
 	github.com/moqsien/wgcf v0.0.0-20230611033011-c542434e2ad6 // indirect
-	github.com/nwaples/rardecode v1.1.0 // indirect
+	github.com/moqsien/xtractr v0.0.1 // indirect
+	github.com/nwaples/rardecode v1.1.3 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/olivere/ndjson v0.1.3 // indirect
 	github.com/onsi/ginkgo/v2 v2.9.4 // indirect
@@ -128,7 +135,7 @@ require (
 	github.com/otiai10/copy v1.9.0 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.7 // indirect
-	github.com/pierrec/lz4/v4 v4.1.14 // indirect
+	github.com/pierrec/lz4/v4 v4.1.17 // indirect
 	github.com/pires/go-proxyproto v0.7.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/ppacher/go-dbus-keyring v1.0.1 // indirect
@@ -170,7 +177,7 @@ require (
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/u-root/uio v0.0.0-20230220225925-ffce2a382923 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
-	github.com/ulikunitz/xz v0.5.9 // indirect
+	github.com/ulikunitz/xz v0.5.11 // indirect
 	github.com/v2fly/ss-bloomring v0.0.0-20210312155135-28617310f63e // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/vishvananda/netns v0.0.0-20211101163701-50045581ed74 // indirect
@@ -188,6 +195,7 @@ require (
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
 	go.uber.org/zap v1.24.0 // indirect
+	go4.org v0.0.0-20230225012048-214862532bf5 // indirect
 	go4.org/netipx v0.0.0-20230303233057-f1b76eb4bb35 // indirect
 	golang.org/x/arch v0.3.0 // indirect
 	golang.org/x/crypto v0.9.0 // indirect

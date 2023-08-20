@@ -8,9 +8,11 @@ import (
 )
 
 type VlangConf struct {
-	VlangGiteeUrls map[string]string `koanf:"vlang_gitee_url"`
-	VlangUrls      map[string]string `koanf:"vlang_url"`
-	path           string
+	VlangGitlabUrls    map[string]string `koanf:"vlang_gitlab_url"`
+	VlangUrls          map[string]string `koanf:"vlang_url"`
+	AnalyzerUrls       map[string]string `koanf:"analyzer_url"`
+	AnalyzerGitlabUrls map[string]string `koanf:"analyzer_gitlab_url"`
+	path               string
 }
 
 func NewVlangConf() (r *VlangConf) {
@@ -30,7 +32,7 @@ func (that *VlangConf) setup() {
 }
 
 func (that *VlangConf) Reset() {
-	that.VlangGiteeUrls = map[string]string{
+	that.VlangGitlabUrls = map[string]string{
 		utils.MacOS:   "https://gitlab.com/moqsien/gvc_resources/-/raw/main/vlang_macos.zip",
 		utils.Linux:   "https://gitlab.com/moqsien/gvc_resources/-/raw/main/vlang_linux.zip",
 		utils.Windows: "https://gitlab.com/moqsien/gvc_resources/-/raw/main/vlang_windows.zip",
@@ -39,5 +41,17 @@ func (that *VlangConf) Reset() {
 		utils.MacOS:   "https://github.com/vlang/v/releases/latest/download/v_macos.zip",
 		utils.Linux:   "https://github.com/vlang/v/releases/latest/download/v_linux.zip",
 		utils.Windows: "https://github.com/vlang/v/releases/latest/download/v_windows.zip",
+	}
+	that.AnalyzerUrls = map[string]string{
+		utils.Windows:  "https://github.com/v-analyzer/v-analyzer/releases/latest/download/v-analyzer-windows-x86_64.zip",
+		utils.Linux:    "https://github.com/v-analyzer/v-analyzer/releases/latest/download/v-analyzer-linux-x86_64.zip",
+		"darwin_amd64": "https://github.com/v-analyzer/v-analyzer/releases/latest/download/v-analyzer-darwin-x86_64.zip",
+		"darwin_arm64": "https://github.com/v-analyzer/v-analyzer/releases/latest/download/v-analyzer-darwin-arm64.zip",
+	}
+	that.AnalyzerGitlabUrls = map[string]string{
+		utils.Windows:  "https://gitlab.com/moqsien/gvc_resources/-/raw/main/v_analyzer_windows_x86_64.zip",
+		utils.Linux:    "https://gitlab.com/moqsien/gvc_resources/-/raw/main/v_analyzer_linux_x86_64.zip",
+		"darwin_amd64": "https://gitlab.com/moqsien/gvc_resources/-/raw/main/v_analyzer_darwin_x86_64.zip",
+		"darwin_arm64": "https://gitlab.com/moqsien/gvc_resources/-/raw/main/v_analyzer_darwin_arm64.zip",
 	}
 }
