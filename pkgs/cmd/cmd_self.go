@@ -1,8 +1,18 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/moqsien/gvc/pkgs/vctrl"
+	"github.com/pterm/pterm"
+	"github.com/pterm/pterm/putils"
 	"github.com/urfave/cli/v2"
+)
+
+var (
+	GitHash string
+	GitTime string
+	GitTag  string
 )
 
 func (that *Cmder) showinfo() {
@@ -25,8 +35,27 @@ func (that *Cmder) version() {
 		Aliases: []string{"ver", "vsi"},
 		Usage:   "Show gvc version info.",
 		Action: func(ctx *cli.Context) error {
-			v := vctrl.NewSelf()
-			v.ShowVersion()
+			// v := vctrl.NewSelf()
+			// v.ShowVersion()
+			name, _ := pterm.DefaultBigText.WithLetters(
+				putils.LettersFromStringWithStyle("G", pterm.FgCyan.ToStyle()),
+				putils.LettersFromStringWithStyle("VC", pterm.FgLightMagenta.ToStyle()),
+			).Srender()
+
+			pterm.Println(name)
+			str := pterm.DefaultBox.
+				WithRightPadding(2).
+				WithLeftPadding(2).
+				WithTopPadding(2).
+				WithBottomPadding(2).
+				Sprintf(
+					"%s\n%s\n%s\n%s",
+					pterm.LightCyan("   Version:     ")+pterm.LightYellow(fmt.Sprintf("%s(%s)", GitTag, GitHash)),
+					pterm.LightCyan("   UpdateAt:    ")+pterm.LightYellow(GitTime),
+					pterm.LightCyan("   Homepage:    ")+pterm.LightYellow("https://github.com/moqsien/gvc"),
+					pterm.LightCyan("   Email:       ")+pterm.LightYellow("moqsien@foxmail.com"),
+				)
+			pterm.Println(str)
 			return nil
 		},
 	}
