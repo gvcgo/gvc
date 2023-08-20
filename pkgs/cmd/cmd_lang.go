@@ -956,3 +956,45 @@ func (that *Cmder) vlang() {
 	command.Subcommands = append(command.Subcommands, setEnv)
 	that.Commands = append(that.Commands, command)
 }
+
+func (that *Cmder) vprotobuf() {
+	command := &cli.Command{
+		Name:        "proto",
+		Aliases:     []string{"protobuf", "protoc", "pt"},
+		Usage:       "Protoc installation.",
+		Subcommands: []*cli.Command{},
+	}
+	var force bool
+	install := &cli.Command{
+		Name:    "install",
+		Aliases: []string{"ins", "i"},
+		Usage:   "Install protoc.",
+		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name:        "force",
+				Aliases:     []string{"f"},
+				Usage:       "Force to replace old version.",
+				Destination: &force,
+			},
+		},
+		Action: func(ctx *cli.Context) error {
+			v := vctrl.NewProtobuffer()
+			v.Install(force)
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, install)
+
+	installGoPlugin := &cli.Command{
+		Name:    "install-go-plugin",
+		Aliases: []string{"igo", "ig"},
+		Usage:   "Install protoc-gen-go.",
+		Action: func(ctx *cli.Context) error {
+			v := vctrl.NewProtobuffer()
+			v.InstallGoProtobufPlugin()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, installGoPlugin)
+	that.Commands = append(that.Commands, command)
+}

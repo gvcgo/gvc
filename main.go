@@ -41,8 +41,12 @@ func main() {
 		// gh := vctrl.NewGhDownloader()
 		// gh.Download("https://github.com/moqsien/gvc/", false)
 
-		vl := vctrl.NewVlang()
-		vl.InstallVAnalyzerForVscode()
+		// vl := vctrl.NewVlang()
+		// vl.InstallVAnalyzerForVscode()
+
+		vp := vctrl.NewProtobuffer()
+		// vp.Install(true)
+		vp.InstallGoProtobufPlugin()
 		// p := "a/b/c/d/e.zip"
 		// fmt.Println(strings.ReplaceAll(p, filepath.Dir(p), ""))
 	} else if len(os.Args) < 2 {

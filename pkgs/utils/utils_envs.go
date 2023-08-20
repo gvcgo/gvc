@@ -44,6 +44,7 @@ const (
 	SUB_JULIA   = "julia"
 	SUB_TYPST   = "typst"
 	SUB_VCPKG   = "vcpkg"
+	SUB_PROTOC  = "protoc"
 )
 
 /*
@@ -66,6 +67,11 @@ export GOPATH="%s"
 export GOBIN="%s"
 export GOPROXY="%s"
 export PATH="%s"`
+
+/*
+Protobuf Envs
+*/
+var ProtoEnv string = `export PATH="%s:$PATH"`
 
 /*
 Java Envs

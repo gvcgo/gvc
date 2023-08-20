@@ -29,6 +29,7 @@ func (c *Cmder) RunApp() {
 
 func (that *Cmder) initiate() {
 	that.vgo()
+	that.vprotobuf()
 	that.vpython()
 	that.vjava()
 	that.vmaven()
