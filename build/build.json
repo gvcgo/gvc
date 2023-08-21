@@ -8,6 +8,8 @@
         "windows/arm64"
     ],
     "build_args": [
+        "-ldflags",
+        "-X 'main.GitTag=$(git describe --abbrev=0 --tags)' -X 'main.GitHash=$(git show -s --format=%H)' -X 'main.GitTime=$(git show -s --format=%cd)' -s -w",
         "-tags",
         "with_wireguard with_shadowsocksr with_utls with_gvisor"
     ],

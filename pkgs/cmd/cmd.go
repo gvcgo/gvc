@@ -8,6 +8,9 @@ import (
 
 type Cmder struct {
 	*cli.App
+	gitTag  string
+	gitHash string
+	gitTime string
 }
 
 func New() *Cmder {

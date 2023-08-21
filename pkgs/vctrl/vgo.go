@@ -8,6 +8,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"strconv"
 	"strings"
@@ -597,7 +598,10 @@ func (that *GoVersion) build(buildArgs []string, buildBaseDir, archOS string, to
 		}
 		os.Setenv("GOOS", pOs)
 		os.Setenv("GOARCH", pArch)
-		cmdArgs := []string{"go", "build", "-ldflags", `-s -w`}
+		cmdArgs := []string{"go", "build"}
+		if !strings.Contains(strings.Join(buildArgs, " "), "-ldflags") {
+			cmdArgs = append(cmdArgs, "-ldflags", `-s -w`)
+		}
 		bArgs := that.getBuildArgs(buildArgs, binaryStoreDir)
 		cmdArgs = append(cmdArgs, bArgs...)
 
@@ -626,6 +630,28 @@ func (that *GoVersion) build(buildArgs []string, buildBaseDir, archOS string, to
 	}
 }
 
+func (that *GoVersion) handleBuildArgs(buildArgs ...string) (args []string) {
+	var reg = regexp.MustCompile(`(\$\(.+?\))`)
+	for _, a := range buildArgs {
+		toExpand := reg.FindAll([]byte(a), -1)
+		for _, b := range toExpand {
+			if len(b) <= 0 {
+				continue
+			}
+			cmd := strings.TrimLeft(strings.TrimRight(string(b), ")"), "$(")
+			if output, err := utils.ExecuteSysCommand(true, cmd); err == nil {
+				result := strings.TrimRight(output.String(), "\n")
+				a = strings.Replace(a, string(b), result, 1)
+			} else {
+				tui.PrintError(err)
+				os.Exit(1)
+			}
+		}
+		args = append(args, a)
+	}
+	return
+}
+
 func (that *GoVersion) Build(args ...string) {
 	goRoot := os.Getenv("GOROOT")
 	if ok, _ := utils.PathIsExist(goRoot); !ok {
@@ -649,15 +675,21 @@ func (that *GoVersion) Build(args ...string) {
 
 	buildConfig := filepath.Join(buildDir, "build.json")
 	kfer, _ := koanfer.NewKoanfer(buildConfig)
-	bConf := &GoBuildArchOS{}
-	if len(args) > 0 {
-		bConf.BuildArgs = args
+	bConf := &GoBuildArchOS{BuildArgs: []string{}}
+	if len(args) > 0 && len(bConf.BuildArgs) == 0 {
+		for idx, v := range args {
+			value := v
+			if value == "-ldflags" && len(args) > idx+1 {
+				args[idx+1] = args[idx+1] + " -s -w"
+			}
+			if strings.Contains(value, "#(") {
+				value = strings.ReplaceAll(value, "#(", "$(")
+			}
+			bConf.BuildArgs = append(bConf.BuildArgs, value)
+		}
 	}
 	if ok, _ := utils.PathIsExist(buildConfig); ok {
 		kfer.Load(bConf)
-		if len(args) > 0 && len(bConf.BuildArgs) == 0 {
-			bConf.BuildArgs = args
-		}
 		kfer.Save(bConf)
 	} else {
 		selector := pterm.DefaultInteractiveSelect
@@ -695,7 +727,8 @@ func (that *GoVersion) Build(args ...string) {
 		if _, ok := alreadyBuilt[archOS]; ok {
 			continue
 		}
-		that.build(bConf.BuildArgs, buildDir, archOS, bConf.Compress)
+		buildArgs := that.handleBuildArgs(bConf.BuildArgs...)
+		that.build(buildArgs, buildDir, archOS, bConf.Compress)
 		alreadyBuilt[archOS] = struct{}{}
 	}
 }

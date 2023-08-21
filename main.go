@@ -13,8 +13,15 @@ import (
 	"github.com/moqsien/gvc/pkgs/vctrl"
 )
 
+var (
+	GitHash string
+	GitTime string
+	GitTag  string
+)
+
 func main() {
 	c := cmd.New()
+	c.SetVersionInfo(GitTag, GitHash, GitTime)
 	ePath, _ := os.Executable()
 	if !strings.HasSuffix(ePath, "gvc") && !strings.HasSuffix(ePath, "gvc.exe") && !strings.HasSuffix(ePath, "g") && !strings.HasSuffix(ePath, "g.exe") {
 		/*

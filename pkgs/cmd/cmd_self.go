@@ -9,12 +9,6 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-var (
-	GitHash string
-	GitTime string
-	GitTag  string
-)
-
 func (that *Cmder) showinfo() {
 	command := &cli.Command{
 		Name:    "show",
@@ -27,6 +21,12 @@ func (that *Cmder) showinfo() {
 		},
 	}
 	that.Commands = append(that.Commands, command)
+}
+
+func (that *Cmder) SetVersionInfo(gitTag, gitHash, gitTime string) {
+	that.gitHash = gitHash
+	that.gitTag = gitTag
+	that.gitTime = gitTime
 }
 
 func (that *Cmder) version() {
@@ -50,8 +50,8 @@ func (that *Cmder) version() {
 				WithBottomPadding(2).
 				Sprintf(
 					"%s\n%s\n%s\n%s",
-					pterm.LightCyan("   Version:     ")+pterm.LightYellow(fmt.Sprintf("%s(%s)", GitTag, GitHash)),
-					pterm.LightCyan("   UpdateAt:    ")+pterm.LightYellow(GitTime),
+					pterm.LightCyan("   Version:     ")+pterm.LightYellow(fmt.Sprintf("%s(%s)", that.gitTag, that.gitHash)),
+					pterm.LightCyan("   UpdateAt:    ")+pterm.LightYellow(that.gitTime),
 					pterm.LightCyan("   Homepage:    ")+pterm.LightYellow("https://github.com/moqsien/gvc"),
 					pterm.LightCyan("   Email:       ")+pterm.LightYellow("moqsien@foxmail.com"),
 				)
