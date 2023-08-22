@@ -57,6 +57,7 @@ func (that *Cmder) initiate() {
 
 	that.vconf()
 	that.version()
+	that.checkUpdate()
 	that.showinfo()
 	that.uninstall()
 }

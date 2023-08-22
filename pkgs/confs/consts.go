@@ -21,6 +21,7 @@ var (
 	GVCWebdavConfigPath = filepath.Join(GVCWorkDir, "webdav.json")
 	GVCBackupDir        = filepath.Join(GVCWorkDir, "backup")
 	GVConfigPath        = filepath.Join(GVCBackupDir, "gvc-config.json")
+	GVCBinTempDir       = filepath.Join(GVCWorkDir, "bin_temp")
 )
 
 /*

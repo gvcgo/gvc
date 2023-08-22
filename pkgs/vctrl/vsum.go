@@ -21,14 +21,19 @@ type SumInfo struct {
 	UpdateAt string `koanf,json:"UpdatAt"`
 }
 
+type Info struct {
+	InfoList         *map[string]*SumInfo `koanf,json:"InfoList"`
+	GVCLatestVersion string               `koanf,json:"GVCLatestVersion"`
+}
+
 type SumChecker struct {
-	InfoList *map[string]*SumInfo `koanf,json:"InfoList"`
-	conf     *config.GVConfig
-	fetcher  *request.Fetcher
+	Info    *Info
+	conf    *config.GVConfig
+	fetcher *request.Fetcher
 }
 
 func NewSumChecker(cnf *config.GVConfig) (s *SumChecker) {
-	s = &SumChecker{InfoList: &map[string]*SumInfo{}, conf: cnf}
+	s = &SumChecker{Info: &Info{InfoList: &map[string]*SumInfo{}}, conf: cnf}
 	s.fetcher = request.NewFetcher()
 	return
 }
@@ -38,11 +43,16 @@ func (that *SumChecker) LoadInfoList() {
 	that.fetcher.Timeout = time.Second * 30
 	if resp := that.fetcher.Get(); resp != nil {
 		content, _ := io.ReadAll(resp.RawResponse.Body)
-		if err := json.Unmarshal(content, that.InfoList); err != nil {
+		if err := json.Unmarshal(content, that.Info); err != nil {
 			tui.PrintError("Download checksum file failed: ", err, " length: ", len(content))
 			os.Exit(1)
 		}
 	}
+}
+
+func (that *SumChecker) GetLatestGVCVersion() string {
+	that.LoadInfoList()
+	return that.Info.GVCLatestVersion
 }
 
 func (that *SumChecker) parseRemoteFilename(dUrl string) string {
@@ -56,7 +66,7 @@ func (that *SumChecker) IsUpdated(fPath, dUrl string) bool {
 	}
 	rfName := that.parseRemoteFilename(dUrl)
 	that.LoadInfoList()
-	infoList := *that.InfoList
+	infoList := *(that.Info.InfoList)
 	if info, ok := infoList[rfName]; !ok {
 		return true
 	} else {

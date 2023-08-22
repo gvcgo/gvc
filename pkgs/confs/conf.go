@@ -14,6 +14,7 @@ func init() {
 }
 
 type GVConfig struct {
+	GVC      *GvcConf      `koanf:"gvc"`
 	Hosts    *HostsConf    `koanf:"hosts"`
 	Go       *GoConf       `koanf:"go"`
 	Java     *JavaConf     `koanf:"java"`
@@ -43,6 +44,7 @@ type GVConfig struct {
 func New() (r *GVConfig) {
 	kfer, _ := koanfer.NewKoanfer(GVConfigPath)
 	r = &GVConfig{
+		GVC:      NewGvcConf(),
 		Hosts:    NewHostsConf(),
 		Go:       NewGoConf(),
 		Java:     NewJavaConf(),
@@ -87,6 +89,8 @@ func (that *GVConfig) initiate() {
 }
 
 func (that *GVConfig) SetDefault() {
+	that.GVC = NewGvcConf()
+	that.GVC.Reset()
 	that.Hosts = NewHostsConf()
 	that.Hosts.Reset()
 	that.Go = NewGoConf()
@@ -131,7 +135,6 @@ func (that *GVConfig) SetDefault() {
 	that.Sum.Reset()
 	that.Protobuf = NewProtobuf()
 	that.Protobuf.Reset()
-
 }
 
 func (that *GVConfig) Reset() {

@@ -62,6 +62,20 @@ func (that *Cmder) version() {
 	that.Commands = append(that.Commands, command)
 }
 
+func (that *Cmder) checkUpdate() {
+	command := &cli.Command{
+		Name:    "check",
+		Aliases: []string{"checklatest", "checkupdate"},
+		Usage:   "Check and download the latest version of gvc.",
+		Action: func(ctx *cli.Context) error {
+			self := vctrl.NewSelf()
+			self.CheckLatestVersion(that.gitTag)
+			return nil
+		},
+	}
+	that.Commands = append(that.Commands, command)
+}
+
 func (that *Cmder) uninstall() {
 	command := &cli.Command{
 		Name:    "uninstall",

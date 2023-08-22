@@ -6,8 +6,10 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"time"
 
 	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/pterm/pterm"
@@ -15,8 +17,9 @@ import (
 )
 
 type Self struct {
-	Conf *config.GVConfig
-	env  *utils.EnvsHandler
+	Conf    *config.GVConfig
+	env     *utils.EnvsHandler
+	checker *SumChecker
 }
 
 func NewSelf() (s *Self) {
@@ -24,6 +27,7 @@ func NewSelf() (s *Self) {
 		Conf: config.New(),
 		env:  utils.NewEnvsHandler(),
 	}
+	s.checker = NewSumChecker(s.Conf)
 	s.env.SetWinWorkDir(config.GVCWorkDir)
 	return
 }
@@ -134,4 +138,33 @@ func (that *Self) ShowVersion() {
 			pterm.LightCyan("   Email:       ")+pterm.LightYellow("moqsien@foxmail.com"),
 		)
 	pterm.Println(str)
+}
+
+func (that *Self) CheckLatestVersion(currentVersion string) {
+	latest := that.checker.GetLatestGVCVersion()
+	if currentVersion == latest {
+		tui.PrintInfo(fmt.Sprintf("Current version: %s is already the latest.", currentVersion))
+		return
+	}
+	confirmPrinter := pterm.DefaultInteractiveConfirm
+	confirmPrinter.DefaultText = "To download the latest version for GVC or not. "
+	confirmPrinter.TextStyle = &pterm.Style{pterm.FgRed}
+	if result, _ := confirmPrinter.Show(); result {
+		that.download()
+	}
+}
+
+func (that *Self) download() {
+	dUrl := that.Conf.GVC.GitlabUrls[fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)]
+	if dUrl != "" {
+		fPath := filepath.Join(config.GVCBinTempDir, "gvc.zip")
+		fetcher := request.NewFetcher()
+		fetcher.SetUrl(dUrl)
+		fetcher.Timeout = 20 * time.Minute
+		if err := fetcher.DownloadAndDecompress(fPath, config.GVCBinTempDir, true); err != nil {
+			tui.PrintError(err)
+		} else {
+			tui.PrintSuccess(config.GVCBinTempDir)
+		}
+	}
 }
