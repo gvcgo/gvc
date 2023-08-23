@@ -60,7 +60,7 @@ func (that *Self) setShortcut() {
 func (that *Self) Install() {
 	utils.MakeDirs(config.GVCWorkDir)
 	ePath, _ := os.Executable()
-	if strings.Contains(ePath, filepath.Join(utils.GetHomeDir(), ".gvc")) {
+	if strings.Contains(ePath, filepath.Join(utils.GetHomeDir(), ".gvc")) && !strings.Contains(ePath, "bin_temp") {
 		// call the installed exe is not allowed.
 		return
 	}
