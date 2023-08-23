@@ -51,9 +51,9 @@ func main() {
 		// vl := vctrl.NewVlang()
 		// vl.InstallVAnalyzerForVscode()
 
-		vp := vctrl.NewProtobuffer()
+		vp := vctrl.NewGSudo()
 		// vp.Install(true)
-		vp.InstallGoProtobufPlugin()
+		vp.Install(true)
 		// p := "a/b/c/d/e.zip"
 		// fmt.Println(strings.ReplaceAll(p, filepath.Dir(p), ""))
 	} else if len(os.Args) < 2 {

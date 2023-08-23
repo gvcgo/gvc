@@ -37,6 +37,7 @@ type GVConfig struct {
 	Webdav   *DavConf      `koanf:"dav"`
 	Sum      *SumConf      `koanf:"sum"`
 	Protobuf *ProtobufConf `koanf:"protobuf"`
+	GSudo    *GsudoConf    `koanf:"gsudo"`
 	path     string
 	koanfer  *koanfer.JsonKoanfer
 }
@@ -66,6 +67,7 @@ func New() (r *GVConfig) {
 		Webdav:   NewDavConf(),
 		Sum:      NewSumConf(),
 		Protobuf: NewProtobuf(),
+		GSudo:    NewGsudoConf(),
 		path:     GVConfigPath,
 		koanfer:  kfer,
 	}
@@ -135,6 +137,8 @@ func (that *GVConfig) SetDefault() {
 	that.Sum.Reset()
 	that.Protobuf = NewProtobuf()
 	that.Protobuf.Reset()
+	that.GSudo = NewGsudoConf()
+	that.GSudo.Reset()
 }
 
 func (that *GVConfig) Reset() {

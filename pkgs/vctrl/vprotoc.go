@@ -3,12 +3,10 @@ package vctrl
 import (
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"runtime"
 	"time"
 
-	"github.com/gogf/gf/os/genv"
 	tui "github.com/moqsien/goutils/pkgs/gtui"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
@@ -80,16 +78,12 @@ func (that *VProtoBuffer) CheckAndInitEnv(protobufDir string) {
 }
 
 func (that *VProtoBuffer) InstallGoProtobufPlugin() {
-	// go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-	// https://github.com/protocolbuffers/protobuf-go/tree/master/cmd/protoc-gen-go
-	cmd := exec.Command("go", "install", "google.golang.org/protobuf/cmd/protoc-gen-go@latest")
-	cmd.Env = genv.All()
-	cmd.Stderr = os.Stderr
-	cmd.Stdout = os.Stdout
-	cmd.Stdin = os.Stdin
-	if err := cmd.Run(); err != nil {
+	if _, err := utils.ExecuteSysCommand(false, "go", "install", that.Conf.Protobuf.ProtoGenGoUrl); err != nil {
 		tui.PrintError(err)
-	} else {
-		tui.PrintSuccess(os.Getenv("GOPATH"))
+	}
+
+	//
+	if _, err := utils.ExecuteSysCommand(false, "go", "install", that.Conf.Protobuf.ProtoGenGRPCUrl); err != nil {
+		tui.PrintError(err)
 	}
 }

@@ -24,6 +24,13 @@ import (
 	tui "github.com/moqsien/goutils/pkgs/gtui"
 )
 
+func WinIsAdmin() bool {
+	if _, err := os.Open("C:\\Program Files\\WindowsApps"); err != nil {
+		return false
+	}
+	return true
+}
+
 func VerifyUrls(rawUrl string) (r bool) {
 	r = true
 	_, err := url.ParseRequestURI(rawUrl)

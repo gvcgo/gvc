@@ -211,6 +211,21 @@ var (
 )
 
 func (that *Hosts) WinRunAsAdmin() {
+	gs := NewGSudo()
+	gsudoPath := gs.GetBinPath(filepath.Join(config.GsudoFilePath, "gsudo"))
+	if ok, _ := utils.PathIsExist(gsudoPath); !ok {
+		that.winRunAsAdmin()
+	} else {
+		if !utils.WinIsAdmin() {
+			args := append([]string{"gsudo"}, os.Args...)
+			utils.ExecuteSysCommand(false, args...)
+		} else {
+			that.Run()
+		}
+	}
+}
+
+func (that *Hosts) winRunAsAdmin() {
 	if ok, _ := utils.PathIsExist(HostsFetchBatPath); !ok {
 		exePath, _ := os.Executable()
 		content := fmt.Sprintf("%s %s %s --%s", exePath, HostsCmd, HostsFileFetchCmd, HostsFlagName)

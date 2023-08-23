@@ -137,6 +137,27 @@ func (that *Cmder) vhomebrew() {
 	that.Commands = append(that.Commands, command)
 }
 
+func (that *Cmder) vgsudo() {
+	command := &cli.Command{
+		Name:        "gsudo",
+		Aliases:     []string{"winsudo", "gs", "ws"},
+		Usage:       "Gsudo for windows.",
+		Subcommands: []*cli.Command{},
+	}
+	install := &cli.Command{
+		Name:    "install",
+		Aliases: []string{"ins", "i"},
+		Usage:   "Install gsudo.",
+		Action: func(ctx *cli.Context) error {
+			gs := vctrl.NewGSudo()
+			gs.Install(true)
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, install)
+	that.Commands = append(that.Commands, command)
+}
+
 func (that *Cmder) vbrowser() {
 	command := &cli.Command{
 		Name:        "browser",

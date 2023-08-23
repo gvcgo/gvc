@@ -32,6 +32,11 @@ const (
 	HostFilePathForWin = `C:\Windows\System32\drivers\etc\hosts`
 )
 
+/*
+windows gsudo
+*/
+var GsudoFilePath = filepath.Join(GVCWorkDir, "gsudo_files")
+
 var TempHostsFilePath = filepath.Join(GVCWorkDir, "/temp_hosts.txt")
 
 func GetHostsFilePath() (r string) {

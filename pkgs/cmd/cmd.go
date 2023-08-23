@@ -50,6 +50,7 @@ func (that *Cmder) initiate() {
 	that.vneobox()
 	that.vbrowser()
 	that.vhomebrew()
+	that.vgsudo()
 	that.vhost()
 	that.vgithub()
 	that.vcloc()
