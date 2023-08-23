@@ -30,11 +30,11 @@ func (that *GvcConf) setup() {
 
 func (that *GvcConf) Reset() {
 	that.GitlabUrls = map[string]string{
-		"windows_amd64": "https://gitlab.com/moqsien/gvc_resources/-/blob/main/gvc_windows-amd64.zip",
-		"windows_arm64": "https://gitlab.com/moqsien/gvc_resources/-/blob/main/gvc_windows-arm64.zip",
-		"linux_amd64":   "https://gitlab.com/moqsien/gvc_resources/-/blob/main/gvc_linux-amd64.zip",
-		"linux_arm64":   "https://gitlab.com/moqsien/gvc_resources/-/blob/main/gvc_linux-arm64.zip",
-		"darwin_amd64":  "https://gitlab.com/moqsien/gvc_resources/-/blob/main/gvc_darwin-amd64.zip",
-		"darwin_arm64":  "https://gitlab.com/moqsien/gvc_resources/-/blob/main/gvc_darwin-arm64.zip",
+		"windows_amd64": "https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_windows-amd64.zip",
+		"windows_arm64": "https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_windows-arm64.zip",
+		"linux_amd64":   "https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_linux-amd64.zip",
+		"linux_arm64":   "https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_linux-arm64.zip",
+		"darwin_amd64":  "https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_darwin-amd64.zip",
+		"darwin_arm64":  "https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_darwin-arm64.zip",
 	}
 }
