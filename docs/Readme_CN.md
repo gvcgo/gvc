@@ -175,6 +175,8 @@ gvc增加了WebDAV协议的网盘同步功能，它能把你的本地配置一�
 安装成功之后，**打开一个新的终端或者PowerShell**，可以执行g help命令，就能看到gvc的帮助信息。
 例如，Windows下，在PowerShell中，就能得到类似于如下的信息：
 ```bash
+$moqsien> g help
+
 NAME:
    g.exe - gvc <Command> <SubCommand>...
 
@@ -185,37 +187,61 @@ DESCRIPTION:
    A productive tool to manage your development environment.
 
 COMMANDS:
-   go, g                          Go version management.
-   python, py                     Python version management.
-   java, jdk, j                   Java jdk version management.
-   maven, mav, ma                 Maven version management.
-   gradle, gra, gr                Gradle version management.
-   nodejs, node, no               NodeJS version management.
-   flutter, flu, fl               Flutter version management.
-   julia, jul, ju                 Julia version management.
-   rust, rustc, ru, r             Rust installation.
-   cpp                            C/C++ management.
-   typst, ty                      Typst installation.
-   vlang, vl                      Vlang installation.
-   vscode, vsc, vs, v             VSCode and extensions installation.
-   nvim, neovim, nv, n            Neovim installation.
-   neobox-shell, shell, box, ns   Start a neobox shell.
-   neobox-runner, nbrunner, nbr   Start a neobox client.
-   neobox-keeper, nbkeeper, nbk   Start a neobox keeper.
-   browser, br                    Browser data management.
-   homebrew, brew, hb             Homebrew installation or update.
-   hosts, h, host                 Sytem hosts file management(need admistrator or root).
-   github, gh                     Open github download acceleration websites.
-   cloc, cl                       Count lines of code.
-   asciinema, ascii, asc          Asciinema terminal recorder.
-   config, conf, cnf, c           Config file management for gvc.
-   version, ver, vsi              Show gvc version info.
-   show, sho, sh                  Show [gvc] installation path and config file path.
-   uninstall, unins, delete, del  [Caution] Remove gvc and softwares installed by gvc!
-   help, h                        Shows a list of commands or help for one command
+   go, g                            Go version management.
+   proto, protobuf, protoc, pt      Protoc installation.
+   python, py                       Python version management.
+   java, jdk, j                     Java jdk version management.
+   maven, mav, ma                   Maven version management.
+   gradle, gra, gr                  Gradle version management.
+   nodejs, node, no                 NodeJS version management.
+   flutter, flu, fl                 Flutter version management.
+   julia, jul, ju                   Julia version management.
+   rust, rustc, ru, r               Rust installation.
+   cpp                              C/C++ management.
+   typst, ty                        Typst installation.
+   vlang, vl                        Vlang installation.
+   vscode, vsc, vs, v               VSCode and extensions installation.
+   nvim, neovim, nv, n              Neovim installation.
+   neobox-shell, shell, box, ns     Start a neobox shell.
+   neobox-runner, nbrunner, nbr     Start a neobox client.
+   neobox-keeper, nbkeeper, nbk     Start a neobox keeper.
+   browser, br                      Browser data management.
+   homebrew, brew, hb               Homebrew installation or update.
+   gsudo, winsudo, gs, ws           Gsudo for windows.
+   hosts, h, host                   Sytem hosts file management(need admistrator or root).
+   github, gh                       Github download speedup.
+   cloc, cl                         Count lines of code.
+   asciinema, ascii, asc            Asciinema terminal recorder.
+   config, conf, cnf, c             Config file management for gvc.
+   version, ver, vsi                Show gvc version info.
+   check, checklatest, checkupdate  Check and download the latest version of gvc.
+   show, sho, sh                    Show [gvc] installation path and config file path.
+   uninstall, unins, delete, del    [Caution] Remove gvc and softwares installed by gvc!
+   help, h                          Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
    --help, -h  show help
+```
+
+```bash
+$moqsien> g version
+
+ ██████  ██    ██  ██████
+██           ██    ██ ██
+██   ███  ██    ██ ██
+██    ██    ██  ██  ██
+ ██████    ████    ██████
+
+┌────────────────────────────────────────────────────────────────────┐
+|                                                                    |
+|                                                                    |
+|     Version:     v1.4.2(f684b2a1a57c560228add15590783d428d92b480)  |
+|     UpdateAt:    Wed Aug 23 17:33:08 2023 +0800                    |
+|     Homepage:    https://github.com/moqsien/gvc                    |
+|     Email:       moqsien@foxmail.com                               |
+|                                                                    |
+|                                                                    |
+└────────────────────────────────────────────────────────────────────┘
 ```
 
 ### go
