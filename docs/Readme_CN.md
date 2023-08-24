@@ -37,6 +37,9 @@
 另外，g默认从[go.dev](https://go.dev)下载，对于中国大陆的用户不太友好，想要使用[golang.google.cn](https://golang.google.cn/)加速还得自行设置环境变量。
 综合考虑，所以自行写了gvc。旨在一键搞定所有，方便好用。
 
+值得提一嘴的是，在Windows下搞定自动配置环境变量，是件比较麻烦的事情。因为Windows通过setx设置环境变量之后，首先容易被接下来的setx命令覆盖，其次是如果不重新打开一个Powershell，
+是无法读取到刚刚通过setx设置的环境变量的。所以，**Windows用户在使用过程中，如果通过gvc安装了软件，记得重新打开Powershell**。
+
 后来，觉得其他语言也可以有类似的功能。因为作者平时使用的语言主要就有go/python/typescript等等，还会看看rust，vlang，c/cpp之类的。所以，为什么gvc不可以支持一下这些语言呢？
 说干就干，一顿操作下来，gvc最终支持的语言有go/java/python/nodejs/flutter(dart)/julia/rust/cpp/vlang/typst。
 
