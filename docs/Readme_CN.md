@@ -28,9 +28,9 @@
 
 ---------
 ## gvc是什么？
-最开始，gvc是general version controller的缩写。当时只是想做一个好用一点，界面相对美观一点的go多版本管理工具。
+最开始，gvc是go version controller的缩写。当时只是想做一个好用一点，界面相对美观一点的go多版本管理工具。
 
-原因在于[gvm](https://github.com/andrewkroh/gvm)很长时间没更新了(不过，我也没使用过它)。
+原因在于[gvm](https://github.com/andrewkroh/gvm)安装都需要自行设置环境变量，而且长时间不更新(不过，我也没使用过它)。
 [g](https://github.com/voidint/g)可以正常使用，也能满足需求，同时也支持Mac/Win/Linux，是个不错的选择。
 但是g显示版本是一行一条，当版本很多时，上下翻找体验确实不好。
 再者，g只负责安装某个版本，不负责配置环境变量。也就是说，如果你的电脑上之前没有安装过go编译器，你还得自行配置GOPROXY, GOPATH,GOBIN等等。
@@ -211,7 +211,7 @@ COMMANDS:
    browser, br                      Browser data management.
    homebrew, brew, hb               Homebrew installation or update.
    gsudo, winsudo, gs, ws           Gsudo for windows.
-   hosts, h, host                   Sytem hosts file management(need admistrator or root).
+   hosts, h, host                   System hosts file management(need admistrator or root).
    github, gh                       Github download speedup.
    cloc, cl                         Count lines of code.
    asciinema, ascii, asc            Asciinema terminal recorder.
