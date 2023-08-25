@@ -3,8 +3,8 @@
 
 - [中文](#中文)
 - [What's GVC?](#whats-gvc)
-  - [What's supported?](#whats-supported)
-  - [Download \& Install](#download--install)
+- [What's supported?](#whats-supported)
+- [Download \& Install](#download--install)
 - [Main features](#main-features)
   - [Subcommand: go](#subcommand-go)
   - [Subcommand: proto](#subcommand-proto)
@@ -46,7 +46,7 @@ Besides, GVC also support [asciinema](https://asciinema.org/) terminal recording
 Finally, GVC becomes something just like a **scaffolding tool for local development environments management**.
 
 ---------
-### What's supported?
+## What's supported?
 
 <table>
   <thead>
@@ -151,7 +151,7 @@ Finally, GVC becomes something just like a **scaffolding tool for local developm
   </tbody>
 </table>
 
-### Download & Install
+## Download & Install
 - Download the latest [release](https://github.com/moqsien/gvc/releases).
 - Unzip, double click the executable file, or run executable file in Terminal/PowerShell.
 - Open a new Terminal/PowerShell, then the command **g** is available. Help info will be displayed using **'g help'**.
