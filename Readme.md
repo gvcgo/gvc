@@ -33,17 +33,17 @@ As we know, we already have [gvm](https://github.com/andrewkroh/gvm) or [g](http
 
 The reason to create GVC is for more convenience and a better UI(maybe TUI more pricisely).
 
-However, this never becomes the end of the story. After the version-management for Go has been implemented, an idea for managing other languages flashes across my mind. Therefore, GVC started to support version-control and auto-installation also for Java/Python/NodeJS/Flutter/Julia/Protoc/Rust/Cpp/Vlang/Typst.
+However, this never becomes the end of the story. After the version-management for Go has been implemented, an idea for managing other languages flashes across my mind. Therefore, GVC started to support version-control and auto-installation also for **Java/Python/NodeJS/Flutter/Julia/Protoc/Rust/Cpp/Vlang/Typst**.
 
-At this point, GVC becomes General Version Controller.
+At this point, GVC becomes **General-Version-Controller**.
 
 And the story still continues.
 
-Auto-installation for Visual Studio Code(VSCode) and NeoVim is adopted.The WebDAV support is also introduced for saving config files from VSCode/NeoVim to user's netdisk(eg. jianguoyun.com). So, you can rebuild your Development Environment using these files on any machine.
+Auto-installation for Visual Studio Code(**VSCode**) and **NeoVim** is adopted.The **WebDAV** support is also introduced for saving config files from VSCode/NeoVim to user's netdisk(eg. jianguoyun.com). So, you can rebuild your Development Environment using these files on any machine.
 
 Besides, GVC also support [asciinema](https://asciinema.org/) terminal recording, browser data management, counting lines of code, etc.
 
-Finally, GVC becomes something just like a **scaffolding tool for local development environments management**.
+Finally, GVC becomes something just like a **Scaffolding Tool for local development environments management**.
 
 ---------
 ## What's supported?
