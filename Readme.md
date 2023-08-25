@@ -1,5 +1,6 @@
 ## [中文](https://github.com/moqsien/gvc/blob/main/docs/Readme_CN.md)
-![logo](https://github.com/moqsien/gvc/blob/main/docs/logo.png)
+<!-- ![logo](https://github.com/moqsien/gvc/blob/main/docs/logo.png) -->
+<img src="https://github.com/moqsien/gvc/blob/main/docs/logo.png" width="30%">
 
 - [中文](#中文)
 - [What's GVC?](#whats-gvc)

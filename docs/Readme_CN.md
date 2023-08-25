@@ -1,5 +1,6 @@
 ## [En](https://github.com/moqsien/gvc)
-![logo](https://github.com/moqsien/gvc/blob/main/docs/logo.png)
+<!-- ![logo](https://github.com/moqsien/gvc/blob/main/docs/logo.png)-->
+<img src="https://github.com/moqsien/gvc/blob/main/docs/logo.png" width="30%">
 
 - [En](#en)
 - [gvc是什么？](#gvc是什么)
