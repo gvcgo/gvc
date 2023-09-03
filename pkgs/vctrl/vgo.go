@@ -2,6 +2,7 @@ package vctrl
 
 import (
 	"archive/zip"
+	"bufio"
 	"fmt"
 	"io"
 	"net/url"
@@ -731,4 +732,63 @@ func (that *GoVersion) Build(args ...string) {
 		that.build(buildArgs, buildDir, archOS, bConf.Compress)
 		alreadyBuilt[archOS] = struct{}{}
 	}
+}
+
+// Rename local go module
+func (that *GoVersion) getOldModuleName(moduleDir string) string {
+	var (
+		modFileName = "go.mod"
+		keyword     = "module"
+	)
+	if eList, err := os.ReadDir(moduleDir); err == nil {
+		for _, entry := range eList {
+			if entry.Name() == modFileName {
+				// open the file
+				file, err := os.Open(filepath.Join(moduleDir, entry.Name()))
+				if err != nil {
+					tui.PrintError(err)
+					return ""
+				}
+				defer file.Close()
+				fileScanner := bufio.NewScanner(file)
+				for fileScanner.Scan() {
+					t := fileScanner.Text()
+					if strings.Contains(t, keyword) {
+						sList := strings.Split(t, keyword)
+						return strings.TrimSpace(sList[1])
+					}
+				}
+				if err := fileScanner.Err(); err != nil {
+					tui.PrintError(err)
+				}
+			}
+		}
+	}
+	tui.PrintError(fmt.Sprintf("Can not find module name in [%s].", filepath.Join(moduleDir, modFileName)))
+	return ""
+}
+
+func (that *GoVersion) renameModule(pathStr, oldName, newName string, isDir bool) {
+	if isDir {
+		if eList, err := os.ReadDir(pathStr); err == nil {
+			for _, entry := range eList {
+				that.renameModule(filepath.Join(pathStr, entry.Name()), oldName, newName, entry.IsDir())
+			}
+		}
+	} else {
+		if strings.HasSuffix(pathStr, "go.mod") || strings.HasSuffix(pathStr, ".go") {
+			if content, err := os.ReadFile(pathStr); err == nil {
+				newStr := strings.ReplaceAll(string(content), oldName, newName)
+				os.WriteFile(pathStr, []byte(newStr), os.ModePerm)
+			}
+		}
+	}
+}
+
+func (that *GoVersion) RenameLocalModule(moduleDir, newName string) {
+	oldName := that.getOldModuleName(moduleDir)
+	if oldName == "" {
+		return
+	}
+	that.renameModule(moduleDir, oldName, newName, true)
 }

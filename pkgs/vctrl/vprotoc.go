@@ -81,8 +81,9 @@ func (that *VProtoBuffer) InstallGoProtobufPlugin() {
 	if _, err := utils.ExecuteSysCommand(false, "go", "install", that.Conf.Protobuf.ProtoGenGoUrl); err != nil {
 		tui.PrintError(err)
 	}
+}
 
-	//
+func (that *VProtoBuffer) InstallGoProtoGRPCPlugin() {
 	if _, err := utils.ExecuteSysCommand(false, "go", "install", that.Conf.Protobuf.ProtoGenGRPCUrl); err != nil {
 		tui.PrintError(err)
 	}

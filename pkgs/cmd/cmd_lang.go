@@ -2,7 +2,10 @@ package cmd
 
 import (
 	"os"
+	"path/filepath"
 
+	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
 	"github.com/moqsien/gvc/pkgs/vctrl"
 	"github.com/urfave/cli/v2"
@@ -159,6 +162,24 @@ func (that *Cmder) vgo() {
 		},
 	}
 	command.Subcommands = append(command.Subcommands, gbuild)
+
+	grename := &cli.Command{
+		Name:    "renameTo",
+		Aliases: []string{"rnt", "rto"},
+		Usage:   `Rename a local go module[gvc go rto NEW_MODULE_NAME].`,
+		Action: func(ctx *cli.Context) error {
+			gv := vctrl.NewGoVersion()
+			newName := ctx.Args().First()
+			moduleDir, _ := os.Getwd()
+			if ok, _ := utils.PathIsExist(filepath.Join(moduleDir, "go.mod")); !ok {
+				tui.PrintError("Can not find go.mod in current working dir.")
+				return nil
+			}
+			gv.RenameLocalModule(moduleDir, newName)
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, grename)
 
 	gdist := &cli.Command{
 		Name:    "list-distributions",
@@ -996,5 +1017,17 @@ func (that *Cmder) vprotobuf() {
 		},
 	}
 	command.Subcommands = append(command.Subcommands, installGoPlugin)
+
+	installGoGrpcPlugin := &cli.Command{
+		Name:    "install-grpc-plugin",
+		Aliases: []string{"igrpc", "igr"},
+		Usage:   "Install protoc-gen-go-grpc.",
+		Action: func(ctx *cli.Context) error {
+			v := vctrl.NewProtobuffer()
+			v.InstallGoProtoGRPCPlugin()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, installGoGrpcPlugin)
 	that.Commands = append(that.Commands, command)
 }
