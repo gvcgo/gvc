@@ -250,6 +250,7 @@ COMMANDS:
    add-envs, env, e, ae                     Add envs for go.
    search-package, sp, search               Search for third-party packages.
    build, bui, b                            Compiles go code for multi-platforms [with <-ldflags "-s -w"> builtin].
+   renameTo, rnt, rto                       Rename a local go module[gvc go rto NEW_MODULE_NAME].
    list-distributions, list-dist, dist, ld  List the platforms supported by go compilers.
    help, h                                  Shows a list of commands or help for one command
 
@@ -257,6 +258,7 @@ OPTIONS:
    --help, -h  show help
 ```
 In this subcommand, you can show/install/remove/change go compiler versions, search third-party packages written in Go, and build Go source code for multi-platforms without prepare any scripts.
+You can also rename a local go module using subcommand: **g go rto NEW_MODULE_NAME**.
 
 ### Subcommand: proto
 ```bash
@@ -269,14 +271,15 @@ USAGE:
    g.exe proto command [command options] [arguments...]
 
 COMMANDS:
-   install, ins, i             Install protoc.
-   install-go-plugin, igo, ig  Install protoc-gen-go.
-   help, h                     Shows a list of commands or help for one command
+   install, ins, i                  Install protoc.
+   install-go-plugin, igo, ig       Install protoc-gen-go.
+   install-grpc-plugin, igrpc, igr  Install protoc-gen-go-grpc.
+   help, h                          Shows a list of commands or help for one command
 
 OPTIONS:
    --help, -h  show help
 ```
-In this subcommand, you can auto-install protoc and protoc-gen-go.
+In this subcommand, you can auto-install protoc, protoc-gen-go and protoc-gen-go-grpc.
 
 ### Subcommand: python
 ```bash

@@ -267,6 +267,7 @@ COMMANDS:
    add-envs, env, e, ae                     Add envs for go.
    search-package, sp, search               Search for third-party packages.
    build, bui, b                            Compiles go code for multi-platforms [with <-ldflags "-s -w"> builtin].
+   renameTo, rnt, rto                       Rename a local go module[gvc go rto NEW_MODULE_NAME].
    list-distributions, list-dist, dist, ld  List the platforms supported by go compilers.
    help, h                                  Shows a list of commands or help for one command
 
@@ -276,6 +277,7 @@ OPTIONS:
 go子命令可以安装、删除、切换版本。还能一键配置好诸如GOPATH、GOPROXY、GOBIN之类的环境变量。
 还能通过search-package来搜索第三方库。
 build子命令还提供了对于go build的增强，可以跨平台编译并压缩打包，无需编写任何脚本。
+renameTo子命令能重命名一个本地go项目。
 
 ### proto子命令
 ```bash
@@ -288,14 +290,15 @@ USAGE:
    g.exe proto command [command options] [arguments...]
 
 COMMANDS:
-   install, ins, i             Install protoc.
-   install-go-plugin, igo, ig  Install protoc-gen-go.
-   help, h                     Shows a list of commands or help for one command
+   install, ins, i                  Install protoc.
+   install-go-plugin, igo, ig       Install protoc-gen-go.
+   install-grpc-plugin, igrpc, igr  Install protoc-gen-go-grpc.
+   help, h                          Shows a list of commands or help for one command
 
 OPTIONS:
    --help, -h  show help
 ```
-一键安装protoc和protoc-gen-go。
+一键安装protoc, protoc-gen-go以及protoc-gen-go-grpc。
 
 ### python子命令
 ```bash
