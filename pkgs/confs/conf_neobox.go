@@ -10,14 +10,14 @@ import (
 )
 
 type NeoboxConf struct {
-	NeoConf *neoconf.NeoBoxConf `koanf:"neobox_conf"`
+	NeoConf *neoconf.NeoConf `koanf:"neobox_conf"`
 	path    string
 }
 
 func NewNeoboxConf() (r *NeoboxConf) {
 	r = &NeoboxConf{
 		path:    ProxyFilesDir,
-		NeoConf: &neoconf.NeoBoxConf{},
+		NeoConf: &neoconf.NeoConf{},
 	}
 	r.setup()
 	return
@@ -33,39 +33,57 @@ func (that *NeoboxConf) setup() {
 
 func (that *NeoboxConf) Reset() {
 	if that.NeoConf == nil {
-		that.NeoConf = &neoconf.NeoBoxConf{}
+		that.NeoConf = &neoconf.NeoConf{}
 	}
-	that.NeoConf.NeoWorkDir = that.path
-	that.NeoConf.NeoLogFileDir = filepath.Join(that.path, "neobox_logs")
-	that.NeoConf.AssetDir = that.path
-	that.NeoConf.XLogFileName = "neobox_client.log"
-	that.NeoConf.SockFilesDir = that.path
-	that.NeoConf.RawUriURL = "https://gitlab.com/moqsien/neobox_resources/-/raw/main/conf.txt"
-	that.NeoConf.RawUriFileName = "neobox_raw_proxies.json"
-	that.NeoConf.ParsedFileName = "neobox_parsed_proxies.json"
-	that.NeoConf.PingedFileName = "neobox_pinged_proxies.json"
-	that.NeoConf.MaxPingers = 100
-	that.NeoConf.MaxAvgRTT = 600
-	that.NeoConf.VerifiedFileName = "neobox_verified_proxies.json"
-	that.NeoConf.VerifiedLocationFileName = "neobox_verified_locations.json"
-	that.NeoConf.VerifierPortRange = &neoconf.PortRange{
-		Min: 4000,
-		Max: 4050,
-	}
-	that.NeoConf.VerificationUri = "https://www.google.com"
-	that.NeoConf.VerificationTimeout = 3
-	that.NeoConf.VerificationCron = "@every 2h"
-	that.NeoConf.NeoBoxClientInPort = 2019
+	that.NeoConf.WorkDir = that.path
+	that.NeoConf.LogDir = filepath.Join(that.path, "neobox_logs")
+	that.NeoConf.GeoInfoDir = filepath.Join(that.path, "neobox_geoinfo")
+	that.NeoConf.SocketDir = filepath.Join(that.path, "neobox_socket")
+	that.NeoConf.DatabaseDir = GVCBackupDir // save sqlite db file to BackupDir
+
+	that.NeoConf.DownloadUrl = "https://gitlab.com/moqsien/gvc_resources/-/raw/main/conf.txt"
+
+	// ping related
+	that.NeoConf.MaxPingers = 120
+	that.NeoConf.MaxPingAvgRTT = 600
+	that.NeoConf.MaxPingPackLoss = 10
+
+	// geoinfo files related
+	that.NeoConf.GeoInfoSumUrl = "https://gitlab.com/moqsien/gvc_resources/-/raw/main/files_info.json?ref_type=heads&inline=false"
 	that.NeoConf.GeoInfoUrls = map[string]string{
-		"geoip.dat":   "https://gitlab.com/moqsien/gvc_resources/-/raw/main/geoip.dat",
-		"geosite.dat": "https://gitlab.com/moqsien/gvc_resources/-/raw/main/geosite.dat",
-		"geoip.db":    "https://gitlab.com/moqsien/gvc_resources/-/raw/main/geoip.db",
-		"geosite.db":  "https://gitlab.com/moqsien/gvc_resources/-/raw/main/geosite.db",
+		"geoip.dat":   "https://gitlab.com/moqsien/neobox_resources/-/raw/main/geoip.dat",
+		"geosite.dat": "https://gitlab.com/moqsien/neobox_resources/-/raw/main/geosite.dat",
+		"geoip.db":    "https://gitlab.com/moqsien/neobox_resources/-/raw/main/geoip.db",
+		"geosite.db":  "https://gitlab.com/moqsien/neobox_resources/-/raw/main/geosite.db",
 	}
-	that.NeoConf.NeoBoxKeeperCron = "@every 3m"
-	that.NeoConf.HistoryVpnsFileDir = GVCBackupDir
-	that.NeoConf.WireGuardConfDir = filepath.Join(that.NeoConf.NeoWorkDir, "wireguard")
-	that.NeoConf.WireGuardIPUrl = "https://gitlab.com/moqsien/neobox_resources/-/raw/main/cloudflare_ips/result.csv"
-	that.NeoConf.WireGuardIPV4FileName = "wireguard_ipv4_verified.json"
-	that.NeoConf.ExtraVPNsDir = filepath.Join(that.NeoConf.NeoWorkDir, "extra_vpns")
+
+	// verifier related
+	that.NeoConf.InboundPort = 2023
+	that.NeoConf.VerificationPortRange = &neoconf.PortRange{
+		Min: 9035,
+		Max: 9095,
+	}
+	that.NeoConf.VerificationTimeout = 3
+	that.NeoConf.MaxToSaveRTT = 2000 // in milliseconds
+	that.NeoConf.VerificationUrl = "https://www.google.com"
+	that.NeoConf.VerificationCron = "@every 2h"
+
+	// location related
+	that.NeoConf.CountryAbbrevsUrl = "https://gitlab.com/moqsien/gvc_resources/-/raw/main/country_names.json?ref_type=heads&inline=false"
+	that.NeoConf.IPLocationQueryUrl = "https://www.fkcoder.com/ip?ip=%s"
+
+	// keeper related
+	that.NeoConf.KeeperCron = "@every 3m"
+
+	// cloudflare/wireguard related
+	that.NeoConf.CloudflareConf = &neoconf.CloudflareConf{
+		CloudflareIPV4URL: "https://www.cloudflare.com/ips-v4",
+		PortList:          []int{443, 8443, 2053, 2096, 2087, 2083},
+		MaxPingCount:      4,
+		MaxGoroutines:     300,
+		MaxRTT:            500,
+		MaxLossRate:       0.0,
+		MaxSaveToDB:       1000,
+		WireGuardConfDir:  GVCBackupDir, // save wireguard configurations to BackupDir
+	}
 }

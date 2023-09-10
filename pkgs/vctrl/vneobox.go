@@ -1,10 +1,13 @@
 package vctrl
 
 import (
+	"os"
 	"os/exec"
 
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/neobox/pkgs/run"
+	"github.com/moqsien/neobox/pkgs/storage/model"
+	nutils "github.com/moqsien/neobox/pkgs/utils"
 )
 
 type NeoBox struct {
@@ -23,9 +26,21 @@ func NewBox(starter, keeperStarter *exec.Cmd) (n *NeoBox) {
 }
 
 func (that *NeoBox) Initiate() {
+	if that.conf.NeoBox.NeoConf.LogDir != "" {
+		os.MkdirAll(that.conf.NeoBox.NeoConf.LogDir, 0666)
+	}
+	if that.conf.NeoBox.NeoConf.GeoInfoDir != "" {
+		os.MkdirAll(that.conf.NeoBox.NeoConf.GeoInfoDir, 0666)
+	}
+	if that.conf.NeoBox.NeoConf.SocketDir != "" {
+		os.MkdirAll(that.conf.NeoBox.NeoConf.SocketDir, 0666)
+	}
 	if that.conf.NeoBox.NeoConf != nil {
 		that.runner = run.NewRunner(that.conf.NeoBox.NeoConf)
-		run.SetNeoBoxEnvs(that.conf.NeoBox.NeoConf)
+		// set envs for neobox
+		nutils.SetNeoboxEnvs(that.conf.NeoBox.NeoConf.GeoInfoDir, that.conf.NeoBox.NeoConf.SocketDir)
+		// init sqlitedb for neobox
+		model.NewDBEngine(that.conf.NeoBox.NeoConf)
 	}
 }
 
