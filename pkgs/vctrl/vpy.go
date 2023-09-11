@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/mholt/archiver/v3"
+	myArchiver "github.com/moqsien/goutils/pkgs/archiver"
 	tui "github.com/moqsien/goutils/pkgs/gtui"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
@@ -196,13 +197,6 @@ func (that *PyVenv) setAssetDirForPyenvWin() {
 			fmt.Sprintf(config.PyenvWinNewCacheDir, newCachePath),
 			0777)
 
-		// newShimsPath := filepath.Join(config.PythonFilesDir, "shims")
-		// os.MkdirAll(newShimsPath, os.ModePerm)
-		// utils.ReplaceFileContent(fpath,
-		// 	config.PyenvWinOriginalShimsDir,
-		// 	fmt.Sprintf(config.PyenvWinNewShimsDir, newShimsPath),
-		// 	0777)
-
 		newVersionPath := filepath.Join(config.PythonFilesDir, "versions")
 		os.MkdirAll(newVersionPath, os.ModePerm)
 		utils.ReplaceFileContent(fpath,
@@ -219,7 +213,21 @@ func (that *PyVenv) setAssetDirForPyenvWin() {
 }
 
 func (that *PyVenv) InstallPyenv() {
+	shimsDir := filepath.Join(config.GetPyenvRootPath(), "shims")
+	zipDir := config.PythonFilesDir
+	zipPath := filepath.Join(config.PythonFilesDir, "old_shims.zip")
+	if ok, _ := utils.PathIsExist(shimsDir); ok {
+		a, _ := myArchiver.NewArchiver(shimsDir, zipDir)
+		a.ZipDir()
+	}
 	that.getPyenv(true)
+	if ok, _ := utils.PathIsExist(zipPath); ok {
+		ok, _ = utils.PathIsExist(shimsDir)
+		if !ok {
+			a, _ := myArchiver.NewArchiver(zipDir, shimsDir)
+			a.UnArchive()
+		}
+	}
 }
 
 func (that *PyVenv) getExecutablePath() (exePath string) {
@@ -397,5 +405,22 @@ func (that *PyVenv) setPipAcceleration() {
 		parser, _ := url.Parse(pUrl)
 		content := fmt.Sprintf(config.PipConfig, pUrl, parser.Host)
 		os.WriteFile(p, []byte(content), 0644)
+	}
+}
+
+func (that *PyVenv) FixSystemGenerationsForWin() {
+	if runtime.GOOS == utils.Windows {
+		if homeDir, err := os.UserHomeDir(); err == nil {
+			targetDir := filepath.Join(homeDir, `AppData\Local\Microsoft\WindowsApps`)
+			pathList := []string{
+				filepath.Join(targetDir, "python"),
+				filepath.Join(targetDir, "python3"),
+				filepath.Join(targetDir, "python.exe"),
+				filepath.Join(targetDir, "python3.exe"),
+			}
+			for _, p := range pathList {
+				os.RemoveAll(p)
+			}
+		}
 	}
 }

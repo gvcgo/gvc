@@ -510,14 +510,10 @@ github.com/moqsien/asciinema v0.3.0 h1:/aMlAcDhhClVbLDDvhy7Z2GrFqfZda2OQUbPGAOQA
 github.com/moqsien/asciinema v0.3.0/go.mod h1:8805nYndqsLowovS0GrWMS2v1MotTb5Fe4uOVK3S1gI=
 github.com/moqsien/goktrl v1.3.8 h1:XU2tTM/dQfQMfx+b+UKJ6hFJO3xiVZbZmcbIcuxQW0c=
 github.com/moqsien/goktrl v1.3.8/go.mod h1:vtYPnSuyWeOGl7HSQ08SX8b8m/NdiVv9icf9gQhT07A=
-github.com/moqsien/goutils v0.3.3 h1:8ZITvhqhrPhtJLHHFlzPOpYospPZalmeA4fjCK+AANE=
-github.com/moqsien/goutils v0.3.3/go.mod h1:V9Yj1e5Qo292hqMyYVfX4/yTihpl6wFp7HhpPZMUvxg=
+github.com/moqsien/goutils v0.3.6 h1:OQVvVsR8dsh00DTH7rI/oj2fGaQCsjBMm4SeKzoSy2Q=
+github.com/moqsien/goutils v0.3.6/go.mod h1:V9Yj1e5Qo292hqMyYVfX4/yTihpl6wFp7HhpPZMUvxg=
 github.com/moqsien/hackbrowser v1.0.3 h1:HpXHg1goHU70YnifqPk8+ityK5/SpIu9e7BB5pN4TUY=
 github.com/moqsien/hackbrowser v1.0.3/go.mod h1:xsUuSbleSJn0vz5TOFMD0nDEmv5fDGgb65HQq8INLJc=
-github.com/moqsien/neobox v1.0.3 h1:9KWL2OpPEWxGZPl0k31dvJkp+cNHmFfuy8QhfLQ5//4=
-github.com/moqsien/neobox v1.0.3/go.mod h1:URxIHQGM0IjDPrg9jENyanhEoI1kMwNCXVPR8Y3VRps=
-github.com/moqsien/neobox v1.0.4 h1:NKZ/1/bJPocIKg6QcOmUl03IRg4T/d31rwl8TMBI6rA=
-github.com/moqsien/neobox v1.0.4/go.mod h1:URxIHQGM0IjDPrg9jENyanhEoI1kMwNCXVPR8Y3VRps=
 github.com/moqsien/neobox v1.0.5 h1:lDmZ8/QJWzec92HPWjpBbatx8RYJJ4MN8eaKAIqsBOk=
 github.com/moqsien/neobox v1.0.5/go.mod h1:URxIHQGM0IjDPrg9jENyanhEoI1kMwNCXVPR8Y3VRps=
 github.com/moqsien/processes v1.0.3 h1:bV8vi4JZnwlhsxguyVAtUUv+zq4yvMSZIfjrsFGfmPE=
