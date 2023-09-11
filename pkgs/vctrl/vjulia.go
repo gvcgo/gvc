@@ -20,6 +20,7 @@ import (
 	"github.com/pterm/pterm"
 )
 
+// TODO: only in china mainland
 type JuliaPackage struct {
 	Url      string
 	FileName string

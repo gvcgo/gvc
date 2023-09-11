@@ -108,15 +108,24 @@ func (that *PyVenv) setEnv() {
 }
 
 func (that *PyVenv) modifyAccelertion(pyenvDir string) {
+	pterm.Println(pterm.Green("Set dowload accelerations[only in China] or not?"))
+	result, _ := pterm.DefaultInteractiveConfirm.Show()
+	pterm.Println()
+	if !result {
+		return
+	}
 	if runtime.GOOS == utils.Windows {
-		fpath := filepath.Join(pyenvDir, "pyenv-win/libexec/pyenv-install.vbs")
+		rootDir := config.GetPyenvRootPath()
+		versionFilePath := filepath.Join(rootDir, ".versions_cache.xml")
+		if ok, _ := utils.PathIsExist(versionFilePath); ok {
+			content, _ := os.ReadFile(versionFilePath)
+			newStr := strings.ReplaceAll(string(content), config.PyenvWinOriginalPyUrl, config.PyenvWinTaobaoPyUrl)
+			os.WriteFile(versionFilePath, []byte(newStr), os.ModePerm)
+		}
+		fpath := filepath.Join(pyenvDir, "pyenv-win", "libexec", "pyenv-install.vbs")
 		utils.ReplaceFileContent(fpath,
-			config.PyenvModifyForwin1,
-			config.PyenvAfterModifyWin1,
-			0777)
-		utils.ReplaceFileContent(fpath,
-			config.PyenvModifyForwin2,
-			config.PyenvAfterModifyWin2,
+			config.PyenvWinBeforeFixed,
+			config.PyenvWinAfterFixed,
 			0777)
 	} else {
 		fpath := filepath.Join(pyenvDir, "plugins/python-build/bin/python-build")
@@ -171,7 +180,41 @@ func (that *PyVenv) getPyenv(force ...bool) {
 				tui.PrintError("Cannot set env for Pyenv.")
 			}
 			that.modifyAccelertion(pDir)
+			that.setAssetDirForPyenvWin()
 		}
+	}
+}
+
+func (that *PyVenv) setAssetDirForPyenvWin() {
+	if runtime.GOOS == utils.Windows {
+		fpath := filepath.Join(config.GetPyenvRootPath(), "libexec", "libs", "pyenv-lib.vbs")
+
+		newCachePath := filepath.Join(config.PythonFilesDir, "install_cache")
+		os.MkdirAll(newCachePath, os.ModePerm)
+		utils.ReplaceFileContent(fpath,
+			config.PyenvWinOriginalCacheDir,
+			fmt.Sprintf(config.PyenvWinNewCacheDir, newCachePath),
+			0777)
+
+		// newShimsPath := filepath.Join(config.PythonFilesDir, "shims")
+		// os.MkdirAll(newShimsPath, os.ModePerm)
+		// utils.ReplaceFileContent(fpath,
+		// 	config.PyenvWinOriginalShimsDir,
+		// 	fmt.Sprintf(config.PyenvWinNewShimsDir, newShimsPath),
+		// 	0777)
+
+		newVersionPath := filepath.Join(config.PythonFilesDir, "versions")
+		os.MkdirAll(newVersionPath, os.ModePerm)
+		utils.ReplaceFileContent(fpath,
+			config.PyenvWinOriginalVersionsDir,
+			fmt.Sprintf(config.PyenvWinNewVersionsDir, newVersionPath),
+			0777)
+
+		batPath := filepath.Join(config.GetPyenvRootPath(), "bin", "pyenv.bat")
+		utils.ReplaceFileContent(batPath,
+			config.PyenvWinBatBeforeFixed,
+			strings.ReplaceAll(config.PyenvWinBatAfterFixed, "$$$", newVersionPath),
+			0777)
 	}
 }
 

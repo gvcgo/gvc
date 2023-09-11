@@ -15,6 +15,7 @@ import (
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
+	"github.com/pterm/pterm"
 	"github.com/tidwall/gjson"
 )
 
@@ -103,7 +104,12 @@ func (that *Code) download() (r string) {
 			return
 		}
 		fpath := filepath.Join(config.CodeTarFileDir, fmt.Sprintf("%s-%s%s", key, that.Version, suffix))
-		that.fetcher.Url = strings.Replace(p.Url, that.Conf.Code.StableUrl, that.Conf.Code.CdnUrl, -1)
+		pterm.Println(pterm.Green("Use CDN to accelerate download or not?"))
+		result, _ := pterm.DefaultInteractiveConfirm.Show()
+		pterm.Println()
+		if result {
+			that.fetcher.Url = strings.Replace(p.Url, that.Conf.Code.StableUrl, that.Conf.Code.CdnUrl, -1)
+		}
 		that.fetcher.Timeout = 600 * time.Second
 		that.fetcher.SetThreadNum(8)
 		if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {

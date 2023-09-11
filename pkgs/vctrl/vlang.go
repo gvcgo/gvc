@@ -171,6 +171,3 @@ func (that *Vlang) InstallVAnalyzerForVscode() {
 		cmd.Run()
 	}
 }
-
-// TODO: protoc installation
-// TODO: sudo for windows, using grpc

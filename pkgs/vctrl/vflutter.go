@@ -20,6 +20,7 @@ import (
 	"github.com/pterm/pterm"
 )
 
+// only in china mianland
 type FlutterPackage struct {
 	Url         string
 	FileName    string

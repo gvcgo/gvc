@@ -390,7 +390,7 @@ var (
 
 func GetPyenvRootPath() (r string) {
 	if runtime.GOOS == utils.Windows {
-		r = filepath.Join(PyenvInstallDir, "pyenv/pyenv-win")
+		r = filepath.Join(PyenvInstallDir, "pyenv", "pyenv-win")
 	} else {
 		r = PythonFilesDir
 	}
@@ -438,18 +438,37 @@ var (
 	PyenvModifyForUnix   string = `    verify_checksum "$package_filename" "$checksum" >&4 2>&1 || return 1`
 	PyenvAfterModifyUnix string = `    #verify_checksum "$package_filename" "$checksum" >&4 2>&1 || return 1
 	echo "download completed."`
-	PyenvModifyForwin1   string = `verDef = versions(version)`
-	PyenvAfterModifyWin1 string = `verDef = versions(version)
-	Dim list
-	Dim url
-	Dim mirror
-	mirror = objws.Environment("Process")("PYTHON_BUILD_MIRROR_URL")
-	If mirror = "" Then mirror = "https://www.python.org/ftp/python"
-	list = split(verDef(LV_URL), "/ftp/python/")
-	url = mirror+list(1)
-	WScript.Echo url`
-	PyenvModifyForwin2   string = `verDef(LV_URL), _`
-	PyenvAfterModifyWin2 string = `url, _`
+
+	PyenvWinOriginalCacheDir    string = `strDirCache  = strPyenvHome & "\install_cache"`
+	PyenvWinNewCacheDir         string = `strDirCache  = "%s"`
+	PyenvWinOriginalVersionsDir string = `strDirVers   = strPyenvHome & "\versions"`
+	PyenvWinNewVersionsDir      string = `strDirVers   = "%s"`
+	PyenvWinOriginalShimsDir    string = `strDirShims  = strPyenvHome & "\shims"`
+	PyenvWinNewShimsDir         string = `strDirShims  = "%s"`
+
+	PyenvWinBeforeFixed string = `deepExtract = objws.Run("msiexec /quiet /a """& file &""" TargetDir="""& installPath & """", 0, True)
+        If deepExtract Then
+            WScript.Echo ":: [Error] :: error installing """& baseName &""" component MSI."
+            Exit Function
+        End If`
+	PyenvWinAfterFixed string = `deepExtract = objws.Run("msiexec /quiet /a """& file &""" TargetDir="""& installPath & """", 0, True)
+        If deepExtract Then
+            deepExtract = objws.Run("msiexec """& file &""" TargetDir="""& installPath & """", 0, True)
+        End If
+	If deepExtract Then
+            WScript.Echo ":: [Error] :: error installing """& baseName &""" component MSI."
+            Exit Function
+        End If`
+
+	PyenvWinBatBeforeFixed string = `for /f "%skip_arg%delims=" %%i in ('%pyenv% vname') do call :extrapath "%~dp0..\versions\%%i"`
+	PyenvWinBatAfterFixed  string = `for /f "%skip_arg%delims=" %%i in ('%pyenv% vname') do call :extrapath "%~dp0..\versions\%%i"
+
+for %%f in ("%bindir%") do set "pyversion=%%~nxf"
+set "bindir=$$$\%pyversion%"
+set "extrapaths=$$$\%pyversion%;$$$\%pyversion%\Scripts;"`
+
+	PyenvWinOriginalPyUrl string = "https://www.python.org/ftp"
+	PyenvWinTaobaoPyUrl   string = "https://registry.npmmirror.com/-/binary"
 )
 
 /*

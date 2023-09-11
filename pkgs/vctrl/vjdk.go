@@ -95,7 +95,11 @@ func (that *JDKVersion) GetFileSuffix(fName string) string {
 	return ""
 }
 
-func (that *JDKVersion) GetVersions(isOfficial bool) {
+func (that *JDKVersion) GetVersions() {
+	pterm.Println(pterm.Green("Download/Show versions from official site or not?"))
+	pterm.Println(pterm.Green("If not, then download/show versions from 'injdk.cn'[accelerated in China]."))
+	isOfficial, _ := pterm.DefaultInteractiveConfirm.Show()
+	pterm.Println()
 	if that.Doc == nil {
 		that.getDoc(isOfficial)
 	}
@@ -200,8 +204,8 @@ func (that *JDKVersion) GetVersions(isOfficial bool) {
 	}
 }
 
-func (that *JDKVersion) ShowVersions(isOfficial bool) {
-	that.GetVersions(isOfficial)
+func (that *JDKVersion) ShowVersions() {
+	that.GetVersions()
 	vList := []string{}
 	for k := range that.Versions {
 		vList = append(vList, k)
@@ -229,8 +233,8 @@ func (that *JDKVersion) findVersion(version string) (p *JDKPackage) {
 	return
 }
 
-func (that *JDKVersion) download(version string, isOfficial bool) (r string) {
-	that.GetVersions(isOfficial)
+func (that *JDKVersion) download(version string) (r string) {
+	that.GetVersions()
 
 	if p := that.findVersion(version); p != nil {
 		that.fetcher.Url = p.Url
@@ -253,7 +257,7 @@ func (that *JDKVersion) download(version string, isOfficial bool) (r string) {
 	} else {
 		tui.PrintError(fmt.Sprintf("Invalid jdk version: %s", version))
 		tui.PrintInfo("Versions available: ")
-		that.ShowVersions(isOfficial)
+		that.ShowVersions()
 	}
 	return
 }
@@ -286,10 +290,10 @@ func (that *JDKVersion) findDir(untarfile string) {
 	}
 }
 
-func (that *JDKVersion) UseVersion(version string, isOfficial bool) {
+func (that *JDKVersion) UseVersion(version string) {
 	untarfile := filepath.Join(config.JavaUnTarFilesPath, version)
 	if ok, _ := utils.PathIsExist(untarfile); !ok {
-		if tarfile := that.download(version, isOfficial); tarfile != "" {
+		if tarfile := that.download(version); tarfile != "" {
 			if err := archiver.Unarchive(tarfile, untarfile); err != nil {
 				os.RemoveAll(untarfile)
 				tui.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))

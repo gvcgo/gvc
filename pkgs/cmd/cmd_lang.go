@@ -204,46 +204,28 @@ func (that *Cmder) vjava() {
 		Subcommands: []*cli.Command{},
 	}
 
-	var zhcn bool
 	vuse := &cli.Command{
 		Name:    "use",
 		Aliases: []string{"u"},
-		Usage:   "Download and use jdk. <Command> {gvc jdk use [-z] xxx}",
-		Flags: []cli.Flag{
-			&cli.BoolFlag{
-				Name:        "zh",
-				Aliases:     []string{"z", "cn"},
-				Usage:       "Use injdk.cn as resource url.",
-				Destination: &zhcn,
-			},
-		},
+		Usage:   "Download and use jdk.}",
 		Action: func(ctx *cli.Context) error {
 			version := ctx.Args().First()
 			if version != "" {
 				gv := vctrl.NewJDKVersion()
-				gv.UseVersion(version, !zhcn)
+				gv.UseVersion(version)
 			}
 			return nil
 		},
 	}
 	command.Subcommands = append(command.Subcommands, vuse)
 
-	var cncn bool
 	vshow := &cli.Command{
 		Name:    "remote",
 		Aliases: []string{"r"},
-		Usage:   "Show available versions.  <Command> {gvc jdk remote [-z]}",
-		Flags: []cli.Flag{
-			&cli.BoolFlag{
-				Name:        "zh",
-				Aliases:     []string{"z", "cn"},
-				Usage:       "Use injdk.cn as resource url.",
-				Destination: &cncn,
-			},
-		},
+		Usage:   "Show available versions.",
 		Action: func(ctx *cli.Context) error {
 			gv := vctrl.NewJDKVersion()
-			gv.ShowVersions(!cncn)
+			gv.ShowVersions()
 			return nil
 		},
 	}
