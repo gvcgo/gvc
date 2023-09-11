@@ -174,6 +174,11 @@ gvc增加了WebDAV协议的网盘同步功能，它能把你的本地配置一�
 - 解压之后，双击可执行文件，或者在Terminal/PowerShell中执行该文件;
 - 在新的Termnial/PowerShell中可以使用g或者gvc命令了，例如：g help;
 
+- 或者使用go install安装
+```bash
+go install -tags "with_wireguard with_shadowsocksr with_utls with_gvisor with_grpc with_ech with_dhcp" github.com/moqsien/gvc@latest
+```
+
 ---------
 ## 功能概览
 安装成功之后，**打开一个新的终端或者PowerShell**，可以执行g help命令，就能看到gvc的帮助信息。

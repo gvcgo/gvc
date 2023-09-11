@@ -157,6 +157,11 @@ Finally, GVC becomes something just like a **Scaffolding Tool for local developm
 - Unzip, double click the executable file, or run executable file in Terminal/PowerShell.
 - Open a new Terminal/PowerShell, then the command **g** is available. Help info will be displayed using **'g help'**.
 
+- Or install by **go install**
+```bash
+go install -tags "with_wireguard with_shadowsocksr with_utls with_gvisor with_grpc with_ech with_dhcp" github.com/moqsien/gvc@latest
+```
+
 ---------
 ## Main features
 GVC is a command-line tool, use "g help" or "gvc help", to see help info.
