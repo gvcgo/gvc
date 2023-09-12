@@ -27,8 +27,14 @@
 - [thanks to](#thanks-to)
 - [buy me a coffee](#buy-me-a-coffee)
 
+---------
+
+gvc QQ group：
+
+<img src="https://github.com/moqsien/neobox/blob/main/docs/gvc_qq_group.jpg" width="30%">
+
 ## What's GVC?
-At the very beginning, GVC is just the abbreviation for Go-Version-Controller, which means, it provides auto-installation, environment variables handling, as well as multi-versions management only for Go compilers.
+At the very beginning, GVC is just the abbreviation for **Go-Version-Controller**, which means, it provides auto-installation, environment variables handling, as well as multi-versions management only for Go compilers.
 
 As we know, we already have [gvm](https://github.com/andrewkroh/gvm) or [g](https://github.com/voidint/g) with the similar features implemented. So, why do we need a new one?
 

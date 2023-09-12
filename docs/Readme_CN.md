@@ -28,6 +28,11 @@
 - [送我一杯咖啡~~~](#送我一杯咖啡)
 
 ---------
+gvc交流QQ群：
+
+<img src="https://github.com/moqsien/neobox/blob/main/docs/gvc_qq_group.jpg" width="30%">
+
+---------
 ## gvc是什么？
 最开始，gvc是go version controller的缩写。当时只是想做一个好用一点，界面相对美观一点的go多版本管理工具。
 
