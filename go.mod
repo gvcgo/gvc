@@ -15,7 +15,7 @@ require (
 	github.com/moqsien/asciinema v0.3.0
 	github.com/moqsien/goutils v0.3.6
 	github.com/moqsien/hackbrowser v1.0.3
-	github.com/moqsien/neobox v1.0.6
+	github.com/moqsien/neobox v1.0.7
 	github.com/pterm/pterm v0.12.62
 	github.com/studio-b12/gowebdav v0.0.0-20230203202212-3282f94193f2
 	github.com/tidwall/gjson v1.14.4
@@ -170,6 +170,7 @@ require (
 	github.com/sagernet/wireguard-go v0.0.0-20230807125731-5d4a7ef2dc5f // indirect
 	github.com/scjalliance/comshim v0.0.0-20230315213746-5e51f40bd3b9 // indirect
 	github.com/seiflotfy/cuckoofilter v0.0.0-20220411075957-e3b120b3f5fb // indirect
+	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e // indirect
 	github.com/syndtr/goleveldb v1.0.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect

@@ -514,8 +514,8 @@ github.com/moqsien/goutils v0.3.6 h1:OQVvVsR8dsh00DTH7rI/oj2fGaQCsjBMm4SeKzoSy2Q
 github.com/moqsien/goutils v0.3.6/go.mod h1:V9Yj1e5Qo292hqMyYVfX4/yTihpl6wFp7HhpPZMUvxg=
 github.com/moqsien/hackbrowser v1.0.3 h1:HpXHg1goHU70YnifqPk8+ityK5/SpIu9e7BB5pN4TUY=
 github.com/moqsien/hackbrowser v1.0.3/go.mod h1:xsUuSbleSJn0vz5TOFMD0nDEmv5fDGgb65HQq8INLJc=
-github.com/moqsien/neobox v1.0.6 h1:ec4/c5lxG8Hi61KNQljzcr93EPwpc5Kj9R9eOhCZLfs=
-github.com/moqsien/neobox v1.0.6/go.mod h1:URxIHQGM0IjDPrg9jENyanhEoI1kMwNCXVPR8Y3VRps=
+github.com/moqsien/neobox v1.0.7 h1:sPzEykVRfohv8cwlWF8eayKmuDHkNYJSavm8ts3UOOw=
+github.com/moqsien/neobox v1.0.7/go.mod h1:L/c6cF1+lPqZwTdp7Kb6LLogL6T7roHpEAwlu5YpA1Q=
 github.com/moqsien/processes v1.0.3 h1:bV8vi4JZnwlhsxguyVAtUUv+zq4yvMSZIfjrsFGfmPE=
 github.com/moqsien/processes v1.0.3/go.mod h1:+jsV7YfT+24Ea7Ks8UXW4x8jcbqX7exKej/o5zlPEm0=
 github.com/moqsien/vpnparser v0.2.1 h1:KNxfSKxdmsifPp25gG34dK34DwrS682GYKt8XTHaVZM=
@@ -717,6 +717,8 @@ github.com/shurcooL/webdavfs v0.0.0-20170829043945-18c3829fa133/go.mod h1:hKmq5k
 github.com/sirupsen/logrus v1.2.0/go.mod h1:LxeOpSwHxABJmUn/MG1IvRgCAasNZTLOkJPxbbu5VWo=
 github.com/sirupsen/logrus v1.4.2/go.mod h1:tLMulIdttU9McNUspp0xgXVQah82FyeX6MwdIuYE2rE=
 github.com/sirupsen/logrus v1.6.0/go.mod h1:7uNnSEd1DgxDLC74fIahvMZmmYsHGZGEOFrfsX/uA88=
+github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e h1:MRM5ITcdelLK2j1vwZ3Je0FKVCfqOLp5zO6trqMLYs0=
+github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e/go.mod h1:XV66xRDqSt+GTGFMVlhk3ULuV0y9ZmzeVGR4mloJI3M=
 github.com/sourcegraph/annotate v0.0.0-20160123013949-f4cad6c6324d/go.mod h1:UdhH50NIW0fCiwBSr0co2m7BnFLdv4fQTgdqdJTHFeE=
 github.com/sourcegraph/syntaxhighlight v0.0.0-20170531221838-bd320f5d308e/go.mod h1:HuIsMU8RRBOtsCgI77wP899iHVBQpCmg4ErYMZB+2IA=
 github.com/spf13/afero v1.9.3 h1:41FoI0fD7OR7mGcKE/aOiLkGreyf8ifIOQmJANWogMk=
