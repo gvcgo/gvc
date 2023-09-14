@@ -161,6 +161,13 @@ func (that *Self) download() {
 		fetcher := request.NewFetcher()
 		fetcher.SetUrl(dUrl)
 		fetcher.Timeout = 20 * time.Minute
+		temBinPath := filepath.Join(config.GVCBinTempDir, "gvc")
+		if runtime.GOOS == utils.Windows {
+			temBinPath += ".exe"
+		}
+		// remove old files before get a new one
+		os.RemoveAll(fPath)
+		os.RemoveAll(temBinPath)
 		if err := fetcher.DownloadAndDecompress(fPath, config.GVCBinTempDir, true); err != nil {
 			tui.PrintError(err)
 		} else {
