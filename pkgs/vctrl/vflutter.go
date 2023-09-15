@@ -31,20 +31,22 @@ type FlutterPackage struct {
 }
 
 type FlutterVersion struct {
-	Versions map[string][]*FlutterPackage
-	Json     *gjson.Json
-	Conf     *config.GVConfig
-	fetcher  *request.Fetcher
-	env      *utils.EnvsHandler
-	baseUrl  string
+	Versions    map[string][]*FlutterPackage
+	Json        *gjson.Json
+	Conf        *config.GVConfig
+	fetcher     *request.Fetcher
+	env         *utils.EnvsHandler
+	baseUrl     string
+	flutterConf map[string]string
 }
 
 func NewFlutterVersion() (fv *FlutterVersion) {
 	fv = &FlutterVersion{
-		Versions: make(map[string][]*FlutterPackage, 500),
-		Conf:     config.New(),
-		fetcher:  request.NewFetcher(),
-		env:      utils.NewEnvsHandler(),
+		Versions:    make(map[string][]*FlutterPackage, 500),
+		Conf:        config.New(),
+		fetcher:     request.NewFetcher(),
+		env:         utils.NewEnvsHandler(),
+		flutterConf: map[string]string{},
 	}
 	fv.initeDirs()
 	fv.env.SetWinWorkDir(config.GVCWorkDir)
@@ -55,17 +57,23 @@ func (that *FlutterVersion) initeDirs() {
 	utils.MakeDirs(config.FlutterRootDir, config.FlutterTarFilePath, config.FlutterUntarFilePath)
 }
 
-func (that *FlutterVersion) getJson() {
-	var fUrl string
-	switch runtime.GOOS {
-	case utils.Windows:
-		fUrl = that.Conf.Flutter.WinUrl
-	case utils.Linux:
-		fUrl = that.Conf.Flutter.LinuxUrl
-	case utils.MacOS:
-		fUrl = that.Conf.Flutter.MacosUrl
-	default:
+func (that *FlutterVersion) ChooseSource() {
+	if that.flutterConf == nil || len(that.flutterConf) == 0 {
+		pterm.Println(pterm.Green("Get versions from official site or not?"))
+		pterm.Println(pterm.Green("If not, then get versions from 'flutter.cn'[accelerated in China]."))
+		isOfficial, _ := pterm.DefaultInteractiveConfirm.Show()
+		pterm.Println()
+		if isOfficial {
+			that.flutterConf = that.Conf.Flutter.OfficialURLs
+		} else {
+			that.flutterConf = that.Conf.Flutter.DefaultURLs
+		}
 	}
+}
+
+func (that *FlutterVersion) getJson() {
+	that.ChooseSource()
+	fUrl := that.flutterConf[runtime.GOOS]
 	if !utils.VerifyUrls(fUrl) {
 		return
 	}
@@ -124,6 +132,7 @@ func (that *FlutterVersion) GetVersions() {
 }
 
 func (that *FlutterVersion) ShowVersions() {
+	// that.ChooseSource()
 	if len(that.Versions) == 0 {
 		that.GetVersions()
 	}
@@ -178,18 +187,19 @@ func (that *FlutterVersion) download(version string) (r string) {
 }
 
 func (that *FlutterVersion) CheckAndInitEnv() {
+	that.ChooseSource()
 	if runtime.GOOS != utils.Windows {
 		flutterEnv := fmt.Sprintf(utils.FlutterEnv,
 			config.FlutterRootDir,
-			that.Conf.Flutter.HostedUrl,
-			that.Conf.Flutter.StorageBaseUrl,
-			that.Conf.Flutter.GitUrl)
+			that.flutterConf["hosted_url"],
+			that.flutterConf["storage_base_url"],
+			that.flutterConf["git_url"])
 		that.env.UpdateSub(utils.SUB_FLUTTER, flutterEnv)
 	} else {
 		envList := map[string]string{
-			"PUB_HOSTED_URL":           that.Conf.Flutter.HostedUrl,
-			"FLUTTER_STORAGE_BASE_URL": that.Conf.Flutter.StorageBaseUrl,
-			"FLUTTER_GIT_URL":          that.Conf.Flutter.GitUrl,
+			"PUB_HOSTED_URL":           that.flutterConf["hosted_url"],
+			"FLUTTER_STORAGE_BASE_URL": that.flutterConf["storage_base_url"],
+			"FLUTTER_GIT_URL":          that.flutterConf["git_url"],
 			"PATH":                     filepath.Join(config.FlutterRootDir, "bin"),
 		}
 		that.env.SetEnvForWin(envList)

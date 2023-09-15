@@ -66,7 +66,15 @@ func (that *GoVersion) initeDirs() {
 
 func (that *GoVersion) getDoc() {
 	if len(that.Conf.Go.CompilerUrls) > 0 {
-		that.fetcher.Url = that.Conf.Go.CompilerUrls[0]
+		pterm.Println(pterm.Green("Get versions from go.dev or not?"))
+		pterm.Println(pterm.Green("If not, then get versions from 'golang.google.cn'[accelerated in China]."))
+		notCN, _ := pterm.DefaultInteractiveConfirm.Show()
+		pterm.Println()
+		if notCN {
+			that.fetcher.Url = that.Conf.Go.CompilerUrls[1]
+		} else {
+			that.fetcher.Url = that.Conf.Go.CompilerUrls[0]
+		}
 		var err error
 		if that.ParsedUrl, err = url.Parse(that.fetcher.Url); err != nil {
 			tui.PrintError(err)
@@ -263,14 +271,21 @@ func (that *GoVersion) findPackage(version string, kind ...string) (p *GoPackage
 func (that *GoVersion) download(version string) (r string) {
 	p := that.findPackage(version)
 	if p != nil {
-		fName := fmt.Sprintf("go-%s-%s.%s%s", version, p.OS, p.Arch, utils.GetExt(p.FileName))
-		fpath := filepath.Join(config.GoTarFilesPath, fName)
-		that.fetcher.Url = p.AliUrl
-		if that.fetcher.Url == "" {
-			that.fetcher.Url = p.Url
+		pterm.Println(pterm.Green("Use Aliyun[mirrors.aliyun.com/golang/, accelerated in China] source to download or not?"))
+		pterm.Println(pterm.Green("If not, then get versions from official/cn site."))
+		useAliMirror, _ := pterm.DefaultInteractiveConfirm.Show()
+		pterm.Println()
+		if useAliMirror {
+			that.fetcher.Url = p.AliUrl
+			if that.fetcher.Url == "" {
+				that.fetcher.Url = p.Url
+			}
 		}
 		that.fetcher.Timeout = 900 * time.Second
-		that.fetcher.SetThreadNum(8)
+		that.fetcher.SetThreadNum(4)
+
+		fName := fmt.Sprintf("go-%s-%s.%s%s", version, p.OS, p.Arch, utils.GetExt(p.FileName))
+		fpath := filepath.Join(config.GoTarFilesPath, fName)
 		if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 			if ok := that.checkFile(p, fpath); ok {
 				return fpath

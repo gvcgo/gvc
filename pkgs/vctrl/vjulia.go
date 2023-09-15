@@ -20,7 +20,6 @@ import (
 	"github.com/pterm/pterm"
 )
 
-// TODO: only in china mainland
 type JuliaPackage struct {
 	Url      string
 	FileName string
@@ -54,7 +53,15 @@ func (that *JuliaVersion) initeDirs() {
 }
 
 func (that *JuliaVersion) getJson() {
-	that.fetcher.Url = that.Conf.Julia.VersionUrl
+	pterm.Println(pterm.Green("Use tsinghua[mirrors.tuna.tsinghua.edu.cn, accelerated in China] source to download or not?"))
+	pterm.Println(pterm.Green("If not, then get versions from official site."))
+	useTsinghua, _ := pterm.DefaultInteractiveConfirm.Show()
+	pterm.Println()
+	if useTsinghua {
+		that.fetcher.Url = that.Conf.Julia.VersionUrl
+	} else {
+		that.fetcher.Url = that.Conf.Julia.VersionUrlOfficial
+	}
 	if !utils.VerifyUrls(that.fetcher.Url) {
 		return
 	}
