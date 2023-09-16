@@ -15,7 +15,7 @@ require (
 	github.com/moqsien/asciinema v0.3.0
 	github.com/moqsien/goutils v0.3.6
 	github.com/moqsien/hackbrowser v1.0.3
-	github.com/moqsien/neobox v1.1.1
+	github.com/moqsien/neobox v1.1.2
 	github.com/pterm/pterm v0.12.62
 	github.com/studio-b12/gowebdav v0.0.0-20230203202212-3282f94193f2
 	github.com/tidwall/gjson v1.14.4
