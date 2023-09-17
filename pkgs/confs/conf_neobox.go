@@ -77,13 +77,14 @@ func (that *NeoboxConf) Reset() {
 
 	// cloudflare/wireguard related
 	that.NeoConf.CloudflareConf = &neoconf.CloudflareConf{
-		CloudflareIPV4URL: "https://www.cloudflare.com/ips-v4",
-		PortList:          []int{443, 8443, 2053, 2096, 2087, 2083},
-		MaxPingCount:      4,
-		MaxGoroutines:     300,
-		MaxRTT:            500,
-		MaxLossRate:       0.0,
-		MaxSaveToDB:       1000,
-		WireGuardConfDir:  GVCBackupDir, // save wireguard configurations to BackupDir
+		CloudflareIPV4URL:       "https://www.cloudflare.com/ips-v4",
+		PortList:                []int{443, 8443, 2053, 2096, 2087, 2083},
+		MaxPingCount:            4,
+		MaxGoroutines:           300,
+		MaxRTT:                  500,
+		MaxLossRate:             0.0,
+		MaxSaveToDB:             1000,
+		WireGuardConfDir:        GVCBackupDir, // save wireguard configurations to BackupDir
+		CloudflareDomainFileUrl: "https://gitlab.com/moqsien/gvc_resources/-/raw/main/cloudflare_domains.txt?ref_type=heads",
 	}
 }
