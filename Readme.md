@@ -155,6 +155,10 @@ Finally, GVC becomes something just like a **Scaffolding Tool for local developm
       <td><a href="https://github.com/protocolbuffers/protobuf">protobuf</a></td>
       <td><a href="https://google.golang.org/protobuf/cmd/protoc-gen-go">protoc-go-gen</a></td>
     </tr>
+    <tr>
+      <td><a href="https://docs.docker.com/desktop/install/windows-install/">docker-for-windows</a></td>
+      <td><a href="https://docs.docker.com/desktop/install/mac-install/">docker-for-MacOS</a></td>
+    </tr>
   </tbody>
 </table>
 
@@ -206,10 +210,11 @@ COMMANDS:
    browser, br                      Browser data management.
    homebrew, brew, hb               Homebrew installation or update.
    gsudo, winsudo, gs, ws           Gsudo for windows.
-   hosts, h, host                   System hosts file management(need admistrator or root).
+   hosts, h, host                   Sytem hosts file management(need admistrator or root).
    github, gh                       Github download speedup.
    cloc, cl                         Count lines of code.
    asciinema, ascii, asc            Asciinema terminal recorder.
+   docker, dck, dock                Gsudo for windows.
    config, conf, cnf, c             Config file management for gvc.
    version, ver, vsi                Show gvc version info.
    check, checklatest, checkupdate  Check and download the latest version of gvc.
@@ -626,6 +631,7 @@ gvc provides no paid services, so, users should make use of it within the limits
 - [PowerSession-rs](https://github.com/Watfaq/PowerSession-rs)
 - [conpty-go](https://github.com/qsocket/conpty-go)
 - [gocloc](https://github.com/hhatto/gocloc)
+- [docker](https://docs.docker.com/desktop/)
 
 ## buy me a coffee
 [wechat](https://github.com/moqsien/moqsien/blob/main/imgs/wechat.jpeg)

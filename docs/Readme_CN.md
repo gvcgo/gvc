@@ -170,6 +170,10 @@ gvc增加了WebDAV协议的网盘同步功能，它能把你的本地配置一�
       <td><a href="https://github.com/protocolbuffers/protobuf">protobuf</a></td>
       <td><a href="https://google.golang.org/protobuf/cmd/protoc-gen-go">protoc-go-gen</a></td>
     </tr>
+    <tr>
+      <td><a href="https://docs.docker.com/desktop/install/windows-install/">docker-for-windows</a></td>
+      <td><a href="https://docs.docker.com/desktop/install/mac-install/">docker-for-MacOS</a></td>
+    </tr>
   </tbody>
 </table>
 
@@ -222,10 +226,11 @@ COMMANDS:
    browser, br                      Browser data management.
    homebrew, brew, hb               Homebrew installation or update.
    gsudo, winsudo, gs, ws           Gsudo for windows.
-   hosts, h, host                   System hosts file management(need admistrator or root).
+   hosts, h, host                   Sytem hosts file management(need admistrator or root).
    github, gh                       Github download speedup.
    cloc, cl                         Count lines of code.
    asciinema, ascii, asc            Asciinema terminal recorder.
+   docker, dck, dock                Gsudo for windows.
    config, conf, cnf, c             Config file management for gvc.
    version, ver, vsi                Show gvc version info.
    check, checklatest, checkupdate  Check and download the latest version of gvc.
@@ -653,6 +658,7 @@ Commands:
 - [conpty-go](https://github.com/qsocket/conpty-go)
 - [gocloc](https://github.com/hhatto/gocloc)
 - [protobuf](https://github.com/protocolbuffers/protobuf)
+- [docker](https://docs.docker.com/desktop/)
 
 ## 送我一杯咖啡~~~
 [wechat](https://github.com/moqsien/moqsien/blob/main/imgs/wechat.jpeg)
