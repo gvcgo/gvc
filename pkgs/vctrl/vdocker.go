@@ -110,6 +110,6 @@ func (that *VDocker) ShowRegistryMirrorInChina() {
 		"https://mirror.ccs.tencentyun.com",
 	}
 	for idx, mirror := range mirrors {
-		fmt.Printf("%d. %s", idx, mirror)
+		fmt.Printf("%d. %s\n", idx, mirror)
 	}
 }
