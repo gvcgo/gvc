@@ -546,3 +546,11 @@ const (
 	ChatgptConversationFileName string = "chatgpt_conversation.json"
 	ChatgptConfigFileName       string = "chatgpt_config.yml"
 )
+
+/*
+Docker related
+*/
+var (
+	DockerFilesDir               string = filepath.Join(GVCWorkDir, "docker_files")
+	DockerWindowsInstallationDir string = filepath.Join(DockerFilesDir, "docker_installation")
+)

@@ -38,6 +38,7 @@ type GVConfig struct {
 	Sum      *SumConf      `koanf:"sum"`
 	Protobuf *ProtobufConf `koanf:"protobuf"`
 	GSudo    *GsudoConf    `koanf:"gsudo"`
+	Docker   *DockerConf   `koanf:"docker"`
 	path     string
 	koanfer  *koanfer.JsonKoanfer
 }
@@ -68,6 +69,7 @@ func New() (r *GVConfig) {
 		Sum:      NewSumConf(),
 		Protobuf: NewProtobuf(),
 		GSudo:    NewGsudoConf(),
+		Docker:   NewDockerConf(),
 		path:     GVConfigPath,
 		koanfer:  kfer,
 	}
@@ -139,6 +141,8 @@ func (that *GVConfig) SetDefault() {
 	that.Protobuf.Reset()
 	that.GSudo = NewGsudoConf()
 	that.GSudo.Reset()
+	that.Docker = NewDockerConf()
+	that.Docker.Reset()
 }
 
 func (that *GVConfig) Reset() {

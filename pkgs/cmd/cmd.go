@@ -55,6 +55,7 @@ func (that *Cmder) initiate() {
 	that.vgithub()
 	that.vcloc()
 	that.asciinema()
+	that.docker()
 
 	that.vconf()
 	that.version()

@@ -369,3 +369,36 @@ func (that *Cmder) asciinema() {
 
 	that.Commands = append(that.Commands, command)
 }
+
+func (that *Cmder) docker() {
+	command := &cli.Command{
+		Name:        "docker",
+		Aliases:     []string{"dck", "dock"},
+		Usage:       "Gsudo for windows.",
+		Subcommands: []*cli.Command{},
+	}
+	install := &cli.Command{
+		Name:    "install",
+		Aliases: []string{"ins", "i"},
+		Usage:   "Install docker.",
+		Action: func(ctx *cli.Context) error {
+			dv := vctrl.NewVDocker()
+			dv.Install()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, install)
+
+	showMirrors := &cli.Command{
+		Name:    "show-mirrors-in-china",
+		Aliases: []string{"shmc", "sh"},
+		Usage:   "Show registry mirrors in China.",
+		Action: func(ctx *cli.Context) error {
+			dv := vctrl.NewVDocker()
+			dv.ShowRegistryMirrorInChina()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, showMirrors)
+	that.Commands = append(that.Commands, command)
+}
