@@ -67,6 +67,7 @@ func (that *VDocker) installDockerForWindows() {
 				tui.PrintErrorf("<net localgroup docker-users <user> /add> errored: %+v", err)
 			}
 		}
+		os.RemoveAll(fPath)
 	}
 }
 
