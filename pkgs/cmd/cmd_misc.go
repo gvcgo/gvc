@@ -374,7 +374,7 @@ func (that *Cmder) docker() {
 	command := &cli.Command{
 		Name:        "docker",
 		Aliases:     []string{"dck", "dock"},
-		Usage:       "Gsudo for windows.",
+		Usage:       "Docker installation.",
 		Subcommands: []*cli.Command{},
 	}
 	install := &cli.Command{
