@@ -32,7 +32,7 @@ func (that *VDocker) installDockerForWindows() {
 	that.fetcher.SetUrl(that.Conf.Docker.WindowsDockerDownloadUrl)
 	that.fetcher.Timeout = time.Minute * 30
 	that.fetcher.SetThreadNum(4)
-	fPath := filepath.Join(config.DockerFilesDir, "docker.exe")
+	fPath := filepath.Join(config.DockerFilesDir, "docker-desktop-installer.exe")
 	os.RemoveAll(fPath)
 	that.fetcher.GetAndSaveFile(fPath, true)
 	if ok, _ := utils.PathIsExist(fPath); ok {
@@ -44,7 +44,7 @@ func (that *VDocker) installDockerForWindows() {
 			"install",
 			"--quiet",
 			"--accept-license",
-			"--backend=windows",
+			"--backend=wsl-2",
 			fmt.Sprintf("--installation-dir=%s", config.DockerWindowsInstallationDir),
 		)
 		if err != nil {
@@ -64,7 +64,7 @@ func (that *VDocker) installDockerForWindows() {
 				"/add",
 			)
 			if err != nil {
-				tui.PrintErrorf("<net localgroup docker-users <user> /add> errored: %+v", err)
+				tui.PrintWarningf("< net localgroup docker-users <user> /add > errored: %+v", err)
 			}
 		}
 		os.RemoveAll(fPath)
@@ -77,7 +77,7 @@ func (that *VDocker) installDockerForLinux() {
 	that.fetcher.Timeout = 3 * time.Minute
 	that.fetcher.GetAndSaveFile(fPath, true)
 	if ok, _ := utils.PathIsExist(fPath); ok {
-		_, err := utils.ExecuteSysCommand(false, "sh", fPath)
+		_, err := utils.ExecuteSysCommand(false, "sudo", "sh", fPath)
 		if err != nil {
 			tui.PrintError(err)
 		}
