@@ -135,7 +135,7 @@ func (that *Self) ShowVersion() {
 			"%s\n%s\n%s",
 			pterm.LightCyan("   Version:     ")+pterm.LightYellow("v"+VERSION),
 			pterm.LightCyan("   Github:      ")+pterm.LightYellow("https://github.com/moqsien/gvc"),
-			pterm.LightCyan("   Email:       ")+pterm.LightYellow("moqsien@foxmail.com"),
+			pterm.LightCyan("   Email:       ")+pterm.LightYellow("moqsien2022@gmail.com"),
 		)
 	pterm.Println(str)
 }
