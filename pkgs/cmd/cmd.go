@@ -52,6 +52,7 @@ func (that *Cmder) initiate() {
 	that.vhomebrew()
 	that.vgsudo()
 	that.vhost()
+	that.vgit()
 	that.vgithub()
 	that.vcloc()
 	that.asciinema()

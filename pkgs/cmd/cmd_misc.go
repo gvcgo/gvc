@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"runtime"
-	"strconv"
 
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/vctrl"
@@ -53,53 +52,6 @@ func (that *Cmder) vhost() {
 		},
 	}
 	command.Subcommands = append(command.Subcommands, showpath)
-
-	that.Commands = append(that.Commands, command)
-}
-
-func (that *Cmder) vgithub() {
-	command := &cli.Command{
-		Name:        "github",
-		Aliases:     []string{"gh"},
-		Usage:       "Github download speedup.",
-		Subcommands: []*cli.Command{},
-	}
-
-	var isSourceCode bool
-	vdownload := &cli.Command{
-		Name:    "download",
-		Aliases: []string{"dl", "d"},
-		Flags: []cli.Flag{
-			&cli.BoolFlag{
-				Name:        "code",
-				Aliases:     []string{"co", "c"},
-				Usage:       "Download only source code.",
-				Destination: &isSourceCode,
-			},
-		},
-		Usage: "Download files from github project.",
-		Action: func(ctx *cli.Context) error {
-			githubProjectUrl := ctx.Args().First()
-			vg := vctrl.NewGhDownloader()
-			vg.Download(githubProjectUrl, isSourceCode)
-			return nil
-		},
-	}
-	command.Subcommands = append(command.Subcommands, vdownload)
-
-	vopen := &cli.Command{
-		Name:    "openbrowser",
-		Aliases: []string{"open", "ob"},
-		Usage:   "Open acceleration website in browser.",
-		Action: func(ctx *cli.Context) error {
-			chosenStr := ctx.Args().First()
-			chosen, _ := strconv.Atoi(chosenStr)
-			vg := vctrl.NewGhDownloader()
-			vg.OpenByBrowser(chosen)
-			return nil
-		},
-	}
-	command.Subcommands = append(command.Subcommands, vopen)
 
 	that.Commands = append(that.Commands, command)
 }

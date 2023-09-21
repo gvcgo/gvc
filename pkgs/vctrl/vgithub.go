@@ -11,6 +11,7 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/go-resty/resty/v2"
+	"github.com/moqsien/goutils/pkgs/ggit"
 	tui "github.com/moqsien/goutils/pkgs/gtui"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
@@ -18,11 +19,13 @@ import (
 	"github.com/pterm/pterm"
 )
 
+// TODO: add git push && git pull through local proxies.
 type GhDownloader struct {
 	Conf     *config.GVConfig
 	path     string
 	fetcher  *request.Fetcher
 	releases map[string]string
+	git      *ggit.Git
 }
 
 func NewGhDownloader() (gd *GhDownloader) {
@@ -31,6 +34,7 @@ func NewGhDownloader() (gd *GhDownloader) {
 		fetcher:  request.NewFetcher(),
 		Conf:     config.New(),
 		releases: make(map[string]string),
+		git:      ggit.NewGit(),
 	}
 	return
 }
@@ -160,5 +164,47 @@ func (that *GhDownloader) OpenByBrowser(chosen int) {
 		if err := cmd.Run(); err != nil {
 			tui.PrintError(fmt.Sprintf("Execution failed: %+v", err))
 		}
+	}
+}
+
+func (that *GhDownloader) Clone(projectUrl, proxyUrl string) {
+	that.git.SetProxyUrl(proxyUrl)
+	if _, err := that.git.CloneBySSH(projectUrl); err != nil {
+		tui.PrintError(err)
+	}
+}
+
+func (that *GhDownloader) Pull(proxyUrl string) {
+	that.git.SetProxyUrl(proxyUrl)
+	if err := that.git.PullBySSH(); err != nil {
+		tui.PrintError(err)
+	}
+}
+
+func (that *GhDownloader) Push(proxyUrl string) {
+	that.git.SetProxyUrl(proxyUrl)
+	if err := that.git.PushBySSH(); err != nil {
+		tui.PrintError(err)
+	}
+}
+
+func (that *GhDownloader) CommitAndPush(commitMsg, proxyUrl string) {
+	that.git.SetProxyUrl(proxyUrl)
+	if err := that.git.CommitAndPush(commitMsg); err != nil {
+		tui.PrintError(err)
+	}
+}
+
+func (that *GhDownloader) AddTagAndPush(tag, proxyUrl string) {
+	that.git.SetProxyUrl(proxyUrl)
+	if err := that.git.AddTagAndPushToRemote(tag); err != nil {
+		tui.PrintError(err)
+	}
+}
+
+func (that *GhDownloader) DelTagAndPush(tag, proxyUrl string) {
+	that.git.SetProxyUrl(proxyUrl)
+	if err := that.git.DeleteTagAndPushToRemote(tag); err != nil {
+		tui.PrintError(err)
 	}
 }
