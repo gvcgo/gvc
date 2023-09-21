@@ -16,6 +16,7 @@
   - [Subcommand: vscode](#subcommand-vscode)
   - [Subcommand: hosts](#subcommand-hosts)
   - [Subcommand: github](#subcommand-github)
+  - [Subcommand: git-XXX](#subcommand-git-xxx)
   - [Subcommand: browser](#subcommand-browser)
   - [Subcommand: asciinema](#subcommand-asciinema)
   - [Subcommand: cloc](#subcommand-cloc)
@@ -159,9 +160,13 @@ Finally, GVC becomes something just like a **Scaffolding Tool for local developm
       <td><a href="https://docs.docker.com/desktop/install/windows-install/">docker-for-windows</a></td>
       <td><a href="https://docs.docker.com/desktop/install/mac-install/">docker-for-MacOS</a></td>
     </tr>
+    <tr>
+      <td><a href="https://github.com/go-git/">git command using a local proxy</a></td>
+      <td><a href="https://github.com/go-git/">go-git/a></td>
+    </tr>
   </tbody>
 </table>
-
+<!-- github.com/go-git -->
 ## Download & Install
 - Download the latest [release](https://github.com/moqsien/gvc/releases).
 - Unzip, double click the executable file, or run executable file in Terminal/PowerShell.
@@ -189,38 +194,44 @@ DESCRIPTION:
    A productive tool to manage your development environment.
 
 COMMANDS:
-   go, g                            Go version management.
-   proto, protobuf, protoc, pt      Protoc installation.
-   python, py                       Python version management.
-   java, jdk, j                     Java jdk version management.
-   maven, mav, ma                   Maven version management.
-   gradle, gra, gr                  Gradle version management.
-   nodejs, node, no                 NodeJS version management.
-   flutter, flu, fl                 Flutter version management.
-   julia, jul, ju                   Julia version management.
-   rust, rustc, ru, r               Rust installation.
-   cpp                              C/C++ management.
-   typst, ty                        Typst installation.
-   vlang, vl                        Vlang installation.
-   vscode, vsc, vs, v               VSCode and extensions installation.
-   nvim, neovim, nv, n              Neovim installation.
-   neobox-shell, shell, box, ns     Start a neobox shell.
-   neobox-runner, nbrunner, nbr     Start a neobox client.
-   neobox-keeper, nbkeeper, nbk     Start a neobox keeper.
-   browser, br                      Browser data management.
-   homebrew, brew, hb               Homebrew installation or update.
-   gsudo, winsudo, gs, ws           Gsudo for windows.
-   hosts, h, host                   Sytem hosts file management(need admistrator or root).
-   github, gh                       Github download speedup.
-   cloc, cl                         Count lines of code.
-   asciinema, ascii, asc            Asciinema terminal recorder.
-   docker, dck, dock                Gsudo for windows.
-   config, conf, cnf, c             Config file management for gvc.
-   version, ver, vsi                Show gvc version info.
-   check, checklatest, checkupdate  Check and download the latest version of gvc.
-   show, sho, sh                    Show [gvc] installation path and config file path.
-   uninstall, unins, delete, del    [Caution] Remove gvc and softwares installed by gvc!
-   help, h                          Shows a list of commands or help for one command
+   go, g                                  Go version management.
+   proto, protobuf, protoc, pt            Protoc installation.
+   python, py                             Python version management.
+   java, jdk, j                           Java jdk version management.
+   maven, mav, ma                         Maven version management.
+   gradle, gra, gr                        Gradle version management.
+   nodejs, node, no                       NodeJS version management.
+   flutter, flu, fl                       Flutter version management.
+   julia, jul, ju                         Julia version management.
+   rust, rustc, ru, r                     Rust installation.
+   cpp                                    C/C++ management.
+   typst, ty                              Typst installation.
+   vlang, vl                              Vlang installation.
+   vscode, vsc, vs, v                     VSCode and extensions installation.
+   nvim, neovim, nv, n                    Neovim installation.
+   neobox-shell, shell, box, ns           Start a neobox shell.
+   neobox-runner, nbrunner, nbr           Start a neobox client.
+   neobox-keeper, nbkeeper, nbk           Start a neobox keeper.
+   browser, br                            Browser data management.
+   homebrew, brew, hb                     Homebrew installation or update.
+   gsudo, winsudo, gs, ws                 Gsudo for windows.
+   hosts, h, host                         Sytem hosts file management(need admistrator or root).
+   git-clone, gclone, gclo                Git Clone using a proxy.
+   git-pull, gpull, gpul                  Git Pull using a proxy.
+   git-push, gpush, gpus                  Git Push using a proxy.
+   git-commit-push, gcpush, gcp           Git commit and push to remote using a proxy.
+   git-add-tag-push, gaddtag, gatag, gat  Git add a new tag and push to remote using a proxy.
+   git-del-tag-push, gdeltag, gdtag, gdt  Git delete a tag and push to remote using a proxy.
+   github, gh                             Github download speedup.
+   cloc, cl                               Count lines of code.
+   asciinema, ascii, asc                  Asciinema terminal recorder.
+   docker, dck, dock                      Docker installation.
+   config, conf, cnf, c                   Config file management for gvc.
+   version, ver, vsi                      Show gvc version info.
+   check, checklatest, checkupdate        Check and download the latest version of gvc.
+   show, sho, sh                          Show [gvc] installation path and config file path.
+   uninstall, unins, delete, del          [Caution] Remove gvc and softwares installed by gvc!
+   help, h                                Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
    --help, -h  show help
@@ -238,10 +249,10 @@ $moqsien> g version
 ┌────────────────────────────────────────────────────────────────────┐
 |                                                                    |
 |                                                                    |
-|     Version:     v1.4.2(f684b2a1a57c560228add15590783d428d92b480)  |
-|     UpdateAt:    Wed Aug 23 17:33:08 2023 +0800                    |
+|     Version:     v1.5.6(17f14754cdcebcfd72f30fcf7fcea1f9304e189a)  |
+|     UpdateAt:    Thu Sep 21 12:53:09 2023 +0800                    |
 |     Homepage:    https://github.com/moqsien/gvc                    |
-|     Email:       moqsien@foxmail.com                               |
+|     Email:       moqsien2022@gmail.com                             |
 |                                                                    |
 |                                                                    |
 └────────────────────────────────────────────────────────────────────┘
@@ -450,6 +461,23 @@ OPTIONS:
 ```
 This subcommand speedups github downloadings in China.
 
+### Subcommand: git-XXX
+```bash
+$moqsien> g help
+...
+git-clone, gclone, gclo                Git Clone using a proxy.
+git-pull, gpull, gpul                  Git Pull using a proxy.
+git-push, gpush, gpus                  Git Push using a proxy.
+git-commit-push, gcpush, gcp           Git commit and push to remote using a proxy.
+git-add-tag-push, gaddtag, gatag, gat  Git add a new tag and push to remote using a proxy.
+git-del-tag-push, gdeltag, gdtag, gdt  Git delete a tag and push to remote using a proxy.
+...
+
+```
+
+These subcommands will accelerate your git command by using a proxy.
+Note that, they will use "http://localhost:2023" provided by neobox if you haven't specified one.
+
 ### Subcommand: browser
 ```bash
 $moqsien> g browser help
@@ -632,6 +660,7 @@ gvc provides no paid services, so, users should make use of it within the limits
 - [conpty-go](https://github.com/qsocket/conpty-go)
 - [gocloc](https://github.com/hhatto/gocloc)
 - [docker](https://docs.docker.com/desktop/)
+- [go-git](https://github.com/go-git)
 
 ## buy me a coffee
 [wechat](https://github.com/moqsien/moqsien/blob/main/imgs/wechat.jpeg)
