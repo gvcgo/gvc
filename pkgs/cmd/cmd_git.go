@@ -64,6 +64,7 @@ git subcommands using proxies
 func (that *Cmder) vgit() {
 	var defaultProxy string = "http://localhost:2023"
 	var mannualProxy string
+	var disableProxy bool
 	gclone := &cli.Command{
 		Name:      "git-clone",
 		Aliases:   []string{"gclone", "gclo"},
@@ -153,6 +154,12 @@ func (that *Cmder) vgit() {
 				Usage:       "Specify your proxy.",
 				Destination: &mannualProxy,
 			},
+			&cli.BoolFlag{
+				Name:        "disable-proxy",
+				Aliases:     []string{"d", "dp", "dpxy"},
+				Usage:       "Disable proxy usage.",
+				Destination: &disableProxy,
+			},
 		},
 		Action: func(ctx *cli.Context) error {
 			commitMsgList := ctx.Args().Slice()
@@ -160,9 +167,12 @@ func (that *Cmder) vgit() {
 			if len(commitMsg) > 0 {
 				commitMsg = strings.Join(commitMsgList, " ")
 			}
-			proxyUrl := defaultProxy
-			if mannualProxy != "" {
-				proxyUrl = mannualProxy
+			var proxyUrl string
+			if !disableProxy {
+				proxyUrl = defaultProxy
+				if mannualProxy != "" {
+					proxyUrl = mannualProxy
+				}
 			}
 			vg := vctrl.NewGhDownloader()
 			vg.CommitAndPush(commitMsg, proxyUrl)
@@ -183,15 +193,24 @@ func (that *Cmder) vgit() {
 				Usage:       "Specify your proxy.",
 				Destination: &mannualProxy,
 			},
+			&cli.BoolFlag{
+				Name:        "disable-proxy",
+				Aliases:     []string{"d", "dp", "dpxy"},
+				Usage:       "Disable proxy usage.",
+				Destination: &disableProxy,
+			},
 		},
 		Action: func(ctx *cli.Context) error {
 			tag := ctx.Args().First()
 			if tag == "" {
 				return nil
 			}
-			proxyUrl := defaultProxy
-			if mannualProxy != "" {
-				proxyUrl = mannualProxy
+			var proxyUrl string
+			if !disableProxy {
+				proxyUrl = defaultProxy
+				if mannualProxy != "" {
+					proxyUrl = mannualProxy
+				}
 			}
 			vg := vctrl.NewGhDownloader()
 			vg.AddTagAndPush(tag, proxyUrl)
@@ -212,15 +231,24 @@ func (that *Cmder) vgit() {
 				Usage:       "Specify your proxy.",
 				Destination: &mannualProxy,
 			},
+			&cli.BoolFlag{
+				Name:        "disable-proxy",
+				Aliases:     []string{"d", "dp", "dpxy"},
+				Usage:       "Disable proxy usage.",
+				Destination: &disableProxy,
+			},
 		},
 		Action: func(ctx *cli.Context) error {
 			tag := ctx.Args().First()
 			if tag == "" {
 				return nil
 			}
-			proxyUrl := defaultProxy
-			if mannualProxy != "" {
-				proxyUrl = mannualProxy
+			var proxyUrl string
+			if !disableProxy {
+				proxyUrl = defaultProxy
+				if mannualProxy != "" {
+					proxyUrl = mannualProxy
+				}
 			}
 			vg := vctrl.NewGhDownloader()
 			vg.DelTagAndPush(tag, proxyUrl)
