@@ -161,8 +161,8 @@ Finally, GVC becomes something just like a **Scaffolding Tool for local developm
       <td><a href="https://docs.docker.com/desktop/install/mac-install/">docker-for-MacOS</a></td>
     </tr>
     <tr>
-      <td><a href="https://github.com/go-git/">git command using a local proxy</a></td>
-      <td><a href="https://github.com/go-git/">go-git/a></td>
+      <td><a href="https://github.com/go-git/go-git">git command using a local proxy</a></td>
+      <td><a href="https://github.com/go-git/go-git">go-git</a></td>
     </tr>
   </tbody>
 </table>
@@ -660,7 +660,7 @@ gvc provides no paid services, so, users should make use of it within the limits
 - [conpty-go](https://github.com/qsocket/conpty-go)
 - [gocloc](https://github.com/hhatto/gocloc)
 - [docker](https://docs.docker.com/desktop/)
-- [go-git](https://github.com/go-git)
+- [go-git](https://github.com/go-git/go-git)
 
 ## buy me a coffee
 [wechat](https://github.com/moqsien/moqsien/blob/main/imgs/wechat.jpeg)

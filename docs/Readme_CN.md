@@ -176,8 +176,8 @@ gvc增加了WebDAV协议的网盘同步功能，它能把你的本地配置一�
       <td><a href="https://docs.docker.com/desktop/install/mac-install/">docker-for-MacOS</a></td>
     </tr>
     <tr>
-      <td><a href="https://github.com/go-git/">可以使用本地代理的git命令</a></td>
-      <td><a href="https://github.com/go-git/">go-git，比git配置全局命令更方便</a></td>
+      <td><a href="https://github.com/go-git/go-git">可以使用本地代理的git命令</a></td>
+      <td><a href="https://github.com/go-git/go-git">go-git，比git配置全局命令更方便</a></td>
     </tr>
   </tbody>
 </table>
@@ -687,7 +687,7 @@ Commands:
 - [gocloc](https://github.com/hhatto/gocloc)
 - [protobuf](https://github.com/protocolbuffers/protobuf)
 - [docker](https://docs.docker.com/desktop/)
-- [go-git](https://github.com/go-git)
+- [go-git](https://github.com/go-git/go-git)
 
 ## 送我一杯咖啡~~~
 [wechat](https://github.com/moqsien/moqsien/blob/main/imgs/wechat.jpeg)
