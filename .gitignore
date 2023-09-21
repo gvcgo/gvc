@@ -37,3 +37,4 @@ storage.db
 *.zip
 .neobox_encrypt_key.json
 test.json
+goutils.exe

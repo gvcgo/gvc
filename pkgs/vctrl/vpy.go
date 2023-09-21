@@ -46,7 +46,6 @@ func (that *PyVenv) initeDirs() {
 	}
 }
 
-// TODO: fix pyenv-win update overwritting the installed python versions.
 func (that *PyVenv) handlePyenvUntarfile() {
 	if fList, err := os.ReadDir(config.PyenvInstallDir); err == nil {
 		dirName := "pyenv"

@@ -19,7 +19,6 @@ import (
 	"github.com/pterm/pterm"
 )
 
-// TODO: add git push && git pull through local proxies.
 type GhDownloader struct {
 	Conf     *config.GVConfig
 	path     string
