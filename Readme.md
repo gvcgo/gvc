@@ -166,7 +166,7 @@ Finally, GVC becomes something just like a **Scaffolding Tool for local developm
     </tr>
   </tbody>
 </table>
-<!-- github.com/go-git -->
+
 ## Download & Install
 - Download the latest [release](https://github.com/moqsien/gvc/releases).
 - Unzip, double click the executable file, or run executable file in Terminal/PowerShell.
