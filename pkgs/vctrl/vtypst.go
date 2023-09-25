@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/mholt/archiver/v3"
-	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
@@ -60,7 +60,7 @@ func (that *Typst) download(force bool) string {
 	if that.fetcher.Url != "" {
 		fpath := filepath.Join(config.TypstFilesDir, fmt.Sprintf("typst%s", suffix))
 		if strings.Contains(that.fetcher.Url, "gitlab.com") && !that.checker.IsUpdated(fpath, that.fetcher.Url) {
-			tui.PrintInfo("Current version is already the latest.")
+			gprint.PrintInfo("Current version is already the latest.")
 			return fpath
 		}
 		if force {
@@ -92,7 +92,7 @@ func (that *Typst) renameDir() {
 func (that *Typst) Install(force bool) {
 	zipFilePath := that.download(force)
 	if ok, _ := utils.PathIsExist(config.TypstRootDir); ok && !force {
-		tui.PrintInfo("Vlang is already installed.")
+		gprint.PrintInfo("Vlang is already installed.")
 		return
 	} else {
 		os.RemoveAll(config.TypstRootDir)
@@ -100,14 +100,14 @@ func (that *Typst) Install(force bool) {
 	if err := archiver.Unarchive(zipFilePath, config.TypstFilesDir); err != nil {
 		os.RemoveAll(config.TypstRootDir)
 		os.RemoveAll(zipFilePath)
-		tui.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
+		gprint.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
 		return
 	}
 	that.renameDir()
 	if ok, _ := utils.PathIsExist(config.TypstRootDir); ok {
 		that.CheckAndInitEnv()
 	} else {
-		tui.PrintError("Install typst failed.")
+		gprint.PrintError("Install typst failed.")
 	}
 }
 

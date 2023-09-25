@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/mholt/archiver/v3"
-	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
@@ -50,7 +50,7 @@ func (that *NVim) download() (r string) {
 		that.fetcher.SetThreadNum(3)
 		fpath := filepath.Join(config.NVimFileDir, fmt.Sprintf("%s%s", nurl.Name, nurl.Ext))
 		if !that.checker.IsUpdated(fpath, that.fetcher.Url) {
-			tui.PrintInfo("Current version is already the latest.")
+			gprint.PrintInfo("Current version is already the latest.")
 			r = fpath
 			return
 		}
@@ -58,14 +58,14 @@ func (that *NVim) download() (r string) {
 			r = fpath
 		}
 	} else {
-		tui.PrintError(fmt.Sprintf("Cannot find nvim package for %s", runtime.GOOS))
+		gprint.PrintError(fmt.Sprintf("Cannot find nvim package for %s", runtime.GOOS))
 	}
 	if ok, _ := utils.PathIsExist(config.NVimFileDir); ok && r != "" {
 		dst := config.NVimFileDir
 		if err := archiver.Unarchive(r, dst); err != nil {
 			os.RemoveAll(filepath.Dir(that.getBinaryPath()))
 			os.RemoveAll(r)
-			tui.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
+			gprint.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
 			return
 		}
 		os.RemoveAll(r)
@@ -104,7 +104,7 @@ func (that *NVim) setenv() {
 func (that *NVim) setInitFile() {
 	dst := config.GetNVimInitPath()
 	if ok, _ := utils.PathIsExist(dst); ok {
-		tui.PrintInfo(fmt.Sprintf("Neovim init file already exists: %s", dst))
+		gprint.PrintInfo(fmt.Sprintf("Neovim init file already exists: %s", dst))
 		return
 	}
 	dir_ := filepath.Dir(config.NVimInitBackupPath)

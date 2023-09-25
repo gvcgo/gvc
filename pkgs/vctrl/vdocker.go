@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
@@ -48,7 +48,7 @@ func (that *VDocker) installDockerForWindows() {
 			fmt.Sprintf("--installation-dir=%s", config.DockerWindowsInstallationDir),
 		)
 		if err != nil {
-			tui.PrintError(err)
+			gprint.PrintError("%+v", err)
 		} else {
 			u, _ := user.Current()
 			userNameList := strings.Split(u.Username, `\`)
@@ -64,7 +64,7 @@ func (that *VDocker) installDockerForWindows() {
 				"/add",
 			)
 			if err != nil {
-				tui.PrintWarningf("< net localgroup docker-users <user> /add > errored: %+v", err)
+				gprint.PrintWarning("< net localgroup docker-users <user> /add > errored: %+v", err)
 			}
 		}
 		os.RemoveAll(fPath)
@@ -79,7 +79,7 @@ func (that *VDocker) installDockerForLinux() {
 	if ok, _ := utils.PathIsExist(fPath); ok {
 		_, err := utils.ExecuteSysCommand(false, "sudo", "sh", fPath)
 		if err != nil {
-			tui.PrintError(err)
+			gprint.PrintError("%+v", err)
 		}
 	}
 }
@@ -88,7 +88,7 @@ func (that *VDocker) installDockerForMacOS() {
 	cmdArgs := strings.Split(that.Conf.Docker.MacOSDockerInstallUsingBrew, " ")
 	_, err := utils.ExecuteSysCommand(false, cmdArgs...)
 	if err != nil {
-		tui.PrintError(err)
+		gprint.PrintError("%+v", err)
 	}
 }
 

@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/bkm"
@@ -25,12 +25,12 @@ func NewBrowser() *Browser {
 
 func (that *Browser) ShowSupportedBrowser() {
 	bList := browser.ListBrowsers()
-	fc := tui.NewFadeColors(bList)
+	fc := gprint.NewFadeColors(bList)
 	fc.Println()
 }
 
 func (that *Browser) ShowBackupPath() {
-	fc := tui.NewFadeColors("Browser data restore dir: " + config.GVCBackupDir)
+	fc := gprint.NewFadeColors("Browser data restore dir: " + config.GVCBackupDir)
 	fc.Println()
 }
 
@@ -47,7 +47,7 @@ func (that *Browser) isBrowserSupported(name string) bool {
 func (that *Browser) getBrowser(browserName string) browser.Browser {
 	browsers, err := browser.PickBrowsers(browserName, "")
 	if err != nil {
-		tui.PrintError(err)
+		gprint.PrintError("%+v", err)
 		return nil
 	}
 	return browsers[0]
@@ -87,7 +87,7 @@ func (that *Browser) clearTempFiles() {
 
 func (that *Browser) Save(browserName string, toPush bool) {
 	if !that.isBrowserSupported(browserName) {
-		tui.PrintError("unsupported browser!")
+		gprint.PrintError("unsupported browser!")
 		return
 	}
 
@@ -106,7 +106,7 @@ func (that *Browser) Save(browserName string, toPush bool) {
 	b.OnlyToSave(itemsToSave)
 	data, err := b.BrowsingData(true)
 	if err != nil {
-		tui.PrintError(err)
+		gprint.PrintError("%+v", err)
 	}
 	data.Output(config.GVCBackupDir, b.Name(), "json")
 

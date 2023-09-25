@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/hhatto/gocloc"
-	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/urfave/cli/v2"
 )
 
@@ -157,9 +157,9 @@ func (that *Cloc) WriteHeader() {
 		header = "File"
 	}
 	if that.ctx.String(FlagOutputType) == OutputTypeDefault {
-		tui.Cyan(fmt.Sprintf("%.[2]*[1]s\n", defaultOutputSeparator, rowLen))
-		tui.Green(fmt.Sprintf("%-[2]*[1]s %[3]s\n", header, headerLen, commonHeader))
-		tui.Cyan(fmt.Sprintf("%.[2]*[1]s\n", defaultOutputSeparator, rowLen))
+		gprint.Cyan(fmt.Sprintf("%.[2]*[1]s\n", defaultOutputSeparator, rowLen))
+		gprint.Green(fmt.Sprintf("%-[2]*[1]s %[3]s\n", header, headerLen, commonHeader))
+		gprint.Cyan(fmt.Sprintf("%.[2]*[1]s\n", defaultOutputSeparator, rowLen))
 	}
 }
 
@@ -171,15 +171,15 @@ func (that *Cloc) WriteFooter() {
 	maxPathLen := that.result.MaxPathLength
 
 	if that.ctx.String(FlagOutputType) == OutputTypeDefault {
-		tui.Cyan(fmt.Sprintf("%.[2]*[1]s\n", defaultOutputSeparator, rowLen))
+		gprint.Cyan(fmt.Sprintf("%.[2]*[1]s\n", defaultOutputSeparator, rowLen))
 		if that.ctx.Bool(FlagByFile) {
-			tui.Magenta(fmt.Sprintf("%-[1]*[2]v %6[3]v %14[4]v %14[5]v %14[6]v\n",
+			gprint.Magenta(fmt.Sprintf("%-[1]*[2]v %6[3]v %14[4]v %14[5]v %14[6]v\n",
 				maxPathLen, "TOTAL", total.Total, total.Blanks, total.Comments, total.Code))
 		} else {
-			tui.Magenta(fmt.Sprintf("%-27v %6v %14v %14v %14v\n",
+			gprint.Magenta(fmt.Sprintf("%-27v %6v %14v %14v %14v\n",
 				"TOTAL", total.Total, total.Blanks, total.Comments, total.Code))
 		}
-		tui.Cyan(fmt.Sprintf("%.[2]*[1]s\n", defaultOutputSeparator, rowLen))
+		gprint.Cyan(fmt.Sprintf("%.[2]*[1]s\n", defaultOutputSeparator, rowLen))
 	}
 }
 
@@ -290,7 +290,7 @@ func (that *Cloc) WriteResult() {
 			os.Stdout.Write(buf)
 		default:
 			for _, language := range sortedLanguages {
-				tui.Gray(fmt.Sprintf("%-27v %6v %14v %14v %14v\n",
+				gprint.Gray(fmt.Sprintf("%-27v %6v %14v %14v %14v\n",
 					language.Name, len(language.Files), language.Blanks, language.Comments, language.Code))
 			}
 		}

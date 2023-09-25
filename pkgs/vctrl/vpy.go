@@ -12,7 +12,7 @@ import (
 
 	"github.com/mholt/archiver/v3"
 	myArchiver "github.com/moqsien/goutils/pkgs/archiver"
-	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
@@ -143,7 +143,7 @@ func (that *PyVenv) getPyenv(force ...bool) {
 	}
 
 	if !flag && that.getExecutablePath() != "" {
-		tui.PrintInfo("Pyenv already installed.")
+		gprint.PrintInfo("Pyenv already installed.")
 		return
 	}
 	if runtime.GOOS == utils.Windows {
@@ -158,7 +158,7 @@ func (that *PyVenv) getPyenv(force ...bool) {
 		that.fetcher.Timeout = 20 * time.Minute
 		fPath := filepath.Join(config.PythonToolsPath, "pyenv-master.zip")
 		if strings.Contains(that.fetcher.Url, "gitlab.com") && !that.checker.IsUpdated(fPath, that.fetcher.Url) {
-			tui.PrintInfo("Current version is already the latest.")
+			gprint.PrintInfo("Current version is already the latest.")
 			return
 		}
 		if flag {
@@ -168,7 +168,7 @@ func (that *PyVenv) getPyenv(force ...bool) {
 			if err := archiver.Unarchive(fPath, config.PyenvInstallDir); err != nil {
 				os.RemoveAll(fPath)
 				os.RemoveAll(config.PyenvInstallDir)
-				tui.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
+				gprint.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
 				return
 			}
 			that.handlePyenvUntarfile()
@@ -177,7 +177,7 @@ func (that *PyVenv) getPyenv(force ...bool) {
 			if that.pyenvPath != "" {
 				that.setEnv()
 			} else {
-				tui.PrintError("Cannot set env for Pyenv.")
+				gprint.PrintError("Cannot set env for Pyenv.")
 			}
 			that.modifyAccelertion(pDir)
 			that.setAssetDirForPyenvWin()
@@ -244,14 +244,14 @@ func (that *PyVenv) getExecutablePath() (exePath string) {
 func (that *PyVenv) UpdatePyenv() {
 	if runtime.GOOS == utils.Windows {
 		if ok, _ := pterm.DefaultInteractiveConfirm.Show("This would delete the python versions you have installed, still continue?"); ok {
-			tui.PrintInfo("Updating pyenv...")
+			gprint.PrintInfo("Updating pyenv...")
 			that.getPyenv(true)
 		} else {
-			tui.PrintInfo("Aborted.")
+			gprint.PrintInfo("Aborted.")
 		}
 		return
 	}
-	tui.PrintInfo("Updating pyenv...")
+	gprint.PrintInfo("Updating pyenv...")
 	that.getPyenv(true)
 }
 
@@ -289,7 +289,7 @@ func (that *PyVenv) ListRemoteVersions() {
 			}
 			newList = append(newList, v)
 		}
-		fc := tui.NewFadeColors(newList)
+		fc := gprint.NewFadeColors(newList)
 		fc.Println()
 	}
 }
@@ -347,7 +347,7 @@ func (that *PyVenv) getInstallNeededForWin(version string) {
 			if err := archiver.Unarchive(fpath, untarfilePath); err != nil {
 				utils.ClearDir(untarfilePath)
 				os.Remove(fpath)
-				tui.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
+				gprint.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
 				return
 			}
 		}
@@ -360,7 +360,7 @@ func (that *PyVenv) InstallVersion(version string, useDefault bool) {
 	if !that.isInstalled(version) {
 		if runtime.GOOS != utils.Windows && os.Getenv("PYENV_PRE_CACHE") != "" {
 			cUrl := that.Conf.Python.PyBuildUrls[0]
-			tui.PrintInfo(fmt.Sprintf("Download cache file from %s", cUrl))
+			gprint.PrintInfo(fmt.Sprintf("Download cache file from %s", cUrl))
 			that.downloadCache(version, cUrl)
 		}
 		that.getReadlineForUnix()
@@ -386,7 +386,7 @@ func (that *PyVenv) ShowInstalled() {
 }
 
 func (that *PyVenv) ShowVersionPath() {
-	fc := tui.NewFadeColors(fmt.Sprintf("Python versions are installed in: %s", config.PyenvVersionsPath))
+	fc := gprint.NewFadeColors(fmt.Sprintf("Python versions are installed in: %s", config.PyenvVersionsPath))
 	fc.Println()
 }
 
@@ -396,7 +396,7 @@ func (that *PyVenv) setPipAcceleration() {
 	if ok, _ := utils.PathIsExist(p); !ok {
 		if ok, _ := utils.PathIsExist(pDir); !ok {
 			if err := os.MkdirAll(pDir, os.ModePerm); err != nil {
-				tui.PrintError(err)
+				gprint.PrintError("%+v", err)
 				return
 			}
 		}

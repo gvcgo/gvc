@@ -18,7 +18,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/aquasecurity/table"
 	"github.com/mholt/archiver/v3"
-	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/koanfer"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
@@ -77,7 +77,7 @@ func (that *GoVersion) getDoc() {
 		}
 		var err error
 		if that.ParsedUrl, err = url.Parse(that.fetcher.Url); err != nil {
-			tui.PrintError(err)
+			gprint.PrintError("%+v", err)
 			os.Exit(1)
 		}
 		that.fetcher.Timeout = 30 * time.Second
@@ -85,10 +85,10 @@ func (that *GoVersion) getDoc() {
 			var err error
 			that.Doc, err = goquery.NewDocumentFromReader(resp.RawBody())
 			if err != nil {
-				tui.PrintError(fmt.Sprintf("Parse page errored: %+v", err))
+				gprint.PrintError(fmt.Sprintf("Parse page errored: %+v", err))
 			}
 			if that.Doc == nil {
-				tui.PrintError(fmt.Sprintf("Cannot parse html for %s", that.fetcher.Url))
+				gprint.PrintError(fmt.Sprintf("Cannot parse html for %s", that.fetcher.Url))
 				os.Exit(1)
 			}
 		}
@@ -234,21 +234,21 @@ func (that *GoVersion) ShowRemoteVersions(arg string) {
 	switch arg {
 	case ShowAll:
 		if err := that.AllVersions(); err == nil {
-			fc := tui.NewFadeColors(sorts.SortGoVersion(that.filterVersionsForCurrentPlatform()))
+			fc := gprint.NewFadeColors(sorts.SortGoVersion(that.filterVersionsForCurrentPlatform()))
 			fc.Println()
 		}
 	case ShowStable:
 		if err := that.StableVersions(); err == nil {
-			fc := tui.NewFadeColors(sorts.SortGoVersion(that.filterVersionsForCurrentPlatform()))
+			fc := gprint.NewFadeColors(sorts.SortGoVersion(that.filterVersionsForCurrentPlatform()))
 			fc.Println()
 		}
 	case ShowUnstable:
 		if err := that.UnstableVersions(); err == nil {
-			fc := tui.NewFadeColors(sorts.SortGoVersion(that.filterVersionsForCurrentPlatform()))
+			fc := gprint.NewFadeColors(sorts.SortGoVersion(that.filterVersionsForCurrentPlatform()))
 			fc.Println()
 		}
 	default:
-		tui.PrintWarning(fmt.Sprintf("Unknown show type: %s", arg))
+		gprint.PrintWarning(fmt.Sprintf("Unknown show type: %s", arg))
 	}
 }
 
@@ -294,7 +294,7 @@ func (that *GoVersion) download(version string) (r string) {
 			}
 		}
 	} else {
-		tui.PrintError(fmt.Sprintf("Cannot find version: %s.", version))
+		gprint.PrintError(fmt.Sprintf("Cannot find version: %s.", version))
 	}
 	return
 }
@@ -343,7 +343,7 @@ func (that *GoVersion) UseVersion(version string) {
 		if tarfile := that.download(version); tarfile != "" {
 			if err := archiver.Unarchive(tarfile, untarfile); err != nil {
 				os.RemoveAll(untarfile)
-				tui.PrintError(fmt.Sprintf("Unarchive failed: %+v.", err))
+				gprint.PrintError(fmt.Sprintf("Unarchive failed: %+v.", err))
 				return
 			}
 		} else {
@@ -356,13 +356,13 @@ func (that *GoVersion) UseVersion(version string) {
 		os.RemoveAll(config.DefaultGoRoot)
 	}
 	if err := utils.MkSymLink(filepath.Join(untarfile, "go"), config.DefaultGoRoot); err != nil {
-		tui.PrintError(fmt.Sprintf("Create link failed: %+v.", err))
+		gprint.PrintError(fmt.Sprintf("Create link failed: %+v.", err))
 		return
 	}
 	if !that.env.DoesEnvExist(utils.SUB_GO) {
 		that.CheckAndInitEnv()
 	}
-	tui.PrintSuccess(fmt.Sprintf("Use %s succeeded!", version))
+	gprint.PrintSuccess(fmt.Sprintf("Use %s succeeded!", version))
 }
 
 func (that *GoVersion) getCurrent() (current string) {
@@ -379,7 +379,7 @@ func (that *GoVersion) ShowInstalled() {
 	current := that.getCurrent()
 	installedList, err := os.ReadDir(config.GoUnTarFilesPath)
 	if err != nil {
-		tui.PrintError(fmt.Sprintf("Read dir failed: %+v", err))
+		gprint.PrintError(fmt.Sprintf("Read dir failed: %+v", err))
 		return
 	}
 	for _, v := range installedList {
@@ -405,7 +405,7 @@ func (that *GoVersion) RemoveUnused() {
 	current := that.getCurrent()
 	installedList, err := os.ReadDir(config.GoUnTarFilesPath)
 	if err != nil {
-		tui.PrintError(fmt.Sprintf("Read dir failed: %+v", err))
+		gprint.PrintError(fmt.Sprintf("Read dir failed: %+v", err))
 		return
 	}
 	tarFiles, _ := os.ReadDir(config.GoTarFilesPath)
@@ -532,7 +532,7 @@ func (that *GoVersion) getGoDistlist() []string {
 
 func (that *GoVersion) ShowGoDistlist() {
 	result := that.getGoDistlist()
-	fc := tui.NewFadeColors(result)
+	fc := gprint.NewFadeColors(result)
 	fc.Println()
 }
 
@@ -600,7 +600,7 @@ func (that *GoVersion) getBuildArgs(buildArgs []string, binaryStoreDir string) (
 }
 
 func (that *GoVersion) build(buildArgs []string, buildBaseDir, archOS string, toGzip bool) {
-	tui.PrintInfo(fmt.Sprintf("Compiling for %s...", archOS))
+	gprint.PrintInfo(fmt.Sprintf("Compiling for %s...", archOS))
 	dirName := strings.ReplaceAll(archOS, "/", "-")
 	infoList := strings.Split(archOS, "/")
 	if len(infoList) == 2 {
@@ -608,7 +608,7 @@ func (that *GoVersion) build(buildArgs []string, buildBaseDir, archOS string, to
 		binaryStoreDir := filepath.Join(buildBaseDir, dirName)
 		if ok, _ := utils.PathIsExist(binaryStoreDir); !ok {
 			if err := os.MkdirAll(binaryStoreDir, 0666); err != nil {
-				tui.PrintError(err)
+				gprint.PrintError("%+v", err)
 				return
 			}
 		}
@@ -622,9 +622,9 @@ func (that *GoVersion) build(buildArgs []string, buildBaseDir, archOS string, to
 		cmdArgs = append(cmdArgs, bArgs...)
 
 		if _, err := utils.ExecuteSysCommand(false, cmdArgs...); err != nil {
-			tui.PrintError(err)
+			gprint.PrintError("%+v", err)
 		} else if toGzip {
-			tui.PrintSuccess(fmt.Sprintf("Compilation for %s succeeded.", archOS))
+			gprint.PrintSuccess(fmt.Sprintf("Compilation for %s succeeded.", archOS))
 			binPath := that.findCompiledBinary(binaryStoreDir)
 			nList := strings.Split(binPath, string(filepath.Separator))
 			binName := nList[len(nList)-1]
@@ -636,13 +636,13 @@ func (that *GoVersion) build(buildArgs []string, buildBaseDir, archOS string, to
 			}
 
 			if err := that.zip(binPath, tarFilePath, binName); err != nil {
-				tui.PrintError(err)
+				gprint.PrintError("%+v", err)
 			} else {
-				tui.PrintSuccess(fmt.Sprintf("Compression for %s succeeded.", archOS))
+				gprint.PrintSuccess(fmt.Sprintf("Compression for %s succeeded.", archOS))
 			}
 		}
 	} else {
-		tui.PrintError(archOS)
+		gprint.PrintError(archOS)
 	}
 }
 
@@ -659,7 +659,7 @@ func (that *GoVersion) handleBuildArgs(buildArgs ...string) (args []string) {
 				result := strings.TrimRight(output.String(), "\n")
 				a = strings.Replace(a, string(b), result, 1)
 			} else {
-				tui.PrintError(err)
+				gprint.PrintError("%+v", err)
 				os.Exit(1)
 			}
 		}
@@ -671,20 +671,20 @@ func (that *GoVersion) handleBuildArgs(buildArgs ...string) (args []string) {
 func (that *GoVersion) Build(args ...string) {
 	goRoot := os.Getenv("GOROOT")
 	if ok, _ := utils.PathIsExist(goRoot); !ok {
-		tui.PrintError("Cannot find a go compiler.")
-		tui.PrintInfo(`You can install a go compiler using gvc. See help info by "gvc go help".`)
+		gprint.PrintError("Cannot find a go compiler.")
+		gprint.PrintInfo(`You can install a go compiler using gvc. See help info by "gvc go help".`)
 		return
 	}
 
 	if ok, _ := utils.PathIsExist("go.mod"); !ok {
-		tui.PrintError("Cannot find go.mod file. Please check your present working directory.")
+		gprint.PrintError("Cannot find go.mod file. Please check your present working directory.")
 		return
 	}
 
 	buildDir := "build"
 	if ok, _ := utils.PathIsExist(buildDir); !ok {
 		if err := os.MkdirAll(buildDir, 0666); err != nil {
-			tui.PrintError(err)
+			gprint.PrintError("%+v", err)
 			return
 		}
 	}
@@ -761,7 +761,7 @@ func (that *GoVersion) getOldModuleName(moduleDir string) string {
 				// open the file
 				file, err := os.Open(filepath.Join(moduleDir, entry.Name()))
 				if err != nil {
-					tui.PrintError(err)
+					gprint.PrintError("%+v", err)
 					return ""
 				}
 				defer file.Close()
@@ -774,12 +774,12 @@ func (that *GoVersion) getOldModuleName(moduleDir string) string {
 					}
 				}
 				if err := fileScanner.Err(); err != nil {
-					tui.PrintError(err)
+					gprint.PrintError("%+v", err)
 				}
 			}
 		}
 	}
-	tui.PrintError(fmt.Sprintf("Can not find module name in [%s].", filepath.Join(moduleDir, modFileName)))
+	gprint.PrintError(fmt.Sprintf("Can not find module name in [%s].", filepath.Join(moduleDir, modFileName)))
 	return ""
 }
 

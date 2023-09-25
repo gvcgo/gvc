@@ -9,13 +9,15 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/charmbracelet/bubbles/textinput"
 	"github.com/gogf/gf/os/genv"
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/file"
 	"github.com/knadh/koanf/providers/structs"
 	"github.com/moqsien/goutils/pkgs/crypt"
-	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
+	"github.com/moqsien/goutils/pkgs/gtea/input"
 	"github.com/moqsien/goutils/pkgs/koanfer"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
@@ -78,7 +80,7 @@ func (that *GVCWebdav) initeAES() {
 	if that.DavConf.EncryptPass != "" {
 		that.AESCrypt = crypt.NewCrypt(that.DavConf.EncryptPass)
 	} else {
-		tui.PrintWarning("use default encryption password.")
+		gprint.PrintWarning("use default encryption password.")
 		that.AESCrypt = crypt.NewCrypt(defaultEncryptPass)
 	}
 }
@@ -100,7 +102,7 @@ func (that *GVCWebdav) RestoreDefaultGVConf() {
 
 func (that *GVCWebdav) Reload() {
 	if ok, _ := utils.PathIsExist(config.GVCWebdavConfigPath); !ok {
-		tui.PrintWarning("It seems that you have not set up your webdav account.")
+		gprint.PrintWarning("It seems that you have not set up your webdav account.")
 		return
 	}
 	that.koanfer.Load(that.DavConf)
@@ -114,19 +116,19 @@ func (that *GVCWebdav) SetWebdavAccount() {
 		wPass      string = "Password"
 		wEncrypter string = "Encrypt Password"
 	)
-	inputItems := []*tui.InputItem{
-		{Title: wHost, Default: "https://dav.jianguoyun.com/dav/", Must: true},
-		{Title: wUname, Must: true},
-		{Title: wPass, Must: true},
-		{Title: wEncrypter, Must: true},
+	order := []string{wHost, wUname, wPass, wEncrypter}
+	inputList := map[string]*input.Input{
+		wHost:      input.NewInput(input.WithPlaceholder(wHost), input.WithWidth(50)),
+		wUname:     input.NewInput(input.WithPlaceholder(wUname), input.WithWidth(50)),
+		wPass:      input.NewInput(input.WithPlaceholder(wPass), input.WithEchoMode(textinput.EchoPassword), input.WithWidth(50)),
+		wEncrypter: input.NewInput(input.WithPlaceholder(wEncrypter), input.WithEchoMode(textinput.EchoPassword), input.WithWidth(50)),
 	}
 
-	iput := tui.NewInput(inputItems)
-	iput.Render()
-
-	for _, item := range inputItems {
-		v := item.String()
-		switch item.Title {
+	for _, name := range order {
+		item := inputList[name]
+		item.Run()
+		v := item.Value()
+		switch name {
 		case wHost:
 			that.DavConf.Host = v
 		case wUname:
@@ -136,7 +138,7 @@ func (that *GVCWebdav) SetWebdavAccount() {
 		case wEncrypter:
 			that.DavConf.EncryptPass = v
 		default:
-			tui.PrintError("unknown input")
+			gprint.PrintError("unknown input")
 		}
 	}
 
@@ -151,7 +153,7 @@ func (that *GVCWebdav) SetWebdavAccount() {
 
 func (that *GVCWebdav) getClient(force bool) {
 	if that.DavConf.Host == "" || that.DavConf.Username == "" || that.DavConf.Password == "" {
-		tui.PrintWarning("It seems that you haven't set a webdav account.")
+		gprint.PrintWarning("It seems that you haven't set a webdav account.")
 		ok, _ := pterm.DefaultInteractiveConfirm.WithConfirmText("Set your webdav account right now?").Show()
 		pterm.Println()
 		if ok {
@@ -165,7 +167,7 @@ func (that *GVCWebdav) getClient(force bool) {
 			that.DavConf.Username, that.DavConf.Password)
 		if err := that.client.Connect(); err != nil {
 			that.client = nil
-			tui.PrintError(fmt.Sprintf("Webdav connecting failed: %+v", err))
+			gprint.PrintError(fmt.Sprintf("Webdav connecting failed: %+v", err))
 		}
 	}
 }
@@ -191,11 +193,11 @@ func (that *GVCWebdav) Pull() {
 	if err != nil {
 		if strings.Contains(err.Error(), "404") {
 			if err := that.client.MkdirAll(that.DavConf.RemoteDir, os.ModePerm); err != nil {
-				tui.PrintError(fmt.Sprintf("Create a new dir for webdav failed: %+v.", err))
+				gprint.PrintError(fmt.Sprintf("Create a new dir for webdav failed: %+v.", err))
 				return
 			}
 		} else {
-			tui.PrintError(fmt.Sprintf("Get files from webdav failed: %+v.", err))
+			gprint.PrintError(fmt.Sprintf("Get files from webdav failed: %+v.", err))
 			return
 		}
 	}
@@ -208,7 +210,7 @@ func (that *GVCWebdav) Pull() {
 				if that.AESCrypt != nil && len(b) > 0 && (strings.Contains(info.Name(), "password") || strings.Contains(info.Name(), "credit")) {
 					b, _ = that.AESCrypt.AesDecrypt(b)
 				}
-				fmt.Println(info.Name())
+				// fmt.Println(info.Name())
 				if len(b) == 0 {
 					r, _ := that.client.ReadStream(rPath)
 					fpath := filepath.Join(that.DavConf.LocalDir, info.Name())
@@ -234,7 +236,7 @@ func (that *GVCWebdav) Push() {
 	if err != nil {
 		if strings.Contains(err.Error(), "404") {
 			if err := that.client.MkdirAll(that.DavConf.RemoteDir, os.ModePerm); err != nil {
-				tui.PrintError(fmt.Sprintf("Create a new dir for webdav failed: %+v.", err))
+				gprint.PrintError(fmt.Sprintf("Create a new dir for webdav failed: %+v.", err))
 				return
 			}
 		}
@@ -305,7 +307,7 @@ func (that *GVCWebdav) modifyKeybindings(backupPath string) {
 }
 
 func (that *GVCWebdav) FetchAndApplySettings() {
-	tui.PrintInfo("Fetching config files from webdav...")
+	gprint.PrintInfo("Fetching config files from webdav...")
 	that.Pull()
 	for backupName, fpath := range that.GetFilesToSync() {
 		if fpath == "" {
@@ -313,7 +315,7 @@ func (that *GVCWebdav) FetchAndApplySettings() {
 		}
 		backupPath := filepath.Join(that.DavConf.LocalDir, backupName)
 		if ok, _ := utils.PathIsExist(backupPath); ok {
-			tui.PrintInfo(fmt.Sprintf("Set config files: %s", backupPath))
+			gprint.PrintInfo(fmt.Sprintf("Set config files: %s", backupPath))
 			if content, _ := os.ReadFile(backupPath); len(content) == 0 {
 				continue
 			}
@@ -334,12 +336,12 @@ func (that *GVCWebdav) InstallVSCodeExts(backupPath string) {
 	if ok, _ := utils.PathIsExist(backupPath); ok {
 		err := that.k.Load(file.Provider(backupPath), that.parser)
 		if err != nil {
-			tui.PrintError(fmt.Sprintf("Config Load Failed: %+v", err))
+			gprint.PrintError(fmt.Sprintf("Config Load Failed: %+v", err))
 			return
 		}
 		that.k.UnmarshalWithConf("", that.vscodeExts, koanf.UnmarshalConf{Tag: "koanf"})
 	} else {
-		tui.PrintError(fmt.Sprintf("Can not find extensions backup file: %s", backupPath))
+		gprint.PrintError(fmt.Sprintf("Can not find extensions backup file: %s", backupPath))
 		return
 	}
 	if len(that.vscodeExts.VSCodeExts) == 0 {
@@ -360,7 +362,7 @@ func (that *GVCWebdav) gatherVSCodeExtsions() {
 	cmd := exec.Command("code", "--list-extensions")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		tui.PrintError(err)
+		gprint.PrintError("%+v", err)
 		return
 	}
 	iNameList := strings.Split(string(out), "\n")
@@ -371,8 +373,8 @@ func (that *GVCWebdav) gatherVSCodeExtsions() {
 				newList = append(newList, iName)
 			}
 		}
-		tui.PrintInfo("Local installed vscode extensions: ")
-		fc := tui.NewFadeColors(newList)
+		gprint.PrintInfo("Local installed vscode extensions: ")
+		fc := gprint.NewFadeColors(newList)
 		fc.Println()
 
 		if len(newList) > 0 {
@@ -394,16 +396,16 @@ func (that *GVCWebdav) GatherAndPushSettings() {
 	that.gatherVSCodeExtsions()
 	if ok, _ := utils.PathIsExist(that.DavConf.LocalDir); !ok {
 		if err := os.MkdirAll(that.DavConf.LocalDir, os.ModePerm); err != nil {
-			tui.PrintError(err)
+			gprint.PrintError("%+v", err)
 			return
 		}
 	}
 	for backupName, fpath := range that.GetFilesToSync() {
 		if ok, _ := utils.PathIsExist(fpath); ok {
-			tui.PrintInfo(fmt.Sprintf("Gathering file: %s.", backupName))
+			gprint.PrintInfo(fmt.Sprintf("Gathering file: %s.", backupName))
 			utils.CopyFile(fpath, filepath.Join(that.DavConf.LocalDir, backupName))
 		}
 	}
-	tui.PrintInfo("Pushing config files to webdav...")
+	gprint.PrintInfo("Pushing config files to webdav...")
 	that.Push()
 }

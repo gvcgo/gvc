@@ -4,7 +4,7 @@ import (
 	"os"
 	"path/filepath"
 
-	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
 	"github.com/moqsien/gvc/pkgs/vctrl"
@@ -172,7 +172,7 @@ func (that *Cmder) vgo() {
 			newName := ctx.Args().First()
 			moduleDir, _ := os.Getwd()
 			if ok, _ := utils.PathIsExist(filepath.Join(moduleDir, "go.mod")); !ok {
-				tui.PrintError("Can not find go.mod in current working dir.")
+				gprint.PrintError("Can not find go.mod in current working dir.")
 				return nil
 			}
 			gv.RenameLocalModule(moduleDir, newName)

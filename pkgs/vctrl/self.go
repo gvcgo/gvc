@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
@@ -98,7 +98,7 @@ func (that *Self) Uninstall() {
 			os.RemoveAll(config.GVCWorkDir)
 		}
 	} else {
-		tui.PrintInfo("Remove has been aborted.")
+		gprint.PrintInfo("Remove has been aborted.")
 	}
 }
 
@@ -143,7 +143,7 @@ func (that *Self) ShowVersion() {
 func (that *Self) CheckLatestVersion(currentVersion string) {
 	latest := that.checker.GetLatestGVCVersion()
 	if currentVersion == latest {
-		tui.PrintInfo(fmt.Sprintf("Current version: %s is already the latest.", currentVersion))
+		gprint.PrintInfo(fmt.Sprintf("Current version: %s is already the latest.", currentVersion))
 		return
 	}
 	confirmPrinter := pterm.DefaultInteractiveConfirm
@@ -169,9 +169,9 @@ func (that *Self) download() {
 		os.RemoveAll(fPath)
 		os.RemoveAll(temBinPath)
 		if err := fetcher.DownloadAndDecompress(fPath, config.GVCBinTempDir, true); err != nil {
-			tui.PrintError(err)
+			gprint.PrintError("%+v", err)
 		} else {
-			tui.PrintSuccess(config.GVCBinTempDir)
+			gprint.PrintSuccess(config.GVCBinTempDir)
 		}
 	}
 }

@@ -10,7 +10,7 @@ import (
 
 	"github.com/moqsien/asciinema/cmd"
 	"github.com/moqsien/asciinema/util"
-	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
 )
@@ -58,7 +58,7 @@ func (that *AsciiCast) Play(fPath string) {
 
 func (that *AsciiCast) Auth() {
 	authUrl, info := that.runner.Auth()
-	tui.PrintInfo(info)
+	gprint.PrintInfo(info)
 	var cmd *exec.Cmd
 	if runtime.GOOS == utils.MacOS {
 		cmd = exec.Command("open", authUrl)
@@ -70,13 +70,13 @@ func (that *AsciiCast) Auth() {
 		return
 	}
 	if err := cmd.Run(); err != nil {
-		tui.PrintError(fmt.Sprintf("Execution failed: %+v", err))
+		gprint.PrintError(fmt.Sprintf("Execution failed: %+v", err))
 	}
 }
 
 func (that *AsciiCast) Upload(fPath string) {
 	that.runner.Title, that.runner.FilePath = handleFilePath(fPath)
 	if respStr, err := that.runner.Upload(); err == nil {
-		tui.PrintInfo(respStr)
+		gprint.PrintInfo(respStr)
 	}
 }

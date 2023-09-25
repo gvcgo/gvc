@@ -7,7 +7,7 @@ import (
 	"runtime"
 	"time"
 
-	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
@@ -44,11 +44,11 @@ func (that *VProtoBuffer) Install(force bool) {
 		dstDir := filepath.Join(config.ProtobufDir, "protobuf")
 		if err := that.fetcher.DownloadAndDecompress(fPath, dstDir, force); err == nil {
 			that.CheckAndInitEnv(dstDir)
-			tui.PrintSuccess(fPath)
+			gprint.PrintSuccess(fPath)
 		} else {
 			os.RemoveAll(fPath)
 			os.RemoveAll(dstDir)
-			tui.PrintError(err)
+			gprint.PrintError("%+v", err)
 		}
 	}
 }
@@ -79,12 +79,12 @@ func (that *VProtoBuffer) CheckAndInitEnv(protobufDir string) {
 
 func (that *VProtoBuffer) InstallGoProtobufPlugin() {
 	if _, err := utils.ExecuteSysCommand(false, "go", "install", that.Conf.Protobuf.ProtoGenGoUrl); err != nil {
-		tui.PrintError(err)
+		gprint.PrintError("%+v", err)
 	}
 }
 
 func (that *VProtoBuffer) InstallGoProtoGRPCPlugin() {
 	if _, err := utils.ExecuteSysCommand(false, "go", "install", that.Conf.Protobuf.ProtoGenGRPCUrl); err != nil {
-		tui.PrintError(err)
+		gprint.PrintError("%+v", err)
 	}
 }

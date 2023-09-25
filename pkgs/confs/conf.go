@@ -3,7 +3,7 @@ package confs
 import (
 	"os"
 
-	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/koanfer"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/pterm/pterm"
@@ -85,7 +85,7 @@ func (that *GVConfig) initiate() {
 	if ok, _ := utils.PathIsExist(that.path); ok {
 		that.Reload()
 	} else {
-		tui.PrintWarning("Cannot find default config files.")
+		gprint.PrintWarning("Cannot find default config files.")
 		if ok, _ := pterm.DefaultInteractiveConfirm.Show("Use the default config files now?"); ok {
 			that.Reset()
 		}

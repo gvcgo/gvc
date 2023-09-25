@@ -12,7 +12,7 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/mholt/archiver/v3"
-	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
@@ -112,7 +112,7 @@ func (that *CppManager) InstallMsys2() {
 		c.Stdin = os.Stdin
 		c.Stdout = os.Stdout
 		if err := c.Run(); err != nil {
-			tui.PrintError(err)
+			gprint.PrintError("%+v", err)
 			return
 		}
 		binPath := filepath.Join(config.Msys2Dir, "usr", "bin")
@@ -138,7 +138,7 @@ func (that *CppManager) UninstallMsys2() {
 		c.Stdin = os.Stdin
 		c.Stdout = os.Stdout
 		if err := c.Run(); err != nil {
-			tui.PrintError(err)
+			gprint.PrintError("%+v", err)
 			return
 		}
 	}
@@ -170,7 +170,7 @@ func (that *CppManager) getCygwinInstaller() (fPath string) {
 		if that.fetcher.Url != "" {
 			that.fetcher.Timeout = 10 * time.Minute
 			if size := that.fetcher.GetAndSaveFile(fPath); size == 0 {
-				tui.PrintError("Download Cygwin installer failed!")
+				gprint.PrintError("Download Cygwin installer failed!")
 				os.RemoveAll(fPath)
 			} else {
 				if runtime.GOOS == utils.Windows {
@@ -189,7 +189,7 @@ func (that *CppManager) InstallCygwin(packInfo string) {
 	if packInfo == "" {
 		packInfo = "git,bash,wget,gcc,gdb,clang,openssh,bashdb,gdbm,gcc-fortran,clang-analyzer,clang-doc,bash-completion,bash-devel,bash-completion-cmake"
 	}
-	tui.PrintInfo(fmt.Sprintf("Install Packages: %s", packInfo))
+	gprint.PrintInfo(fmt.Sprintf("Install Packages: %s", packInfo))
 	if ok, _ := utils.PathIsExist(installerPath); ok && runtime.GOOS == utils.Windows {
 		ePath := os.Getenv("PATH")
 		if !strings.Contains(ePath, config.CppDownloadDir) {
@@ -204,7 +204,7 @@ func (that *CppManager) InstallCygwin(packInfo string) {
 		cmd.Stdin = os.Stdin
 		cmd.Stdout = os.Stdout
 		if err := cmd.Run(); err != nil {
-			tui.PrintError(err)
+			gprint.PrintError("%+v", err)
 			return
 		}
 
@@ -276,10 +276,10 @@ func (that *CppManager) checkVcpkgCompilationEnv() (hasCompiler, hasCmake bool) 
 		hasCmake = true
 	}
 	if !hasCompiler {
-		tui.Yellow("Please install g++ compiler.")
+		gprint.Yellow("Please install g++ compiler.")
 	}
 	if !hasCmake {
-		tui.Yellow("Please install cmake.")
+		gprint.Yellow("Please install cmake.")
 	}
 	return
 }
@@ -292,7 +292,7 @@ func (that *CppManager) InstallVCPkg() {
 	fPath := that.getVCPkg()
 	if ok, _ := utils.PathIsExist(fPath); ok {
 		if err := archiver.Unarchive(fPath, config.CppDownloadDir); err != nil {
-			tui.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
+			gprint.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
 			return
 		}
 		dirList, _ := os.ReadDir(config.CppDownloadDir)
@@ -318,7 +318,7 @@ func (that *CppManager) InstallVCPkg() {
 			os.MkdirAll(buildPath, os.ModePerm)
 
 			if err := archiver.Unarchive(fPath, config.CppDownloadDir); err != nil {
-				tui.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
+				gprint.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
 				return
 			}
 			dirList, _ = os.ReadDir(config.CppDownloadDir)
@@ -338,7 +338,7 @@ func (that *CppManager) InstallVCPkg() {
 					cmd.Stdin = os.Stdin
 					cmd.Stdout = os.Stdout
 					if err := cmd.Run(); err != nil {
-						tui.PrintError(fmt.Sprintf("Execute Compilation Script Failed: %+v", err))
+						gprint.PrintError(fmt.Sprintf("Execute Compilation Script Failed: %+v", err))
 						return
 					}
 				}

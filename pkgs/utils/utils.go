@@ -21,7 +21,7 @@ import (
 	"unicode"
 
 	"github.com/gogf/gf/os/genv"
-	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 )
 
 func WinIsAdmin() bool {
@@ -73,7 +73,7 @@ func GetShellRcFile() (rc string) {
 func GetHomeDir() (homeDir string) {
 	u, err := user.Current()
 	if err != nil {
-		tui.PrintError("Cannot find current user.")
+		gprint.PrintError("Cannot find current user.")
 		return
 	}
 	return u.HomeDir
@@ -103,14 +103,14 @@ func CopyFile(src, dst string) (written int64, err error) {
 	srcFile, err := os.Open(src)
 
 	if err != nil {
-		tui.PrintError(fmt.Sprintf("Cannot open file: %+v", err))
+		gprint.PrintError(fmt.Sprintf("Cannot open file: %+v", err))
 		return
 	}
 	defer srcFile.Close()
 
 	dstFile, err := os.OpenFile(dst, os.O_WRONLY|os.O_CREATE, os.ModePerm)
 	if err != nil {
-		tui.PrintError(fmt.Sprintf("Cannot open file: %+v", err))
+		gprint.PrintError(fmt.Sprintf("Cannot open file: %+v", err))
 		return
 	}
 	defer dstFile.Close()
@@ -171,7 +171,7 @@ func GetExt(filename string) (ext string) {
 func CheckFile(fpath, cType, cSum string) (r bool) {
 	f, err := os.Open(fpath)
 	if err != nil {
-		tui.PrintError(fmt.Sprintf("Open file failed: %+v", err))
+		gprint.PrintError(fmt.Sprintf("Open file failed: %+v", err))
 		return false
 	}
 	defer f.Close()
@@ -185,20 +185,20 @@ func CheckFile(fpath, cType, cSum string) (r bool) {
 	case "sha512":
 		h = sha512.New()
 	default:
-		tui.PrintError(fmt.Sprintf("[Crypto] %s is not supported.", cType))
+		gprint.PrintError(fmt.Sprintf("[Crypto] %s is not supported.", cType))
 		return
 	}
 
 	if _, err = io.Copy(h, f); err != nil {
-		tui.PrintError(fmt.Sprintf("Copy file failed: %+v", err))
+		gprint.PrintError(fmt.Sprintf("Copy file failed: %+v", err))
 		return
 	}
 
 	if cSum != hex.EncodeToString(h.Sum(nil)) {
-		tui.PrintError("Checksum failed.")
+		gprint.PrintError("Checksum failed.")
 		return
 	}
-	tui.PrintSuccess("Checksum succeeded.")
+	gprint.PrintSuccess("Checksum succeeded.")
 	return true
 }
 
@@ -355,7 +355,7 @@ func MakeDirs(dirs ...string) {
 	for _, d := range dirs {
 		if ok, _ := PathIsExist(d); !ok {
 			if err := os.MkdirAll(d, os.ModePerm); err != nil {
-				tui.PrintError(fmt.Sprintf("Make dir [%s] failed: %+v", d, err))
+				gprint.PrintError(fmt.Sprintf("Make dir [%s] failed: %+v", d, err))
 			}
 		}
 	}

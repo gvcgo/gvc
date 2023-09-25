@@ -14,7 +14,7 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/mholt/archiver/v3"
-	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
@@ -83,14 +83,14 @@ func (that *NodeVersion) getSuffix() string {
 func (that *NodeVersion) getVersions() (r []string) {
 	that.fetcher.Url = that.Conf.Nodejs.CompilerUrl
 	if _, err := url.Parse(that.fetcher.Url); err != nil {
-		tui.PrintError(err)
+		gprint.PrintError("%+v", err)
 		os.Exit(1)
 	}
 
 	if resp := that.fetcher.Get(); resp != nil {
 		content, _ := io.ReadAll(resp.RawBody())
 		if err := json.Unmarshal(content, &that.vList); err != nil {
-			tui.PrintError(fmt.Sprintf("Parse content from %s failed.", that.fetcher.Url))
+			gprint.PrintError(fmt.Sprintf("Parse content from %s failed.", that.fetcher.Url))
 			return
 		}
 	}
@@ -131,7 +131,7 @@ func (that *NodeVersion) parseLTS(v any) (r string) {
 }
 
 func (that *NodeVersion) ShowVersions() {
-	fc := tui.NewFadeColors(that.getVersions())
+	fc := gprint.NewFadeColors(that.getVersions())
 	fc.Println()
 }
 
@@ -225,7 +225,7 @@ func (that *NodeVersion) UseVersion(version string) {
 		if tarfile = that.download(version); tarfile != "" {
 			if err := archiver.Unarchive(tarfile, untarfile); err != nil {
 				os.RemoveAll(untarfile)
-				tui.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
+				gprint.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
 				return
 			}
 		}
@@ -238,14 +238,14 @@ func (that *NodeVersion) UseVersion(version string) {
 		return
 	}
 	if err := utils.MkSymLink(that.dir, config.NodejsRoot); err != nil {
-		tui.PrintError(fmt.Sprintf("Create link failed: %+v", err))
+		gprint.PrintError(fmt.Sprintf("Create link failed: %+v", err))
 		return
 	}
 	vFilePath := filepath.Join(that.dir, "version.txt")
 	if ok, _ := utils.PathIsExist(vFilePath); !ok {
 		vFile, err := os.OpenFile(vFilePath, os.O_WRONLY|os.O_CREATE, os.ModePerm)
 		if err != nil {
-			tui.PrintError(fmt.Sprintf("Open file failed: %+v", err))
+			gprint.PrintError(fmt.Sprintf("Open file failed: %+v", err))
 			return
 		}
 		defer vFile.Close()
@@ -253,7 +253,7 @@ func (that *NodeVersion) UseVersion(version string) {
 	}
 	that.setEnv(config.NodejsRoot)
 	that.setNpm()
-	tui.PrintSuccess(fmt.Sprintf("Use %s succeeded!", version))
+	gprint.PrintSuccess(fmt.Sprintf("Use %s succeeded!", version))
 }
 
 func (that *NodeVersion) getCurrent() (v string) {

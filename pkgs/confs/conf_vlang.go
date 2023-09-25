@@ -3,7 +3,7 @@ package confs
 import (
 	"os"
 
-	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/gvc/pkgs/utils"
 )
 
@@ -26,7 +26,7 @@ func NewVlangConf() (r *VlangConf) {
 func (that *VlangConf) setup() {
 	if ok, _ := utils.PathIsExist(that.path); !ok {
 		if err := os.MkdirAll(that.path, os.ModePerm); err != nil {
-			tui.PrintError(err)
+			gprint.PrintError("%+v", err)
 		}
 	}
 }

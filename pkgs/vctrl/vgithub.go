@@ -12,7 +12,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/go-resty/resty/v2"
 	"github.com/moqsien/goutils/pkgs/ggit"
-	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
@@ -61,7 +61,7 @@ func (that *GhDownloader) downloadArchive(githubProjectUrl string) {
 	fPath := filepath.Join(that.path, that.findFileName(mainZipUrl))
 	that.fetcher.SetUrl(that.Conf.Github.DownProxy + mainZipUrl)
 	that.fetcher.Timeout = 30 * time.Minute
-	tui.PrintInfo(fmt.Sprintf("[>>>] %s", mainZipUrl))
+	gprint.PrintInfo(fmt.Sprintf("[>>>] %s", mainZipUrl))
 	if size := that.fetcher.GetFile(fPath, true); size <= 99 {
 		masterZipUrl := githubProjectUrl + "/archive/refs/heads/master.zip"
 		fPath = filepath.Join(that.path, that.findFileName(masterZipUrl))
@@ -70,7 +70,7 @@ func (that *GhDownloader) downloadArchive(githubProjectUrl string) {
 		that.fetcher.GetFile(fPath, true)
 
 	}
-	tui.PrintSuccess(fPath)
+	gprint.PrintSuccess(fPath)
 }
 
 func (that *GhDownloader) getCurrentTag(githubProjectUrl string) (tag string) {
@@ -83,7 +83,7 @@ func (that *GhDownloader) getCurrentTag(githubProjectUrl string) (tag string) {
 		sList := strings.Split(_url, "/")
 		return sList[len(sList)-1]
 	}
-	tui.PrintInfo("Latest tag: ", tag)
+	gprint.PrintInfo("Latest tag: %s", tag)
 	return
 }
 
@@ -110,13 +110,13 @@ func (that *GhDownloader) downloadBinary(githubProjectUrl string) {
 			}
 			selectedOption, _ := pterm.DefaultInteractiveSelect.WithOptions(options).Show()
 			dUrl := that.releases[selectedOption]
-			tui.PrintInfo("[Download] ", dUrl)
+			gprint.PrintInfo("[Download] %s", dUrl)
 			that.fetcher.SetUrl(that.Conf.Github.DownProxy + dUrl)
 			that.fetcher.SetThreadNum(4)
 			that.fetcher.Timeout = 30 * time.Minute
 			fPath := filepath.Join(that.path, selectedOption)
 			if size := that.fetcher.GetAndSaveFile(fPath, true); size > 0 {
-				tui.PrintSuccess(fPath)
+				gprint.PrintSuccess(fPath)
 			}
 		}
 	}
@@ -140,7 +140,7 @@ func (that *GhDownloader) Download(githubProjectUrl string, getSourceCode bool) 
 func (that *GhDownloader) OpenByBrowser(chosen int) {
 	urlList := that.Conf.Github.AccelUrls
 	if len(urlList) == 0 {
-		tui.PrintError("No github download acceleration available.")
+		gprint.PrintError("No github download acceleration available.")
 		return
 	}
 	var gUrl string
@@ -161,7 +161,7 @@ func (that *GhDownloader) OpenByBrowser(chosen int) {
 			return
 		}
 		if err := cmd.Run(); err != nil {
-			tui.PrintError(fmt.Sprintf("Execution failed: %+v", err))
+			gprint.PrintError(fmt.Sprintf("Execution failed: %+v", err))
 		}
 	}
 }
@@ -169,41 +169,41 @@ func (that *GhDownloader) OpenByBrowser(chosen int) {
 func (that *GhDownloader) Clone(projectUrl, proxyUrl string) {
 	that.git.SetProxyUrl(proxyUrl)
 	if _, err := that.git.CloneBySSH(projectUrl); err != nil {
-		tui.PrintError(err)
+		gprint.PrintError("%+v", err)
 	}
 }
 
 func (that *GhDownloader) Pull(proxyUrl string) {
 	that.git.SetProxyUrl(proxyUrl)
 	if err := that.git.PullBySSH(); err != nil {
-		tui.PrintError(err)
+		gprint.PrintError("%+v", err)
 	}
 }
 
 func (that *GhDownloader) Push(proxyUrl string) {
 	that.git.SetProxyUrl(proxyUrl)
 	if err := that.git.PushBySSH(); err != nil {
-		tui.PrintError(err)
+		gprint.PrintError("%+v", err)
 	}
 }
 
 func (that *GhDownloader) CommitAndPush(commitMsg, proxyUrl string) {
 	that.git.SetProxyUrl(proxyUrl)
 	if err := that.git.CommitAndPush(commitMsg); err != nil {
-		tui.PrintError(err)
+		gprint.PrintError("%+v", err)
 	}
 }
 
 func (that *GhDownloader) AddTagAndPush(tag, proxyUrl string) {
 	that.git.SetProxyUrl(proxyUrl)
 	if err := that.git.AddTagAndPushToRemote(tag); err != nil {
-		tui.PrintError(err)
+		gprint.PrintError("%+v", err)
 	}
 }
 
 func (that *GhDownloader) DelTagAndPush(tag, proxyUrl string) {
 	that.git.SetProxyUrl(proxyUrl)
 	if err := that.git.DeleteTagAndPushToRemote(tag); err != nil {
-		tui.PrintError(err)
+		gprint.PrintError("%+v", err)
 	}
 }

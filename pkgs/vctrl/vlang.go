@@ -11,7 +11,8 @@ import (
 
 	"github.com/gogf/gf/os/genv"
 	"github.com/mholt/archiver/v3"
-	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
+	"github.com/moqsien/goutils/pkgs/gtea/selector"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
@@ -36,26 +37,28 @@ func NewVlang() (vl *Vlang) {
 }
 
 func (that *Vlang) download(force bool) string {
-	optionList := []string{
-		"From Gitlab[Default]",
-		"From Github",
-	}
-	sel := tui.NewSelect(optionList, func(s string) string {
-		var vUrls map[string]string
-		switch s {
-		case optionList[1]:
-			vUrls = that.Conf.Vlang.VlangUrls
-		default:
-			vUrls = that.Conf.Vlang.VlangGitlabUrls
-		}
-		return vUrls[runtime.GOOS]
-	})
-	sel.SetDefaultText("Choose your download URL")
-	that.fetcher.Url = sel.Start()
+
+	// sel := gprint.NewSelect(optionList, func(s string) string {
+	// 	var vUrls map[string]string
+	// 	switch s {
+	// 	case optionList[1]:
+	// 		vUrls = that.Conf.Vlang.VlangUrls
+	// 	default:
+	// 		vUrls = that.Conf.Vlang.VlangGitlabUrls
+	// 	}
+	// 	return vUrls[runtime.GOOS]
+	// })
+	itemList := selector.NewItemList()
+	itemList.Add("from gitlab", that.Conf.Vlang.VlangGitlabUrls[runtime.GOOS])
+	itemList.Add("from github", that.Conf.Vlang.VlangUrls[runtime.GOOS])
+	sel := selector.NewSelector(itemList, selector.WidthEnableMulti(false), selector.WithEnbleInfinite(true), selector.WithTitle("Please select a resource"))
+	sel.Run()
+	value := sel.Value()[0]
+	that.fetcher.Url = value.(string)
 	if that.fetcher.Url != "" {
 		fpath := filepath.Join(config.VlangFilesDir, "vlang.zip")
 		if strings.Contains(that.fetcher.Url, "gitlab.com") && !that.checker.IsUpdated(fpath, that.fetcher.Url) {
-			tui.PrintInfo("Current version is already the latest.")
+			gprint.PrintInfo("Current version is already the latest.")
 			return fpath
 		}
 		if force {
@@ -79,7 +82,7 @@ func (that *Vlang) download(force bool) string {
 func (that *Vlang) Install(force bool) {
 	zipFilePath := that.download(force)
 	if ok, _ := utils.PathIsExist(config.VlangRootDir); ok && !force {
-		tui.PrintInfo("Vlang is already installed.")
+		gprint.PrintInfo("Vlang is already installed.")
 		return
 	} else {
 		os.RemoveAll(config.VlangRootDir)
@@ -87,7 +90,7 @@ func (that *Vlang) Install(force bool) {
 	if err := archiver.Unarchive(zipFilePath, config.VlangFilesDir); err != nil {
 		os.RemoveAll(config.VlangRootDir)
 		os.RemoveAll(zipFilePath)
-		tui.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
+		gprint.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
 		return
 	}
 	if ok, _ := utils.PathIsExist(config.VlangRootDir); ok {
@@ -108,38 +111,28 @@ func (that *Vlang) CheckAndInitEnv() {
 }
 
 func (that *Vlang) InstallVAnalyzerForVscode() {
-	optionList := []string{
-		"From Gitlab[Default]",
-		"From Github",
+	itemList := selector.NewItemList()
+	key := runtime.GOOS
+	if key == utils.MacOS {
+		key = fmt.Sprintf("%s_%s", key, runtime.GOARCH)
 	}
-	sel := tui.NewSelect(optionList, func(s string) string {
-		var vUrls map[string]string
-		switch s {
-		case optionList[1]:
-			vUrls = that.Conf.Vlang.AnalyzerUrls
-		default:
-			vUrls = that.Conf.Vlang.AnalyzerGitlabUrls
-		}
-		key := runtime.GOOS
-		if runtime.GOOS == utils.MacOS {
-			key = fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)
-		}
-		return vUrls[key]
-	})
-	sel.SetDefaultText("Choose your download URL")
-	that.fetcher.Url = sel.Start()
-
+	itemList.Add("from gitlab", that.Conf.Vlang.AnalyzerGitlabUrls[key])
+	itemList.Add("from github", that.Conf.Vlang.AnalyzerUrls[key])
+	sel := selector.NewSelector(itemList, selector.WidthEnableMulti(false), selector.WithEnbleInfinite(true), selector.WithTitle("Please select a resource"))
+	sel.Run()
+	value := sel.Value()[0]
+	that.fetcher.Url = value.(string)
 	if that.fetcher.Url != "" {
 		fpath := filepath.Join(config.VlangFilesDir, "analyzer.zip")
 		if strings.Contains(that.fetcher.Url, "gitlab.com") && !that.checker.IsUpdated(fpath, that.fetcher.Url) {
-			tui.PrintInfo("Current version is already the latest.")
+			gprint.PrintInfo("Current version is already the latest.")
 			return
 		}
 		that.fetcher.Timeout = 20 * time.Minute
 		that.fetcher.SetThreadNum(3)
 		if ok, _ := utils.PathIsExist(fpath); !ok {
 			if err := that.fetcher.DownloadAndDecompress(fpath, config.VlangFilesDir, true); err == nil {
-				tui.PrintSuccess(fpath)
+				gprint.PrintSuccess(fpath)
 			} else {
 				fmt.Println(err)
 				os.RemoveAll(fpath)

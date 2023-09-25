@@ -11,7 +11,7 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/mholt/archiver/v3"
-	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
@@ -112,7 +112,7 @@ func (that *MavenVersion) ShowVersions() {
 	}
 	if len(vList) > 0 {
 		res := sorts.SortGoVersion(vList)
-		fc := tui.NewFadeColors(res)
+		fc := gprint.NewFadeColors(res)
 		fc.Println()
 	}
 }
@@ -143,7 +143,7 @@ func (that *MavenVersion) UseVersion(version string) {
 		if tarfile := that.download(version); tarfile != "" {
 			if err := archiver.Unarchive(tarfile, untarfile); err != nil {
 				os.RemoveAll(untarfile)
-				tui.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
+				gprint.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
 				return
 			}
 		}
@@ -155,14 +155,14 @@ func (that *MavenVersion) UseVersion(version string) {
 	dir := finder.String()
 	if dir != "" {
 		if err := utils.MkSymLink(dir, config.MavenRoot); err != nil {
-			tui.PrintError(fmt.Sprintf("Create link failed: %+v", err))
+			gprint.PrintError(fmt.Sprintf("Create link failed: %+v", err))
 			return
 		}
 		if !that.env.DoesEnvExist(utils.SUB_MAVEN) {
 			that.CheckAndInitEnv()
 		}
 		utils.RecordVersion(version, dir)
-		tui.PrintSuccess(fmt.Sprintf("Use %s succeeded!", version))
+		gprint.PrintSuccess(fmt.Sprintf("Use %s succeeded!", version))
 	}
 }
 

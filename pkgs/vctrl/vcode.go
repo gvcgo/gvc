@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/mholt/archiver/v3"
-	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
@@ -84,7 +84,7 @@ func (that *Code) getPackages() (r string) {
 			}
 		}
 	} else {
-		tui.PrintError("Get vscode package info failed.")
+		gprint.PrintError("Get vscode package info failed.")
 	}
 	return
 }
@@ -100,7 +100,7 @@ func (that *Code) download() (r string) {
 		} else if strings.HasSuffix(p.Url, ".tar.gz") {
 			suffix = ".tar.gz"
 		} else {
-			tui.PrintError(fmt.Sprintf("Unsupported file type: %s", p.Url))
+			gprint.PrintError(fmt.Sprintf("Unsupported file type: %s", p.Url))
 			return
 		}
 		fpath := filepath.Join(config.CodeTarFileDir, fmt.Sprintf("%s-%s%s", key, that.Version, suffix))
@@ -120,7 +120,7 @@ func (that *Code) download() (r string) {
 			}
 		}
 	} else {
-		tui.PrintError(fmt.Sprintf("Cannot find package for %s", key))
+		gprint.PrintError(fmt.Sprintf("Cannot find package for %s", key))
 	}
 
 	if ok, _ := utils.PathIsExist(config.CodeUntarFile); !ok {
@@ -138,7 +138,7 @@ func (that *Code) Unarchive(fPath string) {
 	if fPath != "" {
 		if err := archiver.Unarchive(fPath, config.CodeUntarFile); err != nil {
 			os.RemoveAll(config.CodeUntarFile)
-			tui.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
+			gprint.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
 			return
 		}
 	}
@@ -180,7 +180,7 @@ func (that *Code) InstallForMac() {
 				source := filepath.Join(config.CodeUntarFile, file.Name())
 				if ok, _ := utils.PathIsExist(config.CodeMacCmdBinaryDir); !ok {
 					if err := utils.CopyFileOnUnixSudo(source, config.CodeMacInstallDir); err != nil {
-						tui.PrintError(fmt.Sprintf("Install vscode failed: %+v", err))
+						gprint.PrintError(fmt.Sprintf("Install vscode failed: %+v", err))
 					} else {
 						os.RemoveAll(config.CodeUntarFile)
 					}

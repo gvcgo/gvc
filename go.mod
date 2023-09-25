@@ -7,13 +7,14 @@ toolchain go1.21.0
 require (
 	github.com/PuerkitoBio/goquery v1.8.1
 	github.com/aquasecurity/table v1.8.0
+	github.com/charmbracelet/bubbles v0.16.1
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/gogf/gf v1.16.9
 	github.com/hhatto/gocloc v0.5.1
 	github.com/knadh/koanf v1.5.0
 	github.com/mholt/archiver/v3 v3.5.1
 	github.com/moqsien/asciinema v0.3.0
-	github.com/moqsien/goutils v0.3.9
+	github.com/moqsien/goutils v0.4.8
 	github.com/moqsien/hackbrowser v1.0.3
 	github.com/moqsien/neobox v1.1.6
 	github.com/pterm/pterm v0.12.62
@@ -39,15 +40,20 @@ require (
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/andybalholm/cascadia v1.3.2 // indirect
+	github.com/atotto/clipboard v0.1.4 // indirect
+	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/bodgit/plumbing v1.3.0 // indirect
 	github.com/bodgit/sevenzip v1.4.2 // indirect
 	github.com/bodgit/windows v1.0.1 // indirect
 	github.com/bytedance/sonic v1.8.8 // indirect
 	github.com/caddyserver/certmagic v0.19.2 // indirect
+	github.com/charmbracelet/bubbletea v0.24.2 // indirect
+	github.com/charmbracelet/harmonica v0.2.0 // indirect
+	github.com/charmbracelet/lipgloss v0.8.0 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
 	github.com/clbanning/mxj v1.8.5-0.20200714211355-ff02cfb8ea28 // indirect
 	github.com/cloudflare/circl v1.3.3 // indirect
-	github.com/containerd/console v1.0.3 // indirect
+	github.com/containerd/console v1.0.4-0.20230313162750-1ae8d489ac81 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/creack/pty v1.1.15 // indirect
 	github.com/creack/termios v0.0.0-20160714173321-88d0029e36a1 // indirect
@@ -121,8 +127,10 @@ require (
 	github.com/libdns/libdns v0.2.1 // indirect
 	github.com/lithammer/fuzzysearch v1.1.8 // indirect
 	github.com/logrusorgru/aurora v2.0.3+incompatible // indirect
+	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.18 // indirect
+	github.com/mattn/go-localereader v0.0.1 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
 	github.com/mholt/acmez v1.2.0 // indirect
 	github.com/miekg/dns v1.1.55 // indirect
@@ -137,6 +145,10 @@ require (
 	github.com/moqsien/wgcf v0.0.0-20230611034603-e29859e0cae2 // indirect
 	github.com/moqsien/xraycore v1.8.5 // indirect
 	github.com/moqsien/xtractr v0.0.1 // indirect
+	github.com/muesli/ansi v0.0.0-20211018074035-2e021307bc4b // indirect
+	github.com/muesli/cancelreader v0.2.2 // indirect
+	github.com/muesli/reflow v0.3.0 // indirect
+	github.com/muesli/termenv v0.15.2 // indirect
 	github.com/mwitkow/go-http-dialer v0.0.0-20161116154839-378f744fb2b8 // indirect
 	github.com/nwaples/rardecode v1.1.3 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
@@ -182,6 +194,7 @@ require (
 	github.com/sagernet/utls v0.0.0-20230309024959-6732c2ab36f2 // indirect
 	github.com/sagernet/websocket v0.0.0-20220913015213-615516348b4e // indirect
 	github.com/sagernet/wireguard-go v0.0.0-20230807125731-5d4a7ef2dc5f // indirect
+	github.com/sahilm/fuzzy v0.1.0 // indirect
 	github.com/scjalliance/comshim v0.0.0-20230315213746-5e51f40bd3b9 // indirect
 	github.com/seiflotfy/cuckoofilter v0.0.0-20220411075957-e3b120b3f5fb // indirect
 	github.com/sergi/go-diff v1.2.0 // indirect

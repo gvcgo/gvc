@@ -12,7 +12,7 @@ import (
 
 	"github.com/gogf/gf/encoding/gjson"
 	"github.com/mholt/archiver/v3"
-	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
@@ -118,7 +118,7 @@ func (that *JuliaVersion) ShowVersions() {
 		vList = append(vList, v)
 	}
 	res := sorts.SortGoVersion(vList)
-	fc := tui.NewFadeColors(res)
+	fc := gprint.NewFadeColors(res)
 	fc.Println()
 }
 
@@ -164,7 +164,7 @@ func (that *JuliaVersion) download(version string) (r string) {
 			os.RemoveAll(fpath)
 		}
 	} else {
-		tui.PrintError(fmt.Sprintf("Invalid Julia version: %s.", version))
+		gprint.PrintError(fmt.Sprintf("Invalid Julia version: %s.", version))
 	}
 	return
 }
@@ -190,7 +190,7 @@ func (that *JuliaVersion) UseVersion(version string) {
 		if tarfile := that.download(version); tarfile != "" {
 			if err := archiver.Unarchive(tarfile, untarfile); err != nil {
 				os.RemoveAll(untarfile)
-				tui.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
+				gprint.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
 				return
 			}
 		}
@@ -202,14 +202,14 @@ func (that *JuliaVersion) UseVersion(version string) {
 	dir := finder.String()
 	if dir != "" {
 		if err := utils.MkSymLink(dir, config.JuliaRootDir); err != nil {
-			tui.PrintError(fmt.Sprintf("Create link failed: %+v", err))
+			gprint.PrintError(fmt.Sprintf("Create link failed: %+v", err))
 			return
 		}
 		if !that.env.DoesEnvExist(utils.SUB_JULIA) {
 			that.CheckAndInitEnv()
 		}
 		utils.RecordVersion(version, dir)
-		tui.PrintSuccess(fmt.Sprintf("Use %s succeeded!", version))
+		gprint.PrintSuccess(fmt.Sprintf("Use %s succeeded!", version))
 	}
 }
 

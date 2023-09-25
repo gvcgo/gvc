@@ -10,7 +10,7 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/mholt/archiver/v3"
-	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
@@ -72,7 +72,7 @@ func (that *JDKVersion) getDoc(isOfficial bool) {
 		that.Doc, _ = goquery.NewDocumentFromReader(resp.RawBody())
 	}
 	if that.Doc == nil {
-		tui.PrintError(fmt.Sprintf("Cannot parse html for %s", that.fetcher.Url))
+		gprint.PrintError(fmt.Sprintf("Cannot parse html for %s", that.fetcher.Url))
 		os.Exit(1)
 	}
 }
@@ -211,7 +211,7 @@ func (that *JDKVersion) ShowVersions() {
 		vList = append(vList, k)
 	}
 	vList = sorts.SortJDKVersion(vList)
-	fc := tui.NewFadeColors(vList)
+	fc := gprint.NewFadeColors(vList)
 	fc.Println()
 }
 
@@ -255,8 +255,8 @@ func (that *JDKVersion) download(version string) (r string) {
 			os.RemoveAll(fpath)
 		}
 	} else {
-		tui.PrintError(fmt.Sprintf("Invalid jdk version: %s", version))
-		tui.PrintInfo("Versions available: ")
+		gprint.PrintError(fmt.Sprintf("Invalid jdk version: %s", version))
+		gprint.PrintInfo("Versions available: ")
 		that.ShowVersions()
 	}
 	return
@@ -296,7 +296,7 @@ func (that *JDKVersion) UseVersion(version string) {
 		if tarfile := that.download(version); tarfile != "" {
 			if err := archiver.Unarchive(tarfile, untarfile); err != nil {
 				os.RemoveAll(untarfile)
-				tui.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
+				gprint.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
 				return
 			}
 		}
@@ -306,18 +306,18 @@ func (that *JDKVersion) UseVersion(version string) {
 	}
 	that.findDir(untarfile)
 	if that.dir == "" {
-		tui.PrintError(fmt.Sprintf("Can not find binaries in %s", untarfile))
+		gprint.PrintError(fmt.Sprintf("Can not find binaries in %s", untarfile))
 		return
 	}
 
 	if err := utils.MkSymLink(that.dir, config.DefaultJavaRoot); err != nil {
-		tui.PrintError(fmt.Sprintf("Create link failed: %+v", err))
+		gprint.PrintError(fmt.Sprintf("Create link failed: %+v", err))
 		return
 	}
 	if !that.env.DoesEnvExist(utils.SUB_JDK) {
 		that.CheckAndInitEnv()
 	}
-	tui.PrintSuccess(fmt.Sprintf("Use %s succeeded!", version))
+	gprint.PrintSuccess(fmt.Sprintf("Use %s succeeded!", version))
 }
 
 func (that *JDKVersion) getCurrent() (version string) {

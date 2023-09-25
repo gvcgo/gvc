@@ -7,7 +7,7 @@ import (
 	"runtime"
 	"time"
 
-	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
@@ -43,11 +43,11 @@ func (that *VGSudo) Install(force bool) {
 		dstDir := filepath.Join(config.GsudoFilePath, "gsudo")
 		if err := that.fetcher.DownloadAndDecompress(fPath, dstDir, force); err == nil {
 			that.CheckAndInitEnv(dstDir)
-			tui.PrintSuccess(fPath)
+			gprint.PrintSuccess(fPath)
 		} else {
 			os.RemoveAll(fPath)
 			os.RemoveAll(dstDir)
-			tui.PrintError(err)
+			gprint.PrintError("%+v", err)
 		}
 	}
 }

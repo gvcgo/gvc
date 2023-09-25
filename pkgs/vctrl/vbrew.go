@@ -5,11 +5,11 @@ import (
 	"path/filepath"
 	"runtime"
 
-	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
+	"github.com/moqsien/goutils/pkgs/gtea/selector"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
-	"github.com/pterm/pterm"
 )
 
 type Homebrew struct {
@@ -41,26 +41,14 @@ func (that *Homebrew) getShellScript() string {
 }
 
 func (that *Homebrew) SetEnv() {
-	selector := pterm.DefaultInteractiveSelect
-	selector.DefaultText = "Choose a Mirror Site in China"
-	optionList := []string{
-		"TsingHua[Default]",
-		"USTC",
-	}
-	selectedOption, _ := pterm.DefaultInteractiveSelect.WithOptions(optionList).Show()
-
-	switch selectedOption {
-	case optionList[1]:
-		envMap := that.Conf.Homebrew.USTC
-		envars := fmt.Sprintf(utils.HOMEbrewEnv,
-			envMap["HOMEBREW_API_DOMAIN"],
-			envMap["HOMEBREW_BOTTLE_DOMAIN"],
-			envMap["HOMEBREW_BREW_GIT_REMOTE"],
-			envMap["HOMEBREW_CORE_GIT_REMOTE"],
-			envMap["HOMEBREW_PIP_INDEX_URL"])
-		that.envs.UpdateSub(utils.SUB_BREW, envars)
-	default:
-		envMap := that.Conf.Homebrew.TsingHua
+	itemList := selector.NewItemList()
+	itemList.Add("from mirrors.tuna.tsinghua.edu.cn", that.Conf.Homebrew.TsingHua)
+	itemList.Add("form mirrors.ustc.edu.cn", that.Conf.Homebrew.USTC)
+	sel := selector.NewSelector(itemList, selector.WidthEnableMulti(false), selector.WithEnbleInfinite(true), selector.WithWidth(40))
+	sel.Run()
+	value := sel.Value()[0]
+	envMap := value.(map[string]string)
+	if len(envMap) > 0 {
 		envars := fmt.Sprintf(utils.HOMEbrewEnv,
 			envMap["HOMEBREW_API_DOMAIN"],
 			envMap["HOMEBREW_BOTTLE_DOMAIN"],
@@ -75,11 +63,11 @@ func (that *Homebrew) Install() {
 	if runtime.GOOS != utils.Windows {
 		script := that.getShellScript()
 		if _, err := utils.ExecuteSysCommand(false, "sh", script); err != nil {
-			tui.PrintError(err)
+			gprint.PrintError("%+v", err)
 			return
 		}
 		that.SetEnv()
 	} else {
-		tui.PrintError("Homebrew does not support Windows.")
+		gprint.PrintError("Homebrew does not support Windows.")
 	}
 }

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
@@ -44,7 +44,7 @@ func (that *SumChecker) LoadInfoList() {
 	if resp := that.fetcher.Get(); resp != nil {
 		content, _ := io.ReadAll(resp.RawResponse.Body)
 		if err := json.Unmarshal(content, that.Info); err != nil {
-			tui.PrintError("Download checksum file failed: ", err, " length: ", len(content))
+			gprint.PrintError("Download checksum file failed: %+v, lentgth: %d", err, len(content))
 			os.Exit(1)
 		}
 	}

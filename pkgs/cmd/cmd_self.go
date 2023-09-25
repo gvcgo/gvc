@@ -3,9 +3,8 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/gvc/pkgs/vctrl"
-	"github.com/pterm/pterm"
-	"github.com/pterm/pterm/putils"
 	"github.com/urfave/cli/v2"
 )
 
@@ -35,27 +34,20 @@ func (that *Cmder) version() {
 		Aliases: []string{"ver", "vsi"},
 		Usage:   "Show gvc version info.",
 		Action: func(ctx *cli.Context) error {
-			// v := vctrl.NewSelf()
-			// v.ShowVersion()
-			name, _ := pterm.DefaultBigText.WithLetters(
-				putils.LettersFromStringWithStyle("G", pterm.FgCyan.ToStyle()),
-				putils.LettersFromStringWithStyle("VC", pterm.FgLightMagenta.ToStyle()),
-			).Srender()
-
-			pterm.Println(name)
-			str := pterm.DefaultBox.
-				WithRightPadding(2).
-				WithLeftPadding(2).
-				WithTopPadding(2).
-				WithBottomPadding(2).
-				Sprintf(
-					"%s\n%s\n%s\n%s",
-					pterm.LightCyan("   Version:     ")+pterm.LightYellow(fmt.Sprintf("%s(%s)", that.gitTag, that.gitHash)),
-					pterm.LightCyan("   UpdateAt:    ")+pterm.LightYellow(that.gitTime),
-					pterm.LightCyan("   Homepage:    ")+pterm.LightYellow("https://github.com/moqsien/gvc"),
-					pterm.LightCyan("   Email:       ")+pterm.LightYellow("moqsien@foxmail.com"),
-				)
-			pterm.Println(str)
+			hashTail := that.gitHash
+			if len(hashTail) > 8 {
+				hashTail = hashTail[len(hashTail)-8:]
+			}
+			content := fmt.Sprintf(
+				"Name: %s\nVersion: %s\nUpdateAt: %s\nHomepage: %s\nEmail: %s",
+				"GVC",
+				fmt.Sprintf("%s(%s)", that.gitTag, hashTail),
+				that.gitTime,
+				"https://github.com/moqsien/gvc",
+				"moqsien2022@gmail.com",
+			)
+			bp := gprint.NewBlockPrinter(content, gprint.WithBold(true))
+			bp.Println()
 			return nil
 		},
 	}

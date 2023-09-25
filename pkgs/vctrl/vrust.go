@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
@@ -99,7 +99,7 @@ func (that *RustInstaller) Install() {
 		c.Stdin = os.Stdin
 		c.Stdout = os.Stdout
 		if err := c.Run(); err != nil {
-			tui.PrintInfo(fmt.Sprintf("You can install rust by running rustup-init.exe in %s.", iPath))
+			gprint.PrintInfo(fmt.Sprintf("You can install rust by running rustup-init.exe in %s.", iPath))
 		}
 	} else {
 		cmd := exec.Command("sh", iPath)
@@ -108,7 +108,7 @@ func (that *RustInstaller) Install() {
 		cmd.Stdout = os.Stdout
 		cmd.Stdin = os.Stdin
 		if err := cmd.Run(); err != nil {
-			tui.PrintError(fmt.Sprintf("Execute installer failed: %+v", err))
+			gprint.PrintError(fmt.Sprintf("Execute installer failed: %+v", err))
 		}
 	}
 }

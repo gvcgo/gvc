@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"github.com/go-resty/resty/v2"
-	tui "github.com/moqsien/goutils/pkgs/gtui"
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
@@ -106,7 +106,7 @@ func (that *Hosts) GetHosts() {
 			content, err := io.ReadAll(r.RawBody())
 			r.RawBody().Close()
 			if err != nil {
-				tui.PrintError(err)
+				gprint.PrintError("%+v", err)
 				return
 			}
 			that.ParseHosts(content)
@@ -136,7 +136,7 @@ func (that *Hosts) ReadAndBackupHosts(hPath, hBackupPath string) (content []byte
 		err = utils.CopyFileOnUnixSudo(hPath, hBackupPath)
 	}
 	if err != nil {
-		tui.PrintError(fmt.Sprintf("Hosts file backup failed: %+v", err))
+		gprint.PrintError(fmt.Sprintf("Hosts file backup failed: %+v", err))
 		return
 	}
 	return
@@ -182,10 +182,10 @@ func (that *Hosts) FormatAndSaveHosts(oldContent []byte) {
 			}
 		}
 		if err != nil {
-			tui.PrintError(fmt.Sprintf("Write file errored: %+v", err))
+			gprint.PrintError(fmt.Sprintf("Write file errored: %+v", err))
 			return
 		}
-		tui.PrintSuccess("Hosts file modifications succeeded!")
+		gprint.PrintSuccess("Hosts file modifications succeeded!")
 	}
 }
 
@@ -236,11 +236,11 @@ func (that *Hosts) winRunAsAdmin() {
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	if err := cmd.Run(); err != nil {
-		tui.PrintError(fmt.Sprintf("Modification failed: %+v", err))
+		gprint.PrintError(fmt.Sprintf("Modification failed: %+v", err))
 	}
-	tui.PrintSuccess("Hosts file modifications succeeded!")
+	gprint.PrintSuccess("Hosts file modifications succeeded!")
 }
 
 func (that *Hosts) ShowFilePath() {
-	tui.PrintInfo(fmt.Sprintf("HostsFile: %s", config.GetHostsFilePath()))
+	gprint.PrintInfo(fmt.Sprintf("HostsFile: %s", config.GetHostsFilePath()))
 }
