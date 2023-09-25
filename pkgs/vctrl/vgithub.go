@@ -13,10 +13,10 @@ import (
 	"github.com/go-resty/resty/v2"
 	"github.com/moqsien/goutils/pkgs/ggit"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
+	"github.com/moqsien/goutils/pkgs/gtea/selector"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
-	"github.com/pterm/pterm"
 )
 
 type GhDownloader struct {
@@ -104,19 +104,25 @@ func (that *GhDownloader) downloadBinary(githubProjectUrl string) {
 			}
 		}
 		if len(that.releases) > 0 {
-			options := []string{}
+
+			itemList := selector.NewItemList()
 			for opt := range that.releases {
-				options = append(options, opt)
+				itemList.Add(opt, opt)
 			}
-			selectedOption, _ := pterm.DefaultInteractiveSelect.WithOptions(options).Show()
-			dUrl := that.releases[selectedOption]
-			gprint.PrintInfo("[Download] %s", dUrl)
-			that.fetcher.SetUrl(that.Conf.Github.DownProxy + dUrl)
-			that.fetcher.SetThreadNum(4)
-			that.fetcher.Timeout = 30 * time.Minute
-			fPath := filepath.Join(that.path, selectedOption)
-			if size := that.fetcher.GetAndSaveFile(fPath, true); size > 0 {
-				gprint.PrintSuccess(fPath)
+			sel := selector.NewSelector(itemList, selector.WithTitle("Choose a file to download: "), selector.WithEnbleInfinite(true), selector.WidthEnableMulti(false), selector.WithWidth(40))
+			sel.Run()
+			value := sel.Value()[0]
+			selected := value.(string)
+			dUrl := that.releases[selected]
+			if dUrl != "" {
+				gprint.PrintInfo("[Download] %s", dUrl)
+				that.fetcher.SetUrl(that.Conf.Github.DownProxy + dUrl)
+				that.fetcher.SetThreadNum(4)
+				that.fetcher.Timeout = 30 * time.Minute
+				fPath := filepath.Join(that.path, selected)
+				if size := that.fetcher.GetAndSaveFile(fPath, true); size > 0 {
+					gprint.PrintSuccess(fPath)
+				}
 			}
 		}
 	}

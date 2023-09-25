@@ -13,11 +13,11 @@ import (
 	"github.com/gogf/gf/encoding/gjson"
 	"github.com/mholt/archiver/v3"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
+	"github.com/moqsien/goutils/pkgs/gtea/selector"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
-	"github.com/pterm/pterm"
 )
 
 // only in china mianland
@@ -59,15 +59,21 @@ func (that *FlutterVersion) initeDirs() {
 
 func (that *FlutterVersion) ChooseSource() {
 	if that.flutterConf == nil || len(that.flutterConf) == 0 {
-		pterm.Println(pterm.Green("Get versions from official site or not?"))
-		pterm.Println(pterm.Green("If not, then get versions from 'flutter.cn'[accelerated in China]."))
-		isOfficial, _ := pterm.DefaultInteractiveConfirm.Show()
-		pterm.Println()
-		if isOfficial {
-			that.flutterConf = that.Conf.Flutter.OfficialURLs
-		} else {
-			that.flutterConf = that.Conf.Flutter.DefaultURLs
-		}
+		itemList := selector.NewItemList()
+		itemList.Add("from flutter-io.cn", that.Conf.Flutter.DefaultURLs)
+		itemList.Add("from googleapis.com", that.Conf.Flutter.OfficialURLs)
+		sel := selector.NewSelector(
+			itemList,
+			selector.WithTitle("Choose download resource:"),
+			selector.WithEnbleInfinite(true),
+			selector.WidthEnableMulti(false),
+			selector.WithHeight(5),
+			selector.WithWidth(40),
+		)
+		sel.Run()
+
+		value := sel.Value()[0]
+		that.flutterConf = value.(map[string]string)
 	}
 }
 
@@ -246,9 +252,9 @@ func (that *FlutterVersion) ShowInstalled() {
 		if d.IsDir() {
 			switch d.Name() {
 			case current:
-				fmt.Println(pterm.Yellow(fmt.Sprintf("%s <Current>", d.Name())))
+				gprint.Yellow(fmt.Sprintf("%s <Current>", d.Name()))
 			default:
-				fmt.Println(pterm.Cyan(d.Name()))
+				gprint.Cyan(d.Name())
 			}
 		}
 	}

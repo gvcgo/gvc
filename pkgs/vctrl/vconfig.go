@@ -16,12 +16,12 @@ import (
 	"github.com/knadh/koanf/providers/file"
 	"github.com/knadh/koanf/providers/structs"
 	"github.com/moqsien/goutils/pkgs/crypt"
+	"github.com/moqsien/goutils/pkgs/gtea/confirm"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/gtea/input"
 	"github.com/moqsien/goutils/pkgs/koanfer"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
-	"github.com/pterm/pterm"
 	"github.com/studio-b12/gowebdav"
 )
 
@@ -116,31 +116,20 @@ func (that *GVCWebdav) SetWebdavAccount() {
 		wPass      string = "Password"
 		wEncrypter string = "Encrypt Password"
 	)
-	order := []string{wHost, wUname, wPass, wEncrypter}
-	inputList := map[string]*input.Input{
-		wHost:      input.NewInput(input.WithPlaceholder(wHost), input.WithWidth(50)),
-		wUname:     input.NewInput(input.WithPlaceholder(wUname), input.WithWidth(50)),
-		wPass:      input.NewInput(input.WithPlaceholder(wPass), input.WithEchoMode(textinput.EchoPassword), input.WithWidth(50)),
-		wEncrypter: input.NewInput(input.WithPlaceholder(wEncrypter), input.WithEchoMode(textinput.EchoPassword), input.WithWidth(50)),
-	}
 
-	for _, name := range order {
-		item := inputList[name]
-		item.Run()
-		v := item.Value()
-		switch name {
-		case wHost:
-			that.DavConf.Host = v
-		case wUname:
-			that.DavConf.Username = v
-		case wPass:
-			that.DavConf.Password = v
-		case wEncrypter:
-			that.DavConf.EncryptPass = v
-		default:
-			gprint.PrintError("unknown input")
-		}
-	}
+	mInput := input.NewMultiInput()
+	mInput.AddOneItem(wHost, input.MWithWidth(60))
+	mInput.AddOneItem(wUname, input.MWithWidth(60))
+	mInput.AddOneItem(wPass, input.MWithWidth(60), input.MWithEchoMode(textinput.EchoPassword), input.MWithEchoChar("*"))
+	mInput.AddOneItem(wEncrypter, input.MWithWidth(60), input.MWithEchoMode(textinput.EchoPassword), input.MWithEchoChar("*"))
+
+	mInput.Run()
+	result := mInput.Values()
+
+	that.DavConf.Host = result[wHost]
+	that.DavConf.Username = result[wUname]
+	that.DavConf.Password = result[wPass]
+	that.DavConf.EncryptPass = result[wEncrypter]
 
 	if that.conf.Webdav.DefaultWebdavRemoteDir != "" {
 		that.DavConf.RemoteDir = that.conf.Webdav.DefaultWebdavRemoteDir
@@ -153,10 +142,9 @@ func (that *GVCWebdav) SetWebdavAccount() {
 
 func (that *GVCWebdav) getClient(force bool) {
 	if that.DavConf.Host == "" || that.DavConf.Username == "" || that.DavConf.Password == "" {
-		gprint.PrintWarning("It seems that you haven't set a webdav account.")
-		ok, _ := pterm.DefaultInteractiveConfirm.WithConfirmText("Set your webdav account right now?").Show()
-		pterm.Println()
-		if ok {
+		cfm := confirm.NewConfirm(confirm.WithTitle("Set your webdav account right now?"))
+		cfm.Run()
+		if cfm.Result() {
 			that.SetWebdavAccount()
 			that.getClient(force)
 		}

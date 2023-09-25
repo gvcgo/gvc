@@ -8,12 +8,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/moqsien/goutils/pkgs/gtea/confirm"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/pterm/pterm"
-	"github.com/pterm/pterm/putils"
 )
 
 type Self struct {
@@ -115,41 +115,15 @@ func (that *Self) ShowPath() {
 	pterm.Println(str)
 }
 
-const (
-	VERSION = "1.3.x"
-)
-
-func (that *Self) ShowVersion() {
-	name, _ := pterm.DefaultBigText.WithLetters(
-		putils.LettersFromStringWithStyle("G", pterm.FgCyan.ToStyle()),
-		putils.LettersFromStringWithStyle("VC", pterm.FgLightMagenta.ToStyle()),
-	).Srender()
-
-	pterm.Println(name)
-	str := pterm.DefaultBox.
-		WithRightPadding(2).
-		WithLeftPadding(2).
-		WithTopPadding(2).
-		WithBottomPadding(2).
-		Sprintf(
-			"%s\n%s\n%s",
-			pterm.LightCyan("   Version:     ")+pterm.LightYellow("v"+VERSION),
-			pterm.LightCyan("   Github:      ")+pterm.LightYellow("https://github.com/moqsien/gvc"),
-			pterm.LightCyan("   Email:       ")+pterm.LightYellow("moqsien2022@gmail.com"),
-		)
-	pterm.Println(str)
-}
-
 func (that *Self) CheckLatestVersion(currentVersion string) {
 	latest := that.checker.GetLatestGVCVersion()
 	if currentVersion == latest {
 		gprint.PrintInfo(fmt.Sprintf("Current version: %s is already the latest.", currentVersion))
 		return
 	}
-	confirmPrinter := pterm.DefaultInteractiveConfirm
-	confirmPrinter.DefaultText = "To download the latest version for GVC or not. "
-	confirmPrinter.TextStyle = &pterm.Style{pterm.FgRed}
-	if result, _ := confirmPrinter.Show(); result {
+	cfm := confirm.NewConfirm(confirm.WithTitle("To download the latest version for GVC or not?"))
+	cfm.Run()
+	if cfm.Result() {
 		that.download()
 	}
 }

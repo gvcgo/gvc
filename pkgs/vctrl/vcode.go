@@ -11,11 +11,11 @@ import (
 	"time"
 
 	"github.com/mholt/archiver/v3"
+	"github.com/moqsien/goutils/pkgs/gtea/confirm"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
-	"github.com/pterm/pterm"
 	"github.com/tidwall/gjson"
 )
 
@@ -104,10 +104,9 @@ func (that *Code) download() (r string) {
 			return
 		}
 		fpath := filepath.Join(config.CodeTarFileDir, fmt.Sprintf("%s-%s%s", key, that.Version, suffix))
-		pterm.Println(pterm.Green("Use CDN to accelerate download or not?"))
-		result, _ := pterm.DefaultInteractiveConfirm.Show()
-		pterm.Println()
-		if result {
+		cfm := confirm.NewConfirm(confirm.WithTitle("Use vscode.cdn.azure.cn to accelerate download or not?"))
+		cfm.Run()
+		if cfm.Result() {
 			that.fetcher.Url = strings.Replace(p.Url, that.Conf.Code.StableUrl, that.Conf.Code.CdnUrl, -1)
 		}
 		that.fetcher.Timeout = 600 * time.Second
