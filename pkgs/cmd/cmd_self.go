@@ -46,8 +46,7 @@ func (that *Cmder) version() {
 				"https://github.com/moqsien/gvc",
 				"moqsien2022@gmail.com",
 			)
-			bp := gprint.NewBlockPrinter(content, gprint.WithBold(true))
-			bp.Println()
+			gprint.PrintlnByDefault(content)
 			return nil
 		},
 	}
