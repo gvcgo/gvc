@@ -239,23 +239,11 @@ GLOBAL OPTIONS:
 
 ```bash
 $moqsien> g version
-
- ██████  ██    ██  ██████
-██           ██    ██ ██
-██   ███  ██    ██ ██
-██    ██    ██  ██  ██
- ██████    ████    ██████
-
-┌────────────────────────────────────────────────────────────────────┐
-|                                                                    |
-|                                                                    |
-|     Version:     v1.5.6(17f14754cdcebcfd72f30fcf7fcea1f9304e189a)  |
-|     UpdateAt:    Thu Sep 21 12:53:09 2023 +0800                    |
-|     Homepage:    https://github.com/moqsien/gvc                    |
-|     Email:       moqsien2022@gmail.com                             |
-|                                                                    |
-|                                                                    |
-└────────────────────────────────────────────────────────────────────┘
+      Name: GVC
+      Version: v1.5.7(c7d768d9)
+      UpdateAt: Tue Sep 26 13:14:49 2023 +0800
+      Homepage: https://github.com/moqsien/gvc
+      Email: moqsien2022@gmail.com
 ```
 
 ### Subcommand: go
@@ -653,6 +641,8 @@ gvc provides no paid services, so, users should make use of it within the limits
 - [vcpkg-tool](https://github.com/microsoft/vcpkg-tool)
 - [gf](https://github.com/gogf/gf)
 - [cli](https://github.com/urfave/cli)
+- [bubbles](https://github.com/charmbracelet/bubbles)
+- [lipgloss](https://github.com/charmbracelet/lipgloss)
 - [pterm](https://github.com/pterm/pterm)
 - [goutils](https://github.com/moqsien/goutils)
 - [asciinema](https://github.com/securisec/asciinema)
