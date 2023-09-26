@@ -43,7 +43,7 @@ func (that *Typst) download(force bool) string {
 		selector.WithTitle("Choose a download resource:"),
 		selector.WithEnbleInfinite(true),
 		selector.WidthEnableMulti(false),
-		selector.WithHeight(4),
+		selector.WithHeight(10),
 		selector.WithWidth(30),
 	)
 	sel.Run()

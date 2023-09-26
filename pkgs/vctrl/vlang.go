@@ -44,8 +44,8 @@ func (that *Vlang) download(force bool) string {
 		itemList,
 		selector.WidthEnableMulti(false),
 		selector.WithEnbleInfinite(true),
-		selector.WithTitle("Please select a resource"),
-		selector.WithHeight(4),
+		selector.WithTitle("Please select a resource:"),
+		selector.WithHeight(10),
 		selector.WithWidth(30),
 	)
 	sel.Run()
@@ -115,7 +115,14 @@ func (that *Vlang) InstallVAnalyzerForVscode() {
 	}
 	itemList.Add("from gitlab", that.Conf.Vlang.AnalyzerGitlabUrls[key])
 	itemList.Add("from github", that.Conf.Vlang.AnalyzerUrls[key])
-	sel := selector.NewSelector(itemList, selector.WidthEnableMulti(false), selector.WithEnbleInfinite(true), selector.WithTitle("Please select a resource"))
+	sel := selector.NewSelector(
+		itemList,
+		selector.WidthEnableMulti(false),
+		selector.WithEnbleInfinite(true),
+		selector.WithTitle("Please select a resource:"),
+		selector.WithWidth(20),
+		selector.WithHeight(10),
+	)
 	sel.Run()
 	value := sel.Value()[0]
 	that.fetcher.Url = value.(string)

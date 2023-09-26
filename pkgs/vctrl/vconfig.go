@@ -125,11 +125,18 @@ func (that *GVCWebdav) SetWebdavAccount() {
 
 	mInput.Run()
 	result := mInput.Values()
-
-	that.DavConf.Host = result[wHost]
-	that.DavConf.Username = result[wUname]
-	that.DavConf.Password = result[wPass]
-	that.DavConf.EncryptPass = result[wEncrypter]
+	if r := result[wHost]; r != "" {
+		that.DavConf.Host = r
+	}
+	if r := result[wUname]; r != "" {
+		that.DavConf.Username = r
+	}
+	if r := result[wPass]; r != "" {
+		that.DavConf.Password = r
+	}
+	if r := result[wEncrypter]; r != "" {
+		that.DavConf.EncryptPass = r
+	}
 
 	if that.conf.Webdav.DefaultWebdavRemoteDir != "" {
 		that.DavConf.RemoteDir = that.conf.Webdav.DefaultWebdavRemoteDir

@@ -44,7 +44,14 @@ func (that *Homebrew) SetEnv() {
 	itemList := selector.NewItemList()
 	itemList.Add("from mirrors.tuna.tsinghua.edu.cn", that.Conf.Homebrew.TsingHua)
 	itemList.Add("form mirrors.ustc.edu.cn", that.Conf.Homebrew.USTC)
-	sel := selector.NewSelector(itemList, selector.WidthEnableMulti(false), selector.WithEnbleInfinite(true), selector.WithWidth(40))
+	sel := selector.NewSelector(
+		itemList,
+		selector.WidthEnableMulti(false),
+		selector.WithEnbleInfinite(true),
+		selector.WithWidth(40),
+		selector.WithHeight(10),
+		selector.WithTitle("Choose a homebrew mirror"),
+	)
 	sel.Run()
 	value := sel.Value()[0]
 	envMap := value.(map[string]string)

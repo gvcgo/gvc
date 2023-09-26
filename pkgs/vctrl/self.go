@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/charmbracelet/lipgloss"
 	"github.com/moqsien/goutils/pkgs/gtea/confirm"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/request"
@@ -103,12 +104,23 @@ func (that *Self) Uninstall() {
 
 func (that *Self) ShowPath() {
 	content := fmt.Sprintf(
-		"Installation Dir: %s\nGVC Config Path: %s\nGVC Webdav Config Path: %s",
+		"IntalledAt: %s\nGVConfPath: %s\nDAVConfPath: %s",
 		config.GVCWorkDir,
 		config.GVConfigPath,
 		config.GVCWebdavConfigPath,
 	)
-	gprint.PrintlnByDefault(content)
+	bp := gprint.NewBlockPrinter(
+		content,
+		gprint.WithAlign(lipgloss.Left),
+		gprint.WithForeground("#FAFAFA"),
+		gprint.WithBackground("#874BFD", "#7D56F4"),
+		gprint.WithPadding(2, 6),
+		gprint.WithHeight(5),
+		gprint.WithWidth(78),
+		gprint.WithBold(true),
+		gprint.WithItalic(true),
+	)
+	bp.Println()
 }
 
 func (that *Self) CheckLatestVersion(currentVersion string) {

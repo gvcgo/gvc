@@ -67,7 +67,7 @@ func (that *FlutterVersion) ChooseSource() {
 			selector.WithTitle("Choose download resource:"),
 			selector.WithEnbleInfinite(true),
 			selector.WidthEnableMulti(false),
-			selector.WithHeight(5),
+			selector.WithHeight(10),
 			selector.WithWidth(40),
 		)
 		sel.Run()

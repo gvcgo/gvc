@@ -62,7 +62,7 @@ func (that *JuliaVersion) getJson() {
 		selector.WithEnbleInfinite(true),
 		selector.WidthEnableMulti(false),
 		selector.WithWidth(40),
-		selector.WithHeight(4),
+		selector.WithHeight(10),
 	)
 	sel.Run()
 	val := sel.Value()[0]

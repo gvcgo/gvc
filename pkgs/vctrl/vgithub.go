@@ -109,7 +109,14 @@ func (that *GhDownloader) downloadBinary(githubProjectUrl string) {
 			for opt := range that.releases {
 				itemList.Add(opt, opt)
 			}
-			sel := selector.NewSelector(itemList, selector.WithTitle("Choose a file to download: "), selector.WithEnbleInfinite(true), selector.WidthEnableMulti(false), selector.WithWidth(40))
+			sel := selector.NewSelector(
+				itemList,
+				selector.WithTitle("Choose a file to download: "),
+				selector.WithEnbleInfinite(true),
+				selector.WidthEnableMulti(false),
+				selector.WithWidth(40),
+				selector.WithHeight(10),
+			)
 			sel.Run()
 			value := sel.Value()[0]
 			selected := value.(string)

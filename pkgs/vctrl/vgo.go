@@ -77,7 +77,7 @@ func (that *GoVersion) getDoc() {
 			selector.WithEnbleInfinite(true),
 			selector.WidthEnableMulti(false),
 			selector.WithWidth(20),
-			selector.WithHeight(4),
+			selector.WithHeight(10),
 		)
 		sel.Run()
 		val := sel.Value()[0]
@@ -720,7 +720,7 @@ func (that *GoVersion) Build(args ...string) {
 			selector.WidthEnableMulti(true),
 			selector.WithEnbleInfinite(true),
 			selector.WithWidth(40),
-			selector.WithHeight(6),
+			selector.WithHeight(20),
 		)
 		sel.Run()
 		list := sel.Value()

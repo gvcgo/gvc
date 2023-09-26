@@ -105,8 +105,9 @@ func (that *JDKVersion) GetVersions() {
 		selector.WidthEnableMulti(false),
 		selector.WithEnbleInfinite(true),
 		selector.WithWidth(30),
-		selector.WithHeight(5),
+		selector.WithHeight(10),
 	)
+	sel.Run()
 	val := sel.Value()[0]
 	isOfficial := val.(bool)
 
