@@ -18,7 +18,6 @@ import (
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
-	"github.com/pterm/pterm"
 )
 
 type JuliaPackage struct {
@@ -227,9 +226,9 @@ func (that *JuliaVersion) ShowInstalled() {
 		if d.IsDir() {
 			switch d.Name() {
 			case current:
-				fmt.Println(pterm.Yellow(fmt.Sprintf("%s <Current>", d.Name())))
+				gprint.Yellow("%s <Current>", d.Name())
 			default:
-				fmt.Println(pterm.Cyan(d.Name()))
+				gprint.Cyan(d.Name())
 			}
 		}
 	}

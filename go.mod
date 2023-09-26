@@ -16,7 +16,6 @@ require (
 	github.com/moqsien/goutils v0.4.9
 	github.com/moqsien/hackbrowser v1.0.3
 	github.com/moqsien/neobox v1.1.6
-	github.com/pterm/pterm v0.12.62
 	github.com/studio-b12/gowebdav v0.0.0-20230203202212-3282f94193f2
 	github.com/tidwall/gjson v1.14.4
 	github.com/urfave/cli/v2 v2.25.7
@@ -165,6 +164,7 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/ppacher/go-dbus-keyring v1.0.1 // indirect
 	github.com/prometheus-community/pro-bing v0.3.0 // indirect
+	github.com/pterm/pterm v0.12.62 // indirect
 	github.com/quic-go/qpack v0.4.0 // indirect
 	github.com/quic-go/qtls-go1-20 v0.3.3 // indirect
 	github.com/quic-go/quic-go v0.38.1 // indirect

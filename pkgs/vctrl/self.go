@@ -13,7 +13,6 @@ import (
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
-	"github.com/pterm/pterm"
 )
 
 type Self struct {
@@ -81,19 +80,19 @@ func (that *Self) Install() {
 }
 
 func (that *Self) Uninstall() {
-	confirmPrinter := pterm.DefaultInteractiveConfirm
-	confirmPrinter.DefaultText = "Confirm to remove gvc. "
-	confirmPrinter.TextStyle = &pterm.Style{pterm.FgRed}
-	if result, _ := confirmPrinter.Show(); result {
-		pterm.Println()
+	cfm := confirm.NewConfirm(confirm.WithTitle("To remove gvc?"))
+	cfm.Run()
+
+	if cfm.Result() {
 		that.env.RemoveSubs()
-		cp := pterm.DefaultInteractiveConfirm
-		cp.DefaultText = "Confirm to save config files to WebDAV. "
-		if r, _ := cp.Show(); r {
+
+		cfmDAV := confirm.NewConfirm(confirm.WithTitle("Save config files to WebDAV before removing gvc?"))
+		cfmDAV.Run()
+
+		if cfmDAV.Result() {
 			dav := NewGVCWebdav()
 			dav.GatherAndPushSettings()
 		}
-		pterm.Println()
 		if ok, _ := utils.PathIsExist(config.GVCWorkDir); ok {
 			os.RemoveAll(config.GVCWorkDir)
 		}
@@ -103,16 +102,13 @@ func (that *Self) Uninstall() {
 }
 
 func (that *Self) ShowPath() {
-	str := pterm.DefaultBox.
-		WithRightPadding(1).
-		WithLeftPadding(1).
-		WithTopPadding(1).
-		WithBottomPadding(1).
-		Sprintf("%s: %s\n%s: %s\n%s: %s",
-			pterm.Cyan("Installation Dir"), pterm.Green(config.GVCWorkDir),
-			pterm.Cyan("GVC Config Path"), pterm.Green(config.GVConfigPath),
-			pterm.Cyan("GVC Webdav Config Path"), pterm.Green(config.GVCWebdavConfigPath))
-	pterm.Println(str)
+	content := fmt.Sprintf(
+		"Installation Dir: %s\nGVC Config Path: %s\nGVC Webdav Config Path: %s",
+		config.GVCWorkDir,
+		config.GVConfigPath,
+		config.GVCWebdavConfigPath,
+	)
+	gprint.PrintlnByDefault(content)
 }
 
 func (that *Self) CheckLatestVersion(currentVersion string) {

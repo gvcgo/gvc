@@ -3,10 +3,10 @@ package confs
 import (
 	"os"
 
+	"github.com/moqsien/goutils/pkgs/gtea/confirm"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/koanfer"
 	"github.com/moqsien/gvc/pkgs/utils"
-	"github.com/pterm/pterm"
 )
 
 func init() {
@@ -86,7 +86,9 @@ func (that *GVConfig) initiate() {
 		that.Reload()
 	} else {
 		gprint.PrintWarning("Cannot find default config files.")
-		if ok, _ := pterm.DefaultInteractiveConfirm.Show("Use the default config files now?"); ok {
+		cfm := confirm.NewConfirm(confirm.WithTitle("Use the default config files now?"))
+		cfm.Run()
+		if cfm.Result() {
 			that.Reset()
 		}
 	}
