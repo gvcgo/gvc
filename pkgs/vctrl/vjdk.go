@@ -11,11 +11,11 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/mholt/archiver/v3"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
+	"github.com/moqsien/goutils/pkgs/gtea/selector"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
-	"github.com/pterm/pterm"
 )
 
 var AllowedSuffixes = []string{
@@ -96,10 +96,20 @@ func (that *JDKVersion) GetFileSuffix(fName string) string {
 }
 
 func (that *JDKVersion) GetVersions() {
-	pterm.Println(pterm.Green("Download/Show versions from official site or not?"))
-	pterm.Println(pterm.Green("If not, then download/show versions from 'injdk.cn'[accelerated in China]."))
-	isOfficial, _ := pterm.DefaultInteractiveConfirm.Show()
-	pterm.Println()
+	itemList := selector.NewItemList()
+	itemList.Add("from injdk.cn", false)
+	itemList.Add("from oracle.com", true)
+	sel := selector.NewSelector(
+		itemList,
+		selector.WithTitle("Choose resources to download:"),
+		selector.WidthEnableMulti(false),
+		selector.WithEnbleInfinite(true),
+		selector.WithWidth(30),
+		selector.WithHeight(5),
+	)
+	val := sel.Value()[0]
+	isOfficial := val.(bool)
+
 	if that.Doc == nil {
 		that.getDoc(isOfficial)
 	}
@@ -345,9 +355,9 @@ func (that *JDKVersion) ShowInstalled() {
 			continue
 		}
 		if strings.Contains(d.Name(), current) {
-			fmt.Println(pterm.Yellow(fmt.Sprintf("%s <Current>", d.Name())))
+			gprint.Yellow("%s <Current>", d.Name())
 		} else {
-			fmt.Println(pterm.Cyan(d.Name()))
+			gprint.Cyan(d.Name())
 		}
 	}
 }

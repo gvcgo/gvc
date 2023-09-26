@@ -12,11 +12,11 @@ import (
 
 	"github.com/mholt/archiver/v3"
 	myArchiver "github.com/moqsien/goutils/pkgs/archiver"
+	"github.com/moqsien/goutils/pkgs/gtea/confirm"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
-	"github.com/pterm/pterm"
 )
 
 type PyVenv struct {
@@ -108,9 +108,9 @@ func (that *PyVenv) setEnv() {
 }
 
 func (that *PyVenv) modifyAccelertion(pyenvDir string) {
-	pterm.Println(pterm.Green("Set dowload accelerations[only in China] or not?"))
-	result, _ := pterm.DefaultInteractiveConfirm.Show()
-	pterm.Println()
+	cfm := confirm.NewConfirm(confirm.WithTitle("Set download accelerations in China or not?"))
+	cfm.Run()
+	result := cfm.Result()
 	if !result {
 		return
 	}
@@ -151,6 +151,7 @@ func (that *PyVenv) getPyenv(force ...bool) {
 	} else {
 		that.fetcher.Url = that.Conf.Python.PyenvUnix
 	}
+
 	if that.fetcher.Url != "" {
 		if strings.Contains(that.fetcher.Url, "github.com") {
 			that.fetcher.Url = that.Conf.Github.GetDownUrl(that.fetcher.Url)
@@ -242,15 +243,6 @@ func (that *PyVenv) getExecutablePath() (exePath string) {
 }
 
 func (that *PyVenv) UpdatePyenv() {
-	if runtime.GOOS == utils.Windows {
-		if ok, _ := pterm.DefaultInteractiveConfirm.Show("This would delete the python versions you have installed, still continue?"); ok {
-			gprint.PrintInfo("Updating pyenv...")
-			that.getPyenv(true)
-		} else {
-			gprint.PrintInfo("Aborted.")
-		}
-		return
-	}
 	gprint.PrintInfo("Updating pyenv...")
 	that.getPyenv(true)
 }

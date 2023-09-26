@@ -13,6 +13,7 @@ import (
 	"github.com/gogf/gf/encoding/gjson"
 	"github.com/mholt/archiver/v3"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
+	"github.com/moqsien/goutils/pkgs/gtea/selector"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
@@ -53,15 +54,21 @@ func (that *JuliaVersion) initeDirs() {
 }
 
 func (that *JuliaVersion) getJson() {
-	pterm.Println(pterm.Green("Use tsinghua[mirrors.tuna.tsinghua.edu.cn, accelerated in China] source to download or not?"))
-	pterm.Println(pterm.Green("If not, then get versions from official site."))
-	useTsinghua, _ := pterm.DefaultInteractiveConfirm.Show()
-	pterm.Println()
-	if useTsinghua {
-		that.fetcher.Url = that.Conf.Julia.VersionUrl
-	} else {
-		that.fetcher.Url = that.Conf.Julia.VersionUrlOfficial
-	}
+	itemList := selector.NewItemList()
+	itemList.Add("from mirrors.tuna.tsinghua.edu.cn", that.Conf.Julia.VersionUrl)
+	itemList.Add("from julialang.org", that.Conf.Julia.VersionUrlOfficial)
+	sel := selector.NewSelector(
+		itemList,
+		selector.WithTitle("Choose a download resource:"),
+		selector.WithEnbleInfinite(true),
+		selector.WidthEnableMulti(false),
+		selector.WithWidth(40),
+		selector.WithHeight(4),
+	)
+	sel.Run()
+	val := sel.Value()[0]
+	that.fetcher.Url = val.(string)
+
 	if !utils.VerifyUrls(that.fetcher.Url) {
 		return
 	}

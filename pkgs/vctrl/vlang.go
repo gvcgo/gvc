@@ -37,24 +37,21 @@ func NewVlang() (vl *Vlang) {
 }
 
 func (that *Vlang) download(force bool) string {
-
-	// sel := gprint.NewSelect(optionList, func(s string) string {
-	// 	var vUrls map[string]string
-	// 	switch s {
-	// 	case optionList[1]:
-	// 		vUrls = that.Conf.Vlang.VlangUrls
-	// 	default:
-	// 		vUrls = that.Conf.Vlang.VlangGitlabUrls
-	// 	}
-	// 	return vUrls[runtime.GOOS]
-	// })
 	itemList := selector.NewItemList()
 	itemList.Add("from gitlab", that.Conf.Vlang.VlangGitlabUrls[runtime.GOOS])
 	itemList.Add("from github", that.Conf.Vlang.VlangUrls[runtime.GOOS])
-	sel := selector.NewSelector(itemList, selector.WidthEnableMulti(false), selector.WithEnbleInfinite(true), selector.WithTitle("Please select a resource"))
+	sel := selector.NewSelector(
+		itemList,
+		selector.WidthEnableMulti(false),
+		selector.WithEnbleInfinite(true),
+		selector.WithTitle("Please select a resource"),
+		selector.WithHeight(4),
+		selector.WithWidth(30),
+	)
 	sel.Run()
 	value := sel.Value()[0]
 	that.fetcher.Url = value.(string)
+
 	if that.fetcher.Url != "" {
 		fpath := filepath.Join(config.VlangFilesDir, "vlang.zip")
 		if strings.Contains(that.fetcher.Url, "gitlab.com") && !that.checker.IsUpdated(fpath, that.fetcher.Url) {

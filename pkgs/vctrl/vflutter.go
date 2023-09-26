@@ -252,7 +252,7 @@ func (that *FlutterVersion) ShowInstalled() {
 		if d.IsDir() {
 			switch d.Name() {
 			case current:
-				gprint.Yellow(fmt.Sprintf("%s <Current>", d.Name()))
+				gprint.Yellow("%s <Current>", d.Name())
 			default:
 				gprint.Cyan(d.Name())
 			}

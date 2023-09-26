@@ -9,11 +9,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/moqsien/goutils/pkgs/gtea/confirm"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
-	"github.com/pterm/pterm"
 )
 
 type RustInstaller struct {
@@ -47,10 +47,9 @@ func (that *RustInstaller) getInstaller() (fPath string) {
 }
 
 func (that *RustInstaller) SetAccelerationEnv() {
-	pterm.Println(pterm.Green("Set RUSTUP_DIST_SERVER/RUSTUP_UPDATE_ROOT to 'mirrors.ustc.edu.cn' or not?"))
-	pterm.Println(pterm.Green("This will accelerate download in China."))
-	result, _ := pterm.DefaultInteractiveConfirm.Show()
-	pterm.Println()
+	cfm := confirm.NewConfirm(confirm.WithTitle("Set RUSTUP_DIST_SERVER/RUSTUP_UPDATE_ROOT to 'mirrors.ustc.edu.cn' or not?"))
+	cfm.Run()
+	result := cfm.Result()
 	if !result {
 		return
 	}
@@ -76,10 +75,9 @@ func (that *RustInstaller) SetAccelerationEnv() {
 func (that *RustInstaller) getEnv() (r []string) {
 	r = os.Environ()
 	if !strings.Contains(strings.Join(r, " "), config.DistServerEnvName) {
-		pterm.Println(pterm.Green("Set RUSTUP_DIST_SERVER/RUSTUP_UPDATE_ROOT to 'mirrors.ustc.edu.cn' or not?"))
-		pterm.Println(pterm.Green("This will accelerate download in China."))
-		result, _ := pterm.DefaultInteractiveConfirm.Show()
-		pterm.Println()
+		cfm := confirm.NewConfirm(confirm.WithTitle("Set RUSTUP_DIST_SERVER/RUSTUP_UPDATE_ROOT to 'mirrors.ustc.edu.cn' or not?"))
+		cfm.Run()
+		result := cfm.Result()
 		if result {
 			r = append(r, fmt.Sprintf("%s=%s", config.DistServerEnvName, that.Conf.Rust.DistServer))
 			r = append(r, fmt.Sprintf("%s=%s", config.UpdateRootEnvName, that.Conf.Rust.UpdateRoot))

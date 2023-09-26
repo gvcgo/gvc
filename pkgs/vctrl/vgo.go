@@ -16,15 +16,17 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/aquasecurity/table"
+	btable "github.com/charmbracelet/bubbles/table"
 	"github.com/mholt/archiver/v3"
+	"github.com/moqsien/goutils/pkgs/gtea/confirm"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
+	"github.com/moqsien/goutils/pkgs/gtea/gtable"
+	"github.com/moqsien/goutils/pkgs/gtea/selector"
 	"github.com/moqsien/goutils/pkgs/koanfer"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
-	"github.com/pterm/pterm"
 )
 
 type GoPackage struct {
@@ -66,15 +68,21 @@ func (that *GoVersion) initeDirs() {
 
 func (that *GoVersion) getDoc() {
 	if len(that.Conf.Go.CompilerUrls) > 0 {
-		pterm.Println(pterm.Green("Get versions from go.dev or not?"))
-		pterm.Println(pterm.Green("If not, then get versions from 'golang.google.cn'[accelerated in China]."))
-		notCN, _ := pterm.DefaultInteractiveConfirm.Show()
-		pterm.Println()
-		if notCN {
-			that.fetcher.Url = that.Conf.Go.CompilerUrls[1]
-		} else {
-			that.fetcher.Url = that.Conf.Go.CompilerUrls[0]
-		}
+		itemList := selector.NewItemList()
+		itemList.Add("from go.dev", that.Conf.Go.CompilerUrls[1])
+		itemList.Add("from golang.google.cn", that.Conf.Go.CompilerUrls[0])
+		sel := selector.NewSelector(
+			itemList,
+			selector.WithTitle("Choose a resource to download:"),
+			selector.WithEnbleInfinite(true),
+			selector.WidthEnableMulti(false),
+			selector.WithWidth(20),
+			selector.WithHeight(4),
+		)
+		sel.Run()
+		val := sel.Value()[0]
+		that.fetcher.Url = val.(string)
+
 		var err error
 		if that.ParsedUrl, err = url.Parse(that.fetcher.Url); err != nil {
 			gprint.PrintError("%+v", err)
@@ -271,11 +279,9 @@ func (that *GoVersion) findPackage(version string, kind ...string) (p *GoPackage
 func (that *GoVersion) download(version string) (r string) {
 	p := that.findPackage(version)
 	if p != nil {
-		pterm.Println(pterm.Green("Use Aliyun[mirrors.aliyun.com/golang/, accelerated in China] source to download or not?"))
-		pterm.Println(pterm.Green("If not, then get versions from official/cn site."))
-		useAliMirror, _ := pterm.DefaultInteractiveConfirm.Show()
-		pterm.Println()
-		if useAliMirror {
+		cfm := confirm.NewConfirm(confirm.WithTitle("Use mirrors.aliyun.com/golang for download acceleration?"))
+		cfm.Run()
+		if cfm.Result() {
 			that.fetcher.Url = p.AliUrl
 			if that.fetcher.Url == "" {
 				that.fetcher.Url = p.Url
@@ -385,10 +391,10 @@ func (that *GoVersion) ShowInstalled() {
 	for _, v := range installedList {
 		if v.IsDir() {
 			if strings.Contains(current, v.Name()) {
-				fmt.Println(pterm.Yellow(fmt.Sprintf("%s <Current>", v.Name())))
+				gprint.Yellow("%s <Current>", v.Name())
 				continue
 			}
-			fmt.Println(pterm.Cyan(v.Name()))
+			gprint.Cyan(v.Name())
 		}
 	}
 }
@@ -464,37 +470,27 @@ func (that *GoVersion) SearchLibs(name string, sortby int) {
 	})
 
 	result := sorts.SortGoLibs(itemList)
-	l := len(result)
-	totalPage := l / 25
-	currentPage := 0
 
-OUTTER:
-	for {
-		t := table.New(os.Stdout)
-		t.SetAlignment(table.AlignLeft, table.AlignCenter, table.AlignCenter, table.AlignCenter)
-		t.SetHeaders("Url", "Version", "ImportedBy", "UpdateAt")
-		for i := l - 1 - currentPage*25; i >= l-1-(currentPage+1)*25 && currentPage < totalPage && i > 0; i-- {
-			v := result[i]
-			t.AddRow(pterm.Cyan(v.Name), pterm.Green(v.Version), pterm.Yellow(strconv.Itoa(v.Imported)), v.Update)
-		}
-		t.Render()
-		currentPage += 1
-
-		optionsList := []string{
-			"continue.",
-			"exit.",
-		}
-		selectedOption, _ := pterm.DefaultInteractiveSelect.WithOptions(optionsList).Show()
-		switch selectedOption {
-		case optionsList[0]:
-			if currentPage >= totalPage-1 {
-				break OUTTER
-			}
-			continue
-		default:
-			break OUTTER
-		}
+	columns := []btable.Column{
+		{Title: "Url", Width: 60},
+		{Title: "Version", Width: 20},
+		{Title: "ImportedBy", Width: 10},
+		{Title: "UpdatedAt", Width: 20},
 	}
+
+	rows := []btable.Row{}
+
+	for _, v := range result {
+		rows = append(rows, btable.Row{
+			gprint.CyanStr(v.Name),
+			gprint.GreenStr(v.Version),
+			gprint.YellowStr(strconv.Itoa(v.Imported)),
+			v.Update,
+		})
+	}
+
+	t := gtable.NewTable(btable.WithColumns(columns), btable.WithRows(rows), btable.WithFocused(true), btable.WithHeight(30), btable.WithWidth(120))
+	t.Run()
 }
 
 /*
@@ -708,33 +704,34 @@ func (that *GoVersion) Build(args ...string) {
 		kfer.Load(bConf)
 		kfer.Save(bConf)
 	} else {
-		selector := pterm.DefaultInteractiveSelect
-		selector.DefaultText = "Choose arch and os for compilation:"
-		optionList := []string{
-			"Only for current platform",
-			"Commanly used pc platforms[Mac|Win|Linux-amd64|arm64]",
+		itemList := selector.NewItemList()
+		itemList.Add("Only for current platform", []string{fmt.Sprintf("%s/%s", runtime.GOOS, runtime.GOARCH)})
+		itemList.Add("Commanly used pc platforms[Mac|Win|Linux/amd64|arm64]", []string{
+			"darwin/amd64", "darwin/arm64",
+			"linux/amd64", "linux/arm64",
+			"windows/amd64", "windows/arm64",
+		})
+		for _, osArch := range that.getGoDistlist() {
+			itemList.Add(osArch, []string{osArch})
 		}
-		optionList = append(optionList, that.getGoDistlist()...)
-		selectedOptions, _ := pterm.DefaultInteractiveMultiselect.WithOptions(optionList).Show()
-		archOSList := []string{}
-		for _, v := range selectedOptions {
-			if v == optionList[0] {
-				archOSList = append(archOSList, fmt.Sprintf("%s/%s", runtime.GOOS, runtime.GOARCH))
-			} else if v == optionList[1] {
-				archOSList = append(archOSList, []string{"darwin/amd64", "darwin/arm64",
-					"linux/amd64", "linux/arm64", "windows/amd64", "windows/arm64"}...)
-			} else {
-				archOSList = append(archOSList, v)
-			}
+		sel := selector.NewSelector(
+			itemList,
+			selector.WithTitle("Choose arch and os for compilation:"),
+			selector.WidthEnableMulti(true),
+			selector.WithEnbleInfinite(true),
+			selector.WithWidth(40),
+			selector.WithHeight(6),
+		)
+		sel.Run()
+		list := sel.Value()
+		bConf.ArchOSList = []string{}
+		for _, val := range list {
+			bConf.ArchOSList = append(bConf.ArchOSList, val.([]string)...)
 		}
-		bConf.ArchOSList = archOSList
 
-		confirmPrinter := pterm.DefaultInteractiveConfirm
-		confirmPrinter.DefaultText = "To compress binaries or not. "
-		confirmPrinter.TextStyle = &pterm.Style{pterm.FgRed}
-		if result, _ := confirmPrinter.Show(); result {
-			bConf.Compress = result
-		}
+		cfm := confirm.NewConfirm(confirm.WithTitle("To compress binaries or not?"))
+		cfm.Run()
+		bConf.Compress = cfm.Result()
 		kfer.Save(bConf)
 	}
 

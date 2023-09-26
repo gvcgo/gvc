@@ -18,7 +18,6 @@ import (
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
-	"github.com/pterm/pterm"
 )
 
 type NodePackage struct {
@@ -272,10 +271,10 @@ func (that *NodeVersion) ShowInstalled() {
 		for _, v := range rd {
 			if v.IsDir() {
 				if current == v.Name() {
-					fmt.Println(pterm.Yellow(fmt.Sprintf("%s <Current>", v.Name())))
+					gprint.Yellow("%s <Current>", v.Name())
 					continue
 				}
-				fmt.Println(pterm.Cyan(v.Name()))
+				gprint.Cyan(v.Name())
 			}
 		}
 	}

@@ -10,10 +10,10 @@ import (
 
 	"github.com/mholt/archiver/v3"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
+	"github.com/moqsien/goutils/pkgs/gtea/selector"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
-	"github.com/pterm/pterm"
 )
 
 type Typst struct {
@@ -35,21 +35,21 @@ func NewTypstVersion() (tv *Typst) {
 }
 
 func (that *Typst) download(force bool) string {
-	selector := pterm.DefaultInteractiveSelect
-	selector.DefaultText = "Choose your download URL"
-	optionList := []string{
-		"From Gitlab[Default]",
-		"From Github",
-	}
-	selectedOption, _ := pterm.DefaultInteractiveSelect.WithOptions(optionList).Show()
+	itemList := selector.NewItemList()
+	itemList.Add("from gitlab", that.Conf.Typst.GiteeUrls)
+	itemList.Add("from github", that.Conf.Typst.GithubUrls)
+	sel := selector.NewSelector(
+		itemList,
+		selector.WithTitle("Choose a download resource:"),
+		selector.WithEnbleInfinite(true),
+		selector.WidthEnableMulti(false),
+		selector.WithHeight(4),
+		selector.WithWidth(30),
+	)
+	sel.Run()
+	val := sel.Value()[0]
+	vUrls := val.(map[string]string)
 
-	var vUrls map[string]string
-	switch selectedOption {
-	case optionList[1]:
-		vUrls = that.Conf.Typst.GithubUrls
-	default:
-		vUrls = that.Conf.Typst.GiteeUrls
-	}
 	if runtime.GOOS == utils.Windows {
 		that.fetcher.Url = vUrls[runtime.GOOS]
 	} else {

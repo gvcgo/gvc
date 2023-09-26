@@ -16,7 +16,6 @@ import (
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
-	"github.com/pterm/pterm"
 )
 
 type MavenPackage struct {
@@ -199,10 +198,10 @@ func (that *MavenVersion) ShowInstalled() {
 			if strings.Contains(d.Name(), "maven-") {
 				version := strings.Split(d.Name(), "-")[1]
 				if current == version {
-					fmt.Println(pterm.Yellow(fmt.Sprintf("%s <Current>", version)))
+					gprint.Yellow("%s <Current>", version)
 					continue
 				}
-				fmt.Println(pterm.Cyan(version))
+				gprint.Cyan(version)
 			}
 		}
 	}

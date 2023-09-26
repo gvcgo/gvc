@@ -6,7 +6,6 @@ toolchain go1.21.0
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.1
-	github.com/aquasecurity/table v1.8.0
 	github.com/charmbracelet/bubbles v0.16.1
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/gogf/gf v1.16.9
@@ -40,6 +39,7 @@ require (
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/andybalholm/cascadia v1.3.2 // indirect
+	github.com/aquasecurity/table v1.8.0 // indirect
 	github.com/atotto/clipboard v0.1.4 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/bodgit/plumbing v1.3.0 // indirect
