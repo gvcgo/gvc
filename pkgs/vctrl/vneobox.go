@@ -4,6 +4,7 @@ import (
 	"os"
 	"os/exec"
 
+	"github.com/moqsien/goutils/pkgs/logs"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/neobox/pkgs/run"
 	"github.com/moqsien/neobox/pkgs/storage/model"
@@ -39,6 +40,8 @@ func (that *NeoBox) Initiate() {
 		that.runner = run.NewRunner(that.conf.NeoBox.NeoConf)
 		// set envs for neobox
 		nutils.SetNeoboxEnvs(that.conf.NeoBox.NeoConf.GeoInfoDir, that.conf.NeoBox.NeoConf.SocketDir)
+		// set logs
+		logs.SetLogger(that.conf.NeoBox.NeoConf.LogDir)
 		// init sqlitedb for neobox
 		model.NewDBEngine(that.conf.NeoBox.NeoConf)
 	}
