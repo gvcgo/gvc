@@ -604,6 +604,7 @@ Commands:
   show           Show neobox info.
   start          Start a neobox client/keeper.
   stop           Stop neobox client.
+  sys-proxy      To enable or disable System Proxy.
   wireguard      Register wireguard account and update licenseKey to Warp+ [if a licenseKey is specified].
 ```
 Note: You should read the docs for neobox. For details, please see [neobox](https://github.com/moqsien/neobox).

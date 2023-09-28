@@ -630,6 +630,7 @@ Commands:
   show           Show neobox info.
   start          Start a neobox client/keeper.
   stop           Stop neobox client.
+  sys-proxy      To enable or disable System Proxy.
   wireguard      Register wireguard account and update licenseKey to Warp+ [if a licenseKey is specified].
 ```
 在交互式shell中，可以控制免费梯子的启停，筛选等等。
