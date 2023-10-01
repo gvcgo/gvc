@@ -41,7 +41,7 @@ func (that *NeoboxConf) Reset() {
 	that.NeoConf.SocketDir = filepath.Join(that.path, "neobox_socket")
 	that.NeoConf.DatabaseDir = GVCBackupDir // save sqlite db file to BackupDir
 
-	that.NeoConf.DownloadUrl = "https://gitlab.com/moqsien/gvc_resources/-/raw/main/conf.txt"
+	that.NeoConf.DownloadUrl = "https://gitlab.com/moqsien/neobox_related/-/raw/main/conf.txt"
 
 	// ping related
 	that.NeoConf.MaxPingers = 120
@@ -51,10 +51,10 @@ func (that *NeoboxConf) Reset() {
 	// geoinfo files related
 	that.NeoConf.GeoInfoSumUrl = "https://gitlab.com/moqsien/gvc_resources/-/raw/main/files_info.json?ref_type=heads&inline=false"
 	that.NeoConf.GeoInfoUrls = map[string]string{
-		"geoip.dat":   "https://gitlab.com/moqsien/neobox_resources/-/raw/main/geoip.dat",
-		"geosite.dat": "https://gitlab.com/moqsien/neobox_resources/-/raw/main/geosite.dat",
-		"geoip.db":    "https://gitlab.com/moqsien/neobox_resources/-/raw/main/geoip.db",
-		"geosite.db":  "https://gitlab.com/moqsien/neobox_resources/-/raw/main/geosite.db",
+		"geoip.dat":   "https://gitlab.com/moqsien/neobox_related/-/raw/main/geoip.dat",
+		"geosite.dat": "https://gitlab.com/moqsien/neobox_related/-/raw/main/geosite.dat",
+		"geoip.db":    "https://gitlab.com/moqsien/neobox_related/-/raw/main/geoip.db",
+		"geosite.db":  "https://gitlab.com/moqsien/neobox_related/-/raw/main/geosite.db",
 	}
 
 	// verifier related
@@ -69,7 +69,7 @@ func (that *NeoboxConf) Reset() {
 	that.NeoConf.VerificationCron = "@every 2h"
 
 	// location related
-	that.NeoConf.CountryAbbrevsUrl = "https://gitlab.com/moqsien/gvc_resources/-/raw/main/country_names.json?ref_type=heads&inline=false"
+	that.NeoConf.CountryAbbrevsUrl = "https://gitlab.com/moqsien/neobox_related/-/raw/main/country_names.json?ref_type=heads&inline=false"
 	that.NeoConf.IPLocationQueryUrl = "https://www.fkcoder.com/ip?ip=%s"
 
 	// keeper related
@@ -85,6 +85,6 @@ func (that *NeoboxConf) Reset() {
 		MaxLossRate:             0.0,
 		MaxSaveToDB:             1000,
 		WireGuardConfDir:        GVCBackupDir, // save wireguard configurations to BackupDir
-		CloudflareDomainFileUrl: "https://gitlab.com/moqsien/gvc_resources/-/raw/main/cloudflare_domains.txt?ref_type=heads",
+		CloudflareDomainFileUrl: "https://gitlab.com/moqsien/neobox_related/-/raw/main/cloudflare_domains.txt?ref_type=heads&inline=false",
 	}
 }
