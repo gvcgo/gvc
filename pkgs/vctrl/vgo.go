@@ -16,7 +16,6 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	btable "github.com/charmbracelet/bubbles/table"
 	"github.com/mholt/archiver/v3"
 	"github.com/moqsien/goutils/pkgs/gtea/confirm"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
@@ -471,17 +470,17 @@ func (that *GoVersion) SearchLibs(name string, sortby int) {
 
 	result := sorts.SortGoLibs(itemList)
 
-	columns := []btable.Column{
+	columns := []gtable.Column{
 		{Title: "Url", Width: 60},
 		{Title: "Version", Width: 20},
 		{Title: "ImportedBy", Width: 10},
 		{Title: "UpdatedAt", Width: 20},
 	}
 
-	rows := []btable.Row{}
+	rows := []gtable.Row{}
 
 	for _, v := range result {
-		rows = append(rows, btable.Row{
+		rows = append(rows, gtable.Row{
 			gprint.CyanStr(v.Name),
 			gprint.GreenStr(v.Version),
 			gprint.YellowStr(strconv.Itoa(v.Imported)),
@@ -489,7 +488,7 @@ func (that *GoVersion) SearchLibs(name string, sortby int) {
 		})
 	}
 
-	t := gtable.NewTable(btable.WithColumns(columns), btable.WithRows(rows), btable.WithFocused(true), btable.WithHeight(30), btable.WithWidth(120))
+	t := gtable.NewTable(gtable.WithColumns(columns), gtable.WithRows(rows), gtable.WithFocused(true), gtable.WithHeight(30), gtable.WithWidth(120))
 	t.Run()
 }
 
