@@ -220,3 +220,9 @@ func (that *GhDownloader) DelTagAndPush(tag, proxyUrl string) {
 		gprint.PrintError("%+v", err)
 	}
 }
+
+func (that *GhDownloader) ShowLatestTag() {
+	if err := that.git.ShowLatestTag(); err != nil {
+		gprint.PrintError("%+v", err)
+	}
+}

@@ -61,6 +61,7 @@ func (that *Cmder) vgithub() {
 /*
 git subcommands using proxies
 */
+// TODO: show latest tag
 func (that *Cmder) vgit() {
 	var defaultProxy string = "http://localhost:2023"
 	var mannualProxy string
@@ -256,4 +257,16 @@ func (that *Cmder) vgit() {
 		},
 	}
 	that.Commands = append(that.Commands, gDelTagPush)
+
+	gLatestTag := &cli.Command{
+		Name:    "git-show-tag-latest",
+		Aliases: []string{"gshowtaglatest", "gstag", "gst"},
+		Usage:   "Git show the latest tag of a local repository.",
+		Action: func(ctx *cli.Context) error {
+			vg := vctrl.NewGhDownloader()
+			vg.ShowLatestTag()
+			return nil
+		},
+	}
+	that.Commands = append(that.Commands, gLatestTag)
 }

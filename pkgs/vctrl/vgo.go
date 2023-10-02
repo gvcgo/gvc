@@ -611,11 +611,26 @@ func (that *GoVersion) build(buildArgs []string, buildBaseDir, archOS string, to
 		os.Setenv("GOOS", pOs)
 		os.Setenv("GOARCH", pArch)
 		cmdArgs := []string{"go", "build"}
+
+		var targetDir string
+		if len(buildArgs) > 0 {
+			lastArg := buildArgs[len(buildArgs)-1]
+			if ok, _ := utils.PathIsExist(lastArg); ok {
+				targetDir = lastArg
+				buildArgs = buildArgs[:len(buildArgs)-1]
+			}
+		}
+
 		if !strings.Contains(strings.Join(buildArgs, " "), "-ldflags") {
 			cmdArgs = append(cmdArgs, "-ldflags", `-s -w`)
 		}
+
 		bArgs := that.getBuildArgs(buildArgs, binaryStoreDir)
 		cmdArgs = append(cmdArgs, bArgs...)
+
+		if targetDir != "" {
+			cmdArgs = append(cmdArgs, targetDir)
+		}
 
 		if _, err := utils.ExecuteSysCommand(false, cmdArgs...); err != nil {
 			gprint.PrintError("%+v", err)
