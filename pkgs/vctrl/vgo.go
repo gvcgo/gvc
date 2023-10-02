@@ -472,9 +472,9 @@ func (that *GoVersion) SearchLibs(name string, sortby int) {
 
 	columns := []gtable.Column{
 		{Title: "Url", Width: 60},
-		{Title: "Version", Width: 20},
-		{Title: "ImportedBy", Width: 10},
-		{Title: "UpdatedAt", Width: 20},
+		{Title: "Version", Width: 40},
+		{Title: "ImportedBy", Width: 15},
+		{Title: "UpdatedAt", Width: 25},
 	}
 
 	rows := []gtable.Row{}
@@ -483,12 +483,18 @@ func (that *GoVersion) SearchLibs(name string, sortby int) {
 		rows = append(rows, gtable.Row{
 			gprint.CyanStr(v.Name),
 			gprint.GreenStr(v.Version),
-			gprint.YellowStr(strconv.Itoa(v.Imported)),
+			gprint.YellowStr("%d", v.Imported),
 			v.Update,
 		})
 	}
 
-	t := gtable.NewTable(gtable.WithColumns(columns), gtable.WithRows(rows), gtable.WithFocused(true), gtable.WithHeight(30), gtable.WithWidth(120))
+	t := gtable.NewTable(
+		gtable.WithColumns(columns),
+		gtable.WithRows(rows),
+		gtable.WithFocused(true),
+		gtable.WithHeight(35),
+		gtable.WithWidth(150),
+	)
 	t.Run()
 }
 
@@ -726,7 +732,9 @@ func (that *GoVersion) Build(args ...string) {
 			"windows/amd64", "windows/arm64",
 		})
 		for _, osArch := range that.getGoDistlist() {
-			itemList.Add(osArch, []string{osArch})
+			if osArch != "" {
+				itemList.Add(osArch, []string{osArch})
+			}
 		}
 		sel := selector.NewSelector(
 			itemList,
