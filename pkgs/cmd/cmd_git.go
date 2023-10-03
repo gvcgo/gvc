@@ -58,10 +58,23 @@ func (that *Cmder) vgithub() {
 	that.Commands = append(that.Commands, command)
 }
 
+func (that *Cmder) vinstallGitWin() {
+	command := &cli.Command{
+		Name:    "win-git-install",
+		Aliases: []string{"wgit", "wgi"},
+		Usage:   "Install git for windows.",
+		Action: func(ctx *cli.Context) error {
+			vg := vctrl.NewGhDownloader()
+			vg.InstallGitForWindows()
+			return nil
+		},
+	}
+	that.Commands = append(that.Commands, command)
+}
+
 /*
 git subcommands using proxies
 */
-// TODO: show latest tag
 func (that *Cmder) vgit() {
 	var defaultProxy string = "http://localhost:2023"
 	var mannualProxy string

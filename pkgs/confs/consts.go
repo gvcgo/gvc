@@ -554,3 +554,11 @@ var (
 	DockerFilesDir               string = filepath.Join(GVCWorkDir, "docker_files")
 	DockerWindowsInstallationDir string = filepath.Join(DockerFilesDir, "docker_installation")
 )
+
+/*
+git
+*/
+var (
+	GitFileDir                string = filepath.Join(GVCWorkDir, "git_files")
+	GitWindowsInstallationDir string = filepath.Join(GitFileDir, "git_installation")
+)

@@ -7,8 +7,9 @@ import (
 )
 
 type GithubConf struct {
-	DownProxy string   `koanf:"down_proxy"`
-	AccelUrls []string `koanf:"acceleration_urls"`
+	DownProxy  string            `koanf:"down_proxy"`
+	AccelUrls  []string          `koanf:"acceleration_urls"`
+	WinGitUrls map[string]string `koanf:"win_git_urls"`
 }
 
 func NewGithubConf() (ghc *GithubConf) {
@@ -23,6 +24,10 @@ func (that *GithubConf) Reset() {
 	that.AccelUrls = []string{
 		"https://ghproxy.com/",
 		"https://d.serctl.com/?dl_start",
+	}
+	that.WinGitUrls = map[string]string{
+		"amd64": "https://gitlab.com/moqsien/gvc_resources/-/raw/main/PortableGit-2.42.0.2-64-bit.7z.exe",
+		"386":   "https://gitlab.com/moqsien/gvc_resources/-/raw/main/PortableGit-2.42.0.2-32-bit.7z.exe",
 	}
 }
 

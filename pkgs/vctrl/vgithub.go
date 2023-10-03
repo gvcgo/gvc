@@ -3,6 +3,7 @@ package vctrl
 import (
 	"fmt"
 	"net/url"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
@@ -25,6 +26,7 @@ type GhDownloader struct {
 	fetcher  *request.Fetcher
 	releases map[string]string
 	git      *ggit.Git
+	env      *utils.EnvsHandler
 }
 
 func NewGhDownloader() (gd *GhDownloader) {
@@ -34,6 +36,7 @@ func NewGhDownloader() (gd *GhDownloader) {
 		Conf:     config.New(),
 		releases: make(map[string]string),
 		git:      ggit.NewGit(),
+		env:      utils.NewEnvsHandler(),
 	}
 	return
 }
@@ -225,4 +228,39 @@ func (that *GhDownloader) ShowLatestTag() {
 	if err := that.git.ShowLatestTag(); err != nil {
 		gprint.PrintError("%+v", err)
 	}
+}
+
+func (that *GhDownloader) downloadGitForWindows() {
+	if runtime.GOOS != utils.Windows {
+		return
+	}
+	gUrl := that.Conf.Github.WinGitUrls[runtime.GOARCH]
+	if gUrl == "" {
+		return
+	}
+	if ok, _ := utils.PathIsExist(config.GitWindowsInstallationDir); !ok {
+		os.MkdirAll(config.GitWindowsInstallationDir, 0777)
+	}
+	fPath := filepath.Join(config.GitFileDir, "git.7z")
+	that.fetcher.SetUrl(gUrl)
+	that.fetcher.SetThreadNum(2)
+	that.fetcher.Timeout = 10 * time.Minute
+	if err := that.fetcher.DownloadAndDecompress(fPath, config.GitWindowsInstallationDir, true); err != nil {
+		gprint.PrintError("%+v", err)
+	}
+}
+
+func (that *GhDownloader) InstallGitForWindows() {
+	if runtime.GOOS != utils.Windows {
+		return
+	}
+	os.RemoveAll(config.GitWindowsInstallationDir)
+	that.downloadGitForWindows()
+
+	binPath := filepath.Join(config.GitWindowsInstallationDir, "bin")
+	usrBinPath := filepath.Join(config.GitWindowsInstallationDir, "usr", "bin")
+	envarList := map[string]string{
+		"PATH": fmt.Sprintf("%s;%s", binPath, usrBinPath),
+	}
+	that.env.SetEnvForWin(envarList)
 }

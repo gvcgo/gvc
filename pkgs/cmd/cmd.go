@@ -53,6 +53,7 @@ func (that *Cmder) initiate() {
 	that.vgsudo()
 	that.vhost()
 	that.vgit()
+	that.vinstallGitWin()
 	that.vgithub()
 	that.vcloc()
 	that.asciinema()

@@ -38,7 +38,6 @@ export HOMEBREW_API_DOMAIN="https://mirrors.ustc.edu.cn/homebrew-bottles/api"
 */
 func (that *HomebrewConf) Reset() {
 	that.ShellScriptUrl = "https://gitee.com/moqsien/gvc/raw/master/homebrew.sh"
-	// TODO: select resources for homebrew
 	that.TsingHua = map[string]string{
 		"HOMEBREW_API_DOMAIN":      "https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api",
 		"HOMEBREW_BOTTLE_DOMAIN":   "https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles",

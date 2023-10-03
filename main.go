@@ -51,11 +51,13 @@ func main() {
 		// vl := vctrl.NewVlang()
 		// vl.InstallVAnalyzerForVscode()
 
-		vp := vctrl.NewGSudo()
+		// vp := vctrl.NewGSudo()
 		// vp.Install(true)
-		vp.Install(true)
+		// vp.Install(true)
 		// p := "a/b/c/d/e.zip"
 		// fmt.Println(strings.ReplaceAll(p, filepath.Dir(p), ""))
+		gh := vctrl.NewGhDownloader()
+		gh.InstallGitForWindows()
 	} else if len(os.Args) < 2 {
 		self := vctrl.NewSelf()
 		self.Install()
