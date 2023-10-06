@@ -797,6 +797,19 @@ func (that *Cmder) vflutter() {
 		},
 	}
 	command.Subcommands = append(command.Subcommands, vrmall)
+
+	vinstallAndroidTools := &cli.Command{
+		Name:    "install-android-cmdline-tools",
+		Aliases: []string{"install-android", "insand", "iact", "iatools"},
+		Usage:   "Install android cmdline tools.",
+		Action: func(ctx *cli.Context) error {
+			gv := vctrl.NewFlutterVersion()
+			gv.InstallAndroidTool()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vinstallAndroidTools)
+
 	that.Commands = append(that.Commands, command)
 }
 

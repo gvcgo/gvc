@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/url"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
 	"runtime"
@@ -12,7 +13,7 @@ import (
 	"time"
 
 	"github.com/gogf/gf/encoding/gjson"
-	"github.com/moqsien/goutils/pkgs/archiver"
+	"github.com/mholt/archiver/v3"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/gtea/selector"
 	"github.com/moqsien/goutils/pkgs/request"
@@ -55,7 +56,12 @@ func NewFlutterVersion() (fv *FlutterVersion) {
 }
 
 func (that *FlutterVersion) initeDirs() {
-	utils.MakeDirs(config.FlutterRootDir, config.FlutterTarFilePath, config.FlutterUntarFilePath)
+	utils.MakeDirs(
+		config.FlutterRootDir,
+		config.FlutterTarFilePath,
+		config.FlutterUntarFilePath,
+		config.FlutterAndroidToolDownloads,
+	)
 }
 
 func (that *FlutterVersion) ChooseSource() {
@@ -213,6 +219,26 @@ func (that *FlutterVersion) CheckAndInitEnv() {
 	}
 }
 
+func (that *FlutterVersion) FixForFlutter() {
+	// git remote set-url origin https://mirrors.tuna.tsinghua.edu.cn/git/flutter-sdk.git
+	cmd := exec.Command("git", "remote", "set-url", "origin", that.flutterConf["git_url"])
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	cmd.Dir = config.FlutterRootDir
+	if err := cmd.Run(); err != nil {
+		gprint.PrintError("%+v", err)
+	}
+	str := `'Upstream repository https://github.com/flutter/flutter.git is not the same as FLUTTER_GIT_URL'`
+	fPath := filepath.Join(config.FlutterRootDir, "packages", "flutter_tools", "test", "general.shard", "flutter_validator_test.dart")
+	if content, err := os.ReadFile(fPath); err != nil {
+		newContentStr := strings.ReplaceAll(string(content), str, fmt.Sprintf("FLUTTER_GIT_URL :%s", that.flutterConf["git_url"]))
+		if newContentStr != "" {
+			os.WriteFile(fPath, []byte(newContentStr), os.ModePerm)
+		}
+	}
+}
+
 func (that *FlutterVersion) UseVersion(version string) {
 	current := that.getCurrent()
 	if version == current {
@@ -225,22 +251,19 @@ func (that *FlutterVersion) UseVersion(version string) {
 
 	untarfile := config.FlutterFilesDir
 	if tarfile := that.download(version); tarfile != "" {
-		if arch, err := archiver.NewArchiver(tarfile, untarfile); err != nil {
+		if err := archiver.Unarchive(tarfile, untarfile); err != nil {
 			os.RemoveAll(untarfile)
 			gprint.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
 			return
-		} else {
-			if _, err := arch.UnArchive(); err != nil {
-				os.RemoveAll(untarfile)
-				gprint.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
-				return
-			}
 		}
 	}
 
 	if ok, _ := utils.PathIsExist(config.FlutterRootDir); ok {
 		if !that.env.DoesEnvExist(utils.SUB_FLUTTER) {
 			that.CheckAndInitEnv()
+		}
+		if strings.Contains(that.flutterConf["hosted_url"], ".cn") {
+			that.FixForFlutter()
 		}
 		gprint.PrintSuccess(fmt.Sprintf("Use %s succeeded!", version))
 	} else {
@@ -258,9 +281,10 @@ func (that *FlutterVersion) ShowInstalled() {
 	dList, _ := os.ReadDir(config.FlutterTarFilePath)
 	reg := regexp.MustCompile(`(\d+\.\d+\.\d+)`)
 	for _, d := range dList {
+
 		if !d.IsDir() {
 			zipName := d.Name()
-			result := reg.Find([]byte(zipName))
+			result := reg.FindAll([]byte(zipName), -1)
 			var versionName string
 			if len(result) == 1 {
 				versionName = string(result[0])
@@ -312,3 +336,43 @@ func (that *FlutterVersion) RemoveUnused() {
 		}
 	}
 }
+
+// TODO: install android cmdline tools
+// download from official homepage
+func (that *FlutterVersion) InstallAndroidTool() {
+	dUrl := that.Conf.Flutter.AndroidCMDTools[runtime.GOOS]
+	if dUrl == "" {
+		return
+	}
+	that.fetcher.SetUrl(dUrl)
+	that.fetcher.SetThreadNum(2)
+	that.fetcher.Timeout = time.Minute * 20
+	untarDirPath := filepath.Join(config.FlutterFilesDir, "cmdline-tools")
+	if ok, _ := utils.PathIsExist(untarDirPath); ok {
+		os.RemoveAll(untarDirPath)
+	}
+	fPath := filepath.Join(config.FlutterAndroidToolDownloads, "android-cmdline-tools.zip")
+	if size := that.fetcher.GetAndSaveFile(fPath, true); size > 500 {
+		if err := archiver.Unarchive(fPath, config.FlutterFilesDir); err != nil {
+			os.RemoveAll(fPath)
+			gprint.PrintError("unarchive file failed: %+v", err)
+		}
+	}
+	if ok, _ := utils.PathIsExist(untarDirPath); ok {
+		that.SetEnvForAndroidTools(untarDirPath)
+	}
+}
+
+func (that *FlutterVersion) SetEnvForAndroidTools(untarDirPath string) {
+	if runtime.GOOS != utils.Windows {
+		androidToolEnv := fmt.Sprintf(utils.AndroidEnv, filepath.Join(untarDirPath, "bin"))
+		that.env.UpdateSub(utils.SUB_ANDROID, androidToolEnv)
+	} else {
+		envList := map[string]string{
+			"PATH": filepath.Join(untarDirPath, "bin"),
+		}
+		that.env.SetEnvForWin(envList)
+	}
+}
+
+// TODO: setup for AVD

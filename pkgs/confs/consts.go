@@ -513,10 +513,11 @@ var (
 Flutter related
 */
 var (
-	FlutterFilesDir      string = filepath.Join(GVCWorkDir, "flutter_files")
-	FlutterRootDir       string = filepath.Join(FlutterFilesDir, "flutter")
-	FlutterTarFilePath   string = filepath.Join(FlutterFilesDir, "downloads")
-	FlutterUntarFilePath string = filepath.Join(FlutterFilesDir, "versions")
+	FlutterFilesDir             string = filepath.Join(GVCWorkDir, "flutter_files")
+	FlutterRootDir              string = filepath.Join(FlutterFilesDir, "flutter")
+	FlutterTarFilePath          string = filepath.Join(FlutterFilesDir, "downloads")
+	FlutterUntarFilePath        string = filepath.Join(FlutterFilesDir, "versions")
+	FlutterAndroidToolDownloads string = filepath.Join(FlutterFilesDir, "android_tools")
 )
 
 /*

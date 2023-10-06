@@ -40,6 +40,7 @@ const (
 	SUB_BREW    = "homebrew"
 	SUB_VLANG   = "vlang"
 	SUB_FLUTTER = "flutter"
+	SUB_ANDROID = "android"
 	SUB_LUA     = "lua"
 	SUB_JULIA   = "julia"
 	SUB_TYPST   = "typst"
@@ -145,6 +146,11 @@ export PUB_HOSTED_URL=%s
 export FLUTTER_STORAGE_BASE_URL=%s
 export FLUTTER_GIT_URL=%s
 export PATH="$FLUTTER_ROOT/bin:$PATH"`
+
+/*
+Android cmdline tools Envs
+*/
+var AndroidEnv string = `export PATH="%s:$PATH"`
 
 /*
 Julia Envs
