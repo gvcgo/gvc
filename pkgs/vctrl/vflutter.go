@@ -6,12 +6,13 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"strings"
 	"time"
 
 	"github.com/gogf/gf/encoding/gjson"
-	"github.com/mholt/archiver/v3"
+	"github.com/moqsien/goutils/pkgs/archiver"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/gtea/selector"
 	"github.com/moqsien/goutils/pkgs/request"
@@ -213,30 +214,37 @@ func (that *FlutterVersion) CheckAndInitEnv() {
 }
 
 func (that *FlutterVersion) UseVersion(version string) {
-	untarfile := filepath.Join(config.FlutterUntarFilePath, version)
-	if ok, _ := utils.PathIsExist(untarfile); !ok {
-		if tarfile := that.download(version); tarfile != "" {
-			if err := archiver.Unarchive(tarfile, untarfile); err != nil {
+	current := that.getCurrent()
+	if version == current {
+		gprint.PrintSuccess(fmt.Sprintf("Use %s succeeded!", version))
+		return
+	}
+	if ok, _ := utils.PathIsExist(config.FlutterRootDir); ok {
+		os.RemoveAll(config.FlutterRootDir)
+	}
+
+	untarfile := config.FlutterFilesDir
+	if tarfile := that.download(version); tarfile != "" {
+		if arch, err := archiver.NewArchiver(tarfile, untarfile); err != nil {
+			os.RemoveAll(untarfile)
+			gprint.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
+			return
+		} else {
+			if _, err := arch.UnArchive(); err != nil {
 				os.RemoveAll(untarfile)
 				gprint.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
 				return
 			}
 		}
 	}
+
 	if ok, _ := utils.PathIsExist(config.FlutterRootDir); ok {
-		os.RemoveAll(config.FlutterRootDir)
-	}
-	finder := utils.NewBinaryFinder(untarfile, "", "version")
-	dir := finder.String()
-	if dir != "" {
-		if err := utils.MkSymLink(dir, config.FlutterRootDir); err != nil {
-			gprint.PrintError(fmt.Sprintf("Create link failed: %+v", err))
-			return
-		}
 		if !that.env.DoesEnvExist(utils.SUB_FLUTTER) {
 			that.CheckAndInitEnv()
 		}
 		gprint.PrintSuccess(fmt.Sprintf("Use %s succeeded!", version))
+	} else {
+		gprint.PrintError(fmt.Sprintf("Use %s failed!", version))
 	}
 }
 
@@ -247,14 +255,24 @@ func (that *FlutterVersion) getCurrent() string {
 
 func (that *FlutterVersion) ShowInstalled() {
 	current := that.getCurrent()
-	dList, _ := os.ReadDir(config.FlutterUntarFilePath)
+	dList, _ := os.ReadDir(config.FlutterTarFilePath)
+	reg := regexp.MustCompile(`(\d+\.\d+\.\d+)`)
 	for _, d := range dList {
-		if d.IsDir() {
-			switch d.Name() {
+		if !d.IsDir() {
+			zipName := d.Name()
+			result := reg.Find([]byte(zipName))
+			var versionName string
+			if len(result) == 1 {
+				versionName = string(result[0])
+			}
+			if versionName == "" {
+				continue
+			}
+			switch versionName {
 			case current:
-				gprint.Yellow("%s <Current>", d.Name())
+				gprint.Yellow("%s <Current>", versionName)
 			default:
-				gprint.Cyan(d.Name())
+				gprint.Cyan(versionName)
 			}
 		}
 	}

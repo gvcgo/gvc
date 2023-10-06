@@ -118,6 +118,51 @@ func CopyFile(src, dst string) (written int64, err error) {
 	return io.Copy(dstFile, srcFile)
 }
 
+func CopyDir(srcPath, desPath string) error {
+	if srcInfo, err := os.Stat(srcPath); err != nil {
+		return err
+	} else {
+		if !srcInfo.IsDir() {
+			return fmt.Errorf("%s is not a directory", srcPath)
+		}
+	}
+
+	os.MkdirAll(desPath, os.ModePerm)
+	if desInfo, err := os.Stat(desPath); err != nil {
+		return err
+	} else {
+		if !desInfo.IsDir() {
+			return fmt.Errorf("%s is not a directory", desPath)
+		}
+	}
+
+	if strings.TrimSpace(srcPath) == strings.TrimSpace(desPath) {
+		return fmt.Errorf("same path for src and des")
+	}
+
+	err := filepath.Walk(srcPath, func(path string, f os.FileInfo, err error) error {
+		if f == nil {
+			return err
+		}
+		if path == srcPath {
+			return nil
+		}
+		destNewPath := strings.Replace(path, srcPath, desPath, -1)
+
+		if !f.IsDir() {
+			if _, err := CopyFile(path, destNewPath); err != nil {
+				return err
+			}
+		} else {
+			if ok, _ := PathIsExist(destNewPath); !ok {
+				return os.MkdirAll(destNewPath, os.ModePerm)
+			}
+		}
+		return nil
+	})
+	return err
+}
+
 func RunCommand(args ...string) {
 	var cmd *exec.Cmd
 	if runtime.GOOS == Windows {
