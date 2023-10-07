@@ -63,6 +63,7 @@ func (that *FlutterVersion) initeDirs() {
 		config.FlutterTarFilePath,
 		config.FlutterUntarFilePath,
 		config.FlutterAndroidToolDownloads,
+		config.FlutterAndroidHomeDir,
 	)
 }
 
@@ -386,6 +387,10 @@ func (that *FlutterVersion) GetAndroidSDKInfo() (androidSDKs map[string]string) 
 	return androidSDKs
 }
 
+func (that *FlutterVersion) getUntarDir() string {
+	return filepath.Join(config.FlutterAndroidHomeDir, "cmdline-tools")
+}
+
 func (that *FlutterVersion) InstallAndroidTool() {
 	infoList := that.GetAndroidSDKInfo()
 	if len(infoList) == 0 {
@@ -396,34 +401,169 @@ func (that *FlutterVersion) InstallAndroidTool() {
 		return
 	}
 	that.fetcher.SetUrl(dUrl)
-	that.fetcher.SetThreadNum(2)
+	that.fetcher.SetThreadNum(4)
 	that.fetcher.Timeout = time.Minute * 20
-	untarDirPath := filepath.Join(config.FlutterFilesDir, "cmdline-tools")
+	untarDirPath := that.getUntarDir()
 	if ok, _ := utils.PathIsExist(untarDirPath); ok {
 		os.RemoveAll(untarDirPath)
 	}
 	fPath := filepath.Join(config.FlutterAndroidToolDownloads, "android-cmdline-tools.zip")
 	if size := that.fetcher.GetAndSaveFile(fPath, true); size > 500 {
-		if err := archiver.Unarchive(fPath, config.FlutterFilesDir); err != nil {
+		if err := archiver.Unarchive(fPath, untarDirPath); err != nil {
 			os.RemoveAll(fPath)
 			gprint.PrintError("unarchive file failed: %+v", err)
 		}
 	}
 	if ok, _ := utils.PathIsExist(untarDirPath); ok {
-		that.SetEnvForAndroidTools(untarDirPath)
+		that.SetEnvForAndroidTools()
 	}
 }
 
-func (that *FlutterVersion) SetEnvForAndroidTools(untarDirPath string) {
+func (that *FlutterVersion) SetupAVD(avdName string) {
+	if avdName == "" {
+		return
+	}
+	infoList := map[string][]string{
+		"build-tools":   {},
+		"platforms":     {},
+		"system-images": {},
+	}
+	if r, err := utils.ExecuteSysCommand(true, "sdkmanager", "--list"); err == nil {
+		content, _ := io.ReadAll(r)
+		str := string(content)
+
+		for _, s := range strings.Split(str, "\n") {
+			sList := strings.Split(s, " ")
+			for _, ss := range sList {
+				if strings.Contains(ss, "build-tools;") {
+					infoList["build-tools"] = append(infoList["build-tools"], ss)
+				} else if strings.Contains(ss, "platforms;") {
+					infoList["platforms"] = append(infoList["platforms"], ss)
+				} else if strings.Contains(ss, "system-images;") {
+					infoList["system-images"] = append(infoList["system-images"], ss)
+				}
+			}
+		}
+	} else {
+		gprint.PrintError("%+v", err)
+		return
+	}
+
+	// install build-tools
+	itemList := selector.NewItemList()
+	for _, bTools := range infoList["build-tools"] {
+		itemList.Add(bTools, bTools)
+	}
+	sel := selector.NewSelector(
+		itemList,
+		selector.WidthEnableMulti(false),
+		selector.WithEnbleInfinite(true),
+		selector.WithHeight(15),
+		selector.WithTitle("Choose version of build-tools"),
+		selector.WithWidth(20),
+	)
+	sel.Run()
+	val := sel.Value()[0]
+	bTools := val.(string)
+	utils.ExecuteSysCommand(false, "sdkmanager", bTools)
+
+	// install platform
+	itemList = selector.NewItemList()
+	for _, platform := range infoList["platforms"] {
+		itemList.Add(platform, platform)
+	}
+	sel = selector.NewSelector(
+		itemList,
+		selector.WidthEnableMulti(false),
+		selector.WithEnbleInfinite(true),
+		selector.WithHeight(15),
+		selector.WithTitle("Choose version of platforms"),
+		selector.WithWidth(20),
+	)
+	sel.Run()
+	val = sel.Value()[0]
+	platform := val.(string)
+	utils.ExecuteSysCommand(false, "sdkmanager", platform)
+
+	// install system-image
+	itemList = selector.NewItemList()
+	for _, platform := range infoList["system-images"] {
+		itemList.Add(platform, platform)
+	}
+	sel = selector.NewSelector(
+		itemList,
+		selector.WidthEnableMulti(false),
+		selector.WithEnbleInfinite(true),
+		selector.WithHeight(25),
+		selector.WithTitle("Choose version of system-images"),
+		selector.WithWidth(50),
+	)
+	sel.Run()
+	val = sel.Value()[0]
+	systemImage := val.(string)
+	utils.ExecuteSysCommand(false, "sdkmanager", systemImage)
+
+	// create avd
+	utils.ExecuteSysCommand(false, "avdmanager", "create", "avd", "--name", avdName, "--package", systemImage)
+
+	that.SetEnvForAndroidTools()
+}
+
+func (that *FlutterVersion) SetEnvForAndroidTools() {
+	untarDirPath := that.getUntarDir()
+	cmdToolPath := filepath.Join(untarDirPath, "cmdline-tools")
+	if ok, _ := utils.PathIsExist(cmdToolPath); ok {
+		os.Rename(cmdToolPath, filepath.Join(untarDirPath, "latest"))
+	}
+
+	pList := []string{
+		filepath.Join(config.FlutterAndroidHomeDir, "platforms"),
+		filepath.Join(config.FlutterAndroidHomeDir, "platform-tools"),
+		filepath.Join(config.FlutterAndroidHomeDir, "emulator"),
+	}
+	pathList := []string{filepath.Join(untarDirPath, "latest", "bin")}
+	for _, p := range pList {
+		if ok, _ := utils.PathIsExist(p); ok {
+			pathList = append(pathList, p)
+		}
+	}
 	if runtime.GOOS != utils.Windows {
-		androidToolEnv := fmt.Sprintf(utils.AndroidEnv, filepath.Join(untarDirPath, "bin"))
+
+		androidToolEnv := fmt.Sprintf(utils.AndroidEnv, config.FlutterAndroidHomeDir, strings.Join(pathList, ":"))
 		that.env.UpdateSub(utils.SUB_ANDROID, androidToolEnv)
 	} else {
 		envList := map[string]string{
-			"PATH": filepath.Join(untarDirPath, "bin"),
+			"ANDROID_HOME": config.FlutterAndroidHomeDir,
+			"PATH":         strings.Join(pathList, ";"),
 		}
 		that.env.SetEnvForWin(envList)
 	}
 }
 
-// TODO: setup for AVD
+func (that *FlutterVersion) StartAVD() {
+	if r, err := utils.ExecuteSysCommand(true, "emulator", "-list-avds"); err == nil {
+		content, _ := io.ReadAll(r)
+		str := string(content)
+		itemList := selector.NewItemList()
+		for _, v := range strings.Split(str, "\n") {
+			itemList.Add(strings.TrimSpace(v), strings.TrimSpace(v))
+		}
+		if len(itemList.Keys()) > 0 {
+			sel := selector.NewSelector(
+				itemList,
+				selector.WidthEnableMulti(false),
+				selector.WithEnbleInfinite(true),
+				selector.WithHeight(10),
+				selector.WithTitle("Choose an avd"),
+			)
+			sel.Run()
+			val := sel.Value()[0]
+			avdName := val.(string)
+			utils.ExecuteSysCommand(false, "emulator", "-avd", avdName)
+		}
+	}
+}
+
+func (that *FlutterVersion) ShowAndroidSDKManagerList() {
+	utils.ExecuteSysCommand(false, "sdkmanager", "--list")
+}

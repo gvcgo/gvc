@@ -810,6 +810,32 @@ func (that *Cmder) vflutter() {
 	}
 	command.Subcommands = append(command.Subcommands, vinstallAndroidTools)
 
+	vavdCreate := &cli.Command{
+		Name:      "create-avd",
+		Aliases:   []string{"cavd"},
+		Usage:     "Create avd for android.",
+		ArgsUsage: "Specify a avd name.",
+		Action: func(ctx *cli.Context) error {
+			avdName := ctx.Args().First()
+			gv := vctrl.NewFlutterVersion()
+			gv.SetupAVD(avdName)
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vavdCreate)
+
+	vavdStart := &cli.Command{
+		Name:    "start-avd",
+		Aliases: []string{"savd"},
+		Usage:   "Start an avd.",
+		Action: func(ctx *cli.Context) error {
+			gv := vctrl.NewFlutterVersion()
+			gv.StartAVD()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vavdStart)
+
 	that.Commands = append(that.Commands, command)
 }
 

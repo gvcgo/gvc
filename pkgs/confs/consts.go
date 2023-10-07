@@ -518,6 +518,7 @@ var (
 	FlutterTarFilePath          string = filepath.Join(FlutterFilesDir, "downloads")
 	FlutterUntarFilePath        string = filepath.Join(FlutterFilesDir, "versions")
 	FlutterAndroidToolDownloads string = filepath.Join(FlutterFilesDir, "android_tools")
+	FlutterAndroidHomeDir       string = filepath.Join(FlutterFilesDir, "android_home")
 )
 
 /*

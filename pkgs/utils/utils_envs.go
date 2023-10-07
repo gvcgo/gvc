@@ -150,7 +150,8 @@ export PATH="$FLUTTER_ROOT/bin:$PATH"`
 /*
 Android cmdline tools Envs
 */
-var AndroidEnv string = `export PATH="%s:$PATH"`
+var AndroidEnv string = `export ANDROID_HOME="%s"
+export PATH="%s:$PATH"`
 
 /*
 Julia Envs
