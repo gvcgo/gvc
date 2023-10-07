@@ -449,6 +449,10 @@ func (that *FlutterVersion) SetupAVD(avdName string) {
 		return
 	}
 
+	if ok, _ := utils.PathIsExist(filepath.Join(config.FlutterAndroidHomeDir, "platform-tools")); !ok {
+		utils.ExecuteSysCommand(false, "sdkmanager", "platform-tools")
+	}
+
 	// install build-tools
 	itemList := selector.NewItemList()
 	for _, bTools := range infoList["build-tools"] {
@@ -546,6 +550,10 @@ func (that *FlutterVersion) StartAVD() {
 		str := string(content)
 		itemList := selector.NewItemList()
 		for _, v := range strings.Split(str, "\n") {
+			v = strings.TrimSpace(v)
+			if v == "" {
+				continue
+			}
 			itemList.Add(strings.TrimSpace(v), strings.TrimSpace(v))
 		}
 		if len(itemList.Keys()) > 0 {
@@ -559,7 +567,7 @@ func (that *FlutterVersion) StartAVD() {
 			sel.Run()
 			val := sel.Value()[0]
 			avdName := val.(string)
-			utils.ExecuteSysCommand(false, "emulator", "-avd", avdName)
+			utils.ExecuteSysCommand(false, "emulator", "-avd", avdName, "-gpu", "auto")
 		}
 	}
 }
