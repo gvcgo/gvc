@@ -1,6 +1,7 @@
 package vctrl
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"net/url"
@@ -12,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/gogf/gf/encoding/gjson"
 	"github.com/mholt/archiver/v3"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
@@ -337,10 +339,59 @@ func (that *FlutterVersion) RemoveUnused() {
 	}
 }
 
-// TODO: install android cmdline tools
-// download from official homepage
+/*
+Install Android SDK for Flutter & VSCode
+*/
+
+func (that *FlutterVersion) GetAndroidSDKInfo() (androidSDKs map[string]string) {
+	androidSDKs = map[string]string{}
+	itemList := selector.NewItemList()
+	itemList.Add("from developer.android.google.cn", that.Conf.Flutter.AndroidCN)
+	itemList.Add("from developer.android.com", that.Conf.Flutter.Android)
+	sel := selector.NewSelector(
+		itemList,
+		selector.WidthEnableMulti(false),
+		selector.WithEnbleInfinite(true),
+		selector.WithTitle("Choose a download resource:"),
+	)
+	sel.Run()
+	val := sel.Value()[0]
+	if aUrl := val.(string); aUrl != "" {
+		dUrl := that.Conf.Flutter.AndroidCMDTooolsUrl
+		if strings.Contains(aUrl, ".cn") {
+			dUrl = that.Conf.Flutter.AndroidCMDToolsUrlCN
+		}
+		that.fetcher.SetUrl(aUrl)
+		that.fetcher.Timeout = 3 * time.Minute
+		content, _ := that.fetcher.GetString()
+		if doc, err := goquery.NewDocumentFromReader(bytes.NewBufferString(content)); err == nil {
+			doc.Find("table.download").Find("button").Each(func(i int, s *goquery.Selection) {
+				text := s.Text()
+				if !strings.Contains(text, "commandlinetools") {
+					return
+				}
+				sUrl := dUrl + strings.TrimSpace(text)
+				if strings.Contains(sUrl, "win") {
+					androidSDKs[utils.Windows] = sUrl
+				} else if strings.Contains(sUrl, "mac") {
+					androidSDKs[utils.MacOS] = sUrl
+				} else if strings.Contains(sUrl, "linux") {
+					androidSDKs[utils.Linux] = sUrl
+				}
+			})
+		} else {
+			gprint.PrintError("%+v", err)
+		}
+	}
+	return androidSDKs
+}
+
 func (that *FlutterVersion) InstallAndroidTool() {
-	dUrl := that.Conf.Flutter.AndroidCMDTools[runtime.GOOS]
+	infoList := that.GetAndroidSDKInfo()
+	if len(infoList) == 0 {
+		return
+	}
+	dUrl := infoList[runtime.GOOS]
 	if dUrl == "" {
 		return
 	}

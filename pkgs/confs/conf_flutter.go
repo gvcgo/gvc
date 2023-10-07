@@ -8,12 +8,16 @@ import (
 )
 
 type FlutterConf struct {
-	DefaultURLs     map[string]string `koanf:"default_urls"`
-	OfficialURLs    map[string]string `koanf:"official_urls"`
-	TsingHuaUrl     string            `koanf:"tsing_hua_url"`
-	NjuniUrl        string            `koanf:"njuni_url"`
-	AndroidCMDTools map[string]string `koanf:"android_cmd_tools"`
-	path            string
+	DefaultURLs          map[string]string `koanf:"default_urls"`
+	OfficialURLs         map[string]string `koanf:"official_urls"`
+	TsingHuaUrl          string            `koanf:"tsing_hua_url"`
+	NjuniUrl             string            `koanf:"njuni_url"`
+	AndroidCMDTools      map[string]string `koanf:"android_cmd_tools"`
+	AndroidCMDToolsUrlCN string            `koanf:"android_cmd_tools_cn_url"`
+	AndroidCMDTooolsUrl  string            `koanf:"android_cmd_toools_url"`
+	AndroidCN            string            `koanf:"android_cn_url"`
+	Android              string            `koanf:"android_url"`
+	path                 string
 }
 
 func NewFlutterConf() (r *FlutterConf) {
@@ -57,4 +61,8 @@ func (that *FlutterConf) Reset() {
 		utils.MacOS:   "https://googledownloads.cn/android/repository/commandlinetools-mac-10406996_latest.zip",
 		utils.Linux:   "https://googledownloads.cn/android/repository/commandlinetools-linux-10406996_latest.zip",
 	}
+	that.AndroidCMDToolsUrlCN = "https://googledownloads.cn/android/repository/"
+	that.AndroidCMDTooolsUrl = "https://dl.google.com/android/repository/"
+	that.AndroidCN = "https://developer.android.google.cn/studio?hl=zh-cn"
+	that.Android = "https://developer.android.com/studio"
 }
