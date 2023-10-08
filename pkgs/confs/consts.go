@@ -16,6 +16,7 @@ const (
 	GVCVersion = "v0.1.0"
 )
 
+// TODO: install in customed dir
 var (
 	GVCWorkDir          = filepath.Join(utils.GetHomeDir(), ".gvc")
 	GVCWebdavConfigPath = filepath.Join(GVCWorkDir, "webdav.json")
