@@ -747,6 +747,18 @@ func (that *Cmder) vflutter() {
 	}
 	command.Subcommands = append(command.Subcommands, vuse)
 
+	genv := &cli.Command{
+		Name:    "SetPathEnv",
+		Aliases: []string{"env", "path"},
+		Usage:   "Automatically set path env for flutter.",
+		Action: func(ctx *cli.Context) error {
+			gcode := vctrl.NewFlutterVersion()
+			gcode.CheckAndInitEnv()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, genv)
+
 	vshow := &cli.Command{
 		Name:    "remote",
 		Aliases: []string{"r"},
@@ -799,9 +811,9 @@ func (that *Cmder) vflutter() {
 	command.Subcommands = append(command.Subcommands, vrmall)
 
 	vinstallAndroidTools := &cli.Command{
-		Name:    "install-android-cmdline-tools",
-		Aliases: []string{"install-android", "insand", "iact", "iatools"},
-		Usage:   "Install android cmdline tools.",
+		Name:    "install-android-sdkmanager",
+		Aliases: []string{"install-sdkm", "isdkm", "ism"},
+		Usage:   "Install android cmdline tools(sdkmanager).",
 		Action: func(ctx *cli.Context) error {
 			gv := vctrl.NewFlutterVersion()
 			gv.InstallAndroidTool()
@@ -811,9 +823,9 @@ func (that *Cmder) vflutter() {
 	command.Subcommands = append(command.Subcommands, vinstallAndroidTools)
 
 	vavdCreate := &cli.Command{
-		Name:      "create-avd",
-		Aliases:   []string{"cavd"},
-		Usage:     "Create avd for android.",
+		Name:      "install-build-tools-create-avd",
+		Aliases:   []string{"ibt", "cavd"},
+		Usage:     "Install build-tools, platform-tools, etc. And create avd for android.",
 		ArgsUsage: "Specify a avd name.",
 		Action: func(ctx *cli.Context) error {
 			avdName := ctx.Args().First()

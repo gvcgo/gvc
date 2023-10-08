@@ -12,7 +12,7 @@ func (that *Cmder) vscode() {
 		Usage:       "VSCode and extensions installation.",
 		Subcommands: []*cli.Command{},
 	}
-	genvs := &cli.Command{
+	ginstall := &cli.Command{
 		Name:    "install",
 		Aliases: []string{"i", "ins"},
 		Usage:   "Automatically install vscode.",
@@ -22,7 +22,7 @@ func (that *Cmder) vscode() {
 			return nil
 		},
 	}
-	command.Subcommands = append(command.Subcommands, genvs)
+	command.Subcommands = append(command.Subcommands, ginstall)
 
 	installexts := &cli.Command{
 		Name:    "install-extensions",

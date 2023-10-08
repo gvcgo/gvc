@@ -232,14 +232,14 @@ func (that *FlutterVersion) FixForFlutter() {
 	if err := cmd.Run(); err != nil {
 		gprint.PrintError("%+v", err)
 	}
-	str := `'Upstream repository https://github.com/flutter/flutter.git is not the same as FLUTTER_GIT_URL'`
-	fPath := filepath.Join(config.FlutterRootDir, "packages", "flutter_tools", "test", "general.shard", "flutter_validator_test.dart")
-	if content, err := os.ReadFile(fPath); err != nil {
-		newContentStr := strings.ReplaceAll(string(content), str, fmt.Sprintf("FLUTTER_GIT_URL :%s", that.flutterConf["git_url"]))
-		if newContentStr != "" {
-			os.WriteFile(fPath, []byte(newContentStr), os.ModePerm)
-		}
-	}
+	// str := `'Upstream repository https://github.com/flutter/flutter.git is not the same as FLUTTER_GIT_URL'`
+	// fPath := filepath.Join(config.FlutterRootDir, "packages", "flutter_tools", "test", "general.shard", "flutter_validator_test.dart")
+	// if content, err := os.ReadFile(fPath); err != nil {
+	// 	newContentStr := strings.ReplaceAll(string(content), str, fmt.Sprintf("FLUTTER_GIT_URL :%s", that.flutterConf["git_url"]))
+	// 	if newContentStr != "" {
+	// 		os.WriteFile(fPath, []byte(newContentStr), os.ModePerm)
+	// 	}
+	// }
 }
 
 func (that *FlutterVersion) UseVersion(version string) {
@@ -262,9 +262,10 @@ func (that *FlutterVersion) UseVersion(version string) {
 	}
 
 	if ok, _ := utils.PathIsExist(config.FlutterRootDir); ok {
-		if !that.env.DoesEnvExist(utils.SUB_FLUTTER) {
-			that.CheckAndInitEnv()
-		}
+		// if !that.env.DoesEnvExist(utils.SUB_FLUTTER) {
+		// 	that.CheckAndInitEnv()
+		// }
+		that.CheckAndInitEnv()
 		if strings.Contains(that.flutterConf["hosted_url"], ".cn") {
 			that.FixForFlutter()
 		}
@@ -419,6 +420,7 @@ func (that *FlutterVersion) InstallAndroidTool() {
 	}
 }
 
+// install Android build-tools etc. & create AVD emulator.
 func (that *FlutterVersion) SetupAVD(avdName string) {
 	if avdName == "" {
 		return
@@ -509,6 +511,9 @@ func (that *FlutterVersion) SetupAVD(avdName string) {
 
 	// create avd
 	utils.ExecuteSysCommand(false, "avdmanager", "create", "avd", "--name", avdName, "--package", systemImage)
+
+	// flutter doctor --android-licenses
+	utils.ExecuteSysCommand(false, "flutter", "doctor", "--android-licenses")
 
 	that.SetEnvForAndroidTools()
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -93,7 +94,6 @@ func (that *Code) download() (r string) {
 	that.getPackages()
 	key := fmt.Sprintf("%s-%s", runtime.GOOS, runtime.GOARCH)
 	if p := that.Packages[key]; p != nil {
-		fmt.Println(p.Url)
 		var suffix string
 		if strings.HasSuffix(p.Url, ".zip") {
 			suffix = ".zip"
@@ -121,42 +121,23 @@ func (that *Code) download() (r string) {
 	} else {
 		gprint.PrintError(fmt.Sprintf("Cannot find package for %s", key))
 	}
-
-	if ok, _ := utils.PathIsExist(config.CodeUntarFile); !ok {
-		that.Unarchive(r)
-	} else {
-		if runtime.GOOS == utils.Windows || runtime.GOOS == utils.Linux {
-			os.RemoveAll(config.CodeUntarFile)
-			that.Unarchive(r)
-		}
-	}
 	return
 }
 
-func (that *Code) Unarchive(fPath string) {
-	if fPath != "" {
-		if err := archiver.Unarchive(fPath, config.CodeUntarFile); err != nil {
-			os.RemoveAll(config.CodeUntarFile)
+func (that *Code) InstallForWin() {
+	if zipPath := that.download(); zipPath != "" {
+		if ok, _ := utils.PathIsExist(config.CodeWinInstallDir); ok {
+			os.RemoveAll(config.CodeWinInstallDir)
+		}
+		if err := archiver.Unarchive(zipPath, config.CodeWinInstallDir); err != nil {
+			os.RemoveAll(config.CodeWinInstallDir)
 			gprint.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
 			return
-		}
-	}
-}
-
-func (that *Code) InstallForWin() {
-	that.download()
-	if codeDir, _ := os.ReadDir(config.CodeUntarFile); len(codeDir) > 0 {
-		for _, file := range codeDir {
-			if strings.Contains(file.Name(), ".exe") {
-				if !strings.Contains(os.Getenv("PATH"), config.CodeWinCmdBinaryDir) {
-					that.env.SetEnvForWin(map[string]string{
-						"PATH": config.CodeWinCmdBinaryDir,
-					})
-				}
-				// Automatically create shortcut.
-				that.GenerateShortcut()
-				break
-			}
+		} else {
+			that.env.SetEnvForWin(map[string]string{
+				"PATH": config.CodeWinCmdBinaryDir,
+			})
+			that.GenerateShortcut()
 		}
 	}
 }
@@ -164,7 +145,12 @@ func (that *Code) InstallForWin() {
 func (that *Code) GenerateShortcut() error {
 	config.SaveWinShortcutCreator()
 	if ok, _ := utils.PathIsExist(config.WinShortcutCreatorPath); ok {
-		args := append([]string{"wscript"}, config.WinVSCodeShortcutCommand...)
+		WinVSCodeShortcutCommand := []string{
+			config.WinShortcutCreatorPath,
+			fmt.Sprintf(`/target:%s`, filepath.Join(config.CodeWinInstallDir, "Code.exe")),
+			fmt.Sprintf(`/shortcut:%s`, config.CodeWinShortcutPath),
+		}
+		args := append([]string{"wscript"}, WinVSCodeShortcutCommand...)
 		_, err := utils.ExecuteSysCommand(false, args...)
 		return err
 	}
@@ -191,14 +177,32 @@ func (that *Code) InstallForMac() {
 }
 
 func (that *Code) InstallForLinux() {
-	that.download()
-	if codeDir, _ := os.ReadDir(config.CodeUntarFile); len(codeDir) > 0 && len(codeDir) < 3 {
-		for _, file := range codeDir {
-			if file.IsDir() {
-				binaryDir := filepath.Join(config.CodeUntarFile, file.Name(), "bin")
-				that.env.UpdateSub(utils.SUB_CODE, binaryDir)
-			}
+	if zipPath := that.download(); zipPath != "" {
+		os.RemoveAll(config.CodeUntarFile)
+		if err := archiver.Unarchive(zipPath, config.CodeUntarFile); err != nil {
+			os.RemoveAll(config.CodeUntarFile)
+			gprint.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
+			return
 		}
+		cmd := exec.Command("sudo", "rm", "-rf", config.CodeLinuxInstallDir)
+		cmd.Stderr = os.Stderr
+		cmd.Stdin = os.Stdin
+		cmd.Stdout = os.Stdout
+		if err := cmd.Run(); err != nil {
+			gprint.PrintError("%+v", err)
+			return
+		}
+
+		cmd = exec.Command("sudo", "mv", config.CodeUntarFile, config.CodeLinuxInstallDir)
+		cmd.Stderr = os.Stderr
+		cmd.Stdin = os.Stdin
+		cmd.Stdout = os.Stdout
+		if err := cmd.Run(); err != nil {
+			gprint.PrintError("%+v", err)
+			return
+		}
+
+		that.env.UpdateSub(utils.SUB_CODE, config.CodeLinuxCmdBinaryDir)
 	}
 }
 

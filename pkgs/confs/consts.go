@@ -52,13 +52,18 @@ func GetHostsFilePath() (r string) {
 vscode related
 */
 var (
-	CodeFileDir         string = filepath.Join(GVCWorkDir, "vscode_file")
-	CodeTarFileDir      string = filepath.Join(CodeFileDir, "downloads")
-	CodeUntarFile       string = filepath.Join(CodeFileDir, "vscode")
-	CodeMacInstallDir   string = "/Applications/"
-	CodeMacCmdBinaryDir string = filepath.Join(CodeMacInstallDir, "Visual Studio Code.app/Contents/Resources/app/bin")
-	CodeWinCmdBinaryDir string = filepath.Join(CodeUntarFile, "bin")
-	CodeWinShortcutPath string = filepath.Join(utils.GetHomeDir(), `Desktop\vscode`)
+	CodeFileDir           string = filepath.Join(GVCWorkDir, "vscode_file")
+	CodeTarFileDir        string = filepath.Join(CodeFileDir, "downloads")
+	CodeUntarFile         string = filepath.Join(CodeFileDir, "vscode")
+	CodeMacInstallDir     string = "/Applications/"
+	CodeMacCmdBinaryDir   string = filepath.Join(CodeMacInstallDir, "Visual Studio Code.app", "Contents", "Resources", "app", "bin")
+	CodeWinInstallDir     string = filepath.Join(utils.GetHomeDir(), "AppData", "Local", "Programs", "Microsoft VS Code")
+	CodeWinCmdBinaryDir   string = filepath.Join(CodeWinInstallDir, "bin")
+	CodeLinuxInstallDir   string = "/usr/share/code"
+	CodeLinuxCmdBinaryDir string = filepath.Join(CodeLinuxInstallDir, "bin")
+
+	// CodeWinCmdBinaryDir string = filepath.Join(CodeUntarFile, "bin")
+	CodeWinShortcutPath string = filepath.Join(utils.GetHomeDir(), "Desktop", "VSCode")
 )
 
 var (
@@ -98,13 +103,8 @@ oShellLink.WindowStyle = 1
 oShellLink.Save`
 
 var (
-	WinShortcutCreatorName          = "sc.vbs"
-	WinShortcutCreatorPath   string = filepath.Join(GVCWorkDir, WinShortcutCreatorName)
-	WinVSCodeShortcutCommand        = []string{
-		WinShortcutCreatorPath,
-		fmt.Sprintf(`/target:%s`, filepath.Join(CodeUntarFile, "Code.exe")),
-		fmt.Sprintf(`/shortcut:%s`, CodeWinShortcutPath),
-	}
+	WinShortcutCreatorName        = "sc.vbs"
+	WinShortcutCreatorPath string = filepath.Join(GVCWorkDir, WinShortcutCreatorName)
 )
 
 func SaveWinShortcutCreator() {
