@@ -580,3 +580,24 @@ func (that *FlutterVersion) StartAVD() {
 func (that *FlutterVersion) ShowAndroidSDKManagerList() {
 	utils.ExecuteSysCommand(false, "sdkmanager", "--list")
 }
+
+var oldRepoStr string = `google()`
+var newRepoStr string = `maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://maven.aliyun.com/repository/jcenter' }
+        maven { url 'https://maven.aliyun.com/repository/public' }`
+
+func (that *FlutterVersion) ReplaceMavenRepo() {
+	cwd, _ := os.Getwd()
+	if ok, _ := utils.PathIsExist(filepath.Join(cwd, "pubspec.yaml")); ok {
+		gradleFile := filepath.Join(cwd, "android", "build.gradle")
+		if exist, _ := utils.PathIsExist(gradleFile); exist {
+			if content, err := os.ReadFile(gradleFile); err == nil {
+				newStr := strings.ReplaceAll(string(content), oldRepoStr, newRepoStr)
+				newStr = strings.ReplaceAll(newStr, "mavenCentral()", "")
+				if newStr != "" {
+					os.WriteFile(gradleFile, []byte(newStr), os.ModePerm)
+				}
+			}
+		}
+	}
+}

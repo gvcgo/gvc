@@ -848,6 +848,18 @@ func (that *Cmder) vflutter() {
 	}
 	command.Subcommands = append(command.Subcommands, vavdStart)
 
+	vreplace := &cli.Command{
+		Name:    "gradle-repo-aliyun",
+		Aliases: []string{"repo", "aliyun"},
+		Usage:   "use aliyun repo for android gradle.",
+		Action: func(ctx *cli.Context) error {
+			gv := vctrl.NewFlutterVersion()
+			gv.ReplaceMavenRepo()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vreplace)
+
 	that.Commands = append(that.Commands, command)
 }
 

@@ -56,8 +56,11 @@ func main() {
 		// vp.Install(true)
 		// p := "a/b/c/d/e.zip"
 		// fmt.Println(strings.ReplaceAll(p, filepath.Dir(p), ""))
-		gh := vctrl.NewGhDownloader()
-		gh.InstallGitForWindows()
+		// gh := vctrl.NewGhDownloader()
+		// gh.InstallGitForWindows()
+
+		br := vctrl.NewBrowser()
+		br.Save("edge", false)
 	} else if len(os.Args) < 2 {
 		self := vctrl.NewSelf()
 		self.Install()

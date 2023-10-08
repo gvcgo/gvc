@@ -13,7 +13,6 @@ import (
 	"github.com/moqsien/hackbrowser/item"
 )
 
-// TODO: bugfix
 type Browser struct {
 	Conf *config.GVConfig
 }
