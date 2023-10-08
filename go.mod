@@ -16,7 +16,7 @@ require (
 	github.com/moqsien/asciinema v0.3.0
 	github.com/moqsien/goutils v0.5.5
 	github.com/moqsien/hackbrowser v1.0.3
-	github.com/moqsien/neobox v1.3.4
+	github.com/moqsien/neobox v1.3.5
 	github.com/studio-b12/gowebdav v0.0.0-20230203202212-3282f94193f2
 	github.com/tidwall/gjson v1.14.4
 	github.com/urfave/cli/v2 v2.25.7
@@ -140,7 +140,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/moqsien/goktrl v1.3.8 // indirect
 	github.com/moqsien/processes v1.0.3 // indirect
-	github.com/moqsien/vpnparser v0.2.3 // indirect
+	github.com/moqsien/vpnparser v0.2.4 // indirect
 	github.com/moqsien/wgcf v0.0.0-20230611034603-e29859e0cae2 // indirect
 	github.com/moqsien/xraycore v1.8.5 // indirect
 	github.com/moqsien/xtractr v0.0.1 // indirect
