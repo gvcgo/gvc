@@ -180,9 +180,8 @@ func RunCommand(args ...string) {
 
 func MkSymLink(target, newfile string) (err error) {
 	if runtime.GOOS == Windows {
-		if err = exec.Command("cmd", "/c", "mklink", "/j", newfile, target).Run(); err == nil {
-			return nil
-		}
+		gprint.PrintWarning("Some disk formats do not support symbol link: %s", "extFAT, FAT32")
+		return exec.Command("cmd", "/c", "mklink", "/j", newfile, target).Run()
 	}
 	return os.Symlink(target, newfile)
 }

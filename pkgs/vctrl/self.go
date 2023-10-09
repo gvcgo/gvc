@@ -66,10 +66,11 @@ func (that *Self) Install() {
 	}
 	name := filepath.Base(ePath)
 	if strings.HasSuffix(ePath, "/gvc") || strings.HasSuffix(ePath, "gvc.exe") {
-		if _, err := utils.CopyFile(ePath, filepath.Join(config.GVCDir, name)); err == nil {
-			that.setEnv()
-			that.setShortcut()
+		if _, err := utils.CopyFile(ePath, filepath.Join(config.GVCDir, name)); err != nil {
+			gprint.PrintError("%+v", err)
 		}
+		that.setEnv()
+		that.setShortcut()
 		// reset config file to default.
 		that.Conf.SetDefault()
 		that.Conf.Restore()
@@ -94,6 +95,9 @@ func (that *Self) Uninstall() {
 			dav := NewGVCWebdav()
 			dav.GatherAndPushSettings()
 		}
+		if ok, _ := utils.PathIsExist(config.GVCInstallDir); ok {
+			os.RemoveAll(config.GVCInstallDir)
+		}
 		if ok, _ := utils.PathIsExist(config.GVCDir); ok {
 			os.RemoveAll(config.GVCDir)
 		}
@@ -104,8 +108,9 @@ func (that *Self) Uninstall() {
 
 func (that *Self) ShowPath() {
 	content := fmt.Sprintf(
-		"IntalledAt: %s\nGVConfPath: %s\nDAVConfPath: %s",
+		"GVCDir: %s\nGVCInstallDir:%s\nGVConfPath: %s\nDAVConfPath: %s",
 		config.GVCDir,
+		config.GVCInstallDir,
 		config.GVConfigPath,
 		config.GVCWebdavConfigPath,
 	)

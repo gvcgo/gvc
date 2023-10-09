@@ -143,15 +143,8 @@ func (that *Code) InstallForWin() {
 }
 
 func (that *Code) GenerateShortcut() error {
-	config.SaveWinShortcutCreator()
 	if ok, _ := utils.PathIsExist(config.WinShortcutCreatorPath); ok {
-		WinVSCodeShortcutCommand := []string{
-			config.WinShortcutCreatorPath,
-			fmt.Sprintf(`/target:%s`, filepath.Join(config.CodeWinInstallDir, "Code.exe")),
-			fmt.Sprintf(`/shortcut:%s`, config.CodeWinShortcutPath),
-		}
-		args := append([]string{"wscript"}, WinVSCodeShortcutCommand...)
-		_, err := utils.ExecuteSysCommand(false, args...)
+		err := config.CreateShortCut(filepath.Join(config.CodeWinInstallDir, "Code.exe"), config.CodeWinShortcutPath)
 		return err
 	}
 	return errors.New("shortcut script not found")

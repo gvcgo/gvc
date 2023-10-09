@@ -33,7 +33,7 @@ func GetGVCWorkDir() string {
 		content, _ := os.ReadFile(installPathConfig)
 		return string(content)
 	}
-	ipt := input.NewInput(input.WithPlaceholder("set where to install packages"), input.WithWidth(40))
+	ipt := input.NewInput(input.WithPlaceholder(`set where to install packages; default: "$HomeDir/.gvc/"`), input.WithWidth(100))
 	ipt.Run()
 	d := ipt.Value()
 	if ok, _ := utils.PathIsExist(d); ok {
@@ -144,6 +144,22 @@ var (
 		fmt.Sprintf(`/shortcut:%s`, filepath.Join(GVCDir, "g")),
 	}
 )
+
+func CreateShortCut(targetPath, shortcutPath string) error {
+	if runtime.GOOS != utils.Windows {
+		return os.Symlink(targetPath, shortcutPath)
+	} else {
+		SaveWinShortcutCreator()
+		WinVSCodeShortcutCommand := []string{
+			WinShortcutCreatorPath,
+			fmt.Sprintf(`/target:%s`, targetPath),
+			fmt.Sprintf(`/shortcut:%s`, shortcutPath),
+		}
+		args := append([]string{"wscript"}, WinVSCodeShortcutCommand...)
+		_, err := utils.ExecuteSysCommand(false, args...)
+		return err
+	}
+}
 
 /*
 go related
