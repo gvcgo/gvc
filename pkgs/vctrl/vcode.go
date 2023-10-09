@@ -55,7 +55,7 @@ func NewCode() (co *Code) {
 	}
 	co.fetcher.NoRedirect = true
 	co.initeDirs()
-	co.env.SetWinWorkDir(config.GVCWorkDir)
+	co.env.SetWinWorkDir(config.GVCDir)
 	return
 }
 

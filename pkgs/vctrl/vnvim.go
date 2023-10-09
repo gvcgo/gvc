@@ -33,7 +33,7 @@ func NewNVim() (nv *NVim) {
 	}
 	nv.checker = NewSumChecker(nv.Conf)
 	nv.setup()
-	nv.env.SetWinWorkDir(config.GVCWorkDir)
+	nv.env.SetWinWorkDir(config.GVCDir)
 	return
 }
 

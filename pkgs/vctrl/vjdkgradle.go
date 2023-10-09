@@ -42,7 +42,7 @@ func NewGradleVersion() (gv *GradleVersion) {
 		env:      utils.NewEnvsHandler(),
 	}
 	gv.initeDirs()
-	gv.env.SetWinWorkDir(config.GVCWorkDir)
+	gv.env.SetWinWorkDir(config.GVCDir)
 	return gv
 }
 

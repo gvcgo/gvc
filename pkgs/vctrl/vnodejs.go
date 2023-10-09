@@ -63,7 +63,7 @@ func NewNodeVersion() (nv *NodeVersion) {
 		env:      utils.NewEnvsHandler(),
 	}
 	nv.initeDirs()
-	nv.env.SetWinWorkDir(config.GVCWorkDir)
+	nv.env.SetWinWorkDir(config.GVCDir)
 	return
 }
 

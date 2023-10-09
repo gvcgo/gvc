@@ -44,7 +44,7 @@ func NewJuliaVersion() (jv *JuliaVersion) {
 		env:      utils.NewEnvsHandler(),
 	}
 	jv.initeDirs()
-	jv.env.SetWinWorkDir(config.GVCWorkDir)
+	jv.env.SetWinWorkDir(config.GVCDir)
 	return
 }
 

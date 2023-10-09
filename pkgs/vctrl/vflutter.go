@@ -53,7 +53,7 @@ func NewFlutterVersion() (fv *FlutterVersion) {
 		flutterConf: map[string]string{},
 	}
 	fv.initeDirs()
-	fv.env.SetWinWorkDir(config.GVCWorkDir)
+	fv.env.SetWinWorkDir(config.GVCDir)
 	return
 }
 

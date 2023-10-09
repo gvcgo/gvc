@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"runtime"
 
+	"github.com/moqsien/goutils/pkgs/gtea/input"
 	"github.com/moqsien/gvc/pkgs/utils"
 )
 
@@ -18,12 +19,39 @@ const (
 
 // TODO: install in customed dir
 var (
-	GVCWorkDir          = filepath.Join(utils.GetHomeDir(), ".gvc")
-	GVCWebdavConfigPath = filepath.Join(GVCWorkDir, "webdav.json")
-	GVCBackupDir        = filepath.Join(GVCWorkDir, "backup")
+	GVCDir              = filepath.Join(utils.GetHomeDir(), ".gvc")
+	GVCInstallDir       = GetGVCWorkDir()
+	GVCWebdavConfigPath = filepath.Join(GVCDir, "webdav.json")
+	GVCBackupDir        = filepath.Join(GVCDir, "backup")
 	GVConfigPath        = filepath.Join(GVCBackupDir, "gvc-config.json")
-	GVCBinTempDir       = filepath.Join(GVCWorkDir, "bin_temp")
+	GVCBinTempDir       = filepath.Join(GVCDir, "bin_temp")
 )
+
+func GetGVCWorkDir() string {
+	installPathConfig := filepath.Join(GVCDir, "pkg_install_path.conf")
+	if ok, _ := utils.PathIsExist(installPathConfig); ok {
+		content, _ := os.ReadFile(installPathConfig)
+		return string(content)
+	}
+	ipt := input.NewInput(input.WithPlaceholder("set where to install packages"), input.WithWidth(40))
+	ipt.Run()
+	d := ipt.Value()
+	if ok, _ := utils.PathIsExist(d); ok {
+		os.WriteFile(installPathConfig, []byte(d), os.ModePerm)
+		return d
+	} else if err := os.MkdirAll(d, os.ModePerm); err == nil {
+		os.WriteFile(installPathConfig, []byte(d), os.ModePerm)
+		return d
+	} else {
+		os.WriteFile(installPathConfig, []byte(GVCDir), os.ModePerm)
+		return GVCDir
+	}
+}
+
+/*
+windows gsudo
+*/
+var GsudoFilePath = filepath.Join(GVCInstallDir, "gsudo_files")
 
 /*
 hosts related
@@ -33,12 +61,7 @@ const (
 	HostFilePathForWin = `C:\Windows\System32\drivers\etc\hosts`
 )
 
-/*
-windows gsudo
-*/
-var GsudoFilePath = filepath.Join(GVCWorkDir, "gsudo_files")
-
-var TempHostsFilePath = filepath.Join(GVCWorkDir, "/temp_hosts.txt")
+var TempHostsFilePath = filepath.Join(GVCDir, "temp_hosts.txt")
 
 func GetHostsFilePath() (r string) {
 	if runtime.GOOS == utils.Windows {
@@ -53,7 +76,7 @@ func GetHostsFilePath() (r string) {
 vscode related
 */
 var (
-	CodeFileDir           string = filepath.Join(GVCWorkDir, "vscode_file")
+	CodeFileDir           string = filepath.Join(GVCInstallDir, "vscode_file")
 	CodeTarFileDir        string = filepath.Join(CodeFileDir, "downloads")
 	CodeUntarFile         string = filepath.Join(CodeFileDir, "vscode")
 	CodeMacInstallDir     string = "/Applications/"
@@ -105,7 +128,7 @@ oShellLink.Save`
 
 var (
 	WinShortcutCreatorName        = "sc.vbs"
-	WinShortcutCreatorPath string = filepath.Join(GVCWorkDir, WinShortcutCreatorName)
+	WinShortcutCreatorPath string = filepath.Join(GVCDir, WinShortcutCreatorName)
 )
 
 func SaveWinShortcutCreator() {
@@ -117,15 +140,15 @@ func SaveWinShortcutCreator() {
 var (
 	GVCShortcutCommand = []string{
 		WinShortcutCreatorPath,
-		fmt.Sprintf(`/target:%s`, filepath.Join(GVCWorkDir, "gvc.exe")),
-		fmt.Sprintf(`/shortcut:%s`, filepath.Join(GVCWorkDir, "g")),
+		fmt.Sprintf(`/target:%s`, filepath.Join(GVCDir, "gvc.exe")),
+		fmt.Sprintf(`/shortcut:%s`, filepath.Join(GVCDir, "g")),
 	}
 )
 
 /*
 go related
 */
-var GoFilesDir = filepath.Join(GVCWorkDir, "go_files")
+var GoFilesDir = filepath.Join(GVCInstallDir, "go_files")
 
 func getGoPath() string {
 	if runtime.GOOS != utils.Windows {
@@ -162,14 +185,14 @@ export PATH="%s"
 Protobuf related
 */
 var (
-	ProtobufDir string = filepath.Join(GVCWorkDir, "protobuf_files")
+	ProtobufDir string = filepath.Join(GVCInstallDir, "protobuf_files")
 )
 
 /*
 Neovim related.
 */
 var (
-	NVimFileDir            string = filepath.Join(GVCWorkDir, "nvim_files")
+	NVimFileDir            string = filepath.Join(GVCInstallDir, "nvim_files")
 	NVimWinInitPath        string = filepath.Join(utils.GetHomeDir(), `\AppData\Local\nvim\init.vim`)
 	NVimUnixInitPath       string = filepath.Join(utils.GetHomeDir(), ".config/nvim/init.vim")
 	NVimInitBackupPath     string = filepath.Join(GVCBackupDir, "nvim-init.vim")
@@ -203,7 +226,7 @@ export PATH="%s:$PATH"
 Proxy related
 */
 var (
-	ProxyFilesDir     = filepath.Join(GVCWorkDir, "proxy_files")
+	ProxyFilesDir     = filepath.Join(GVCInstallDir, "proxy_files")
 	ProxyListFilePath = filepath.Join(ProxyFilesDir, "proxy_list.json")
 )
 
@@ -224,7 +247,7 @@ var ProxyXrayKeepRunningBat = `Start-Process "%s" xray -k -WorkingDirectory "%s"
 /*
 Java related
 */
-var JavaFilesDir = filepath.Join(GVCWorkDir, "java_files")
+var JavaFilesDir = filepath.Join(GVCInstallDir, "java_files")
 
 var (
 	DefaultJavaRoot    = filepath.Join(JavaFilesDir, "java")
@@ -346,7 +369,7 @@ var MavenSettings = fmt.Sprintf(MavenSettingsPattern, JavaLocalRepoPath)
 Rust related
 */
 var (
-	RustFilesDir      = filepath.Join(GVCWorkDir, "rust_files")
+	RustFilesDir      = filepath.Join(GVCInstallDir, "rust_files")
 	DistServerEnvName = "RUSTUP_DIST_SERVER"
 	UpdateRootEnvName = "RUSTUP_UPDATE_ROOT"
 )
@@ -360,7 +383,7 @@ export %s=%s
 Nodejs related
 */
 var (
-	NodejsFilesDir   = filepath.Join(GVCWorkDir, "nodejs_files")
+	NodejsFilesDir   = filepath.Join(GVCInstallDir, "nodejs_files")
 	NodejsRoot       = filepath.Join(NodejsFilesDir, "nodejs")
 	NodejsTarFiles   = filepath.Join(NodejsFilesDir, "downloads")
 	NodejsUntarFiles = filepath.Join(NodejsFilesDir, "versions")
@@ -377,7 +400,7 @@ export PATH="$NODE_HOME/bin:$PATH"
 Python related
 */
 var (
-	PythonFilesDir         string = filepath.Join(GVCWorkDir, "py_files")
+	PythonFilesDir         string = filepath.Join(GVCInstallDir, "py_files")
 	PythonToolsPath        string = filepath.Join(PythonFilesDir, "tools")
 	PyenvInstallDir        string = filepath.Join(PythonToolsPath, "pyenv")
 	PyenvRootPath          string = GetPyenvRootPath()
@@ -476,7 +499,7 @@ set "extrapaths=$$$\%pyversion%;$$$\%pyversion%\Scripts;"`
 C/C++ related
 */
 var (
-	CppFilesDir            = filepath.Join(GVCWorkDir, "cpp_files")
+	CppFilesDir            = filepath.Join(GVCInstallDir, "cpp_files")
 	Msys2Dir               = filepath.Join(CppFilesDir, "msys2")
 	CygwinRootDir   string = filepath.Join(CppFilesDir, "cygwin")
 	CygwinBinaryDir string = filepath.Join(CygwinRootDir, "bin")
@@ -500,13 +523,13 @@ for /f %%1 in ('git %*') do cygpath -w %%1`
 /*
 Homebrew related
 */
-var HomebrewFileDir string = filepath.Join(GVCWorkDir, "homebrew_files")
+var HomebrewFileDir string = filepath.Join(GVCInstallDir, "homebrew_files")
 
 /*
 Vlang related
 */
 var (
-	VlangFilesDir string = filepath.Join(GVCWorkDir, "vlang_files")
+	VlangFilesDir string = filepath.Join(GVCInstallDir, "vlang_files")
 	VlangRootDir  string = filepath.Join(VlangFilesDir, "v")
 )
 
@@ -514,7 +537,7 @@ var (
 Flutter related
 */
 var (
-	FlutterFilesDir             string = filepath.Join(GVCWorkDir, "flutter_files")
+	FlutterFilesDir             string = filepath.Join(GVCInstallDir, "flutter_files")
 	FlutterRootDir              string = filepath.Join(FlutterFilesDir, "flutter")
 	FlutterTarFilePath          string = filepath.Join(FlutterFilesDir, "downloads")
 	FlutterUntarFilePath        string = filepath.Join(FlutterFilesDir, "versions")
@@ -526,7 +549,7 @@ var (
 Julia related
 */
 var (
-	JuliaFilesDir      string = filepath.Join(GVCWorkDir, "julia_files")
+	JuliaFilesDir      string = filepath.Join(GVCInstallDir, "julia_files")
 	JuliaRootDir       string = filepath.Join(JuliaFilesDir, "julia")
 	JuliaTarFilePath   string = filepath.Join(JuliaFilesDir, "downloads")
 	JuliaUntarFilePath string = filepath.Join(JuliaFilesDir, "versions")
@@ -536,7 +559,7 @@ var (
 Typst related
 */
 var (
-	TypstFilesDir string = filepath.Join(GVCWorkDir, "typst_files")
+	TypstFilesDir string = filepath.Join(GVCInstallDir, "typst_files")
 	TypstRootDir  string = filepath.Join(TypstFilesDir, "typst")
 )
 
@@ -554,7 +577,7 @@ const (
 Docker related
 */
 var (
-	DockerFilesDir               string = filepath.Join(GVCWorkDir, "docker_files")
+	DockerFilesDir               string = filepath.Join(GVCInstallDir, "docker_files")
 	DockerWindowsInstallationDir string = filepath.Join(DockerFilesDir, "docker_installation")
 )
 
@@ -562,6 +585,6 @@ var (
 git
 */
 var (
-	GitFileDir                string = filepath.Join(GVCWorkDir, "git_files")
+	GitFileDir                string = filepath.Join(GVCInstallDir, "git_files")
 	GitWindowsInstallationDir string = filepath.Join(GitFileDir, "git_installation")
 )

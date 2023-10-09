@@ -207,7 +207,7 @@ const (
 )
 
 var (
-	HostsFetchBatPath = filepath.Join(config.GVCWorkDir, "hosts.bat")
+	HostsFetchBatPath = filepath.Join(config.GVCDir, "hosts.bat")
 )
 
 func (that *Hosts) WinRunAsAdmin() {

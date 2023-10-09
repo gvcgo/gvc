@@ -32,7 +32,7 @@ func NewVlang() (vl *Vlang) {
 		env:     utils.NewEnvsHandler(),
 	}
 	vl.checker = NewSumChecker(vl.Conf)
-	vl.env.SetWinWorkDir(config.GVCWorkDir)
+	vl.env.SetWinWorkDir(config.GVCDir)
 	return
 }
 

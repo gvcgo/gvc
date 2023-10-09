@@ -27,7 +27,7 @@ func NewProtobuffer() (p *VProtoBuffer) {
 		env:     utils.NewEnvsHandler(),
 	}
 	p.checker = NewSumChecker(p.Conf)
-	p.env.SetWinWorkDir(config.GVCWorkDir)
+	p.env.SetWinWorkDir(config.GVCDir)
 	return
 }
 

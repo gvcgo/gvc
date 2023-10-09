@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	utils.MakeDirs(GVCWorkDir)
+	utils.MakeDirs(GVCDir)
 }
 
 type GVConfig struct {

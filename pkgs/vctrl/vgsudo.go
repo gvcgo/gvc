@@ -27,7 +27,7 @@ func NewGSudo() (gs *VGSudo) {
 		env:     utils.NewEnvsHandler(),
 	}
 	gs.checker = NewSumChecker(gs.Conf)
-	gs.env.SetWinWorkDir(config.GVCWorkDir)
+	gs.env.SetWinWorkDir(config.GVCDir)
 	return
 }
 

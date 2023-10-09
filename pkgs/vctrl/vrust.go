@@ -28,7 +28,7 @@ func NewRustInstaller() (ri *RustInstaller) {
 		Conf:    config.New(),
 		env:     utils.NewEnvsHandler(),
 	}
-	ri.env.SetWinWorkDir(config.GVCWorkDir)
+	ri.env.SetWinWorkDir(config.GVCDir)
 	return
 }
 

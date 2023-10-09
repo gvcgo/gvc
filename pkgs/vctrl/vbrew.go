@@ -24,7 +24,7 @@ func NewHomebrew() (hb *Homebrew) {
 		fetcher: request.NewFetcher(),
 		envs:    utils.NewEnvsHandler(),
 	}
-	hb.envs.SetWinWorkDir(config.GVCWorkDir)
+	hb.envs.SetWinWorkDir(config.GVCDir)
 	return
 }
 

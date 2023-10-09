@@ -28,37 +28,37 @@ func NewSelf() (s *Self) {
 		env:  utils.NewEnvsHandler(),
 	}
 	s.checker = NewSumChecker(s.Conf)
-	s.env.SetWinWorkDir(config.GVCWorkDir)
+	s.env.SetWinWorkDir(config.GVCDir)
 	return
 }
 
 func (that *Self) setEnv() {
 	if runtime.GOOS != utils.Windows {
-		that.env.UpdateSub(utils.SUB_GVC, fmt.Sprintf(utils.GvcEnv, config.GVCWorkDir))
+		that.env.UpdateSub(utils.SUB_GVC, fmt.Sprintf(utils.GvcEnv, config.GVCDir))
 	} else {
-		that.env.SetEnvForWin(map[string]string{"PATH": config.GVCWorkDir})
+		that.env.SetEnvForWin(map[string]string{"PATH": config.GVCDir})
 	}
 }
 
 func (that *Self) setShortcut() {
 	switch runtime.GOOS {
 	case utils.Windows:
-		fPath := filepath.Join(config.GVCWorkDir, "gvc.exe")
+		fPath := filepath.Join(config.GVCDir, "gvc.exe")
 		if ok, _ := utils.PathIsExist(fPath); ok {
-			newPath := filepath.Join(config.GVCWorkDir, "g.exe")
+			newPath := filepath.Join(config.GVCDir, "g.exe")
 			os.RemoveAll(newPath)
 			utils.CopyFile(fPath, newPath)
 		}
 	default:
-		fPath := filepath.Join(config.GVCWorkDir, "gvc")
+		fPath := filepath.Join(config.GVCDir, "gvc")
 		if ok, _ := utils.PathIsExist(fPath); ok {
-			utils.MkSymLink(fPath, filepath.Join(config.GVCWorkDir, "g"))
+			utils.MkSymLink(fPath, filepath.Join(config.GVCDir, "g"))
 		}
 	}
 }
 
 func (that *Self) Install() {
-	utils.MakeDirs(config.GVCWorkDir)
+	utils.MakeDirs(config.GVCDir)
 	ePath, _ := os.Executable()
 	if strings.Contains(ePath, filepath.Join(utils.GetHomeDir(), ".gvc")) && !strings.Contains(ePath, "bin_temp") {
 		// call the installed exe is not allowed.
@@ -66,7 +66,7 @@ func (that *Self) Install() {
 	}
 	name := filepath.Base(ePath)
 	if strings.HasSuffix(ePath, "/gvc") || strings.HasSuffix(ePath, "gvc.exe") {
-		if _, err := utils.CopyFile(ePath, filepath.Join(config.GVCWorkDir, name)); err == nil {
+		if _, err := utils.CopyFile(ePath, filepath.Join(config.GVCDir, name)); err == nil {
 			that.setEnv()
 			that.setShortcut()
 		}
@@ -94,8 +94,8 @@ func (that *Self) Uninstall() {
 			dav := NewGVCWebdav()
 			dav.GatherAndPushSettings()
 		}
-		if ok, _ := utils.PathIsExist(config.GVCWorkDir); ok {
-			os.RemoveAll(config.GVCWorkDir)
+		if ok, _ := utils.PathIsExist(config.GVCDir); ok {
+			os.RemoveAll(config.GVCDir)
 		}
 	} else {
 		gprint.PrintInfo("Remove has been aborted.")
@@ -105,7 +105,7 @@ func (that *Self) Uninstall() {
 func (that *Self) ShowPath() {
 	content := fmt.Sprintf(
 		"IntalledAt: %s\nGVConfPath: %s\nDAVConfPath: %s",
-		config.GVCWorkDir,
+		config.GVCDir,
 		config.GVConfigPath,
 		config.GVCWebdavConfigPath,
 	)

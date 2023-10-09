@@ -34,7 +34,7 @@ func NewPyVenv() (py *PyVenv) {
 		env:     utils.NewEnvsHandler(),
 	}
 	py.initeDirs()
-	py.env.SetWinWorkDir(config.GVCWorkDir)
+	py.env.SetWinWorkDir(config.GVCDir)
 	py.checker = NewSumChecker(py.Conf)
 	return
 }

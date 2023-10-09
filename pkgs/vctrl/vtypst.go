@@ -29,7 +29,7 @@ func NewTypstVersion() (tv *Typst) {
 		fetcher: request.NewFetcher(),
 		env:     utils.NewEnvsHandler(),
 	}
-	tv.env.SetWinWorkDir(config.GVCWorkDir)
+	tv.env.SetWinWorkDir(config.GVCDir)
 	tv.checker = NewSumChecker(tv.Conf)
 	return
 }

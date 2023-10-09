@@ -57,7 +57,7 @@ func NewGoVersion() (gv *GoVersion) {
 		fetcher:  request.NewFetcher(),
 	}
 	gv.initeDirs()
-	gv.env.SetWinWorkDir(config.GVCWorkDir)
+	gv.env.SetWinWorkDir(config.GVCDir)
 	return
 }
 
