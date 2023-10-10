@@ -143,6 +143,7 @@ func (that *Code) InstallForWin() {
 }
 
 func (that *Code) GenerateShortcut() error {
+	config.SaveWinShortcutCreator()
 	if ok, _ := utils.PathIsExist(config.WinShortcutCreatorPath); ok {
 		err := config.CreateShortCut(filepath.Join(config.CodeWinInstallDir, "Code.exe"), config.CodeWinShortcutPath)
 		return err

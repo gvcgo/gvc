@@ -149,7 +149,6 @@ func CreateShortCut(targetPath, shortcutPath string) error {
 	if runtime.GOOS != utils.Windows {
 		return os.Symlink(targetPath, shortcutPath)
 	} else {
-		SaveWinShortcutCreator()
 		WinVSCodeShortcutCommand := []string{
 			WinShortcutCreatorPath,
 			fmt.Sprintf(`/target:%s`, targetPath),
