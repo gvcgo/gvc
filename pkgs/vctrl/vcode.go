@@ -152,22 +152,29 @@ func (that *Code) GenerateShortcut() error {
 }
 
 func (that *Code) InstallForMac() {
-	that.download()
-	if codeDir, _ := os.ReadDir(config.CodeUntarFile); len(codeDir) > 0 {
+	zipPath := that.download()
+	if zipPath != "" {
+		if err := archiver.Unarchive(zipPath, config.CodeTarFileDir); err != nil {
+			os.RemoveAll(zipPath)
+			gprint.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
+			return
+		}
+	}
+	if codeDir, _ := os.ReadDir(config.CodeTarFileDir); len(codeDir) > 0 {
 		for _, file := range codeDir {
 			if strings.Contains(file.Name(), ".app") {
-				source := filepath.Join(config.CodeUntarFile, file.Name())
+				source := filepath.Join(config.CodeTarFileDir, file.Name())
 				if ok, _ := utils.PathIsExist(config.CodeMacCmdBinaryDir); !ok {
 					if err := utils.CopyFileOnUnixSudo(source, config.CodeMacInstallDir); err != nil {
 						gprint.PrintError(fmt.Sprintf("Install vscode failed: %+v", err))
 					} else {
-						os.RemoveAll(config.CodeUntarFile)
+						os.RemoveAll(source)
 					}
 				}
+				that.env.UpdateSub(utils.SUB_CODE, config.CodeMacCmdBinaryDir)
 			}
 		}
 	}
-	that.env.UpdateSub(utils.SUB_CODE, config.CodeMacCmdBinaryDir)
 }
 
 func (that *Code) InstallForLinux() {

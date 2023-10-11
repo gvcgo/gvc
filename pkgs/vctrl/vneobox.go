@@ -1,11 +1,11 @@
 package vctrl
 
 import (
-	"os"
 	"os/exec"
 
 	"github.com/moqsien/goutils/pkgs/logs"
 	config "github.com/moqsien/gvc/pkgs/confs"
+	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/neobox/pkgs/run"
 	"github.com/moqsien/neobox/pkgs/storage/model"
 	nutils "github.com/moqsien/neobox/pkgs/utils"
@@ -27,15 +27,15 @@ func NewBox(starter, keeperStarter *exec.Cmd) (n *NeoBox) {
 }
 
 func (that *NeoBox) Initiate() {
-	if that.conf.NeoBox.NeoConf.LogDir != "" {
-		os.MkdirAll(that.conf.NeoBox.NeoConf.LogDir, 0666)
+	// fixbugs： cannot use backup files for different platforms
+	if ok, _ := utils.PathIsExist(that.conf.NeoBox.NeoConf.WorkDir); !ok && that.conf.NeoBox.NeoConf.WorkDir != "" {
+		that.conf.Reset()
 	}
-	if that.conf.NeoBox.NeoConf.GeoInfoDir != "" {
-		os.MkdirAll(that.conf.NeoBox.NeoConf.GeoInfoDir, 0666)
-	}
-	if that.conf.NeoBox.NeoConf.SocketDir != "" {
-		os.MkdirAll(that.conf.NeoBox.NeoConf.SocketDir, 0666)
-	}
+	utils.MakeDirs(
+		that.conf.NeoBox.NeoConf.LogDir,
+		that.conf.NeoBox.NeoConf.GeoInfoDir,
+		that.conf.NeoBox.NeoConf.SocketDir,
+	)
 	if that.conf.NeoBox.NeoConf != nil {
 		that.runner = run.NewRunner(that.conf.NeoBox.NeoConf)
 		// set envs for neobox
