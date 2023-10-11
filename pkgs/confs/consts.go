@@ -17,7 +17,6 @@ const (
 	GVCVersion = "v0.1.0"
 )
 
-// TODO: install in customed dir
 var (
 	GVCDir              = filepath.Join(utils.GetHomeDir(), ".gvc")
 	GVCInstallDir       = GetGVCWorkDir()
@@ -85,9 +84,7 @@ var (
 	CodeWinCmdBinaryDir   string = filepath.Join(CodeWinInstallDir, "bin")
 	CodeLinuxInstallDir   string = "/usr/share/code"
 	CodeLinuxCmdBinaryDir string = filepath.Join(CodeLinuxInstallDir, "bin")
-
-	// CodeWinCmdBinaryDir string = filepath.Join(CodeUntarFile, "bin")
-	CodeWinShortcutPath string = filepath.Join(utils.GetHomeDir(), "Desktop", "VSCode")
+	CodeWinShortcutPath   string = filepath.Join(utils.GetHomeDir(), "Desktop", "VSCode")
 )
 
 var (
@@ -95,23 +92,6 @@ var (
 export PATH="%s:$PATH"
 # VSCode end`
 )
-
-// var (
-// 	CodeUserSettingsFilePathForMac string = filepath.Join(utils.GetHomeDir(),
-// 		"Library/Application Support/Code/User/settings.json")
-// 	CodeKeybindingsFilePathForMac string = filepath.Join(utils.GetHomeDir(),
-// 		"Library/Application Support/Code/User/keybindings.json")
-// 	CodeUserSettingsFilePathForWin string = filepath.Join(utils.GetWinAppdataEnv(),
-// 		`Code\User\settings.json`)
-// 	CodeKeybindingsFilePathForWin string = filepath.Join(utils.GetWinAppdataEnv(),
-// 		`Code\User\keybindings.json`)
-// 	CodeUserSettingsFilePathForLinux string = filepath.Join(utils.GetHomeDir(),
-// 		".config/Code/User/settings.json")
-// 	CodeKeybindingsFilePathForLinux string = filepath.Join(utils.GetHomeDir(),
-// 		".config/Code/User/keybindings.json")
-// 	CodeUserSettingsBackupPath = GetUserSettingsBackupPath()
-// 	CodeKeybindingsBackupPath  = GetCodeKeybindingsBackupPath()
-// )
 
 var (
 	CodeUserSettingsBackupFileName = "vscode-user-settings.json"

@@ -30,7 +30,7 @@ func (that *BookmarkTree) initTree() {
 		j := gjson.New(b)
 		that.Root.ParseTree(j.GetString("roots.bookmark_bar"))
 	} else if that.Root.BType == Firefox {
-		if db, err := sql.Open("sqlite3", that.OriginalFilePath); err == nil {
+		if db, err := sql.Open("sqlite", that.OriginalFilePath); err == nil {
 			sql_ := `SELECT id FROM moz_bookmarks WHERE title="toolbar"`
 			rows, err := db.Query(sql_)
 			if err != nil {
