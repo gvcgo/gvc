@@ -171,10 +171,11 @@ func (that *Code) InstallForMac() {
 						os.RemoveAll(source)
 					}
 				}
-				that.env.UpdateSub(utils.SUB_CODE, config.CodeMacCmdBinaryDir)
+
 			}
 		}
 	}
+	that.env.UpdateSub(utils.SUB_CODE, fmt.Sprintf(config.CodeEnvForUnix, config.CodeMacCmdBinaryDir))
 }
 
 func (that *Code) InstallForLinux() {
@@ -203,7 +204,7 @@ func (that *Code) InstallForLinux() {
 			return
 		}
 
-		that.env.UpdateSub(utils.SUB_CODE, config.CodeLinuxCmdBinaryDir)
+		that.env.UpdateSub(utils.SUB_CODE, fmt.Sprintf(config.CodeEnvForUnix, config.CodeLinuxCmdBinaryDir))
 	}
 }
 
