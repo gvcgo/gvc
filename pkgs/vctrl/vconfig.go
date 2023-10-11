@@ -404,3 +404,5 @@ func (that *GVCWebdav) GatherAndPushSettings() {
 	gprint.PrintInfo("Pushing config files to webdav...")
 	that.Push()
 }
+
+// TODO: restore .ssh/ to WebDAV
