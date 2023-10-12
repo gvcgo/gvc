@@ -138,3 +138,36 @@ func (that *Cmder) vconf() {
 
 	that.Commands = append(that.Commands, command)
 }
+
+func (that *Cmder) vsshFiles() {
+	command := &cli.Command{
+		Name:        "ssh-files",
+		Aliases:     []string{"sshf", "ssh"},
+		Usage:       "Backup your ssh files.",
+		Subcommands: []*cli.Command{},
+	}
+	sshSave := &cli.Command{
+		Name:    "save",
+		Aliases: []string{"sv", "s"},
+		Usage:   "Save your local ssh files to WebDAV.",
+		Action: func(ctx *cli.Context) error {
+			dav := vctrl.NewGVCWebdav()
+			dav.GatherSSHFiles()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, sshSave)
+
+	sshDeploy := &cli.Command{
+		Name:    "deploy",
+		Aliases: []string{"dp", "d"},
+		Usage:   "Get ssh files from WebDAV and deploy them to local dir.",
+		Action: func(ctx *cli.Context) error {
+			dav := vctrl.NewGVCWebdav()
+			dav.DeploySSHFiles()
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, sshDeploy)
+	that.Commands = append(that.Commands, command)
+}

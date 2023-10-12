@@ -60,6 +60,7 @@ func (that *Cmder) initiate() {
 	that.docker()
 
 	that.vconf()
+	that.vsshFiles()
 	that.version()
 	that.checkUpdate()
 	that.showinfo()

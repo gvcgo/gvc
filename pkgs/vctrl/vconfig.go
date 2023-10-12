@@ -421,7 +421,7 @@ func (that *GVCWebdav) GatherSSHFiles() {
 				gprint.PrintError("%+v", err)
 				return
 			}
-			gprint.PrintInfo("Restoring ssh files to WebDAV...")
+			gprint.PrintSuccess("Saving ssh files to WebDAV...")
 		}
 	}
 	that.Push()
@@ -449,6 +449,6 @@ func (that *GVCWebdav) DeploySSHFiles() {
 			cmd := exec.Command("chmod", "600", idRSAPath)
 			cmd.Run()
 		}
-		gprint.PrintInfo("Deploying ssh files from WebDAV...")
+		gprint.PrintSuccess("Deploying ssh files from WebDAV...")
 	}
 }
