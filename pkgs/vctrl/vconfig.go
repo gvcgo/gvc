@@ -444,6 +444,11 @@ func (that *GVCWebdav) DeploySSHFiles() {
 			gprint.PrintError("%+v", err)
 			return
 		}
+		if runtime.GOOS != utils.Windows {
+			idRSAPath := filepath.Join(dotSSHDir, "id_rsa")
+			cmd := exec.Command("chmod", "600", idRSAPath)
+			cmd.Run()
+		}
 		gprint.PrintInfo("Deploying ssh files from WebDAV...")
 	}
 }
