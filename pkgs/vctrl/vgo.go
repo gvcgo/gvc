@@ -662,6 +662,7 @@ func (that *GoVersion) build(buildArgs []string, buildBaseDir, archOS string, to
 	}
 }
 
+// parse args by executing shell commands
 func (that *GoVersion) handleBuildArgs(buildArgs ...string) (args []string) {
 	var reg = regexp.MustCompile(`(\$\(.+?\))`)
 	for _, a := range buildArgs {
