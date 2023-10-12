@@ -239,7 +239,7 @@ func (that *GhDownloader) downloadGitForWindows() {
 		return
 	}
 	if ok, _ := utils.PathIsExist(config.GitWindowsInstallationDir); !ok {
-		os.MkdirAll(config.GitWindowsInstallationDir, 0777)
+		os.MkdirAll(config.GitWindowsInstallationDir, os.ModePerm)
 	}
 	fPath := filepath.Join(config.GitFileDir, "git.7z")
 	that.fetcher.SetUrl(gUrl)

@@ -608,7 +608,7 @@ func (that *GoVersion) build(buildArgs []string, buildBaseDir, archOS string, to
 		pOs, pArch := infoList[0], infoList[1]
 		binaryStoreDir := filepath.Join(buildBaseDir, dirName)
 		if ok, _ := utils.PathIsExist(binaryStoreDir); !ok {
-			if err := os.MkdirAll(binaryStoreDir, 0666); err != nil {
+			if err := os.MkdirAll(binaryStoreDir, os.ModePerm); err != nil {
 				gprint.PrintError("%+v", err)
 				return
 			}
@@ -670,8 +670,10 @@ func (that *GoVersion) handleBuildArgs(buildArgs ...string) (args []string) {
 			if len(b) <= 0 {
 				continue
 			}
+
 			cmd := strings.TrimLeft(strings.TrimRight(string(b), ")"), "$(")
-			if output, err := utils.ExecuteSysCommand(true, cmd); err == nil {
+			cmdArgs := strings.Split(cmd, " ")
+			if output, err := utils.ExecuteSysCommand(true, cmdArgs...); err == nil {
 				result := strings.TrimRight(output.String(), "\n")
 				a = strings.Replace(a, string(b), result, 1)
 			} else {
@@ -699,7 +701,7 @@ func (that *GoVersion) Build(args ...string) {
 
 	buildDir := "build"
 	if ok, _ := utils.PathIsExist(buildDir); !ok {
-		if err := os.MkdirAll(buildDir, 0666); err != nil {
+		if err := os.MkdirAll(buildDir, os.ModePerm); err != nil {
 			gprint.PrintError("%+v", err)
 			return
 		}

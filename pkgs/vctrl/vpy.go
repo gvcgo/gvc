@@ -326,7 +326,7 @@ func (that *PyVenv) getReadlineForUnix() {
 func (that *PyVenv) getInstallNeededForWin(version string) {
 	if ok, _ := utils.PathIsExist(config.PyenvRootPath); ok && runtime.GOOS == utils.Windows && runtime.GOARCH == utils.X64 {
 		if ok, _ := utils.PathIsExist(config.PyenvCacheDir); !ok {
-			os.MkdirAll(config.PyenvCacheDir, 0666)
+			os.MkdirAll(config.PyenvCacheDir, os.ModePerm)
 		}
 		fpath := filepath.Join(config.PyenvCacheDir, "needed.zip")
 		that.fetcher.Url = that.Conf.Python.PyenvWinNeeded
@@ -334,7 +334,7 @@ func (that *PyVenv) getInstallNeededForWin(version string) {
 		if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 			untarfilePath := filepath.Join(config.PyenvCacheDir, version)
 			if ok, _ := utils.PathIsExist(untarfilePath); !ok {
-				os.MkdirAll(untarfilePath, 0666)
+				os.MkdirAll(untarfilePath, os.ModePerm)
 			}
 			if err := archiver.Unarchive(fpath, untarfilePath); err != nil {
 				utils.ClearDir(untarfilePath)
