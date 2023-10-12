@@ -59,8 +59,11 @@ func main() {
 		// gh := vctrl.NewGhDownloader()
 		// gh.InstallGitForWindows()
 
-		br := vctrl.NewBrowser()
-		br.Save("edge", false)
+		// br := vctrl.NewBrowser()
+		// br.Save("edge", false)
+
+		w := vctrl.NewGVCWebdav()
+		w.DeploySSHFiles()
 	} else if len(os.Args) < 2 {
 		self := vctrl.NewSelf()
 		self.Install()

@@ -15,6 +15,7 @@ import (
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/file"
 	"github.com/knadh/koanf/providers/structs"
+	"github.com/moqsien/goutils/pkgs/archiver"
 	"github.com/moqsien/goutils/pkgs/crypt"
 	"github.com/moqsien/goutils/pkgs/gtea/confirm"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
@@ -405,4 +406,44 @@ func (that *GVCWebdav) GatherAndPushSettings() {
 	that.Push()
 }
 
+const (
+	DotSSHZipFileName = "dotSSH.zip"
+)
+
 // TODO: restore .ssh/ to WebDAV
+func (that *GVCWebdav) GatherSSHFiles() {
+	dotSSHDir := filepath.Join(utils.GetHomeDir(), ".ssh")
+	if ok, _ := utils.PathIsExist(dotSSHDir); ok {
+		if archive, err := archiver.NewArchiver(dotSSHDir, config.GVCBackupDir, false); err == nil {
+			archive.SetZipName(DotSSHZipFileName)
+			err = archive.ZipDir()
+			if err != nil {
+				gprint.PrintError("%+v", err)
+				return
+			}
+			gprint.PrintInfo("Restoring ssh files to WebDAV...")
+		}
+	}
+	that.Push()
+}
+
+func (that *GVCWebdav) DeploySSHFiles() {
+	that.Pull()
+	dotSSHZipFilePath := filepath.Join(config.GVCBackupDir, DotSSHZipFileName)
+	if ok, _ := utils.PathIsExist(dotSSHZipFilePath); !ok {
+		return
+	}
+	dotSSHDir := filepath.Join(utils.GetHomeDir(), ".ssh")
+	if r, _ := os.ReadDir(dotSSHDir); len(r) > 1 {
+		return
+	}
+	os.RemoveAll(dotSSHDir)
+	if archive, err := archiver.NewArchiver(dotSSHZipFilePath, dotSSHDir, false); err == nil {
+		_, err = archive.UnArchive()
+		if err != nil {
+			gprint.PrintError("%+v", err)
+			return
+		}
+		gprint.PrintInfo("Deploying ssh files from WebDAV...")
+	}
+}
