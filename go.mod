@@ -14,7 +14,7 @@ require (
 	github.com/knadh/koanf v1.5.0
 	github.com/mholt/archiver/v3 v3.5.1
 	github.com/moqsien/asciinema v0.3.0
-	github.com/moqsien/goutils v0.5.8
+	github.com/moqsien/goutils v0.5.9
 	github.com/moqsien/hackbrowser v1.0.6
 	github.com/moqsien/neobox v1.3.8
 	github.com/studio-b12/gowebdav v0.0.0-20230203202212-3282f94193f2
@@ -37,6 +37,7 @@ require (
 	github.com/abiosoft/readline v0.0.0-20180607040430-155bce2042db // indirect
 	github.com/acomagu/bufpipe v1.0.4 // indirect
 	github.com/ajg/form v1.5.1 // indirect
+	github.com/alexmullins/zip v0.0.0-20180717182244-4affb64b04d0 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/andybalholm/cascadia v1.3.2 // indirect
 	github.com/aquasecurity/table v1.8.0 // indirect
@@ -144,7 +145,7 @@ require (
 	github.com/moqsien/vpnparser v0.2.4 // indirect
 	github.com/moqsien/wgcf v0.0.0-20230611034603-e29859e0cae2 // indirect
 	github.com/moqsien/xraycore v1.8.5 // indirect
-	github.com/moqsien/xtractr v0.0.1 // indirect
+	github.com/moqsien/xtractr v0.0.2 // indirect
 	github.com/muesli/ansi v0.0.0-20211018074035-2e021307bc4b // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
 	github.com/muesli/reflow v0.3.0 // indirect

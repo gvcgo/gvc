@@ -410,12 +410,13 @@ const (
 	DotSSHZipFileName = "dotSSH.zip"
 )
 
-// TODO: restore .ssh/ to WebDAV
+// push .ssh/files to WebDAV, ziped with password
 func (that *GVCWebdav) GatherSSHFiles() {
 	dotSSHDir := filepath.Join(utils.GetHomeDir(), ".ssh")
 	if ok, _ := utils.PathIsExist(dotSSHDir); ok {
 		if archive, err := archiver.NewArchiver(dotSSHDir, config.GVCBackupDir, false); err == nil {
 			archive.SetZipName(DotSSHZipFileName)
+			archive.SetPassword(that.DavConf.EncryptPass)
 			err = archive.ZipDir()
 			if err != nil {
 				gprint.PrintError("%+v", err)
@@ -427,6 +428,7 @@ func (that *GVCWebdav) GatherSSHFiles() {
 	that.Push()
 }
 
+// get ./ssh/files from WebDAV, and deploy them to local dir.
 func (that *GVCWebdav) DeploySSHFiles() {
 	that.Pull()
 	dotSSHZipFilePath := filepath.Join(config.GVCBackupDir, DotSSHZipFileName)
@@ -439,6 +441,7 @@ func (that *GVCWebdav) DeploySSHFiles() {
 	}
 	os.RemoveAll(dotSSHDir)
 	if archive, err := archiver.NewArchiver(dotSSHZipFilePath, dotSSHDir, false); err == nil {
+		archive.SetPassword(that.DavConf.EncryptPass)
 		_, err = archive.UnArchive()
 		if err != nil {
 			gprint.PrintError("%+v", err)
