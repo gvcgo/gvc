@@ -39,8 +39,8 @@ func (that *FlutterConf) setup() {
 func (that *FlutterConf) Reset() {
 	that.DefaultURLs = map[string]string{
 		utils.Windows:      "https://storage.flutter-io.cn/flutter_infra_release/releases/releases_windows.json",
-		utils.MacOS:        "https://storage.flutter-io.cn/flutter_infra_release/releases/releases_linux.json",
-		utils.Linux:        "https://storage.flutter-io.cn/flutter_infra_release/releases/releases_macos.json",
+		utils.MacOS:        "https://storage.flutter-io.cn/flutter_infra_release/releases/releases_macos.json",
+		utils.Linux:        "https://storage.flutter-io.cn/flutter_infra_release/releases/releases_linux.json",
 		"hosted_url":       "https://pub.flutter-io.cn",
 		"storage_base_url": "https://storage.flutter-io.cn",
 		"git_url":          "https://mirrors.tuna.tsinghua.edu.cn/git/flutter-sdk.git",
