@@ -426,8 +426,8 @@ github.com/hashicorp/yamux v0.0.0-20180604194846-3520598351bb/go.mod h1:+NfK9FKe
 github.com/hashicorp/yamux v0.0.0-20181012175058-2f1d1f20f75d/go.mod h1:+NfK9FKeTrX5uv1uIXGdwYDTeHna2qgaIlx54MXqjAM=
 github.com/hashicorp/yamux v0.1.1 h1:yrQxtgseBDrq9Y652vSRDvsKCJKOUD+GzTS4Y0Y8pvE=
 github.com/hashicorp/yamux v0.1.1/go.mod h1:CtWFDAQgb7dxtzFs4tWbplKIe2jSi3+5vKbgIO0SLnQ=
-github.com/hhatto/gocloc v0.5.1 h1:VFTm5VdllyGxvAjvXmYQDgthaVAUwPPJphebL+fHz2c=
-github.com/hhatto/gocloc v0.5.1/go.mod h1:pTtvBwdm0Mhqjkqu1g9uXplkncP/CHnhhDOigLj9/ek=
+github.com/hhatto/gocloc v0.5.2 h1:wCPQZziiXBed1cbPH6sj23bWsgxiSgiujpSA2IGxoZA=
+github.com/hhatto/gocloc v0.5.2/go.mod h1:pTtvBwdm0Mhqjkqu1g9uXplkncP/CHnhhDOigLj9/ek=
 github.com/hjson/hjson-go/v4 v4.0.0 h1:wlm6IYYqHjOdXH1gHev4VoXCaW20HdQAGCxdOEEg2cs=
 github.com/hjson/hjson-go/v4 v4.0.0/go.mod h1:KaYt3bTw3zhBjYqnXkYywcYctk0A2nxeEFTse3rH13E=
 github.com/hpcloud/tail v1.0.0 h1:nfCOvKYfkgYP8hkirhJocXT2+zOD8yUNjXaWfTlyFKI=

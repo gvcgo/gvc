@@ -9,6 +9,7 @@ import (
 
 	"github.com/hhatto/gocloc"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
+	"github.com/moqsien/goutils/pkgs/gtea/gtable"
 	"github.com/urfave/cli/v2"
 )
 
@@ -131,57 +132,11 @@ func (that *Cloc) Run() {
 }
 
 const (
-	commonHeader           string = "files          blank        comment           code"
-	defaultOutputSeparator string = "-------------------------------------------------------------------------" +
-		"-------------------------------------------------------------------------" +
-		"-------------------------------------------------------------------------"
 	OutputTypeDefault   string = "default"
 	OutputTypeClocXML   string = "cloc-xml"
 	OutputTypeSloccount string = "sloccount"
 	OutputTypeJSON      string = "json"
 )
-
-var rowLen = 79
-
-func (that *Cloc) WriteHeader() {
-	if that.result == nil {
-		return
-	}
-	maxPathLen := that.result.MaxPathLength
-	headerLen := 28
-	header := "Language"
-
-	if that.ctx.Bool(FlagByFile) {
-		headerLen = maxPathLen + 1
-		rowLen = maxPathLen + len(commonHeader) + 2
-		header = "File"
-	}
-	if that.ctx.String(FlagOutputType) == OutputTypeDefault {
-		gprint.Cyan(fmt.Sprintf("%.[2]*[1]s\n", defaultOutputSeparator, rowLen))
-		gprint.Green(fmt.Sprintf("%-[2]*[1]s %[3]s\n", header, headerLen, commonHeader))
-		gprint.Cyan(fmt.Sprintf("%.[2]*[1]s\n", defaultOutputSeparator, rowLen))
-	}
-}
-
-func (that *Cloc) WriteFooter() {
-	if that.result == nil {
-		return
-	}
-	total := that.result.Total
-	maxPathLen := that.result.MaxPathLength
-
-	if that.ctx.String(FlagOutputType) == OutputTypeDefault {
-		gprint.Cyan(fmt.Sprintf("%.[2]*[1]s\n", defaultOutputSeparator, rowLen))
-		if that.ctx.Bool(FlagByFile) {
-			gprint.Magenta(fmt.Sprintf("%-[1]*[2]v %6[3]v %14[4]v %14[5]v %14[6]v\n",
-				maxPathLen, "TOTAL", total.Total, total.Blanks, total.Comments, total.Code))
-		} else {
-			gprint.Magenta(fmt.Sprintf("%-27v %6v %14v %14v %14v\n",
-				"TOTAL", total.Total, total.Blanks, total.Comments, total.Code))
-		}
-		gprint.Cyan(fmt.Sprintf("%.[2]*[1]s\n", defaultOutputSeparator, rowLen))
-	}
-}
 
 func (that *Cloc) writeResultWithByFile() {
 	clocFiles := that.result.Files
@@ -248,9 +203,6 @@ func (that *Cloc) writeResultWithByFile() {
 }
 
 func (that *Cloc) WriteResult() {
-	// write header
-	that.WriteHeader()
-
 	clocLangs := that.result.Languages
 	total := that.result.Total
 
@@ -289,13 +241,38 @@ func (that *Cloc) WriteResult() {
 			}
 			os.Stdout.Write(buf)
 		default:
-			for _, language := range sortedLanguages {
-				gprint.Gray(fmt.Sprintf("%-27v %6v %14v %14v %14v\n",
-					language.Name, len(language.Files), language.Blanks, language.Comments, language.Code))
+			columns := []gtable.Column{
+				{Title: "Language", Width: 36},
+				{Title: "Code", Width: 20},
+				{Title: "Files", Width: 20},
+				{Title: "Comments", Width: 20},
+				{Title: "Blank", Width: 20},
 			}
+			rows := []gtable.Row{}
+			for _, language := range sortedLanguages {
+				rows = append(rows, gtable.Row{
+					gprint.YellowStr(language.Name),
+					fmt.Sprintf("%d", language.Code),
+					fmt.Sprintf("%d", len(language.Files)),
+					fmt.Sprintf("%d", language.Comments),
+					fmt.Sprintf("%d", language.Blanks),
+				})
+			}
+			rows = append(rows, gtable.Row{
+				gprint.YellowStr("Sum"),
+				fmt.Sprintf("%d", total.Code),
+				fmt.Sprintf("%d", total.Total),
+				fmt.Sprintf("%d", total.Comments),
+				fmt.Sprintf("%d", total.Blanks),
+			})
+			t := gtable.NewTable(
+				gtable.WithColumns(columns),
+				gtable.WithRows(rows),
+				gtable.WithFocused(true),
+				gtable.WithHeight(15),
+				gtable.WithWidth(125),
+			)
+			t.Run()
 		}
 	}
-
-	// write footer
-	that.WriteFooter()
 }

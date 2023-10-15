@@ -10,7 +10,7 @@ require (
 	github.com/charmbracelet/lipgloss v0.8.0
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/gogf/gf v1.16.9
-	github.com/hhatto/gocloc v0.5.1
+	github.com/hhatto/gocloc v0.5.2
 	github.com/knadh/koanf v1.5.0
 	github.com/mholt/archiver/v3 v3.5.1
 	github.com/moqsien/asciinema v0.3.0
