@@ -76,9 +76,22 @@ func (that *Cmder) vinstallGitWin() {
 git subcommands using proxies
 */
 func (that *Cmder) vgit() {
-	var defaultProxy string = "http://localhost:2023"
+	vg := vctrl.NewGhDownloader()
+	var defaultProxy string = vg.ReadDefaultProxy()
 	var mannualProxy string
 	var disableProxy bool
+
+	gSetProxy := &cli.Command{
+		Name:    "git-set-proxy",
+		Aliases: []string{"gsproxy", "gsp"},
+		Usage:   "Set default proxy for git [default: http://localhost:2023].",
+		Action: func(ctx *cli.Context) error {
+			vg.SaveDefaultProxy(ctx.Args().First())
+			return nil
+		},
+	}
+	that.Commands = append(that.Commands, gSetProxy)
+
 	gclone := &cli.Command{
 		Name:      "git-clone",
 		Aliases:   []string{"gclone", "gclo"},
@@ -101,7 +114,6 @@ func (that *Cmder) vgit() {
 			if mannualProxy != "" {
 				proxyUrl = mannualProxy
 			}
-			vg := vctrl.NewGhDownloader()
 			vg.Clone(projectUrl, proxyUrl)
 			return nil
 		},
@@ -125,7 +137,6 @@ func (that *Cmder) vgit() {
 			if mannualProxy != "" {
 				proxyUrl = mannualProxy
 			}
-			vg := vctrl.NewGhDownloader()
 			vg.Pull(proxyUrl)
 			return nil
 		},
@@ -149,7 +160,6 @@ func (that *Cmder) vgit() {
 			if mannualProxy != "" {
 				proxyUrl = mannualProxy
 			}
-			vg := vctrl.NewGhDownloader()
 			vg.Push(proxyUrl)
 			return nil
 		},
@@ -188,7 +198,6 @@ func (that *Cmder) vgit() {
 					proxyUrl = mannualProxy
 				}
 			}
-			vg := vctrl.NewGhDownloader()
 			vg.CommitAndPush(commitMsg, proxyUrl)
 			return nil
 		},
@@ -226,7 +235,6 @@ func (that *Cmder) vgit() {
 					proxyUrl = mannualProxy
 				}
 			}
-			vg := vctrl.NewGhDownloader()
 			vg.AddTagAndPush(tag, proxyUrl)
 			return nil
 		},
@@ -264,7 +272,6 @@ func (that *Cmder) vgit() {
 					proxyUrl = mannualProxy
 				}
 			}
-			vg := vctrl.NewGhDownloader()
 			vg.DelTagAndPush(tag, proxyUrl)
 			return nil
 		},
@@ -276,7 +283,6 @@ func (that *Cmder) vgit() {
 		Aliases: []string{"gshowtaglatest", "gstag", "gst"},
 		Usage:   "Git show the latest tag of a local repository.",
 		Action: func(ctx *cli.Context) error {
-			vg := vctrl.NewGhDownloader()
 			vg.ShowLatestTag()
 			return nil
 		},

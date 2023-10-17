@@ -182,6 +182,23 @@ func (that *GhDownloader) OpenByBrowser(chosen int) {
 	}
 }
 
+func (that *GhDownloader) SaveDefaultProxy(proxyUrl string) {
+	filePath := filepath.Join(config.GVCDir, ".default_proxy.conf")
+	if proxyUrl == "" {
+		proxyUrl = "http://127.0.0.1:2023"
+	}
+	os.WriteFile(filePath, []byte(proxyUrl), os.ModePerm)
+}
+
+func (that *GhDownloader) ReadDefaultProxy() string {
+	filePath := filepath.Join(config.GVCDir, ".default_proxy.conf")
+	r, _ := os.ReadFile(filePath)
+	if len(r) == 0 {
+		return "http://127.0.0.1:2023"
+	}
+	return string(r)
+}
+
 func (that *GhDownloader) Clone(projectUrl, proxyUrl string) {
 	that.git.SetProxyUrl(proxyUrl)
 	if _, err := that.git.CloneBySSH(projectUrl); err != nil {
