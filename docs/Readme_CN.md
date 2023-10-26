@@ -51,7 +51,7 @@ gvc交流QQ群：
 后来，觉得其他语言也可以有类似的功能。因为作者平时使用的语言主要就有go/python/typescript等等，还会看看rust，vlang，c/cpp之类的。所以，为什么gvc不可以支持一下这些语言呢？
 说干就干，一顿操作下来，gvc最终支持的语言有go/java/python/nodejs/flutter(dart)/julia/rust/cpp/vlang/typst。
 
-所以，gvc可以说时General version controller的缩写。
+所以，gvc可以说是General version controller的缩写。
 
 不过，光有语言的编译器/解释器，总觉得还缺点什么？
 是的，缺IDE/Editor。所以，gvc支持了一键安装VSCode和Neovim。二者可以通过插件进行搭配，轻松实现多语言开发。
