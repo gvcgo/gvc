@@ -47,6 +47,7 @@ func (that *Cmder) initiate() {
 
 	that.vscode()
 	that.vnvim()
+	that.vgpt()
 	that.vneobox()
 	that.vbrowser()
 	that.vhomebrew()
@@ -56,8 +57,8 @@ func (that *Cmder) initiate() {
 	that.vinstallGitWin()
 	that.vgithub()
 	that.vcloc()
-	that.asciinema()
-	that.docker()
+	that.vasciinema()
+	that.vdocker()
 
 	that.vconf()
 	that.vsshFiles()

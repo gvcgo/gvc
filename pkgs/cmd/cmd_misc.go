@@ -261,7 +261,7 @@ func (that *Cmder) vcloc() {
 	that.Commands = append(that.Commands, command)
 }
 
-func (that *Cmder) asciinema() {
+func (that *Cmder) vasciinema() {
 	command := &cli.Command{
 		Name:        "asciinema",
 		Aliases:     []string{"ascii", "asc"},
@@ -322,7 +322,7 @@ func (that *Cmder) asciinema() {
 	that.Commands = append(that.Commands, command)
 }
 
-func (that *Cmder) docker() {
+func (that *Cmder) vdocker() {
 	command := &cli.Command{
 		Name:        "docker",
 		Aliases:     []string{"dck", "dock"},
@@ -352,5 +352,19 @@ func (that *Cmder) docker() {
 		},
 	}
 	command.Subcommands = append(command.Subcommands, showMirrors)
+	that.Commands = append(that.Commands, command)
+}
+
+func (that *Cmder) vgpt() {
+	command := &cli.Command{
+		Name:    "gpt-spark",
+		Aliases: []string{"gpt", "gspark"},
+		Usage:   "ChatGPT/Spark bot.",
+		Action: func(ctx *cli.Context) error {
+			gv := vctrl.NewVGPT()
+			gv.Run()
+			return nil
+		},
+	}
 	that.Commands = append(that.Commands, command)
 }

@@ -33,12 +33,12 @@ type GVConfig struct {
 	Flutter  *FlutterConf  `koanf:"flutter"`
 	Julia    *JuliaConf    `koanf:"julia"`
 	Typst    *TypstConf    `koanf:"typst"`
-	Chatgpt  *ChatgptConf  `koanf:"chatgpt"`
 	Webdav   *DavConf      `koanf:"dav"`
 	Sum      *SumConf      `koanf:"sum"`
 	Protobuf *ProtobufConf `koanf:"protobuf"`
 	GSudo    *GsudoConf    `koanf:"gsudo"`
 	Docker   *DockerConf   `koanf:"docker"`
+	GPT      *GPTConf      `koanf:"gpt"`
 	path     string
 	koanfer  *koanfer.JsonKoanfer
 }
@@ -64,12 +64,12 @@ func New() (r *GVConfig) {
 		Flutter:  NewFlutterConf(),
 		Julia:    NewJuliaConf(),
 		Typst:    NewTypstConf(),
-		Chatgpt:  NewGptConf(),
 		Webdav:   NewDavConf(),
 		Sum:      NewSumConf(),
 		Protobuf: NewProtobuf(),
 		GSudo:    NewGsudoConf(),
 		Docker:   NewDockerConf(),
+		GPT:      NewGPTConf(),
 		path:     GVConfigPath,
 		koanfer:  kfer,
 	}
@@ -133,8 +133,6 @@ func (that *GVConfig) SetDefault() {
 	that.Julia.Reset()
 	that.Typst = NewTypstConf()
 	that.Typst.Reset()
-	that.Chatgpt = NewGptConf()
-	that.Chatgpt.Reset()
 	that.Webdav = NewDavConf()
 	that.Webdav.Reset()
 	that.Sum = NewSumConf()
@@ -145,6 +143,8 @@ func (that *GVConfig) SetDefault() {
 	that.GSudo.Reset()
 	that.Docker = NewDockerConf()
 	that.Docker.Reset()
+	that.GPT = NewGPTConf()
+	that.GPT.Reset()
 }
 
 func (that *GVConfig) Reset() {
