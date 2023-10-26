@@ -7,7 +7,8 @@
 - [gvc支持哪些语言或应用？](#gvc支持哪些语言或应用)
 - [下载和安装](#下载和安装)
 - [功能概览](#功能概览)
-  - [go](#go)
+  - [gpt子命令](#gpt子命令)
+  - [go子命令](#go子命令)
   - [proto子命令](#proto子命令)
   - [python子命令](#python子命令)
   - [java子命令](#java子命令)
@@ -179,6 +180,14 @@ gvc增加了WebDAV协议的网盘同步功能，它能把你的本地配置一�
       <td><a href="https://github.com/go-git/go-git">可以使用本地代理的git命令</a></td>
       <td><a href="https://github.com/go-git/go-git">go-git，比git配置全局命令更方便</a></td>
     </tr>
+    <tr>
+      <td><a href="https://openai.com/">openai</a></td>
+      <td><a href="https://github.com/sashabaranov/go-openai">go-openai</a></td>
+    </tr>
+    <tr>
+      <td><a href="https://xinghuo.xfyun.cn/">讯飞星火</a></td>
+      <td><a href="https://xinghuo.xfyun.cn/sparkapi">讯飞星火</a></td>
+    </tr>
   </tbody>
 </table>
 
@@ -217,7 +226,7 @@ COMMANDS:
    maven, mav, ma                                   Maven version management.
    gradle, gra, gr                                  Gradle version management.
    nodejs, node, no                                 NodeJS version management.
-   flutter, flu, fl                                 Flutter version management.
+   flutter, flu, fl                                 Flutter version management. // 无需安装Android Studio，轻松配置VSCode进行Flutter安卓开发。
    julia, jul, ju                                   Julia version management.
    rust, rustc, ru, r                               Rust installation.
    cpp                                              C/C++ management.
@@ -225,6 +234,7 @@ COMMANDS:
    vlang, vl                                        Vlang installation.
    vscode, vsc, vs, v                               VSCode and extensions installation.
    nvim, neovim, nv, n                              Neovim installation.
+   gpt-spark, gpt, gspark                           ChatGPT/Spark bot.
    neobox-shell, shell, box, ns                     Start a neobox shell.
    neobox-runner, nbrunner, nbr                     Start a neobox client.
    neobox-keeper, nbkeeper, nbk                     Start a neobox keeper.
@@ -232,6 +242,7 @@ COMMANDS:
    homebrew, brew, hb                               Homebrew installation or update.
    gsudo, winsudo, gs, ws                           Gsudo for windows.
    hosts, h, host                                   Sytem hosts file management(need admistrator or root).
+   git-set-proxy, gsproxy, gsp                      Set default proxy for git [default: http://localhost:2023]. // 设置git-*子命令的默认代理
    git-clone, gclone, gclo                          Git Clone using a proxy.
    git-pull, gpull, gpul                            Git Pull using a proxy.
    git-push, gpush, gpus                            Git Push using a proxy.
@@ -245,6 +256,7 @@ COMMANDS:
    asciinema, ascii, asc                            Asciinema terminal recorder.
    docker, dck, dock                                Docker installation.
    config, conf, cnf, c                             Config file management for gvc.
+   ssh-files, sshf, ssh                             Backup your ssh files.
    version, ver, vsi                                Show gvc version info.
    check, checklatest, checkupdate                  Check and download the latest version of gvc.
    show, sho, sh                                    Show [gvc] installation path and config file path.
@@ -265,7 +277,21 @@ $moqsien> g version
       Email: moqsien2022@gmail.com
 ```
 
-### go
+### gpt子命令
+```bash
+$moqsien> g gpt help
+
+NAME:
+   g.exe gpt-spark - ChatGPT/Spark bot.
+
+USAGE:
+   g.exe gpt-spark [command options] [arguments...]
+
+OPTIONS:
+   --help, -h  show help
+```
+
+### go子命令
 ```bash
 $moqsien> g go help
 
@@ -682,6 +708,7 @@ Commands:
 - [protobuf](https://github.com/protocolbuffers/protobuf)
 - [docker](https://docs.docker.com/desktop/)
 - [go-git](https://github.com/go-git/go-git)
+- [gogpt](https://github.com/moqsien/gogpt)
 
 ## 送我一杯咖啡~~~
 [wechat](https://github.com/moqsien/moqsien/blob/main/imgs/wechat.jpeg)

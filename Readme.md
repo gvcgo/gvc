@@ -7,6 +7,7 @@
 - [What's supported?](#whats-supported)
 - [Download \& Install](#download--install)
 - [Main features](#main-features)
+  - [Subcommand: gpt](#subcommand-gpt)
   - [Subcommand: go](#subcommand-go)
   - [Subcommand: proto](#subcommand-proto)
   - [Subcommand: python](#subcommand-python)
@@ -164,6 +165,14 @@ Finally, GVC becomes something just like a **Scaffolding Tool for local developm
       <td><a href="https://github.com/go-git/go-git">git command using a local proxy</a></td>
       <td><a href="https://github.com/go-git/go-git">go-git</a></td>
     </tr>
+    <tr>
+      <td><a href="https://openai.com/">openai</a></td>
+      <td><a href="https://github.com/sashabaranov/go-openai">go-openai</a></td>
+    </tr>
+    <tr>
+      <td><a href="https://xinghuo.xfyun.cn/">Iflytek</a></td>
+      <td><a href="https://xinghuo.xfyun.cn/sparkapi">spark-api</a></td>
+    </tr>
   </tbody>
 </table>
 
@@ -209,6 +218,7 @@ COMMANDS:
    vlang, vl                                        Vlang installation.
    vscode, vsc, vs, v                               VSCode and extensions installation.
    nvim, neovim, nv, n                              Neovim installation.
+   gpt-spark, gpt, gspark                           ChatGPT/Spark bot.
    neobox-shell, shell, box, ns                     Start a neobox shell.
    neobox-runner, nbrunner, nbr                     Start a neobox client.
    neobox-keeper, nbkeeper, nbk                     Start a neobox keeper.
@@ -216,6 +226,7 @@ COMMANDS:
    homebrew, brew, hb                               Homebrew installation or update.
    gsudo, winsudo, gs, ws                           Gsudo for windows.
    hosts, h, host                                   Sytem hosts file management(need admistrator or root).
+   git-set-proxy, gsproxy, gsp                      Set default proxy for git [default: http://localhost:2023].
    git-clone, gclone, gclo                          Git Clone using a proxy.
    git-pull, gpull, gpul                            Git Pull using a proxy.
    git-push, gpush, gpus                            Git Push using a proxy.
@@ -229,6 +240,7 @@ COMMANDS:
    asciinema, ascii, asc                            Asciinema terminal recorder.
    docker, dck, dock                                Docker installation.
    config, conf, cnf, c                             Config file management for gvc.
+   ssh-files, sshf, ssh                             Backup your ssh files.
    version, ver, vsi                                Show gvc version info.
    check, checklatest, checkupdate                  Check and download the latest version of gvc.
    show, sho, sh                                    Show [gvc] installation path and config file path.
@@ -247,6 +259,22 @@ $moqsien> g version
       Homepage: https://github.com/moqsien/gvc
       Email: moqsien2022@gmail.com
 ```
+
+### Subcommand: gpt
+```bash
+$moqsien> g gpt help
+
+NAME:
+   g.exe gpt-spark - ChatGPT/Spark bot.
+
+USAGE:
+   g.exe gpt-spark [command options] [arguments...]
+
+OPTIONS:
+   --help, -h  show help
+```
+
+A TUI client for ChatGPT and Spark.
 
 ### Subcommand: go
 ```bash
@@ -654,6 +682,7 @@ gvc provides no paid services, so, users should make use of it within the limits
 - [gocloc](https://github.com/hhatto/gocloc)
 - [docker](https://docs.docker.com/desktop/)
 - [go-git](https://github.com/go-git/go-git)
+- [gogpt](https://github.com/moqsien/gogpt)
 
 ## buy me a coffee
 [wechat](https://github.com/moqsien/moqsien/blob/main/imgs/wechat.jpeg)
