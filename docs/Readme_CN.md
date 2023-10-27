@@ -290,6 +290,7 @@ USAGE:
 OPTIONS:
    --help, -h  show help
 ```
+ChatGPT和讯飞星火大模型客户端。基于TUI。详细信息请查看[gogpt](https://github.com/moqsien/gogpt)。
 
 ### go子命令
 ```bash

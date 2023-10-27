@@ -274,7 +274,7 @@ OPTIONS:
    --help, -h  show help
 ```
 
-A TUI client for ChatGPT and Spark.
+A TUI client for ChatGPT and Spark. For detail, see [gogpt](https://github.com/moqsien/gogpt).
 
 ### Subcommand: go
 ```bash
