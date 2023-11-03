@@ -92,7 +92,7 @@ func (that *Typst) renameDir() {
 func (that *Typst) Install(force bool) {
 	zipFilePath := that.download(force)
 	if ok, _ := utils.PathIsExist(config.TypstRootDir); ok && !force {
-		gprint.PrintInfo("Vlang is already installed.")
+		gprint.PrintInfo("Typst is already installed.")
 		return
 	} else {
 		os.RemoveAll(config.TypstRootDir)
