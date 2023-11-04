@@ -14,15 +14,15 @@ type GithubConf struct {
 
 func NewGithubConf() (ghc *GithubConf) {
 	ghc = &GithubConf{
-		DownProxy: "https://ghproxy.com/",
+		DownProxy: "https://gh.flyinbug.top/gh/",
 	}
 	return
 }
 
 func (that *GithubConf) Reset() {
-	that.DownProxy = "https://ghproxy.com/"
+	that.DownProxy = "https://gh.flyinbug.top/gh/"
 	that.AccelUrls = []string{
-		"https://ghproxy.com/",
+		"https://gh.flyinbug.top/gh/",
 		"https://d.serctl.com/?dl_start",
 	}
 	that.WinGitUrls = map[string]string{

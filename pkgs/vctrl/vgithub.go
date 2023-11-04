@@ -139,7 +139,7 @@ func (that *GhDownloader) downloadBinary(githubProjectUrl string) {
 }
 
 func (that *GhDownloader) Download(githubProjectUrl string, getSourceCode bool) {
-	// exampler: https://github.com/moqsien/gvc
+	// example: https://github.com/moqsien/gvc
 	if !strings.Contains(githubProjectUrl, "github.com/") {
 		return
 	}
@@ -187,7 +187,9 @@ func (that *GhDownloader) SaveDefaultProxy(proxyUrl string) {
 	if proxyUrl == "" {
 		proxyUrl = "http://127.0.0.1:2023"
 	}
-	os.WriteFile(filePath, []byte(proxyUrl), os.ModePerm)
+	if err := os.WriteFile(filePath, []byte(proxyUrl), os.ModePerm); err == nil {
+		gprint.PrintInfo("default proxy for github has been saved in %s", filePath)
+	}
 }
 
 func (that *GhDownloader) ReadDefaultProxy() string {
