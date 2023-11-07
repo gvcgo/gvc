@@ -14,31 +14,32 @@ func init() {
 }
 
 type GVConfig struct {
-	GVC      *GvcConf      `koanf:"gvc"`
-	Hosts    *HostsConf    `koanf:"hosts"`
-	Go       *GoConf       `koanf:"go"`
-	Java     *JavaConf     `koanf:"java"`
-	Gradle   *GradleConf   `koanf:"gradle"`
-	Maven    *MavenConf    `koanf:"maven"`
-	Rust     *RustConf     `koanf:"rust"`
-	Code     *CodeConf     `koanf:"code"`
-	Nodejs   *NodejsConf   `koanf:"nodejs"`
-	Python   *PyConf       `koanf:"python"`
-	NVim     *NVimConf     `koanf:"nvim"`
-	NeoBox   *NeoboxConf   `koanf:"neobox"`
-	Github   *GithubConf   `koanf:"github"`
-	Cpp      *CppConf      `koanf:"cpp"`
-	Homebrew *HomebrewConf `koanf:"homebrew"`
-	Vlang    *VlangConf    `koanf:"vlang"`
-	Flutter  *FlutterConf  `koanf:"flutter"`
-	Julia    *JuliaConf    `koanf:"julia"`
-	Typst    *TypstConf    `koanf:"typst"`
-	Webdav   *DavConf      `koanf:"dav"`
-	Sum      *SumConf      `koanf:"sum"`
-	Protobuf *ProtobufConf `koanf:"protobuf"`
-	GSudo    *GsudoConf    `koanf:"gsudo"`
-	Docker   *DockerConf   `koanf:"docker"`
-	GPT      *GPTConf      `koanf:"gpt"`
+	GVCProxy *GVCReverseProxyConf `koanf:"gvc_proxy"`
+	GVC      *GvcConf             `koanf:"gvc"`
+	Hosts    *HostsConf           `koanf:"hosts"`
+	Go       *GoConf              `koanf:"go"`
+	Java     *JavaConf            `koanf:"java"`
+	Gradle   *GradleConf          `koanf:"gradle"`
+	Maven    *MavenConf           `koanf:"maven"`
+	Rust     *RustConf            `koanf:"rust"`
+	Code     *CodeConf            `koanf:"code"`
+	Nodejs   *NodejsConf          `koanf:"nodejs"`
+	Python   *PyConf              `koanf:"python"`
+	NVim     *NVimConf            `koanf:"nvim"`
+	NeoBox   *NeoboxConf          `koanf:"neobox"`
+	Github   *GithubConf          `koanf:"github"`
+	Cpp      *CppConf             `koanf:"cpp"`
+	Homebrew *HomebrewConf        `koanf:"homebrew"`
+	Vlang    *VlangConf           `koanf:"vlang"`
+	Flutter  *FlutterConf         `koanf:"flutter"`
+	Julia    *JuliaConf           `koanf:"julia"`
+	Typst    *TypstConf           `koanf:"typst"`
+	Webdav   *DavConf             `koanf:"dav"`
+	Sum      *SumConf             `koanf:"sum"`
+	Protobuf *ProtobufConf        `koanf:"protobuf"`
+	GSudo    *GsudoConf           `koanf:"gsudo"`
+	Docker   *DockerConf          `koanf:"docker"`
+	GPT      *GPTConf             `koanf:"gpt"`
 	path     string
 	koanfer  *koanfer.JsonKoanfer
 }
@@ -95,6 +96,8 @@ func (that *GVConfig) initiate() {
 }
 
 func (that *GVConfig) SetDefault() {
+	that.GVCProxy = NewReverseProxyConf()
+	that.GVCProxy.Reset()
 	that.GVC = NewGvcConf()
 	that.GVC.Reset()
 	that.Hosts = NewHostsConf()
