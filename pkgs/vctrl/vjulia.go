@@ -149,6 +149,9 @@ func (that *JuliaVersion) download(version string) (r string) {
 	}
 
 	if p := that.findPackage(version); p != nil {
+		if strings.Contains(p.Url, "julialang-s3.julialang.org") {
+			p.Url = that.Conf.GVCProxy.WrapUrl(p.Url)
+		}
 		that.fetcher.Url = p.Url
 		if !utils.VerifyUrls(that.fetcher.Url) {
 			return
