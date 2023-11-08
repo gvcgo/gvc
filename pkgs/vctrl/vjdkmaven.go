@@ -61,7 +61,7 @@ func (that *MavenVersion) getVs(vn string) {
 		return
 	}
 	that.Doc = nil
-	that.fetcher.Url = mUrl
+	that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(mUrl)
 	if resp := that.fetcher.Get(); resp != nil {
 		that.Doc, _ = goquery.NewDocumentFromReader(resp.RawBody())
 	}
@@ -119,7 +119,7 @@ func (that *MavenVersion) ShowVersions() {
 func (that *MavenVersion) download(version string) (r string) {
 	that.getVersions()
 	if p, ok := that.Versions[version]; ok {
-		that.fetcher.Url = p.Url
+		that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(p.Url)
 		that.fetcher.Timeout = 900 * time.Minute
 		that.fetcher.SetThreadNum(8)
 		fpath := filepath.Join(config.MavenTarFilePath, p.FileName)
