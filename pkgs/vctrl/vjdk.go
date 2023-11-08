@@ -62,7 +62,7 @@ func (that *JDKVersion) initeDirs() {
 func (that *JDKVersion) getDoc(isOfficial bool) {
 	jUrl := that.Conf.Java.JDKUrl
 	if isOfficial {
-		jUrl = that.Conf.Java.CompilerUrl
+		jUrl = that.Conf.GVCProxy.WrapUrl(that.Conf.Java.CompilerUrl)
 	}
 	if !utils.VerifyUrls(jUrl) {
 		return
@@ -78,6 +78,9 @@ func (that *JDKVersion) getDoc(isOfficial bool) {
 }
 
 func (that *JDKVersion) GetSha(sUrl string) (res string) {
+	if strings.Contains(sUrl, "oracle.com") {
+		sUrl = that.Conf.GVCProxy.WrapUrl(sUrl)
+	}
 	that.fetcher.Url = sUrl
 	resp := that.fetcher.Get()
 	if resp != nil {
@@ -248,6 +251,9 @@ func (that *JDKVersion) download(version string) (r string) {
 	that.GetVersions()
 
 	if p := that.findVersion(version); p != nil {
+		if strings.Contains(p.Url, "oracle.com") {
+			p.Url = that.Conf.GVCProxy.WrapUrl(p.Url)
+		}
 		that.fetcher.Url = p.Url
 		that.fetcher.Timeout = 100 * time.Minute
 		that.fetcher.SetThreadNum(8)
