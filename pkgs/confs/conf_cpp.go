@@ -35,7 +35,7 @@ func (that *CppConf) setup() {
 }
 
 func (that *CppConf) Reset() {
-	that.MsysInstallerUrl = "https://mirrors.tuna.tsinghua.edu.cn/msys2/distrib/x86_64/"
+	that.MsysInstallerUrl = "https://github.com/msys2/msys2-installer/releases/latest/msys2-x86_64-latest.exe"
 	that.MsysMirrorUrls = map[string]string{
 		"mirrorlist.msys":    "https://mirrors.tuna.tsinghua.edu.cn/msys2/msys/$arch/",
 		"mirrorlist.mingw64": "https://mirrors.tuna.tsinghua.edu.cn/msys2/mingw/x86_64/",
@@ -45,17 +45,17 @@ func (that *CppConf) Reset() {
 		"mirrorlist.clang32": "https://mirrors.tuna.tsinghua.edu.cn/msys2/mingw/clang32/",
 		"mirrorlist.ucrt64":  "https://mirrors.tuna.tsinghua.edu.cn/msys2/mingw/ucrt64/",
 	}
-	that.CygwinInstallerUrl = "https://gitee.com/moqsien/gvc/releases/download/v1/cygwin-installer.exe"
+	that.CygwinInstallerUrl = "https://www.cygwin.com/setup-x86_64.exe"
 	that.CygwinMirrorUrls = []string{
 		"https://mirrors.ustc.edu.cn/cygwin/",
 		"https://mirrors.zju.edu.cn/cygwin/",
 		"https://mirrors.tuna.tsinghua.edu.cn/cygwin/",
 		"https://mirrors.aliyun.com/cygwin/",
 	}
-	that.VCpkgUrl = "https://gitee.com/moqsien/gvc/releases/download/v1/vcpkg.zip"
-	that.VCpkgToolUrl = "https://gitee.com/moqsien/gvc/releases/download/v1/vcpkg-tool.zip"
+	that.VCpkgUrl = "https://github.com/microsoft/vcpkg-tool/archive/refs/heads/main.zip"
+	that.VCpkgToolUrl = "https://github.com/microsoft/vcpkg-tool/archive/refs/heads/main.zip"
 	that.WinVCpkgToolUrls = map[string]string{
-		"arm64": "https://gitee.com/moqsien/gvc/releases/download/v1/vcpkg-arm64.exe",
-		"amd64": "https://gitee.com/moqsien/gvc/releases/download/v1/vcpkg.exe",
+		"arm64": "https://github.com/microsoft/vcpkg-tool/releases/latest/download/vcpkg-arm64.exe",
+		"amd64": "https://github.com/microsoft/vcpkg-tool/releases/latest/download/vcpkg.exe",
 	}
 }

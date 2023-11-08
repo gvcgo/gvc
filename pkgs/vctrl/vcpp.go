@@ -2,7 +2,6 @@ package vctrl
 
 import (
 	"fmt"
-	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -52,40 +51,11 @@ func (that *CppManager) initDirs() {
 	utils.MakeDirs(config.CppFilesDir, config.Msys2Dir, config.VCpkgDir, config.CppDownloadDir, config.CygwinRootDir)
 }
 
-func (that *CppManager) getDoc() {
-	that.fetcher.Url = that.Conf.Cpp.MsysInstallerUrl
-	if !utils.VerifyUrls(that.fetcher.Url) {
-		return
-	}
-	if resp := that.fetcher.Get(); resp != nil {
-		that.Doc, _ = goquery.NewDocumentFromReader(resp.RawBody())
-	}
-}
-
 func (that *CppManager) getMsys2Installer() (fPath string) {
-	if that.Doc == nil {
-		that.getDoc()
-	}
-	if that.Doc != nil {
-		var exeUrl string
-		maxIdx := that.Doc.Find("table#list").Find("tr").Last().Index()
-		for i := maxIdx; i >= 0; i-- {
-			exeUrl = that.Doc.Find("table#list").Find("tr").Eq(i).Find("a").AttrOr("href", "")
-			if strings.HasSuffix(exeUrl, ".exe") {
-				break
-			}
-		}
-
-		if exeUrl != "" {
-			if !strings.HasPrefix(exeUrl, "http://") {
-				exeUrl, _ = url.JoinPath(that.Conf.Cpp.MsysInstallerUrl, exeUrl)
-			}
-
-			fPath = filepath.Join(config.CppDownloadDir, Msys2InstallerName)
-			that.fetcher.Url = exeUrl
-			that.fetcher.GetAndSaveFile(fPath)
-		}
-	}
+	fPath = filepath.Join(config.CppDownloadDir, Msys2InstallerName)
+	that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(that.Conf.Cpp.MsysInstallerUrl)
+	that.fetcher.Timeout = 10 * time.Minute
+	that.fetcher.GetAndSaveFile(fPath)
 	return
 }
 
@@ -166,7 +136,7 @@ func (that *CppManager) RepairGitForVSCode() {
 func (that *CppManager) getCygwinInstaller() (fPath string) {
 	fPath = filepath.Join(config.CppDownloadDir, CygwinInstallerName)
 	if ok, _ := utils.PathIsExist(fPath); !ok {
-		that.fetcher.Url = that.Conf.Cpp.CygwinInstallerUrl
+		that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(that.Conf.Cpp.CygwinInstallerUrl)
 		if that.fetcher.Url != "" {
 			that.fetcher.Timeout = 10 * time.Minute
 			if size := that.fetcher.GetAndSaveFile(fPath); size == 0 {
@@ -225,7 +195,7 @@ var (
 )
 
 func (that *CppManager) getVCPkg() string {
-	that.fetcher.Url = that.Conf.Cpp.VCpkgUrl
+	that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(that.Conf.Cpp.VCpkgUrl)
 	fPath := filepath.Join(config.CppDownloadDir, VCpkgFilename)
 	if size := that.fetcher.GetAndSaveFile(fPath); size != 0 {
 		return fPath
@@ -236,7 +206,7 @@ func (that *CppManager) getVCPkg() string {
 }
 
 func (that *CppManager) getVCPkgTool() string {
-	that.fetcher.Url = that.Conf.Cpp.VCpkgToolUrl
+	that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(that.Conf.Cpp.VCpkgToolUrl)
 	fPath := filepath.Join(config.CppDownloadDir, VCpkgToolFilename)
 	if size := that.fetcher.GetAndSaveFile(fPath); size != 0 {
 		return fPath
@@ -352,7 +322,7 @@ func (that *CppManager) InstallVCPkg() {
 			os.RemoveAll(filepath.Join(config.VCpkgDir, "buildtrees"))
 		} else {
 			fPath := filepath.Join(config.VCpkgDir, "vcpkg.exe")
-			that.fetcher.Url = that.Conf.Cpp.WinVCpkgToolUrls[runtime.GOARCH]
+			that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(that.Conf.Cpp.WinVCpkgToolUrls[runtime.GOARCH])
 			if that.fetcher.Url != "" {
 				if size := that.fetcher.GetAndSaveFile(fPath); size == 0 {
 					os.RemoveAll(fPath)

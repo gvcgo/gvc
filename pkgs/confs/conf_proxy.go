@@ -1,5 +1,7 @@
 package confs
 
+import "strings"
+
 /*
 GVC Reverse Proxy
 */
@@ -14,4 +16,12 @@ func NewReverseProxyConf() (r *GVCReverseProxyConf) {
 
 func (that *GVCReverseProxyConf) Reset() {
 	that.ReverseProxyUrl = "https://worker-github.moqsien2022.workers.dev/proxy/"
+}
+
+func (that *GVCReverseProxyConf) WrapUrl(origUrl string) (finUrl string) {
+	if !strings.HasPrefix(origUrl, "http") || that.ReverseProxyUrl == "" {
+		return origUrl
+	}
+	finUrl = that.ReverseProxyUrl + origUrl
+	return
 }
