@@ -55,7 +55,7 @@ func (that *GradleVersion) getDoc() {
 	if !utils.VerifyUrls(gUrl) {
 		return
 	}
-	that.fetcher.Url = gUrl
+	that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(gUrl)
 	if resp := that.fetcher.Get(); resp != nil {
 		that.Doc, _ = goquery.NewDocumentFromReader(resp.RawBody())
 	}
@@ -71,7 +71,7 @@ func (that *GradleVersion) getSha() {
 		return
 	}
 	that.Doc = nil
-	that.fetcher.Url = cUrl
+	that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(cUrl)
 	if resp := that.fetcher.Get(); resp != nil {
 		that.Doc, _ = goquery.NewDocumentFromReader(resp.RawBody())
 	}
