@@ -110,6 +110,8 @@ gvc增加了WebDAV协议的网盘同步功能，它能把你的本地配置一�
 </tbody>
 </table>
 
+**注意**: 在macos中，如果安装被阻止，则需要在"系统设置>安全与隐私"中允许"任何来源"。
+
 - 或者使用go install安装
 ```bash
 go install -tags "with_wireguard with_shadowsocksr with_utls with_gvisor with_grpc with_ech with_dhcp" github.com/moqsien/gvc@latest
