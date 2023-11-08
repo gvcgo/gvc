@@ -36,8 +36,9 @@ func (that *VProtoBuffer) Install(force bool) {
 	if runtime.GOOS == utils.Linux {
 		key = fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)
 	}
-	that.fetcher.Url = that.Conf.Protobuf.GitlabUrls[key]
+	that.fetcher.Url = that.Conf.Protobuf.GithubUrls[key]
 	if that.fetcher.Url != "" {
+		that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(that.fetcher.Url)
 		that.fetcher.Timeout = 20 * time.Minute
 		that.fetcher.SetThreadNum(2)
 		fPath := filepath.Join(config.ProtobufDir, "protobuf.zip")
