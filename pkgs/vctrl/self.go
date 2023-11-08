@@ -143,8 +143,7 @@ func (that *Self) CheckLatestVersion(currentVersion string) {
 		return
 	}
 
-	latest := doc.Find("span.css-truncate css-truncate-target").Find("span").Text()
-	fmt.Println(latest)
+	latest := doc.Find("span.css-truncate-target").Find("span").Text()
 	if currentVersion == strings.TrimSpace(latest) {
 		gprint.PrintInfo(fmt.Sprintf("Current version: %s is already the latest.", currentVersion))
 		return
