@@ -13,9 +13,9 @@ require (
 	github.com/mholt/archiver/v3 v3.5.1
 	github.com/moqsien/asciinema v0.3.0
 	github.com/moqsien/gogpt v0.2.4
-	github.com/moqsien/goutils v0.7.0
+	github.com/moqsien/goutils v0.7.1
 	github.com/moqsien/hackbrowser v1.0.6
-	github.com/moqsien/neobox v1.3.9
+	github.com/moqsien/neobox v1.4.0
 	github.com/postfinance/single v0.0.2
 	github.com/studio-b12/gowebdav v0.0.0-20230203202212-3282f94193f2
 	github.com/tidwall/gjson v1.14.4

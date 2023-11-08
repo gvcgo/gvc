@@ -35,7 +35,6 @@ type GVConfig struct {
 	Julia    *JuliaConf           `koanf:"julia"`
 	Typst    *TypstConf           `koanf:"typst"`
 	Webdav   *DavConf             `koanf:"dav"`
-	Sum      *SumConf             `koanf:"sum"`
 	Protobuf *ProtobufConf        `koanf:"protobuf"`
 	GSudo    *GsudoConf           `koanf:"gsudo"`
 	Docker   *DockerConf          `koanf:"docker"`
@@ -66,7 +65,6 @@ func New() (r *GVConfig) {
 		Julia:    NewJuliaConf(),
 		Typst:    NewTypstConf(),
 		Webdav:   NewDavConf(),
-		Sum:      NewSumConf(),
 		Protobuf: NewProtobuf(),
 		GSudo:    NewGsudoConf(),
 		Docker:   NewDockerConf(),
@@ -138,8 +136,6 @@ func (that *GVConfig) SetDefault() {
 	that.Typst.Reset()
 	that.Webdav = NewDavConf()
 	that.Webdav.Reset()
-	that.Sum = NewSumConf()
-	that.Sum.Reset()
 	that.Protobuf = NewProtobuf()
 	that.Protobuf.Reset()
 	that.GSudo = NewGsudoConf()
