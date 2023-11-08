@@ -261,6 +261,7 @@ func (that *GhDownloader) downloadGitForWindows() {
 		os.MkdirAll(config.GitWindowsInstallationDir, os.ModePerm)
 	}
 	fPath := filepath.Join(config.GitFileDir, "git.7z")
+	gUrl = that.Conf.GVCProxy.WrapUrl(gUrl)
 	that.fetcher.SetUrl(gUrl)
 	that.fetcher.SetThreadNum(2)
 	that.fetcher.Timeout = 10 * time.Minute

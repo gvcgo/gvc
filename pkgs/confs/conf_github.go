@@ -26,8 +26,8 @@ func (that *GithubConf) Reset() {
 		"https://d.serctl.com/?dl_start",
 	}
 	that.WinGitUrls = map[string]string{
-		"amd64": "https://gitlab.com/moqsien/gvc_resources/-/raw/main/PortableGit-2.42.0.2-64-bit.7z.exe",
-		"386":   "https://gitlab.com/moqsien/gvc_resources/-/raw/main/PortableGit-2.42.0.2-32-bit.7z.exe",
+		"amd64": "https://github.com/git-for-windows/git/releases/download/v2.42.0.windows.2/PortableGit-2.42.0.2-64-bit.7z.exe",
+		"386":   "https://github.com/git-for-windows/git/releases/download/v2.42.0.windows.2/PortableGit-2.42.0.2-32-bit.7z.exe",
 	}
 }
 
