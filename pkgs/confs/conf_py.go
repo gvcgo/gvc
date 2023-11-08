@@ -35,9 +35,9 @@ func (that *PyConf) setup() {
 }
 
 func (that *PyConf) Reset() {
-	that.PyenvWin = "https://gitlab.com/moqsien/gvc_resources/-/raw/main/pyenv_win.zip"
+	that.PyenvWin = "https://github.com/pyenv-win/pyenv-win/archive/refs/heads/master.zip"
 	that.PyenvWinNeeded = "https://gitlab.com/moqsien/gvc_resources/uploads/45d0ad242f9abb45b5a09b9634d3be73/pyenv_win_needed.zip"
-	that.PyenvUnix = "https://gitlab.com/moqsien/gvc_resources/-/raw/main/pyenv_unix.zip"
+	that.PyenvUnix = "https://github.com/pyenv/pyenv/archive/refs/heads/master.zip"
 	that.PyenvReadline = []string{
 		"https://gitlab.com/moqsien/gvc_resources/uploads/06845bbd8f73ce5c24e1d4f5761829a1/readline-8.1.tar.gz",
 		"https://gitlab.com/moqsien/gvc_resources/uploads/5ae9516bd13038839b0aa102dada0a14/readline-8.2.tar.gz",

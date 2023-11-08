@@ -151,11 +151,9 @@ func (that *PyVenv) getPyenv(force ...bool) {
 	} else {
 		that.fetcher.Url = that.Conf.Python.PyenvUnix
 	}
+	that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(that.fetcher.Url)
 
 	if that.fetcher.Url != "" {
-		if strings.Contains(that.fetcher.Url, "github.com") {
-			that.fetcher.Url = that.Conf.Github.GetDownUrl(that.fetcher.Url)
-		}
 		that.fetcher.Timeout = 20 * time.Minute
 		fPath := filepath.Join(config.PythonToolsPath, "pyenv-master.zip")
 		if strings.Contains(that.fetcher.Url, "gitlab.com") && !that.checker.IsUpdated(fPath, that.fetcher.Url) {
