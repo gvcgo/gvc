@@ -91,7 +91,7 @@ func (that *Hosts) GetHosts() {
 	that.fetcher.Timeout = time.Duration(that.Conf.Hosts.ReqTimeout) * time.Second
 	for _, url := range that.Conf.Hosts.SourceUrls {
 		that.wg.Add(1)
-		var url_ string = url
+		var url_ string = that.Conf.GVCProxy.WrapUrl(url)
 		go func() {
 			defer that.wg.Done()
 			that.fetcher.Url = url_

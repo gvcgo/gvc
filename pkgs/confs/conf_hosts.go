@@ -15,12 +15,12 @@ func NewHostsConf() *HostsConf {
 
 func (that *HostsConf) Reset() {
 	that.SourceUrls = []string{
-		"https://raw.gitmirror.com/JohyC/Hosts/main/MicrosoftHosts.txt",
-		"https://raw.gitmirror.com/JohyC/Hosts/main/EpicHosts.txt",
-		"https://raw.gitmirror.com/JohyC/Hosts/main/SteamDomains.txt",
-		"https://raw.gitmirror.com/JohyC/Hosts/main/hosts.txt",
-		"https://raw.gitmirror.com/ineo6/hosts/master/next-hosts",
-		"https://raw.gitmirror.com/sengshinlee/hosts/main/hosts",
+		"https://raw.githubusercontent.com/JohyC/Hosts/main/MicrosoftHosts.txt",
+		"https://raw.githubusercontent.com/JohyC/Hosts/main/EpicHosts.txt",
+		"https://raw.githubusercontent.com/JohyC/Hosts/main/SteamDomains.txt",
+		"https://raw.githubusercontent.com/JohyC/Hosts/main/hosts.txt",
+		"https://raw.githubusercontent.com/ineo6/hosts/master/next-hosts",
+		"https://raw.githubusercontent.com/sengshinlee/hosts/main/hosts",
 	}
 	that.HostFilters = []string{
 		"github",
