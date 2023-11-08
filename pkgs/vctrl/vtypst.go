@@ -10,7 +10,6 @@ import (
 
 	"github.com/mholt/archiver/v3"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
-	"github.com/moqsien/goutils/pkgs/gtea/selector"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
@@ -35,27 +34,14 @@ func NewTypstVersion() (tv *Typst) {
 }
 
 func (that *Typst) download(force bool) string {
-	itemList := selector.NewItemList()
-	itemList.Add("from gitlab", that.Conf.Typst.GiteeUrls)
-	itemList.Add("from github", that.Conf.Typst.GithubUrls)
-	sel := selector.NewSelector(
-		itemList,
-		selector.WithTitle("Choose a download resource:"),
-		selector.WithEnbleInfinite(true),
-		selector.WidthEnableMulti(false),
-		selector.WithHeight(10),
-		selector.WithWidth(30),
-	)
-	sel.Run()
-	val := sel.Value()[0]
-	vUrls := val.(map[string]string)
+	vUrls := that.Conf.Typst.GithubUrls
 
 	if runtime.GOOS == utils.Windows {
 		that.fetcher.Url = vUrls[runtime.GOOS]
 	} else {
 		that.fetcher.Url = vUrls[fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)]
 	}
-
+	that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(that.fetcher.Url)
 	suffix := utils.GetExt(that.fetcher.Url)
 	if that.fetcher.Url != "" {
 		fpath := filepath.Join(config.TypstFilesDir, fmt.Sprintf("typst%s", suffix))
