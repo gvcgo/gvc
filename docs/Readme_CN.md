@@ -4,8 +4,8 @@
 
 - [En](#en)
 - [gvc是什么？](#gvc是什么)
-- [gvc支持哪些语言或应用？](#gvc支持哪些语言或应用)
 - [下载和安装](#下载和安装)
+- [gvc支持哪些语言或应用？](#gvc支持哪些语言或应用)
 - [功能概览](#功能概览)
   - [gpt子命令](#gpt子命令)
   - [go子命令](#go子命令)
@@ -68,6 +68,52 @@ gvc增加了WebDAV协议的网盘同步功能，它能把你的本地配置一�
 此外，gvc还提供了代码统计(Count Lines of Code)， asciinema终端录制和上传，浏览器数据网盘同步等等功能。
 
 目前为止，**gvc可以说已经成为一个跨平台，多机器开发环境管理的脚手架工具**。
+
+---------
+## 下载和安装
+- 在[release](https://gvc.1710717.xyz/proxy/https://github.com/moqsien/gvc/releases)中下载最新版;
+- 解压之后，双击可执行文件，或者在Terminal/PowerShell中执行该文件;
+- 在新的Termnial/PowerShell中可以使用g或者gvc命令了，例如：g help;
+
+<table>
+<thead>
+    <tr>
+        <th>支持的平台</th>
+        <th>国内加速下载</th>
+    </tr>
+</thead>
+<tbody>
+    <tr>
+        <td>macos-amd64</td>
+        <td><a href="https://gvc.1710717.xyz/proxy/https://github.com/moqsien/gvc/releases/latest/download/gvc_darwin-amd64.zip">国内加速下载</a></td>
+    </tr>
+    <tr>
+        <td>macos-arm64</td>
+        <td><a href="https://gvc.1710717.xyz/proxy/https://github.com/moqsien/gvc/releases/latest/download/gvc_darwin-arm64.zip">国内加速下载</a></td>
+    </tr>
+    <tr>
+        <td>win-amd64</td>
+        <td><a href="https://gvc.1710717.xyz/proxy/https://github.com/moqsien/gvc/releases/latest/download/gvc_windows-amd64.zip">国内加速下载</a></td>
+    </tr>
+    <tr>
+        <td>win-arm64</td>
+        <td><a href="https://gvc.1710717.xyz/proxy/https://github.com/moqsien/gvc/releases/latest/download/gvc_windows-arm64.zip">国内加速下载</a></td>
+    </tr>
+    <tr>
+        <td>linux-amd64</td>
+        <td><a href="https://gvc.1710717.xyz/proxy/https://github.com/moqsien/gvc/releases/latest/download/gvc_linux-amd64.zip">国内加速下载</a></td>
+    </tr>
+    <tr>
+        <td>linux-arm64</td>
+        <td><a href="https://gvc.1710717.xyz/proxy/https://github.com/moqsien/gvc/releases/latest/download/gvc_linux-arm64.zip">国内加速下载</a></td>
+    </tr>
+</tbody>
+</table>
+
+- 或者使用go install安装
+```bash
+go install -tags "with_wireguard with_shadowsocksr with_utls with_gvisor with_grpc with_ech with_dhcp" github.com/moqsien/gvc@latest
+```
 
 ---------
 ## gvc支持哪些语言或应用？
@@ -190,17 +236,6 @@ gvc增加了WebDAV协议的网盘同步功能，它能把你的本地配置一�
     </tr>
   </tbody>
 </table>
-
----------
-## 下载和安装
-- 在[release](https://github.com/moqsien/gvc/releases)中下载最新版;
-- 解压之后，双击可执行文件，或者在Terminal/PowerShell中执行该文件;
-- 在新的Termnial/PowerShell中可以使用g或者gvc命令了，例如：g help;
-
-- 或者使用go install安装
-```bash
-go install -tags "with_wireguard with_shadowsocksr with_utls with_gvisor with_grpc with_ech with_dhcp" github.com/moqsien/gvc@latest
-```
 
 ---------
 ## 功能概览
