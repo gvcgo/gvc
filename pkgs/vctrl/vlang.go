@@ -12,7 +12,6 @@ import (
 	"github.com/gogf/gf/os/genv"
 	"github.com/mholt/archiver/v3"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
-	"github.com/moqsien/goutils/pkgs/gtea/selector"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
@@ -37,20 +36,8 @@ func NewVlang() (vl *Vlang) {
 }
 
 func (that *Vlang) download(force bool) string {
-	itemList := selector.NewItemList()
-	itemList.Add("from gitlab", that.Conf.Vlang.VlangGitlabUrls[runtime.GOOS])
-	itemList.Add("from github", that.Conf.Vlang.VlangUrls[runtime.GOOS])
-	sel := selector.NewSelector(
-		itemList,
-		selector.WidthEnableMulti(false),
-		selector.WithEnbleInfinite(true),
-		selector.WithTitle("Please select a resource:"),
-		selector.WithHeight(10),
-		selector.WithWidth(30),
-	)
-	sel.Run()
-	value := sel.Value()[0]
-	that.fetcher.Url = value.(string)
+	that.fetcher.Url = that.Conf.Vlang.VlangUrls[runtime.GOOS]
+	that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(that.fetcher.Url)
 
 	if that.fetcher.Url != "" {
 		fpath := filepath.Join(config.VlangFilesDir, "vlang.zip")
@@ -108,24 +95,12 @@ func (that *Vlang) CheckAndInitEnv() {
 }
 
 func (that *Vlang) InstallVAnalyzerForVscode() {
-	itemList := selector.NewItemList()
 	key := runtime.GOOS
 	if key == utils.MacOS {
 		key = fmt.Sprintf("%s_%s", key, runtime.GOARCH)
 	}
-	itemList.Add("from gitlab", that.Conf.Vlang.AnalyzerGitlabUrls[key])
-	itemList.Add("from github", that.Conf.Vlang.AnalyzerUrls[key])
-	sel := selector.NewSelector(
-		itemList,
-		selector.WidthEnableMulti(false),
-		selector.WithEnbleInfinite(true),
-		selector.WithTitle("Please select a resource:"),
-		selector.WithWidth(20),
-		selector.WithHeight(10),
-	)
-	sel.Run()
-	value := sel.Value()[0]
-	that.fetcher.Url = value.(string)
+	that.fetcher.Url = that.Conf.Vlang.AnalyzerUrls[key]
+	that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(that.fetcher.Url)
 	if that.fetcher.Url != "" {
 		fpath := filepath.Join(config.VlangFilesDir, "analyzer.zip")
 		if strings.Contains(that.fetcher.Url, "gitlab.com") && !that.checker.IsUpdated(fpath, that.fetcher.Url) {
