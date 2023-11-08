@@ -8,8 +8,8 @@ import (
 )
 
 type GsudoConf struct {
-	GitlabUrl string `koanf:"gitlab_url"`
-	path      string
+	Url  string `koanf:"github_url"`
+	path string
 }
 
 func NewGsudoConf() (r *GsudoConf) {
@@ -29,5 +29,5 @@ func (that *GsudoConf) setup() {
 }
 
 func (that *GsudoConf) Reset() {
-	that.GitlabUrl = "https://gitlab.com/moqsien/gvc_resources/-/raw/main/gsudo_portable.zip"
+	that.Url = "https://github.com/gerardog/gsudo/releases/latest/download/gsudo.portable.zip"
 }

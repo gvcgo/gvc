@@ -35,7 +35,7 @@ func (that *VGSudo) Install(force bool) {
 	if runtime.GOOS != utils.Windows {
 		return
 	}
-	that.fetcher.Url = that.Conf.GSudo.GitlabUrl
+	that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(that.Conf.GSudo.Url)
 	if that.fetcher.Url != "" {
 		that.fetcher.Timeout = 20 * time.Minute
 		that.fetcher.SetThreadNum(2)
