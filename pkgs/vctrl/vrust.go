@@ -42,6 +42,7 @@ func (that *RustInstaller) getInstaller() (fPath string) {
 		that.fetcher.Url = that.Conf.Rust.UrlUnix
 		fPath = filepath.Join(config.RustFilesDir, that.Conf.Rust.FileNameUnix)
 	}
+	that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(that.fetcher.Url)
 	that.fetcher.GetAndSaveFile(fPath)
 	return
 }
