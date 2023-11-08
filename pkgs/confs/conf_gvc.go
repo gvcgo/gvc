@@ -8,8 +8,8 @@ import (
 )
 
 type GvcConf struct {
-	GitlabUrls map[string]string `koanf:"gitlab_urls"`
-	path       string
+	Urls map[string]string `koanf:"github_urls"`
+	path string
 }
 
 func NewGvcConf() (r *GvcConf) {
@@ -29,12 +29,12 @@ func (that *GvcConf) setup() {
 }
 
 func (that *GvcConf) Reset() {
-	that.GitlabUrls = map[string]string{
-		"windows_amd64": "https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_windows-amd64.zip",
-		"windows_arm64": "https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_windows-arm64.zip",
-		"linux_amd64":   "https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_linux-amd64.zip",
-		"linux_arm64":   "https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_linux-arm64.zip",
-		"darwin_amd64":  "https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_darwin-amd64.zip",
-		"darwin_arm64":  "https://gitlab.com/moqsien/gvc_resources/-/raw/main/gvc_darwin-arm64.zip",
+	that.Urls = map[string]string{
+		"windows_amd64": "https://github.com/moqsien/gvc/releases/latest/download/gvc_windows-amd64.zip",
+		"windows_arm64": "https://github.com/moqsien/gvc/releases/latest/download/gvc_windows-arm64.zip",
+		"linux_amd64":   "https://github.com/moqsien/gvc/releases/latest/download/gvc_linux-amd64.zip",
+		"linux_arm64":   "https://github.com/moqsien/gvc/releases/latest/download/gvc_linux-arm64.zip",
+		"darwin_amd64":  "https://github.com/moqsien/gvc/releases/latest/download/gvc_darwin-amd64.zip",
+		"darwin_arm64":  "https://github.com/moqsien/gvc/releases/latest/download/gvc_darwin-arm64.zip",
 	}
 }

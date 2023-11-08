@@ -142,10 +142,11 @@ func (that *Self) CheckLatestVersion(currentVersion string) {
 }
 
 func (that *Self) download() {
-	dUrl := that.Conf.GVC.GitlabUrls[fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)]
+	dUrl := that.Conf.GVC.Urls[fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)]
 	if dUrl != "" {
 		fPath := filepath.Join(config.GVCBinTempDir, "gvc.zip")
 		fetcher := request.NewFetcher()
+		dUrl = that.Conf.GVCProxy.WrapUrl(dUrl)
 		fetcher.SetUrl(dUrl)
 		fetcher.Timeout = 20 * time.Minute
 		temBinPath := filepath.Join(config.GVCBinTempDir, "gvc")
