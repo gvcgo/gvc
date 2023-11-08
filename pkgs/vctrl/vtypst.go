@@ -19,7 +19,6 @@ type Typst struct {
 	Conf    *config.GVConfig
 	fetcher *request.Fetcher
 	env     *utils.EnvsHandler
-	checker *SumChecker
 }
 
 func NewTypstVersion() (tv *Typst) {
@@ -29,7 +28,6 @@ func NewTypstVersion() (tv *Typst) {
 		env:     utils.NewEnvsHandler(),
 	}
 	tv.env.SetWinWorkDir(config.GVCDir)
-	tv.checker = NewSumChecker(tv.Conf)
 	return
 }
 
@@ -45,10 +43,6 @@ func (that *Typst) download(force bool) string {
 	suffix := utils.GetExt(that.fetcher.Url)
 	if that.fetcher.Url != "" {
 		fpath := filepath.Join(config.TypstFilesDir, fmt.Sprintf("typst%s", suffix))
-		if strings.Contains(that.fetcher.Url, "gitlab.com") && !that.checker.IsUpdated(fpath, that.fetcher.Url) {
-			gprint.PrintInfo("Current version is already the latest.")
-			return fpath
-		}
 		if force {
 			os.RemoveAll(fpath)
 		}

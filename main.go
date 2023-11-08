@@ -62,8 +62,10 @@ func main() {
 		// br := vctrl.NewBrowser()
 		// br.Save("edge", false)
 
-		w := vctrl.NewGVCWebdav()
-		w.DeploySSHFiles()
+		// w := vctrl.NewGVCWebdav()
+		// w.DeploySSHFiles()
+		self := vctrl.NewSelf()
+		self.CheckLatestVersion("v1.6.4")
 	} else if len(os.Args) < 2 {
 		self := vctrl.NewSelf()
 		self.Install()

@@ -20,7 +20,6 @@ type NVim struct {
 	checktype string
 	env       *utils.EnvsHandler
 	fetcher   *request.Fetcher
-	checker   *SumChecker
 }
 
 func NewNVim() (nv *NVim) {
@@ -31,7 +30,6 @@ func NewNVim() (nv *NVim) {
 		checktype: "sha256",
 		env:       utils.NewEnvsHandler(),
 	}
-	nv.checker = NewSumChecker(nv.Conf)
 	nv.setup()
 	nv.env.SetWinWorkDir(config.GVCDir)
 	return

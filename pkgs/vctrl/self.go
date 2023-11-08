@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/moqsien/goutils/pkgs/gtea/confirm"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
@@ -17,9 +18,8 @@ import (
 )
 
 type Self struct {
-	Conf    *config.GVConfig
-	env     *utils.EnvsHandler
-	checker *SumChecker
+	Conf *config.GVConfig
+	env  *utils.EnvsHandler
 }
 
 func NewSelf() (s *Self) {
@@ -27,7 +27,6 @@ func NewSelf() (s *Self) {
 		Conf: config.New(),
 		env:  utils.NewEnvsHandler(),
 	}
-	s.checker = NewSumChecker(s.Conf)
 	s.env.SetWinWorkDir(config.GVCDir)
 	return
 }
@@ -129,8 +128,24 @@ func (that *Self) ShowPath() {
 }
 
 func (that *Self) CheckLatestVersion(currentVersion string) {
-	latest := that.checker.GetLatestGVCVersion()
-	if currentVersion == latest {
+	gUrl := "https://github.com/moqsien/gvc/releases/latest"
+	gUrl = that.Conf.GVCProxy.WrapUrl(gUrl)
+	fetcher := request.NewFetcher()
+	fetcher.SetUrl(gUrl)
+	fetcher.Timeout = 30 * time.Second
+	resp := fetcher.Get()
+	if resp == nil {
+		return
+	}
+	doc, err := goquery.NewDocumentFromReader(resp.RawBody())
+	if err != nil {
+		gprint.PrintError("%+v", err)
+		return
+	}
+
+	latest := doc.Find("span.css-truncate css-truncate-target").Find("span").Text()
+	fmt.Println(latest)
+	if currentVersion == strings.TrimSpace(latest) {
 		gprint.PrintInfo(fmt.Sprintf("Current version: %s is already the latest.", currentVersion))
 		return
 	}

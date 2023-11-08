@@ -21,7 +21,6 @@ type Vlang struct {
 	Conf    *config.GVConfig
 	env     *utils.EnvsHandler
 	fetcher *request.Fetcher
-	checker *SumChecker
 }
 
 func NewVlang() (vl *Vlang) {
@@ -30,7 +29,6 @@ func NewVlang() (vl *Vlang) {
 		fetcher: request.NewFetcher(),
 		env:     utils.NewEnvsHandler(),
 	}
-	vl.checker = NewSumChecker(vl.Conf)
 	vl.env.SetWinWorkDir(config.GVCDir)
 	return
 }
@@ -41,10 +39,6 @@ func (that *Vlang) download(force bool) string {
 
 	if that.fetcher.Url != "" {
 		fpath := filepath.Join(config.VlangFilesDir, "vlang.zip")
-		if strings.Contains(that.fetcher.Url, "gitlab.com") && !that.checker.IsUpdated(fpath, that.fetcher.Url) {
-			gprint.PrintInfo("Current version is already the latest.")
-			return fpath
-		}
 		if force {
 			os.RemoveAll(fpath)
 		}
@@ -103,10 +97,6 @@ func (that *Vlang) InstallVAnalyzerForVscode() {
 	that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(that.fetcher.Url)
 	if that.fetcher.Url != "" {
 		fpath := filepath.Join(config.VlangFilesDir, "analyzer.zip")
-		if strings.Contains(that.fetcher.Url, "gitlab.com") && !that.checker.IsUpdated(fpath, that.fetcher.Url) {
-			gprint.PrintInfo("Current version is already the latest.")
-			return
-		}
 		that.fetcher.Timeout = 20 * time.Minute
 		that.fetcher.SetThreadNum(3)
 		if ok, _ := utils.PathIsExist(fpath); !ok {

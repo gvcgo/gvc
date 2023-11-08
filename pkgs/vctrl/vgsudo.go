@@ -17,7 +17,6 @@ type VGSudo struct {
 	Conf    *config.GVConfig
 	fetcher *request.Fetcher
 	env     *utils.EnvsHandler
-	checker *SumChecker
 }
 
 func NewGSudo() (gs *VGSudo) {
@@ -26,7 +25,6 @@ func NewGSudo() (gs *VGSudo) {
 		fetcher: request.NewFetcher(),
 		env:     utils.NewEnvsHandler(),
 	}
-	gs.checker = NewSumChecker(gs.Conf)
 	gs.env.SetWinWorkDir(config.GVCDir)
 	return
 }

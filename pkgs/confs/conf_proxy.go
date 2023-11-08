@@ -15,7 +15,12 @@ func NewReverseProxyConf() (r *GVCReverseProxyConf) {
 }
 
 func (that *GVCReverseProxyConf) Reset() {
-	that.ReverseProxyUrl = "https://worker-github.moqsien2022.workers.dev/proxy/"
+	/*
+		https://gh.flyinbug.top/gh/
+		https://gvc.1710717.xyz/proxy/
+		https://gh.chapro.xyz/
+	*/
+	that.ReverseProxyUrl = "https://gvc.1710717.xyz/proxy/" // only for gvc related
 }
 
 func (that *GVCReverseProxyConf) WrapUrl(origUrl string) (finUrl string) {

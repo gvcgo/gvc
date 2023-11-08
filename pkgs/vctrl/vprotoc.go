@@ -17,7 +17,6 @@ type VProtoBuffer struct {
 	Conf    *config.GVConfig
 	fetcher *request.Fetcher
 	env     *utils.EnvsHandler
-	checker *SumChecker
 }
 
 func NewProtobuffer() (p *VProtoBuffer) {
@@ -26,7 +25,6 @@ func NewProtobuffer() (p *VProtoBuffer) {
 		fetcher: request.NewFetcher(),
 		env:     utils.NewEnvsHandler(),
 	}
-	p.checker = NewSumChecker(p.Conf)
 	p.env.SetWinWorkDir(config.GVCDir)
 	return
 }

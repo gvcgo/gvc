@@ -284,3 +284,15 @@ func (that *GhDownloader) InstallGitForWindows() {
 	}
 	that.env.SetEnvForWin(envarList)
 }
+
+func (that *GhDownloader) SetReverseProxyForDownload(pUrl string) {
+	if pUrl == "" {
+		return
+	}
+	if !strings.HasSuffix(pUrl, "/") {
+		pUrl += "/"
+	}
+	that.Conf.Reload()
+	that.Conf.GVCProxy.ReverseProxyUrl = pUrl
+	that.Conf.Restore()
+}

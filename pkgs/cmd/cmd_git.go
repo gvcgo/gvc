@@ -55,6 +55,19 @@ func (that *Cmder) vgithub() {
 	}
 	command.Subcommands = append(command.Subcommands, vopen)
 
+	vreverse := &cli.Command{
+		Name:    "add-reverse-proxy",
+		Aliases: []string{"arproxy", "arp"},
+		Usage:   "Add reverse proxy for github.",
+		Action: func(ctx *cli.Context) error {
+			proxyStr := ctx.Args().First()
+			vg := vctrl.NewGhDownloader()
+			vg.SetReverseProxyForDownload(proxyStr)
+			return nil
+		},
+	}
+	command.Subcommands = append(command.Subcommands, vreverse)
+
 	that.Commands = append(that.Commands, command)
 }
 
