@@ -50,6 +50,7 @@ func (that *NeoboxConf) Reset() {
 
 	// geoinfo files related
 	that.NeoConf.GeoInfoSumUrl = "https://gitlab.com/moqsien/gvc_resources/-/raw/main/files_info.json?ref_type=heads&inline=false"
+	// TODO: reverse proxy
 	that.NeoConf.GeoInfoUrls = map[string]string{
 		"geoip.dat":   "https://gitlab.com/moqsien/neobox_related/-/raw/main/geoip.dat",
 		"geosite.dat": "https://gitlab.com/moqsien/neobox_related/-/raw/main/geosite.dat",

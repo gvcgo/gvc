@@ -45,15 +45,10 @@ func (that *NVim) download() (r string) {
 	nurl, ok := that.Conf.NVim.Urls[runtime.GOOS]
 	if ok {
 		utils.ClearDir(config.NVimFileDir)
-		that.fetcher.Url = nurl.Url
+		that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(nurl.Url)
 		that.fetcher.Timeout = 20 * time.Minute
 		that.fetcher.SetThreadNum(3)
 		fpath := filepath.Join(config.NVimFileDir, fmt.Sprintf("%s%s", nurl.Name, nurl.Ext))
-		if !that.checker.IsUpdated(fpath, that.fetcher.Url) {
-			gprint.PrintInfo("Current version is already the latest.")
-			r = fpath
-			return
-		}
 		if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 			r = fpath
 		}
