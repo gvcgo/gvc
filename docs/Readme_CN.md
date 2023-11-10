@@ -89,23 +89,23 @@ gvc增加了WebDAV协议的网盘同步功能，它能把你的本地配置一�
     </tr>
     <tr>
         <td>macos-arm64</td>
-        <td><a href="https://gvc.1710717.xyz/proxy/https://github.com/moqsien/gvc/releases/latest/download/gvc_darwin-arm64.zip">国内加速下载</a></td>
+        <td><a href="https://gh.chapro.xyz/https://github.com/moqsien/gvc/releases/latest/download/gvc_darwin-arm64.zip">国内加速下载</a></td>
     </tr>
     <tr>
         <td>win-amd64</td>
-        <td><a href="https://gvc.1710717.xyz/proxy/https://github.com/moqsien/gvc/releases/latest/download/gvc_windows-amd64.zip">国内加速下载</a></td>
+        <td><a href="https://gh.chapro.xyz/https://github.com/moqsien/gvc/releases/latest/download/gvc_windows-amd64.zip">国内加速下载</a></td>
     </tr>
     <tr>
         <td>win-arm64</td>
-        <td><a href="https://gvc.1710717.xyz/proxy/https://github.com/moqsien/gvc/releases/latest/download/gvc_windows-arm64.zip">国内加速下载</a></td>
+        <td><a href="https://gh.chapro.xyz/https://github.com/moqsien/gvc/releases/latest/download/gvc_windows-arm64.zip">国内加速下载</a></td>
     </tr>
     <tr>
         <td>linux-amd64</td>
-        <td><a href="https://gvc.1710717.xyz/proxy/https://github.com/moqsien/gvc/releases/latest/download/gvc_linux-amd64.zip">国内加速下载</a></td>
+        <td><a href="https://gh.chapro.xyz/https://github.com/moqsien/gvc/releases/latest/download/gvc_linux-amd64.zip">国内加速下载</a></td>
     </tr>
     <tr>
         <td>linux-arm64</td>
-        <td><a href="https://gvc.1710717.xyz/proxy/https://github.com/moqsien/gvc/releases/latest/download/gvc_linux-arm64.zip">国内加速下载</a></td>
+        <td><a href="https://gh.chapro.xyz/https://github.com/moqsien/gvc/releases/latest/download/gvc_linux-arm64.zip">国内加速下载</a></td>
     </tr>
 </tbody>
 </table>
