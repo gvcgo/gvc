@@ -143,3 +143,34 @@ func (that *Cli) configure() {
 	})
 	that.rootCmd.AddCommand(cfgCmd)
 }
+
+// to backup/deploy .ssh files.
+func (that *Cli) ssh() {
+	sshCmd := &cobra.Command{
+		Use:     "ssh",
+		Aliases: []string{"s"},
+		Short:   "Backups/Deploys your .ssh files.",
+		GroupID: that.groupID,
+	}
+
+	sshCmd.AddCommand(&cobra.Command{
+		Use:     "backup",
+		Aliases: []string{"b"},
+		Short:   "Backups your .ssh files to remote repo.",
+		Run: func(cmd *cobra.Command, args []string) {
+			dav := vctrl.NewGVCWebdav()
+			dav.GatherSSHFiles()
+		},
+	})
+
+	sshCmd.AddCommand(&cobra.Command{
+		Use:     "deploy",
+		Aliases: []string{"d"},
+		Short:   "Gets .ssh files from remote repo and deploys them.",
+		Run: func(cmd *cobra.Command, args []string) {
+			dav := vctrl.NewGVCWebdav()
+			dav.DeploySSHFiles()
+		},
+	})
+	that.rootCmd.AddCommand(sshCmd)
+}

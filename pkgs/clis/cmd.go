@@ -36,6 +36,7 @@ func (that *Cli) initiate() {
 	that.checkForUpdate()
 	that.uninstall()
 	that.configure()
+	that.ssh()
 }
 
 func (that *Cli) Run() {
