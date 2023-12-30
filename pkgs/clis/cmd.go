@@ -40,6 +40,8 @@ func (that *Cli) initiate() {
 	// ide related CLIs
 	that.vscode()
 	that.neovim()
+	// neobox related CLIs
+	that.neobox()
 }
 
 func (that *Cli) Run() {
