@@ -31,7 +31,11 @@ func New() (c *Cli) {
 }
 
 func (that *Cli) initiate() {
-
+	// self related CLIs
+	that.showVersion()
+	that.checkForUpdate()
+	that.uninstall()
+	that.configure()
 }
 
 func (that *Cli) Run() {
