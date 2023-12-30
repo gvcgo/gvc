@@ -6,6 +6,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+// TODO: switch to cobra.
 type Cmder struct {
 	*cli.App
 	gitTag  string

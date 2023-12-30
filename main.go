@@ -3,6 +3,7 @@ a dev tool for multi-platforms
 */
 package main
 
+// TODO: move to package g
 import (
 	"os"
 	"strings"

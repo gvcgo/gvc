@@ -26,6 +26,7 @@ import (
 	"github.com/studio-b12/gowebdav"
 )
 
+// TODO: support github or gitee.
 type WebdavConf struct {
 	Host            string `koanf:"url"`
 	Username        string `koanf:"username"`

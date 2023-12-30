@@ -11,6 +11,7 @@ import (
 	nutils "github.com/moqsien/neobox/pkgs/utils"
 )
 
+// TODO: update to latest version.
 type NeoBox struct {
 	conf   *config.GVConfig
 	runner *run.Runner

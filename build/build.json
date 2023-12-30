@@ -11,7 +11,7 @@
         "-ldflags",
         "-X main.GitTag=$(git describe --abbrev=0 --tags) -X main.GitHash=$(git show -s --format=%H) -X main.GitTime=$(git show -s --date=format:%Y-%m-%d@%H:%M:%S --format=%cd) -s -w",
         "-tags",
-        "with_wireguard with_shadowsocksr with_utls with_gvisor with_grpc with_ech with_dhcp"
+        "with_wireguard with_utls with_gvisor with_grpc with_ech with_dhcp"
     ],
     "compress": true
 }
