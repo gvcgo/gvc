@@ -53,5 +53,7 @@ func (that *Cli) neobox() {
 			neobox.StartKeeper()
 		},
 	})
+
+	// TODO: generate auto-start script.
 	that.rootCmd.AddCommand(neoboxCmd)
 }
