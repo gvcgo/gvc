@@ -23,4 +23,11 @@ func (that *Cli) langs() {
 		gradle
 	*/
 	langs.SetJava(that)
+
+	/*
+		python
+		pyenv
+		pyenv-win
+	*/
+	langs.SetPython(that)
 }
