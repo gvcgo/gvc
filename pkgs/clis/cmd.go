@@ -50,8 +50,6 @@ func (that *Cli) initiate() {
 	*/
 	that.github()
 	that.git()
-	that.gogit()
-	that.lazygit()
 }
 
 func (that *Cli) Run() {

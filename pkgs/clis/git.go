@@ -1,6 +1,9 @@
 package clis
 
 import (
+	"runtime"
+
+	"github.com/moqsien/gvc/pkgs/utils"
 	"github.com/moqsien/gvc/pkgs/vctrl"
 	"github.com/spf13/cobra"
 )
@@ -14,6 +17,7 @@ func (that *Cli) github() {
 		GroupID: that.groupID,
 	}
 
+	vg := vctrl.NewGhDownloader()
 	githubCmd.AddCommand(&cobra.Command{
 		Use:     "proxy",
 		Aliases: []string{"p"},
@@ -24,7 +28,6 @@ func (that *Cli) github() {
 				cmd.Help()
 				return
 			}
-			vg := vctrl.NewGhDownloader()
 			vg.SetReverseProxyForDownload(args[0])
 		},
 	})
@@ -40,12 +43,10 @@ func (that *Cli) github() {
 				cmd.Help()
 				return
 			}
-			vg := vctrl.NewGhDownloader()
 			onlySourceCode, _ := cmd.Flags().GetBool(sourceCodeFlag)
 			vg.Download(args[0], onlySourceCode)
 		},
 	}
-
 	download.Flags().BoolP(sourceCodeFlag, "c", false, "To download source code only.")
 	githubCmd.AddCommand(download)
 
@@ -54,15 +55,162 @@ func (that *Cli) github() {
 
 // git installation for windows.
 func (that *Cli) git() {
+	gitCmd := &cobra.Command{
+		Use:     "git",
+		Aliases: []string{"g"},
+		Short:   "Git related CLIs(especially with a proxy).",
+		GroupID: that.groupID,
+	}
 
-}
+	vg := vctrl.NewGhDownloader()
+	gitCmd.AddCommand(&cobra.Command{
+		Use:     "install",
+		Aliases: []string{"i"},
+		Short:   "Installs git for windows.",
+		Run: func(cmd *cobra.Command, args []string) {
+			if runtime.GOOS != utils.Windows {
+				cmd.Help()
+				return
+			}
+			vg.InstallGitForWindows()
+		},
+	})
 
-// git with proxy written in pure go.
-func (that *Cli) gogit() {
+	gitCmd.AddCommand(&cobra.Command{
+		Use:     "proxy",
+		Aliases: []string{"pr"},
+		Short:   "Sets a proxy for your git.",
+		Long:    "Example: g pr http://localhost:2023",
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				return
+			}
+			vg.SaveDefaultProxy(args[0])
+		},
+	})
 
-}
+	var (
+		defaultProxy        string = vg.ReadDefaultProxy()
+		manualProxyFlagName string = "proxy"
+		NoProxyFlagName     string = "no"
+	)
 
-// lazygit with proxy set/unset.
-func (that *Cli) lazygit() {
+	getProxy := func(cmd *cobra.Command) string {
+		pxy := ""
+		if disableProxy, _ := cmd.Flags().GetBool(NoProxyFlagName); !disableProxy {
+			pxy, _ = cmd.Flags().GetString(manualProxyFlagName)
+			if pxy == "" {
+				pxy = defaultProxy
+			}
+		}
+		return pxy
+	}
 
+	cloneCmd := &cobra.Command{
+		Use:     "clone",
+		Aliases: []string{"c"},
+		Short:   "Clones a remote repo.",
+		Long:    "Example: g c --proxy=http://localhost:2023  git@github.com:moqsien/gvc.git",
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				return
+			}
+			vg.Clone(args[0], getProxy(cmd))
+		},
+	}
+	cloneCmd.Flags().StringP(manualProxyFlagName, "p", "", "Specifies the proxy for using.")
+	cloneCmd.Flags().BoolP(NoProxyFlagName, "n", false, "Disables the proxy.")
+	gitCmd.AddCommand(cloneCmd)
+
+	pullCmd := &cobra.Command{
+		Use:     "pull",
+		Aliases: []string{"P"},
+		Short:   "Pulles from a remote repo.",
+		Long:    "Example: g P --proxy=http://localhost:2023",
+		Run: func(cmd *cobra.Command, args []string) {
+			vg.Pull(getProxy(cmd))
+		},
+	}
+	pullCmd.Flags().StringP(manualProxyFlagName, "p", "", "Specifies the proxy for using.")
+	pullCmd.Flags().BoolP(NoProxyFlagName, "n", false, "Disables the proxy.")
+	gitCmd.AddCommand(pullCmd)
+
+	pushCmd := &cobra.Command{
+		Use:     "push",
+		Aliases: []string{"p"},
+		Short:   "Pushes to a remot repo.",
+		Long:    "Example: g p --proxy=http://localhost:2023",
+		Run: func(cmd *cobra.Command, args []string) {
+			vg.Push(getProxy(cmd))
+		},
+	}
+	pushCmd.Flags().StringP(manualProxyFlagName, "p", "", "Specifies the proxy for using.")
+	pushCmd.Flags().BoolP(NoProxyFlagName, "n", false, "Disables the proxy.")
+	gitCmd.AddCommand(pushCmd)
+
+	commitPushCmd := &cobra.Command{
+		Use:     "commit-push",
+		Aliases: []string{"cp"},
+		Short:   "Commits and pushes to a remote repo.",
+		Long:    "Example: g cp --proxy=http://localhost:2023 <commit msg>",
+		Run: func(cmd *cobra.Command, args []string) {
+			commitMsg := "update"
+			if len(args) > 0 {
+				commitMsg = args[0]
+			}
+			vg.CommitAndPush(commitMsg, getProxy(cmd))
+		},
+	}
+	commitPushCmd.Flags().StringP(manualProxyFlagName, "p", "", "Specifies the proxy for using.")
+	commitPushCmd.Flags().BoolP(NoProxyFlagName, "n", false, "Disables the proxy.")
+	gitCmd.AddCommand(commitPushCmd)
+
+	latesTagCmd := &cobra.Command{
+		Use:     "tag-latest",
+		Aliases: []string{"tl", "t"},
+		Short:   "Shows the latest tag of a local repo.",
+		Run: func(cmd *cobra.Command, args []string) {
+			vg.ShowLatestTag()
+		},
+	}
+	gitCmd.AddCommand(latesTagCmd)
+
+	addTagPushCmd := &cobra.Command{
+		Use:     "tag-push",
+		Aliases: []string{"tp"},
+		Short:   "Adds a tag and pushes to a remote repo.",
+		Long:    "Example: g tp v0.0.1",
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				return
+			}
+			vg.AddTagAndPush(args[0], getProxy(cmd))
+		},
+	}
+	addTagPushCmd.Flags().StringP(manualProxyFlagName, "p", "", "Specifies the proxy for using.")
+	addTagPushCmd.Flags().BoolP(NoProxyFlagName, "n", false, "Disables the proxy.")
+	gitCmd.AddCommand(addTagPushCmd)
+
+	delTagCmd := &cobra.Command{
+		Use:     "detag-push",
+		Aliases: []string{"dp"},
+		Short:   "Deletes a tag and pushes to a remote repo.",
+		Long:    "Example: g dp v0.0.1",
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				return
+			}
+			vg.DelTagAndPush(args[0], getProxy(cmd))
+		},
+	}
+	delTagCmd.Flags().StringP(manualProxyFlagName, "p", "", "Specifies the proxy for using.")
+	delTagCmd.Flags().BoolP(NoProxyFlagName, "n", false, "Disables the proxy.")
+	gitCmd.AddCommand(delTagCmd)
+
+	// TODO: handle proxy for lazygit.
+	that.rootCmd.AddCommand(gitCmd)
 }
