@@ -1,1 +1,235 @@
 package clis
+
+import (
+	"runtime"
+
+	"github.com/moqsien/gvc/pkgs/utils"
+	"github.com/moqsien/gvc/pkgs/vctrl"
+	"github.com/spf13/cobra"
+)
+
+// Homebrew accelerations in China.
+func (that *Cli) homebrew() {
+	brewCmd := &cobra.Command{
+		Use:     "brew",
+		Aliases: []string{"B"},
+		Short:   "Homebrew accelerations in China.",
+		GroupID: that.groupID,
+	}
+
+	brewCmd.AddCommand(&cobra.Command{
+		Use:     "install",
+		Aliases: []string{"i"},
+		Short:   "Installs homebrew.",
+		Run: func(cmd *cobra.Command, args []string) {
+			hb := vctrl.NewHomebrew()
+			hb.Install()
+		},
+	})
+
+	brewCmd.AddCommand(&cobra.Command{
+		Use:     "env",
+		Aliases: []string{"e"},
+		Short:   "Set envs to accelerate homebrew in China.",
+		Run: func(cmd *cobra.Command, args []string) {
+			v := vctrl.NewHomebrew()
+			v.SetEnv()
+		},
+	})
+
+	that.rootCmd.AddCommand(brewCmd)
+}
+
+// Installs sudo command for windows.
+func (that *Cli) gsudo() {
+	gsudoCmd := &cobra.Command{
+		Use:     "gsudo-install",
+		Aliases: []string{"gs"},
+		Short:   "Installs gsudo for windows.",
+		GroupID: that.groupID,
+		Run: func(cmd *cobra.Command, args []string) {
+			if runtime.GOOS != utils.Windows {
+				cmd.Help()
+				return
+			}
+			gs := vctrl.NewGSudo()
+			gs.Install(true)
+		},
+	}
+	that.rootCmd.AddCommand(gsudoCmd)
+}
+
+func (that *Cli) browser() {
+	browserCmd := &cobra.Command{
+		Use:     "browser",
+		Aliases: []string{"b"},
+		Short:   "Manages data for different browsers.",
+		GroupID: that.groupID,
+	}
+
+	browserCmd.AddCommand(&cobra.Command{
+		Use:     "list",
+		Aliases: []string{"l"},
+		Short:   "Lists the supported browsers and dir to save your data.",
+		Run: func(cmd *cobra.Command, args []string) {
+			b := vctrl.NewBrowser()
+			b.ShowSupportedBrowser()
+			b.ShowBackupPath()
+		},
+	})
+
+	browserCmd.AddCommand(&cobra.Command{
+		Use:     "push",
+		Aliases: []string{"p"},
+		Short:   "Push local data to your remote repo.",
+		Long:    "Example: b p <your_browser_name>; Your local data may include bookmarks, password(encrypted), extensions list.",
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				return
+			}
+			b := vctrl.NewBrowser()
+			b.Save(args[0], true)
+		},
+	})
+
+	browserCmd.AddCommand(&cobra.Command{
+		Use:     "save",
+		Aliases: []string{"s"},
+		Short:   "Save browser data to the local dir.",
+		Long:    "Example: b s <your_browser_name>; Your local data may include bookmarks, password(encrypted), extensions list.",
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				return
+			}
+			b := vctrl.NewBrowser()
+			b.Save(args[0], false)
+		},
+	})
+
+	browserCmd.AddCommand(&cobra.Command{
+		Use:     "pull",
+		Aliases: []string{"P"},
+		Short:   "Pull browser data from your remote repo.",
+		Run: func(cmd *cobra.Command, args []string) {
+			b := vctrl.NewBrowser()
+			b.PullData()
+		},
+	})
+
+	that.rootCmd.AddCommand(browserCmd)
+}
+
+func (that *Cli) docker() {
+	dockerCmd := &cobra.Command{
+		Use:     "docker",
+		Aliases: []string{"d"},
+		Short:   "Docker related CLIs.",
+		GroupID: that.groupID,
+	}
+
+	dockerCmd.AddCommand(&cobra.Command{
+		Use:     "install",
+		Aliases: []string{"i"},
+		Short:   "Installs docker.",
+		Run: func(cmd *cobra.Command, args []string) {
+			dv := vctrl.NewVDocker()
+			dv.Install()
+		},
+	})
+
+	dockerCmd.AddCommand(&cobra.Command{
+		Use:     "mirrors",
+		Aliases: []string{"m"},
+		Short:   "Shows mirrors available in China(for accelerations).",
+		Run: func(cmd *cobra.Command, args []string) {
+			dv := vctrl.NewVDocker()
+			dv.ShowRegistryMirrorInChina()
+		},
+	})
+
+	that.rootCmd.AddCommand(dockerCmd)
+}
+
+func (that *Cli) asciinema() {
+	asnemaCmd := &cobra.Command{
+		Use:     "asciinema",
+		Aliases: []string{"asc", "a"},
+		Short:   "Asciinema related CLIs(terminal recorder).",
+		GroupID: that.groupID,
+	}
+
+	asnemaCmd.AddCommand(&cobra.Command{
+		Use:     "record",
+		Aliases: []string{"r"},
+		Short:   "Record your terminal operations.",
+		Long:    "Example: a r <your_file_name>",
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				return
+			}
+			a := vctrl.NewAsciiCast()
+			a.Rec(args[0])
+		},
+	})
+
+	asnemaCmd.AddCommand(&cobra.Command{
+		Use:     "paly",
+		Aliases: []string{"p"},
+		Short:   "Plays an asciinema file.",
+		Long:    "Example: a p <your_file_path>",
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				return
+			}
+			a := vctrl.NewAsciiCast()
+			a.Play(args[0])
+		},
+	})
+
+	asnemaCmd.AddCommand(&cobra.Command{
+		Use:     "auth",
+		Aliases: []string{"a"},
+		Short:   "Binds your installation id to asciinema.org account.",
+		Run: func(cmd *cobra.Command, args []string) {
+			a := vctrl.NewAsciiCast()
+			a.Auth()
+		},
+	})
+
+	asnemaCmd.AddCommand(&cobra.Command{
+		Use:     "upload",
+		Aliases: []string{"u"},
+		Short:   "Upload an asciinema file to asciinema.org.",
+		Long:    "Example: a u <your_file_path>",
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				return
+			}
+			a := vctrl.NewAsciiCast()
+			a.Upload(args[0])
+		},
+	})
+
+	that.rootCmd.AddCommand(asnemaCmd)
+}
+
+func (that *Cli) gpt() {
+	that.rootCmd.AddCommand(&cobra.Command{
+		Use:     "gpt",
+		Aliases: []string{"G"},
+		Short:   "Starts the ChatGPT/Spark bot.",
+		Run: func(cmd *cobra.Command, args []string) {
+			gv := vctrl.NewVGPT()
+			gv.Run()
+		},
+	})
+}
+
+func (that *Cli) cloc() {
+
+}

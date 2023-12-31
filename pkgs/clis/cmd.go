@@ -50,6 +50,24 @@ func (that *Cli) initiate() {
 	*/
 	that.github()
 	that.git()
+
+	/*
+		misc:
+		1. homebrew
+		2. gsudo for windows
+		3. browser files
+		4. count lines fo code(CLOC)
+		5. asciinema(Terminal recorder)
+		6. docker
+		7. GPT
+	*/
+	that.homebrew()
+	that.gsudo()
+	that.browser()
+	that.cloc()
+	that.asciinema()
+	that.docker()
+	that.gpt()
 }
 
 func (that *Cli) Run() {

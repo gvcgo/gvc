@@ -17,6 +17,22 @@ func (that *Cli) github() {
 		GroupID: that.groupID,
 	}
 
+	// automatically modifies hosts file.
+	githubCmd.AddCommand(&cobra.Command{
+		Use:     "hosts",
+		Aliases: []string{"h"},
+		Short:   "Modifies hosts file for github.",
+		Run: func(cmd *cobra.Command, args []string) {
+			h := vctrl.NewHosts()
+			if runtime.GOOS != utils.Windows {
+				h.Run()
+			} else {
+				h.WinRunAsAdmin()
+			}
+			h.ShowFilePath()
+		},
+	})
+
 	vg := vctrl.NewGhDownloader()
 	githubCmd.AddCommand(&cobra.Command{
 		Use:     "proxy",
@@ -53,7 +69,7 @@ func (that *Cli) github() {
 	that.rootCmd.AddCommand(githubCmd)
 }
 
-// git installation for windows.
+// git related CLIs.
 func (that *Cli) git() {
 	gitCmd := &cobra.Command{
 		Use:     "git",
