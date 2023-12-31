@@ -30,4 +30,20 @@ func (that *Cli) langs() {
 		pyenv-win
 	*/
 	langs.SetPython(that)
+
+	/*
+		NodeJS
+	*/
+	langs.SetNodeJS(that)
+
+	/*
+		Flutter
+		Flutter-Android-DEV using VSCode.
+	*/
+	langs.SetFlutter(that)
+
+	/*
+		julia
+	*/
+	langs.SetJava(that)
 }
