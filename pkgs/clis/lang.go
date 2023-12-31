@@ -49,6 +49,14 @@ func (that *Cli) langs() {
 
 	/*
 		rust
+		rust acceleration.
 	*/
 	langs.SetRust(that)
+
+	/*
+		cygwin
+		msys2
+		vcpkg
+	*/
+	langs.SetCpp(that)
 }

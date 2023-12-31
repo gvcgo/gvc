@@ -9,6 +9,7 @@ func SetRust(reg IRegister) {
 	rustCmd := &cobra.Command{
 		Use:     "rust",
 		Aliases: []string{"r"},
+		Short:   "Rust related CLIs.",
 	}
 
 	installCmd := &cobra.Command{
