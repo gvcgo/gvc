@@ -42,6 +42,16 @@ func (that *Cli) initiate() {
 	that.neovim()
 	// neobox related CLIs
 	that.neobox()
+	/*
+		1. github accelerations
+		2. git installation for windows
+		3. some git CLIs with proxy
+		4. lazygit with proxy
+	*/
+	that.github()
+	that.git()
+	that.gogit()
+	that.lazygit()
 }
 
 func (that *Cli) Run() {
