@@ -178,6 +178,22 @@ func (that *Cmder) vbrowser() {
 	that.Commands = append(that.Commands, command)
 }
 
+type Ctx struct {
+	cmd *cli.Context
+}
+
+func (c *Ctx) String(name string) string {
+	return c.cmd.String(name)
+}
+
+func (c *Ctx) Bool(name string) bool {
+	return c.cmd.Bool(name)
+}
+
+func (c *Ctx) Args() []string {
+	return c.cmd.Args().Slice()
+}
+
 func (that *Cmder) vcloc() {
 	command := &cli.Command{
 		Name:    "cloc",
@@ -252,7 +268,7 @@ func (that *Cmder) vcloc() {
 			},
 		},
 		Action: func(ctx *cli.Context) error {
-			cloc := vctrl.NewCloc(ctx)
+			cloc := vctrl.NewCloc(&Ctx{cmd: ctx})
 			cloc.Run()
 			return nil
 		},

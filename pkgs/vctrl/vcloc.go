@@ -10,7 +10,6 @@ import (
 	"github.com/hhatto/gocloc"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/gtea/gtable"
-	"github.com/urfave/cli/v2"
 )
 
 const (
@@ -44,12 +43,18 @@ var (
 	}
 )
 
+type IContext interface {
+	String(string) string
+	Bool(string) bool
+	Args() []string
+}
+
 type Cloc struct {
-	ctx    *cli.Context
+	ctx    IContext
 	result *gocloc.Result
 }
 
-func NewCloc(ctx *cli.Context) *Cloc {
+func NewCloc(ctx IContext) *Cloc {
 	return &Cloc{ctx: ctx}
 }
 
@@ -72,9 +77,9 @@ func (that *Cloc) Run() {
 	}
 	dir, _ := os.Getwd()
 	paths := []string{dir}
-	if that.ctx.Args().Len() > 0 {
+	if len(that.ctx.Args()) > 0 {
 		cargs := that.ctx.Args()
-		paths = append([]string{cargs.First()}, cargs.Tail()...)
+		paths = cargs
 	}
 	languages := gocloc.NewDefinedLanguages()
 	if that.ctx.Bool(FlagShowLang) {

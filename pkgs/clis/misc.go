@@ -230,6 +230,50 @@ func (that *Cli) gpt() {
 	})
 }
 
-func (that *Cli) cloc() {
+type CCtx struct {
+	cmd  *cobra.Command
+	args []string
+}
 
+func (c *CCtx) String(name string) string {
+	r, _ := c.cmd.Flags().GetString(name)
+	return r
+}
+
+func (c *CCtx) Bool(name string) bool {
+	r, _ := c.cmd.Flags().GetBool(name)
+	return r
+}
+
+func (c *CCtx) Args() []string {
+	return c.args
+}
+
+func (that *Cli) cloc() {
+	clCmd := &cobra.Command{
+		Use:     "cloc",
+		Aliases: []string{"cl"},
+		Short:   "Counts lines of code.",
+		Long:    "Example: cloc <your_path>",
+		GroupID: that.groupID,
+		Run: func(cmd *cobra.Command, args []string) {
+			cloc := vctrl.NewCloc(&CCtx{cmd: cmd})
+			cloc.Run()
+		},
+	}
+
+	clCmd.Flags().BoolP(vctrl.FlagByFile, "bf", false, "Report results for every encountered source file.")
+	clCmd.Flags().BoolP(vctrl.FlagDebug, "d", false, "Dump debug log for developer.")
+	clCmd.Flags().BoolP(vctrl.FlagSkipDuplicated, "sd", false, "Skip duplicated files.")
+	clCmd.Flags().BoolP(vctrl.FlagShowLang, "sl", false, "Print about all languages and extensions.")
+	clCmd.Flags().StringP(vctrl.FlagSortTag, "st", "name", `Sort based on a certain column["name", "files", "blank", "comment", "code"].`)
+	clCmd.Flags().StringP(vctrl.FlagOutputType, "op", "default", "Show summary only.")
+	clCmd.Flags().StringP(vctrl.FlagExcludeExt, "ee", "", "Exclude file name extensions (separated commas).")
+	clCmd.Flags().StringP(vctrl.FlagIncludeLang, "il", "", "Include language name (separated commas).")
+	clCmd.Flags().StringP(vctrl.FlagMatch, "m", "", "Include file name (regex).")
+	clCmd.Flags().StringP(vctrl.FlagNotMatch, "nm", "", "Exclude file name (regex).")
+	clCmd.Flags().StringP(vctrl.FlagMatchDir, "md", "", "Include dir name (regex).")
+	clCmd.Flags().StringP(vctrl.FlagNotMatchDir, "nmd", "", "Exclude dir name (regex).")
+
+	that.rootCmd.AddCommand(clCmd)
 }

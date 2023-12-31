@@ -96,7 +96,7 @@ func (that *Cli) uninstall() {
 func (that *Cli) configure() {
 	cfgCmd := &cobra.Command{
 		Use:     "config",
-		Aliases: []string{"cfg", "c"},
+		Aliases: []string{"cfg"},
 		Short:   "Configurations.",
 		GroupID: that.groupID,
 	}
