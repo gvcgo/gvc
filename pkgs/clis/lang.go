@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// register new command to Cli.
 func (that *Cli) Register(cmd *cobra.Command) {
 	cmd.GroupID = that.groupID
 	that.rootCmd.AddCommand(cmd)
@@ -64,4 +65,11 @@ func (that *Cli) langs() {
 		typst
 	*/
 	langs.SetTypst(that)
+
+	/*
+		vlang
+		v-analyzer
+		v-analyzer extension for VSCode
+	*/
+	langs.SetVlang(that)
 }
