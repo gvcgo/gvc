@@ -11,5 +11,16 @@ func (that *Cli) Register(cmd *cobra.Command) {
 }
 
 func (that *Cli) langs() {
+	/*
+		go
+		protoc
+		grpc
+	*/
 	langs.SetGo(that)
+	/*
+		java
+		maven
+		gradle
+	*/
+	langs.SetJava(that)
 }
