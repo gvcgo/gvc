@@ -59,4 +59,9 @@ func (that *Cli) langs() {
 		vcpkg
 	*/
 	langs.SetCpp(that)
+
+	/*
+		typst
+	*/
+	langs.SetTypst(that)
 }
