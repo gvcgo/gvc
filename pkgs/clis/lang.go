@@ -46,4 +46,9 @@ func (that *Cli) langs() {
 		julia
 	*/
 	langs.SetJava(that)
+
+	/*
+		rust
+	*/
+	langs.SetRust(that)
 }

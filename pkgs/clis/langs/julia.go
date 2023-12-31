@@ -6,7 +6,7 @@ import (
 )
 
 func SetJulia(reg IRegister) {
-	nodeCmd := &cobra.Command{
+	juliaCmd := &cobra.Command{
 		Use:     "julia",
 		Aliases: []string{"jl", "J"},
 		Short:   "Julia related CLIs.",
@@ -21,7 +21,7 @@ func SetJulia(reg IRegister) {
 			jv.ShowVersions()
 		},
 	}
-	nodeCmd.AddCommand(remoteCmd)
+	juliaCmd.AddCommand(remoteCmd)
 
 	useCmd := &cobra.Command{
 		Use:     "use",
@@ -37,7 +37,7 @@ func SetJulia(reg IRegister) {
 			jv.UseVersion(args[0])
 		},
 	}
-	nodeCmd.AddCommand(useCmd)
+	juliaCmd.AddCommand(useCmd)
 
 	localCmd := &cobra.Command{
 		Use:     "local",
@@ -48,7 +48,7 @@ func SetJulia(reg IRegister) {
 			jv.ShowInstalled()
 		},
 	}
-	nodeCmd.AddCommand(localCmd)
+	juliaCmd.AddCommand(localCmd)
 
 	removeAllCmd := &cobra.Command{
 		Use:     "remove-unused",
@@ -59,7 +59,7 @@ func SetJulia(reg IRegister) {
 			jv.RemoveUnused()
 		},
 	}
-	nodeCmd.AddCommand(removeAllCmd)
+	juliaCmd.AddCommand(removeAllCmd)
 
 	removeCmd := &cobra.Command{
 		Use:     "remove",
@@ -75,6 +75,6 @@ func SetJulia(reg IRegister) {
 			jv.RemoveVersion(args[0])
 		},
 	}
-	nodeCmd.AddCommand(removeCmd)
-	reg.Register(nodeCmd)
+	juliaCmd.AddCommand(removeCmd)
+	reg.Register(juliaCmd)
 }
