@@ -68,6 +68,22 @@ func (that *Cli) initiate() {
 	that.asciinema()
 	that.docker()
 	that.gpt()
+
+	/*
+		Programming Languages:
+		go
+		java
+		python
+		nodejs
+		rust
+		cpp
+		flutter(dart)
+		julia
+		zig
+		vlang
+		typst
+	*/
+	that.langs()
 }
 
 func (that *Cli) Run() {
