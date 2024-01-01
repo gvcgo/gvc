@@ -111,7 +111,7 @@ func (that *Cli) git() {
 		manualProxyFlagName string = "proxy"
 		NoProxyFlagName     string = "no"
 	)
-
+	// TODO: set alias in shell or bat files.
 	getProxy := func(cmd *cobra.Command) string {
 		pxy := ""
 		if disableProxy, _ := cmd.Flags().GetBool(NoProxyFlagName); !disableProxy {

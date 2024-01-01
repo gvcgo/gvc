@@ -39,7 +39,8 @@ func (that *Self) setEnv() {
 	}
 }
 
-func (that *Self) setShortcut() {
+// Deprecated
+func (that *Self) SetShortcut() {
 	switch runtime.GOOS {
 	case utils.Windows:
 		fPath := filepath.Join(config.GVCDir, "gvc.exe")
@@ -69,7 +70,7 @@ func (that *Self) Install() {
 			gprint.PrintError("%+v", err)
 		}
 		that.setEnv()
-		that.setShortcut()
+		// that.SetShortcut()
 		// reset config file to default.
 		that.Conf.SetDefault()
 		that.Conf.Restore()
