@@ -262,18 +262,18 @@ func (that *Cli) cloc() {
 		},
 	}
 
-	clCmd.Flags().BoolP(vctrl.FlagByFile, "bf", false, "Report results for every encountered source file.")
+	clCmd.Flags().BoolP(vctrl.FlagByFile, "f", false, "Report results for every encountered source file.")
 	clCmd.Flags().BoolP(vctrl.FlagDebug, "d", false, "Dump debug log for developer.")
-	clCmd.Flags().BoolP(vctrl.FlagSkipDuplicated, "sd", false, "Skip duplicated files.")
-	clCmd.Flags().BoolP(vctrl.FlagShowLang, "sl", false, "Print about all languages and extensions.")
-	clCmd.Flags().StringP(vctrl.FlagSortTag, "st", "name", `Sort based on a certain column["name", "files", "blank", "comment", "code"].`)
-	clCmd.Flags().StringP(vctrl.FlagOutputType, "op", "default", "Show summary only.")
-	clCmd.Flags().StringP(vctrl.FlagExcludeExt, "ee", "", "Exclude file name extensions (separated commas).")
-	clCmd.Flags().StringP(vctrl.FlagIncludeLang, "il", "", "Include language name (separated commas).")
+	clCmd.Flags().BoolP(vctrl.FlagSkipDuplicated, "s", false, "Skip duplicated files.")
+	clCmd.Flags().BoolP(vctrl.FlagShowLang, "l", false, "Print about all languages and extensions.")
+	clCmd.Flags().StringP(vctrl.FlagSortTag, "t", "name", `Sort based on a certain column["name", "files", "blank", "comment", "code"].`)
+	clCmd.Flags().StringP(vctrl.FlagOutputType, "o", "default", "Show summary only.")
+	clCmd.Flags().StringP(vctrl.FlagExcludeExt, "e", "", "Exclude file name extensions (separated commas).")
+	clCmd.Flags().StringP(vctrl.FlagIncludeLang, "L", "", "Include language name (separated commas).")
 	clCmd.Flags().StringP(vctrl.FlagMatch, "m", "", "Include file name (regex).")
-	clCmd.Flags().StringP(vctrl.FlagNotMatch, "nm", "", "Exclude file name (regex).")
-	clCmd.Flags().StringP(vctrl.FlagMatchDir, "md", "", "Include dir name (regex).")
-	clCmd.Flags().StringP(vctrl.FlagNotMatchDir, "nmd", "", "Exclude dir name (regex).")
+	clCmd.Flags().StringP(vctrl.FlagNotMatch, "M", "", "Exclude file name (regex).")
+	clCmd.Flags().StringP(vctrl.FlagMatchDir, "d", "", "Include dir name (regex).")
+	clCmd.Flags().StringP(vctrl.FlagNotMatchDir, "D", "", "Exclude dir name (regex).")
 
 	that.rootCmd.AddCommand(clCmd)
 }
