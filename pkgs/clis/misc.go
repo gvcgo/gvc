@@ -263,7 +263,7 @@ func (that *Cli) cloc() {
 	}
 
 	clCmd.Flags().BoolP(vctrl.FlagByFile, "f", false, "Report results for every encountered source file.")
-	clCmd.Flags().BoolP(vctrl.FlagDebug, "d", false, "Dump debug log for developer.")
+	clCmd.Flags().BoolP(vctrl.FlagDebug, "b", false, "Dump debug log for developer.")
 	clCmd.Flags().BoolP(vctrl.FlagSkipDuplicated, "s", false, "Skip duplicated files.")
 	clCmd.Flags().BoolP(vctrl.FlagShowLang, "l", false, "Print about all languages and extensions.")
 	clCmd.Flags().StringP(vctrl.FlagSortTag, "t", "name", `Sort based on a certain column["name", "files", "blank", "comment", "code"].`)
