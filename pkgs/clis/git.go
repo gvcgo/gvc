@@ -106,6 +106,41 @@ func (that *Cli) git() {
 		},
 	})
 
+	sshProxyCmd := &cobra.Command{
+		Use:     "ssh-proxy-fix",
+		Aliases: []string{"sp"},
+		Short:   "Adds proxy info to the ssh config file.",
+		Run: func(cmd *cobra.Command, args []string) {
+			pxyURI := vg.ReadDefaultProxy()
+			vg.SetProxyForGitSSH(pxyURI)
+		},
+	}
+	gitCmd.AddCommand(sshProxyCmd)
+
+	toggleProxyForGitSSHCmd := &cobra.Command{
+		Use:     "toggle-ssh-proxy",
+		Aliases: []string{"tp"},
+		Short:   "Toggle status of the proxy for ssh.",
+		Run: func(cmd *cobra.Command, args []string) {
+			vg.ToggleProxyForGitSSH()
+		},
+	}
+	gitCmd.AddCommand(toggleProxyForGitSSHCmd)
+
+	var toEnableProxyFlagName string = "proxy"
+	lazyGitCmd := &cobra.Command{
+		Use:     "lazygit",
+		Aliases: []string{"lg"},
+		Short:   "Start lazygit with/without an ssh proxy.",
+		Long:    "Example: git lg -p",
+		Run: func(cmd *cobra.Command, args []string) {
+			p, _ := cmd.Flags().GetBool(toEnableProxyFlagName)
+			vg.LazyGit(p, args...)
+		},
+	}
+	lazyGitCmd.Flags().BoolP(toEnableProxyFlagName, "p", false, "To enable the proxy for lazygit.")
+	gitCmd.AddCommand(lazyGitCmd)
+
 	var (
 		defaultProxy        string = vg.ReadDefaultProxy()
 		manualProxyFlagName string = "proxy"
@@ -227,6 +262,5 @@ func (that *Cli) git() {
 	delTagCmd.Flags().BoolP(NoProxyFlagName, "n", false, "Disables the proxy.")
 	gitCmd.AddCommand(delTagCmd)
 
-	// TODO: handle proxy for lazygit.
 	that.rootCmd.AddCommand(gitCmd)
 }

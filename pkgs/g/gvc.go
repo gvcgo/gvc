@@ -30,7 +30,7 @@ func main() {
 		self.CheckLatestVersion("v1.6.4")
 	} else if len(os.Args) < 2 {
 		/*
-			GVC is allowed to be installed in ~/.gvc/ or $GOPATH/bin/
+			GVC is allowed to be installed in ~/.gvc/ or $GOPATH/bin/ .
 		*/
 		goPath := os.Getenv("GOPATH")
 		toInstall := true

@@ -12,6 +12,7 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/go-resty/resty/v2"
+	lazyapp "github.com/jesseduffield/lazygit/pkg/app"
 	"github.com/moqsien/goutils/pkgs/ggit"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/gtea/selector"
@@ -295,4 +296,153 @@ func (that *GhDownloader) SetReverseProxyForDownload(pUrl string) {
 	that.Conf.Reload()
 	that.Conf.GVCProxy.ReverseProxyUrl = pUrl
 	that.Conf.Restore()
+}
+
+// set a proxy for git ssh
+func (that *GhDownloader) SetProxyForGitSSH(pURI string) {
+	if pURI == "" {
+		pURI = that.ReadDefaultProxy()
+	}
+	if !strings.Contains(pURI, "://") {
+		gprint.PrintError("No legal proxy is specified.")
+		return
+	}
+
+	if u, err := url.Parse(pURI); err == nil {
+		homeDir, _ := os.UserHomeDir()
+		dotSSHPath := filepath.Join(homeDir, ".ssh")
+		idRSAPath := filepath.Join(dotSSHPath, "id_rsa")
+		if ok, _ := utils.PathIsExist(idRSAPath); !ok {
+			gprint.PrintError("Cannot find ~/.ssh/id_rsa.")
+			return
+		}
+		uStr := fmt.Sprintf("%s:%s", u.Hostname(), u.Port())
+		switch runtime.GOOS {
+		case utils.Windows:
+			pxyCmd := fmt.Sprintf(
+				config.GitSSHProxyCommandWin,
+				uStr,
+				`%h`,
+				`%p`,
+			)
+			content := fmt.Sprintf(
+				config.GitSSHConfigStr,
+				idRSAPath,
+				pxyCmd,
+				idRSAPath,
+				pxyCmd,
+			)
+			that.setProxyForGitSSH(dotSSHPath, idRSAPath, content)
+		case utils.Linux, utils.MacOS:
+			pxyCmd := fmt.Sprintf(
+				config.GitSSHProxyCommandNix,
+				uStr,
+				`%h`,
+				`%p`,
+			)
+			content := fmt.Sprintf(
+				config.GitSSHConfigStr,
+				idRSAPath,
+				pxyCmd,
+				idRSAPath,
+				pxyCmd,
+			)
+			that.setProxyForGitSSH(dotSSHPath, idRSAPath, content)
+		default:
+			gprint.PrintError("Unsupported OS.")
+		}
+	}
+}
+
+func (that *GhDownloader) setProxyForGitSSH(dotSSHPath, idRSAPath, content string) {
+	confPath := filepath.Join(dotSSHPath, "config")
+	if ok, _ := utils.PathIsExist(confPath); !ok {
+		os.WriteFile(confPath, []byte(content), 0666)
+	} else {
+		oldContentByte, _ := os.ReadFile(confPath)
+		oldContent := string(oldContentByte)
+		if !strings.Contains(oldContent, "ProxyCommand") && len(oldContent) > 0 {
+			os.WriteFile(confPath, []byte(oldContent+"\n"+content), 0666)
+		} else {
+			os.WriteFile(confPath, []byte(content), 0666)
+		}
+	}
+}
+
+func (that *GhDownloader) ToggleProxyForGitSSH() {
+	homeDir, _ := os.UserHomeDir()
+	confPath := filepath.Join(homeDir, ".ssh", "config")
+	backupConfPath := filepath.Join(homeDir, ".ssh", "config.bak")
+
+	ok1, _ := utils.PathIsExist(confPath)
+	ok2, _ := utils.PathIsExist(backupConfPath)
+
+	if !ok1 && !ok2 {
+		gprint.PrintError("No proxy available.")
+	} else if ok1 && !ok2 {
+		if err := os.Rename(confPath, backupConfPath); err == nil {
+			gprint.PrintInfo("Proxy disabled.")
+		}
+	} else if !ok1 && ok2 {
+		if err := os.Rename(backupConfPath, confPath); err == nil {
+			gprint.PrintSuccess("Proxy enabled.")
+		}
+	} else {
+		os.RemoveAll(backupConfPath)
+		if err := os.Rename(confPath, backupConfPath); err == nil {
+			gprint.PrintInfo("Proxy disabled.")
+		}
+	}
+}
+
+// lazygit with a proxy
+func (that *GhDownloader) LazyGit(enableProxy bool, args ...string) {
+	if enableProxy {
+		pxyURI := that.ReadDefaultProxy()
+		if pxyURI == "" {
+			gprint.PrintError(`No proxy available. Please use command "git proxy <your_proxy_uri> to set one."`)
+			return
+		}
+		homeDir, _ := os.UserHomeDir()
+		confPath := filepath.Join(homeDir, ".ssh", "config")
+		backupConfPath := filepath.Join(homeDir, ".ssh", "config.bak")
+
+		ok1, _ := utils.PathIsExist(confPath)
+		ok2, _ := utils.PathIsExist(backupConfPath)
+
+		if ok1 && ok2 {
+			os.RemoveAll(backupConfPath)
+		}
+
+		content := []byte{}
+		if ok1 {
+			content, _ = os.ReadFile(confPath)
+		} else if ok2 {
+			content, _ = os.ReadFile(backupConfPath)
+		}
+
+		if !strings.Contains(string(content), "ProxyCommand") {
+			that.SetProxyForGitSSH(pxyURI)
+		} else if !ok1 && ok2 {
+			that.ToggleProxyForGitSSH()
+		}
+	}
+	// start lazygit
+	var (
+		commit      string = "5e388e2"
+		date        string = "2023-08-07"
+		version     string = "0.40.2"
+		buildSource string = "gvc"
+	)
+	ldFlagsBuildInfo := &lazyapp.BuildInfo{
+		Commit:      commit,
+		Date:        date,
+		Version:     version,
+		BuildSource: buildSource,
+	}
+	lazyapp.Start(ldFlagsBuildInfo, nil)
+
+	if enableProxy {
+		that.ToggleProxyForGitSSH()
+	}
 }

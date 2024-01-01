@@ -39,3 +39,7 @@ storage.db
 test.json
 goutils.exe
 test.txt
+build/darwin-*/*
+build/linux-*/*
+build/windows-*/*
+build/*.zip

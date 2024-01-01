@@ -145,16 +145,9 @@ go related
 */
 var GoFilesDir = filepath.Join(GVCInstallDir, "go_files")
 
-func getGoPath() string {
-	if runtime.GOOS != utils.Windows {
-		return "data/projects/go"
-	}
-	return `data\projects\go`
-}
-
 var (
 	DefaultGoRoot    string = filepath.Join(GoFilesDir, "go")
-	DefaultGoPath    string = filepath.Join(utils.GetHomeDir(), getGoPath())
+	DefaultGoPath    string = filepath.Join(utils.GetHomeDir(), "data", "projects", "go")
 	DefaultGoProxy   string = "https://goproxy.cn,direct"
 	GoTarFilesPath   string = filepath.Join(GoFilesDir, "downloads")
 	GoUnTarFilesPath string = filepath.Join(GoFilesDir, "versions")
@@ -582,4 +575,33 @@ git
 var (
 	GitFileDir                string = filepath.Join(GVCInstallDir, "git_files")
 	GitWindowsInstallationDir string = filepath.Join(GitFileDir, "git_installation")
+)
+
+/*
+id_rsa
+*/
+var GitSSHConfigStr string = `Host github.com
+  User git
+  Port 22
+  Hostname github.com
+  IdentityFile "%s"
+  TCPKeepAlive yes
+  %s
+
+Host ssh.github.com
+  User git
+  Port 443
+  Hostname ssh.github.com
+  IdentityFile "%s"
+  TCPKeepAlive yes
+  %s
+`
+
+/*
+%h
+%p
+*/
+var (
+	GitSSHProxyCommandWin string = `ProxyCommand connect -S %s %s %s`
+	GitSSHProxyCommandNix string = `ProxyCommand nc -v -x %s %s %s`
 )
