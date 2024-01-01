@@ -5,23 +5,24 @@ import (
 	"os/exec"
 
 	"github.com/moqsien/gvc/pkgs/vctrl"
+	"github.com/moqsien/neobox/pkgs/run"
 	"github.com/spf13/cobra"
 )
 
 func (that *Cli) neobox() {
 	const (
-		boxCmd    string = "neobox"
 		runnerCmd string = "runner"
 		keeperCmd string = "keeper"
 	)
 	binPath, _ := os.Executable()
+	// run neobox-server and neobox-keeper in daemon.
 	neobox := vctrl.NewBox(
-		exec.Command(binPath, boxCmd, runnerCmd),
-		exec.Command(binPath, boxCmd, keeperCmd),
+		exec.Command(binPath, vctrl.NeoBoxCmdName, runnerCmd),
+		exec.Command(binPath, vctrl.NeoBoxCmdName, keeperCmd),
 	)
 
 	neoboxCmd := &cobra.Command{
-		Use:     boxCmd,
+		Use:     vctrl.NeoBoxCmdName,
 		Aliases: []string{"nb"},
 		Short:   "NeoBox related CLIs.",
 		GroupID: that.groupID,
@@ -54,6 +55,30 @@ func (that *Cli) neobox() {
 		},
 	})
 
-	// TODO: generate auto-start script.
+	autoStartCmd := &cobra.Command{
+		Use:     vctrl.NeoBoxAutoStartCmdName,
+		Aliases: []string{"as"},
+		Short:   "This command is for auto-start on system booting.",
+		Run: func(cmd *cobra.Command, args []string) {
+			neobox.AutoStart(cmd, args...)
+		},
+	}
+	autoStartCmd.Flags().BoolP(run.RestartUseDomain, "d", false, "Uses domains for edgetunnels.")
+	autoStartCmd.Flags().BoolP(run.RestartForceSingbox, "s", false, "Force to use sing-box as client.")
+	autoStartCmd.Flags().BoolP(run.RestartShowProxy, "p", false, "Shows proxy info.")
+	autoStartCmd.Flags().BoolP(run.RestartShowConfig, "c", false, "Shows the config string.")
+	neoboxCmd.AddCommand(autoStartCmd)
+
+	genScriptCmd := &cobra.Command{
+		Use:     "gen-script",
+		Aliases: []string{"gs"},
+		Short:   "Generates an autostart script for NeoBox.",
+		Long:    "The generated script can be added to your system booting list.",
+		Run: func(cmd *cobra.Command, args []string) {
+			neobox.GenAutoStartScript()
+		},
+	}
+	neoboxCmd.AddCommand(genScriptCmd)
+
 	that.rootCmd.AddCommand(neoboxCmd)
 }
