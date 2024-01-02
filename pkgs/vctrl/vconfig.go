@@ -269,6 +269,11 @@ func (that *GVCWebdav) GetFilesToSync() (fm config.Filemap) {
 	return
 }
 
+/*
+TODO: move setting files synchronizations to its related modules.
+TODO: support github/gitee/webdav as a remote repo.
+*/
+
 // https://code.visualstudio.com/docs/getstarted/keybindings
 func (that *GVCWebdav) modifyKeybindings(backupPath string) {
 	if ok, _ := utils.PathIsExist(backupPath); !ok {
