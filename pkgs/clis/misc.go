@@ -223,6 +223,7 @@ func (that *Cli) gpt() {
 		Use:     "gpt",
 		Aliases: []string{"G"},
 		Short:   "Starts the ChatGPT/Spark bot.",
+		GroupID: that.groupID,
 		Run: func(cmd *cobra.Command, args []string) {
 			gv := vctrl.NewVGPT()
 			gv.Run()
