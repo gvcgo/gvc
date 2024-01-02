@@ -27,16 +27,6 @@ func (that *Cli) showVersion() {
 			if len(hashTail) > 8 {
 				hashTail = hashTail[len(hashTail)-8:]
 			}
-			content := fmt.Sprintf(
-				"Name: %s\nVersion: %s\nUpdateAt: %s\nHomepage: %s\nEmail: %s",
-				"GVC",
-				fmt.Sprintf("%s(%s)", that.gitTag, hashTail),
-				that.gitTime,
-				"https://github.com/moqsien/gvc",
-				"moqsien2022@gmail.com",
-			)
-			gprint.PrintlnByDefault(content)
-
 			pattern := "Name: GVC \nVersion: %s\nUpdatedAt: %s\nHomepage: %s\nEmail: %s\n"
 			pattern = pattern + "GVCBin: %s\nConfPath: %s\nRemoteConf: %s\nAppsDir: %s\n"
 			s := fmt.Sprintf(
@@ -58,7 +48,7 @@ func (that *Cli) showVersion() {
 				gprint.WithBackground("#874BFD", "#7D56F4"),
 				gprint.WithPadding(2, 6),
 				gprint.WithHeight(8),
-				gprint.WithWidth(78),
+				gprint.WithWidth(70),
 				gprint.WithBold(true),
 				gprint.WithItalic(true),
 			)
