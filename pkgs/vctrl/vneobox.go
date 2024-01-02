@@ -26,10 +26,9 @@ type NeoBox struct {
 
 func NewBox(starter, keeperStarter *exec.Cmd) (n *NeoBox) {
 	n = &NeoBox{
-		conf: config.New(),
+		conf:  config.New(),
+		nconf: &neoconf.NeoConf{},
 	}
-	n.nconf = n.conf.NeoBox.GetNeoConf()
-
 	n.Initiate()
 	n.registerStarter(starter)
 	n.registerKeeperStarter(keeperStarter)
@@ -37,13 +36,12 @@ func NewBox(starter, keeperStarter *exec.Cmd) (n *NeoBox) {
 }
 
 func (that *NeoBox) Initiate() {
-	if that.nconf == nil {
-		return
-	}
 	// fixbugs： cannot use backup files for different platforms
-	if ok, _ := utils.PathIsExist(that.nconf.WorkDir); !ok && that.nconf.WorkDir != "" {
+	if ok, _ := utils.PathIsExist(that.nconf.WorkDir); !ok {
 		that.conf.Reset()
 	}
+	that.nconf = that.conf.NeoBox.GetNeoConf()
+
 	utils.MakeDirs(
 		that.nconf.LogDir,
 		that.nconf.GeoInfoDir,
@@ -62,30 +60,40 @@ func (that *NeoBox) Initiate() {
 func (that *NeoBox) registerStarter(cmd *exec.Cmd) {
 	if that.runner != nil {
 		that.runner.SetStarter(cmd)
+	} else {
+		gprint.PrintError("No runner found.")
 	}
 }
 
 func (that *NeoBox) registerKeeperStarter(cmd *exec.Cmd) {
 	if that.runner != nil {
 		that.runner.SetKeeperStarter(cmd)
+	} else {
+		gprint.PrintError("No runner found.")
 	}
 }
 
 func (that *NeoBox) StartShell() {
 	if that.runner != nil {
 		that.runner.OpenShell()
+	} else {
+		gprint.PrintError("No runner found.")
 	}
 }
 
 func (that *NeoBox) StartClient() {
 	if that.runner != nil {
 		that.runner.Start()
+	} else {
+		gprint.PrintError("No runner found.")
 	}
 }
 
 func (that *NeoBox) StartKeeper() {
 	if that.runner != nil {
 		that.runner.StartKeeper()
+	} else {
+		gprint.PrintError("No runner found.")
 	}
 }
 
@@ -96,6 +104,7 @@ const (
 
 func (that *NeoBox) AutoStart(cmd *cobra.Command, args ...string) {
 	if that.runner == nil {
+		gprint.PrintError("No runner found.")
 		return
 	}
 	sh := that.runner.GetShell()
@@ -123,7 +132,7 @@ func (that *NeoBox) GenAutoStartScript() {
 	}
 	scriptPath := filepath.Join(config.GVCDir, scriptName)
 	binPath, _ := os.Executable()
-	content := fmt.Sprintf("%s %s %s", NeoBoxCmdName, binPath, NeoBoxAutoStartCmdName)
+	content := fmt.Sprintf("%s %s %s", binPath, NeoBoxCmdName, NeoBoxAutoStartCmdName)
 	os.WriteFile(scriptPath, []byte(content), 0777)
 	gprint.PrintInfo("Autostart script path: %s", scriptPath)
 }

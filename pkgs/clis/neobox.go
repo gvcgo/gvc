@@ -15,8 +15,8 @@ func (that *Cli) neobox() {
 		keeperCmd string = "keeper"
 	)
 	binPath, _ := os.Executable()
-	// run neobox-server and neobox-keeper in daemon.
-	neobox := vctrl.NewBox(
+	// run box-server and box-keeper in daemon.
+	box := vctrl.NewBox(
 		exec.Command(binPath, vctrl.NeoBoxCmdName, runnerCmd),
 		exec.Command(binPath, vctrl.NeoBoxCmdName, keeperCmd),
 	)
@@ -33,7 +33,7 @@ func (that *Cli) neobox() {
 		Aliases: []string{"s"},
 		Short:   "Start NeoBox shell.",
 		Run: func(cmd *cobra.Command, args []string) {
-			neobox.StartShell()
+			box.StartShell()
 		},
 	})
 
@@ -42,7 +42,7 @@ func (that *Cli) neobox() {
 		Aliases: []string{"r"},
 		Short:   "Start NeoBox server.",
 		Run: func(cmd *cobra.Command, args []string) {
-			neobox.StartClient() // server.
+			box.StartClient() // server.
 		},
 	})
 
@@ -51,7 +51,7 @@ func (that *Cli) neobox() {
 		Aliases: []string{"k"},
 		Short:   "Start NeoBox keeper.",
 		Run: func(cmd *cobra.Command, args []string) {
-			neobox.StartKeeper()
+			box.StartKeeper()
 		},
 	})
 
@@ -60,7 +60,7 @@ func (that *Cli) neobox() {
 		Aliases: []string{"as"},
 		Short:   "This command is for auto-start on system booting.",
 		Run: func(cmd *cobra.Command, args []string) {
-			neobox.AutoStart(cmd, args...)
+			box.AutoStart(cmd, args...)
 		},
 	}
 	autoStartCmd.Flags().BoolP(run.RestartUseDomain, "d", false, "Uses domains for edgetunnels.")
@@ -75,7 +75,7 @@ func (that *Cli) neobox() {
 		Short:   "Generates an autostart script for NeoBox.",
 		Long:    "The generated script can be added to your system booting list.",
 		Run: func(cmd *cobra.Command, args []string) {
-			neobox.GenAutoStartScript()
+			box.GenAutoStartScript()
 		},
 	}
 	neoboxCmd.AddCommand(genScriptCmd)

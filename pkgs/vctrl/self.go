@@ -65,7 +65,7 @@ func (that *Self) Install() {
 		return
 	}
 	name := filepath.Base(ePath)
-	if strings.HasSuffix(ePath, "/gvc") || strings.HasSuffix(ePath, "gvc.exe") {
+	if strings.HasSuffix(ePath, "/g") || strings.HasSuffix(ePath, "g.exe") {
 		if _, err := utils.CopyFile(ePath, filepath.Join(config.GVCDir, name)); err != nil {
 			gprint.PrintError("%+v", err)
 		}
