@@ -127,18 +127,18 @@ func (that *Cli) git() {
 	}
 	gitCmd.AddCommand(toggleProxyForGitSSHCmd)
 
-	var toEnableProxyFlagName string = "proxy"
+	var toEnableProxyFlagName string = "enable-proxy"
 	lazyGitCmd := &cobra.Command{
 		Use:     "lazygit",
 		Aliases: []string{"lg"},
 		Short:   "Start lazygit with/without an ssh proxy.",
-		Long:    "Example: git lg -p",
+		Long:    "Example: g git lg -e [layzgit-args...]",
 		Run: func(cmd *cobra.Command, args []string) {
 			p, _ := cmd.Flags().GetBool(toEnableProxyFlagName)
 			vg.LazyGit(p, args...)
 		},
 	}
-	lazyGitCmd.Flags().BoolP(toEnableProxyFlagName, "p", false, "To enable the proxy for lazygit.")
+	lazyGitCmd.Flags().BoolP(toEnableProxyFlagName, "e", false, "To enable the proxy for lazygit.")
 	gitCmd.AddCommand(lazyGitCmd)
 
 	var (

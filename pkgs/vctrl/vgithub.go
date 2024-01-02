@@ -440,7 +440,10 @@ func (that *GhDownloader) LazyGit(enableProxy bool, args ...string) {
 		Version:     version,
 		BuildSource: buildSource,
 	}
+	oldArgs := os.Args
+	os.Args = append([]string{"lg"}, args...)
 	lazyapp.Start(ldFlagsBuildInfo, nil)
+	os.Args = oldArgs
 
 	if enableProxy {
 		that.ToggleProxyForGitSSH()
