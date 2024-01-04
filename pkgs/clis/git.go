@@ -108,7 +108,7 @@ func (that *Cli) git() {
 
 	sshProxyCmd := &cobra.Command{
 		Use:     "ssh-proxy-fix",
-		Aliases: []string{"sp"},
+		Aliases: []string{"spf"},
 		Short:   "Adds proxy info to the ssh config file.",
 		Run: func(cmd *cobra.Command, args []string) {
 			pxyURI := vg.ReadDefaultProxy()
@@ -119,7 +119,7 @@ func (that *Cli) git() {
 
 	toggleProxyForGitSSHCmd := &cobra.Command{
 		Use:     "toggle-ssh-proxy",
-		Aliases: []string{"tp"},
+		Aliases: []string{"tsp"},
 		Short:   "Toggle status of the proxy for ssh.",
 		Run: func(cmd *cobra.Command, args []string) {
 			vg.ToggleProxyForGitSSH()

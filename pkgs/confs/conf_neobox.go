@@ -92,6 +92,7 @@ func (that *NeoboxConf) Reset() {
 	// location related
 	that.nconf.Conf.CountryAbbrevsUrl = "https://gitlab.com/moqsien/neobox_related/-/raw/main/country_names.json?ref_type=heads&inline=false"
 	that.nconf.Conf.IPLocationQueryUrl = "https://www.fkcoder.com/ip?ip=%s"
+	that.nconf.Conf.IPLocationQueryUrl2 = "http://ip-api.com/json/%s"
 
 	// keeper related
 	that.nconf.Conf.KeeperCron = "@every 3m"

@@ -17,7 +17,7 @@ require (
 	github.com/moqsien/goutils v0.7.6
 	github.com/moqsien/gshell v0.2.7
 	github.com/moqsien/hackbrowser v1.0.6
-	github.com/moqsien/neobox v1.5.2
+	github.com/moqsien/neobox v1.5.5
 	github.com/postfinance/single v0.0.2
 	github.com/spf13/cobra v1.8.0
 	github.com/studio-b12/gowebdav v0.0.0-20230203202212-3282f94193f2
