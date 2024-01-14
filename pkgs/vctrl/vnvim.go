@@ -133,3 +133,5 @@ func (that *NVim) initiatePlugins() {
 func (that *NVim) Install() {
 	that.download()
 }
+
+// TODO: astronvim installation.

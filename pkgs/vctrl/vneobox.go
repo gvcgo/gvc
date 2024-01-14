@@ -18,7 +18,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// TODO: update sing-box
 type NeoBox struct {
 	conf   *config.GVConfig
 	nconf  *neoconf.NeoConf

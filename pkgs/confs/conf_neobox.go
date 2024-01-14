@@ -56,12 +56,13 @@ func (that *NeoboxConf) Reset() {
 	that.nconf.Conf.LogDir = filepath.Join(that.path, "neobox_logs")
 	that.nconf.Conf.GeoInfoDir = filepath.Join(that.path, "neobox_geoinfo")
 	that.nconf.Conf.SocketDir = filepath.Join(that.path, "neobox_socket")
+	// TODO: Encrypted.
 	that.nconf.Conf.DatabaseDir = GVCBackupDir // save sqlite db file to BackupDir
 	// new added
 	that.nconf.Conf.HistoryMaxLines = 300
 	that.nconf.Conf.HistoryFileName = neoconf.HistoryFileName
 	that.nconf.Conf.ShellSocketName = neoconf.ShellSocketName
-
+	// TODO: change to github.
 	that.nconf.Conf.DownloadUrl = "https://gitlab.com/moqsien/neobox_related/-/raw/main/conf.txt"
 
 	// ping related
@@ -71,6 +72,7 @@ func (that *NeoboxConf) Reset() {
 
 	// geoinfo files related
 	that.nconf.Conf.GeoInfoSumUrl = "https://gitlab.com/moqsien/gvc_resources/-/raw/main/files_info.json?ref_type=heads&inline=false"
+	// TODO: change to github.
 	that.nconf.Conf.GeoInfoUrls = map[string]string{
 		"geoip.dat":   "https://gitlab.com/moqsien/neobox_related/-/raw/main/geoip.dat",
 		"geosite.dat": "https://gitlab.com/moqsien/neobox_related/-/raw/main/geosite.dat",
@@ -99,14 +101,15 @@ func (that *NeoboxConf) Reset() {
 
 	// cloudflare/wireguard related
 	that.nconf.Conf.CloudflareConf = &neoconf.CloudflareConf{
-		CloudflareIPV4URL:       "https://www.cloudflare.com/ips-v4",
-		PortList:                []int{443, 8443, 2053, 2096, 2087, 2083},
-		MaxPingCount:            4,
-		MaxGoroutines:           300,
-		MaxRTT:                  500,
-		MaxLossRate:             0.0,
-		MaxSaveToDB:             1000,
-		WireGuardConfDir:        GVCBackupDir, // save wireguard configurations to BackupDir
+		CloudflareIPV4URL: "https://www.cloudflare.com/ips-v4",
+		PortList:          []int{443, 8443, 2053, 2096, 2087, 2083},
+		MaxPingCount:      4,
+		MaxGoroutines:     300,
+		MaxRTT:            500,
+		MaxLossRate:       0.0,
+		MaxSaveToDB:       1000,
+		WireGuardConfDir:  GVCBackupDir, // save wireguard configurations to BackupDir
+		// TODO: change to github.
 		CloudflareDomainFileUrl: "https://gitlab.com/moqsien/neobox_related/-/raw/main/cloudflare_domains.txt?ref_type=heads&inline=false",
 	}
 	// save to config file.

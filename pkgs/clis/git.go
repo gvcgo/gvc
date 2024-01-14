@@ -178,7 +178,7 @@ func (that *Cli) git() {
 	pullCmd := &cobra.Command{
 		Use:     "pull",
 		Aliases: []string{"P"},
-		Short:   "Pulles from a remote repo.",
+		Short:   "Pulls from a remote repo.",
 		Long:    "Example: g P --proxy=http://localhost:2023",
 		Run: func(cmd *cobra.Command, args []string) {
 			vg.Pull(getProxy(cmd))

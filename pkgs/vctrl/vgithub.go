@@ -21,6 +21,10 @@ import (
 	"github.com/moqsien/gvc/pkgs/utils"
 )
 
+const (
+	DefaultProxyFileName string = ".default_proxy.conf"
+)
+
 type GhDownloader struct {
 	Conf     *config.GVConfig
 	path     string
@@ -184,7 +188,7 @@ func (that *GhDownloader) OpenByBrowser(chosen int) {
 }
 
 func (that *GhDownloader) SaveDefaultProxy(proxyUrl string) {
-	filePath := filepath.Join(config.GVCDir, ".default_proxy.conf")
+	filePath := filepath.Join(config.GVCDir, DefaultProxyFileName)
 	if proxyUrl == "" {
 		proxyUrl = "http://127.0.0.1:2023"
 	}
@@ -194,7 +198,7 @@ func (that *GhDownloader) SaveDefaultProxy(proxyUrl string) {
 }
 
 func (that *GhDownloader) ReadDefaultProxy() string {
-	filePath := filepath.Join(config.GVCDir, ".default_proxy.conf")
+	filePath := filepath.Join(config.GVCDir, DefaultProxyFileName)
 	r, _ := os.ReadFile(filePath)
 	if len(r) == 0 {
 		return "http://127.0.0.1:2023"
