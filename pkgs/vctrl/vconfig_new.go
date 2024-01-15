@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"path/filepath"
 
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/koanfer"
 	"github.com/moqsien/goutils/pkgs/storage"
 	"github.com/moqsien/gvc/pkgs/confs"
@@ -45,15 +46,42 @@ func NewSynchronizer() (s *Synchronizer) {
 }
 
 func (that *Synchronizer) initiate() {
+	if that.koanfer == nil {
+		gprint.PrintError("nil koanfer.")
+		return
+	}
 	if that.CNF.AccessToken == "" {
 		var SType RepoType
 		fmt.Println("Choose your repo type: ")
 		fmt.Println("1. Github. ")
 		fmt.Println("2. Gitee. ")
 		fmt.Scanln(&SType)
+
+		var username string
+		fmt.Println("Enter your username: ")
+		fmt.Scanln(&username)
+
+		var token string
+		fmt.Println("Enter your access token: ")
+		fmt.Scanln(&token)
+
+		var key string
+		fmt.Println("Enter your crypto key: ")
+		fmt.Scanln(&key)
+
+		var proxyUri string
+		fmt.Println("Enter your proxy uri: ")
+		fmt.Scanln(&proxyUri)
+
 		that.CNF.Type = SType
-		// TODO: config uploader.
+		that.CNF.UserName = username
+		that.CNF.AccessToken = token
+		that.CNF.CryptoKey = key
+		that.CNF.ProxyURI = proxyUri
+		that.koanfer.Save(that.CNF)
 	}
+
+	that.koanfer.Load(that.CNF)
 	that.storage = storage.NewGhStorage(that.CNF.UserName, that.CNF.AccessToken)
 }
 
