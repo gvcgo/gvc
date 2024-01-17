@@ -17,6 +17,7 @@ const (
 	RepoTypeGitee   RepoType = "gitee"
 	RepoName        string   = "gvc_configs"
 	StorageConfName string   = ".remote_storage.json"
+	EncryptedFlag   string   = "encypd"
 )
 
 /*
@@ -88,6 +89,12 @@ func (that *Synchronizer) initiate() {
 func (that *Synchronizer) UploadFile() {
 
 }
+
+func (that *Synchronizer) EncryptAndUploadFile() {
+
+}
+
+func (that *Synchronizer) ZipAndUploadFile() {}
 
 func (that *Synchronizer) DownloadFile() {
 
