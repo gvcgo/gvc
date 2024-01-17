@@ -8,6 +8,7 @@ require (
 	github.com/charmbracelet/lipgloss v0.8.0
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/gogf/gf v1.16.9
+	github.com/gogf/gf/v2 v2.6.1
 	github.com/hhatto/gocloc v0.5.2
 	github.com/jesseduffield/lazygit v0.40.2
 	github.com/knadh/koanf v1.5.0
@@ -108,7 +109,6 @@ require (
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/gofrs/uuid/v5 v5.0.0 // indirect
-	github.com/gogf/gf/v2 v2.6.1 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/golang/snappy v0.0.2 // indirect

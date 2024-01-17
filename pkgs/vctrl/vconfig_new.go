@@ -2,22 +2,31 @@ package vctrl
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 
+	"github.com/gogf/gf/v2/encoding/gjson"
+	"github.com/moqsien/goutils/pkgs/archiver"
+	"github.com/moqsien/goutils/pkgs/crypt"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/koanfer"
 	"github.com/moqsien/goutils/pkgs/storage"
-	"github.com/moqsien/gvc/pkgs/confs"
+	config "github.com/moqsien/gvc/pkgs/confs"
+	"github.com/moqsien/gvc/pkgs/utils"
 )
 
 type RepoType string
 
+type EncryptoType string
+
 const (
-	RepoTypeGithub  RepoType = "github"
-	RepoTypeGitee   RepoType = "gitee"
-	RepoName        string   = "gvc_configs"
-	StorageConfName string   = ".remote_storage.json"
-	EncryptedFlag   string   = "encypd"
+	RepoTypeGithub  RepoType     = "github"
+	RepoTypeGitee   RepoType     = "gitee"
+	RepoName        string       = "gvc_configs"
+	StorageConfName string       = ".remote_storage.json"
+	EncryptByAES    EncryptoType = "aes"
+	EncryptByZip    EncryptoType = "zip"
+	EncryptByNone   EncryptoType = "none"
 )
 
 /*
@@ -40,7 +49,7 @@ type Synchronizer struct {
 
 func NewSynchronizer() (s *Synchronizer) {
 	s = &Synchronizer{}
-	s.path = filepath.Join(confs.GetGVCWorkDir(), StorageConfName)
+	s.path = filepath.Join(config.GetGVCWorkDir(), StorageConfName)
 	s.koanfer, _ = koanfer.NewKoanfer(s.path)
 	s.initiate()
 	return
@@ -83,19 +92,69 @@ func (that *Synchronizer) initiate() {
 	}
 
 	that.koanfer.Load(that.CNF)
-	that.storage = storage.NewGhStorage(that.CNF.UserName, that.CNF.AccessToken)
+
+	// setup for remote storage.
+	switch that.CNF.Type {
+	case RepoTypeGithub:
+		gh := storage.NewGhStorage(that.CNF.UserName, that.CNF.AccessToken)
+		gh.Proxy = that.CNF.ProxyURI
+		that.storage = gh
+	case RepoTypeGitee:
+		that.storage = storage.NewGtStorage(that.CNF.UserName, that.CNF.AccessToken)
+	default:
+	}
 }
 
-func (that *Synchronizer) UploadFile() {
-
+func (that *Synchronizer) upload(fPath, remoteFileName string) (r []byte) {
+	if that.storage == nil {
+		gprint.PrintError("No remote storages found.")
+		return
+	}
+	content := that.storage.GetContents(RepoName, "", remoteFileName)
+	shaStr := gjson.New(content).Get("sha").String()
+	return that.storage.UploadFile(RepoName, "", fPath, shaStr)
 }
 
-func (that *Synchronizer) EncryptAndUploadFile() {
-
+func (that *Synchronizer) UploadFile(fPath, remoteFileName string, et EncryptoType) {
+	if ok, _ := utils.PathIsExist(fPath); !ok {
+		gprint.PrintError("File not exist: %s", fPath)
+		return
+	}
+	switch et {
+	case EncryptByAES:
+		cc := crypt.NewCrptWithKey([]byte(that.CNF.CryptoKey))
+		content, err := os.ReadFile(fPath)
+		if err != nil {
+			gprint.PrintError("Read file error: %+v", err)
+			return
+		}
+		if r, err := cc.AesEncrypt([]byte(content)); err != nil {
+			gprint.PrintError("Encrypt file error: %+v", err)
+			return
+		} else {
+			fPath = filepath.Join(config.GVCBackupDir, remoteFileName)
+			if err = os.WriteFile(fPath, r, os.ModePerm); err != nil {
+				gprint.PrintError("Write file error: %+v", err)
+				return
+			}
+		}
+	case EncryptByZip:
+		if archive, err := archiver.NewArchiver(fPath, config.GVCBackupDir, false); err == nil {
+			archive.SetZipName(remoteFileName)
+			archive.SetPassword(that.CNF.CryptoKey)
+			err = archive.ZipDir()
+			if err != nil {
+				gprint.PrintError("Zip dir error: %+v", err)
+				return
+			}
+		}
+		fPath = filepath.Join(config.GVCBackupDir, remoteFileName)
+	default:
+	}
+	// TODO: success or not.
+	that.upload(fPath, remoteFileName)
 }
 
-func (that *Synchronizer) ZipAndUploadFile() {}
-
-func (that *Synchronizer) DownloadFile() {
+func (that *Synchronizer) DownloadFile(fPath, remoteFileName string, et EncryptoType) {
 
 }
