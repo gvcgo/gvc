@@ -22,7 +22,6 @@ require (
 	github.com/postfinance/single v0.0.2
 	github.com/spf13/cobra v1.8.0
 	github.com/studio-b12/gowebdav v0.0.0-20230203202212-3282f94193f2
-	github.com/tidwall/gjson v1.14.4
 )
 
 require (
@@ -251,6 +250,7 @@ require (
 	github.com/spkg/bom v0.0.0-20160624110644-59b7046e48ad // indirect
 	github.com/stefanhaller/tcell/v2 v2.6.2-0.20230806061358-2dfa11eddb68 // indirect
 	github.com/syndtr/goleveldb v1.0.0 // indirect
+	github.com/tidwall/gjson v1.14.4 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect

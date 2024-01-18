@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gogf/gf/encoding/gjson"
+	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/mholt/archiver/v3"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/gtea/selector"
@@ -82,28 +82,28 @@ func (that *JuliaVersion) GetVersions() {
 		that.getJson()
 	}
 	if that.Json != nil {
-		m := that.Json.GetMap(".")
+		m := that.Json.Get(".").Map()
 		for version, vcontent := range m {
 			j := gjson.New(vcontent)
-			if j.GetBool("stable") {
+			if j.Get("stable").Bool() {
 				if len(that.Versions[version]) == 0 {
 					that.Versions[version] = []*JuliaPackage{}
 				}
-				for _, f := range j.GetArray("files") {
+				for _, f := range j.Get("files").Array() {
 					fj := gjson.New(f)
-					if fj.GetString("kind") == "archive" {
-						fext := fj.GetString("extension")
+					if fj.Get("kind").String() == "archive" {
+						fext := fj.Get("extension").String()
 						if fext != "tar.gz" && fext != "zip" && fext != "tar.xz" {
 							continue
 						}
 						p := &JuliaPackage{}
-						p.Url = fj.GetString("url")
-						p.Arch = utils.ParseArch(fj.GetString("arch"))
-						p.OS = utils.ParsePlatform(fj.GetString("os"))
+						p.Url = fj.Get("url").String()
+						p.Arch = utils.ParseArch(fj.Get("arch").String())
+						p.OS = utils.ParsePlatform(fj.Get("os").String())
 						if p.Arch == "" || p.OS == "" || p.Url == "" {
 							continue
 						}
-						p.Checksum = fj.GetString("sha256")
+						p.Checksum = fj.Get("sha256").String()
 
 						p.FileName = fmt.Sprintf("julia-%s-%s-%s.%s",
 							version, p.OS, p.Arch, fext)

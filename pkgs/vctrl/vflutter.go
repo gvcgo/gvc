@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/gogf/gf/encoding/gjson"
+	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/mholt/archiver/v3"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/gtea/selector"
@@ -100,7 +100,7 @@ func (that *FlutterVersion) getJson() {
 		that.Json = gjson.New(content)
 	}
 	if that.Json != nil {
-		that.baseUrl = that.Json.GetString("base_url")
+		that.baseUrl = that.Json.Get("base_url").String()
 	}
 }
 
@@ -118,24 +118,24 @@ func (that *FlutterVersion) GetVersions() {
 		that.getJson()
 	}
 	if that.Json != nil {
-		rList := that.Json.GetArray("releases")
+		rList := that.Json.Get("releases").Array()
 		for _, release := range rList {
 			j := gjson.New(release)
-			rChannel := j.GetString("channel")
-			version := j.GetString("version")
+			rChannel := j.Get("channel").String()
+			version := j.Get("version").String()
 			if rChannel != "stable" || version == "" || strings.Contains(version, "hotfix") {
 				continue
 			}
 
 			p := &FlutterPackage{}
-			p.Url = j.GetString("archive")
-			p.Arch = utils.ParseArch(j.GetString("dart_sdk_arch"))
+			p.Url = j.Get("archive").String()
+			p.Arch = utils.ParseArch(j.Get("dart_sdk_arch").String())
 			if p.Url == "" || p.Arch == "" {
 				continue
 			}
 			p.OS = runtime.GOOS
-			p.DartVersion = j.GetString("dart_sdk_version")
-			p.Checksum = j.GetString("sha256")
+			p.DartVersion = j.Get("dart_sdk_version").String()
+			p.Checksum = j.Get("sha256").String()
 			p.FileName = fmt.Sprintf("flutter-%s-%s-%s%s",
 				version, p.OS, p.Arch, that.GetFileSuffix(p.Url))
 			if len(that.Versions[version]) == 0 {

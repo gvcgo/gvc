@@ -11,13 +11,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/mholt/archiver/v3"
 	"github.com/moqsien/goutils/pkgs/gtea/confirm"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
-	"github.com/tidwall/gjson"
 )
 
 type CodePackage struct {
@@ -69,17 +69,19 @@ func (that *Code) getPackages() (r string) {
 	if resp := that.fetcher.Get(); resp != nil {
 		defer resp.RawBody().Close()
 		rjson, _ := io.ReadAll(resp.RawBody())
-		products := gjson.Get(string(rjson), "products")
-		for _, product := range products.Array() {
+		j := gjson.New(rjson)
+		products := j.Get("products").Array()
+		for _, product := range products {
+			pd := gjson.New(product)
 			if that.Version == "" {
-				that.Version = product.Get("productVersion").String()
+				that.Version = pd.Get("productVersion").String()
 			}
-			osArch := product.Get("platform.os")
-			if localOsArch, ok := codeType[osArch.String()]; ok {
+			osArch := pd.Get("platform.os").String()
+			if localOsArch, ok := codeType[osArch]; ok {
 				that.Packages[localOsArch] = &CodePackage{
-					OsArchName: osArch.String(),
-					Url:        product.Get("url").String(),
-					CheckSum:   product.Get("sha256hash").String(),
+					OsArchName: osArch,
+					Url:        pd.Get("url").String(),
+					CheckSum:   pd.Get("sha256hash").String(),
 					CheckType:  "sha256",
 				}
 			}

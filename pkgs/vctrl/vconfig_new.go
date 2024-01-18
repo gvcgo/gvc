@@ -60,6 +60,7 @@ func (that *Synchronizer) initiate() {
 		gprint.PrintError("nil koanfer.")
 		return
 	}
+	// TODO: use bubbletea TUI.
 	if that.CNF.AccessToken == "" {
 		var SType RepoType
 		fmt.Println("Choose your repo type: ")
@@ -151,10 +152,18 @@ func (that *Synchronizer) UploadFile(fPath, remoteFileName string, et EncryptoTy
 		fPath = filepath.Join(config.GVCBackupDir, remoteFileName)
 	default:
 	}
-	// TODO: success or not.
-	that.upload(fPath, remoteFileName)
+
+	r := that.upload(fPath, remoteFileName)
+	j := gjson.New(r)
+	if j.Get("content.path").String() != "" && j.Get("content.sha").String() != "" {
+		gprint.PrintSuccess("uploaded successfully: %s", fPath)
+	} else {
+		gprint.PrintWarning("error occurred: %s", string(r))
+	}
 }
 
 func (that *Synchronizer) DownloadFile(fPath, remoteFileName string, et EncryptoType) {
 
 }
+
+// TODO: change gjson to v2.

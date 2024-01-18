@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gogf/gf/encoding/gjson"
+	"github.com/gogf/gf/v2/encoding/gjson"
 )
 
 var toolbarFlag bool
@@ -35,16 +35,16 @@ type BkmNode struct {
 func (that *BkmNode) ParseTree(content interface{}) {
 	if that.BType == Chrome {
 		j := gjson.New(content)
-		that.DateAdded = j.GetString("date_added")
-		that.DateLastUsed = j.GetString("date_last_used")
-		that.DateModified = j.GetString("date_modified")
-		that.Guid = j.GetString("guid")
-		that.Id = j.GetString("id")
-		that.Name = j.GetString("name")
-		that.Type = j.GetString("type")
-		that.Url = j.GetString("url")
+		that.DateAdded = j.Get("date_added").String()
+		that.DateLastUsed = j.Get("date_last_used").String()
+		that.DateModified = j.Get("date_modified").String()
+		that.Guid = j.Get("guid").String()
+		that.Id = j.Get("id").String()
+		that.Name = j.Get("name").String()
+		that.Type = j.Get("type").String()
+		that.Url = j.Get("url").String()
 		if that.Type == BFolder {
-			children := j.GetArray("children")
+			children := j.Get("children").Array()
 			for _, v := range children {
 				child := &BkmNode{BType: Chrome}
 				that.Children = append(that.Children, child)
