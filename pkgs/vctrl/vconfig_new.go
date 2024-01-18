@@ -165,5 +165,3 @@ func (that *Synchronizer) UploadFile(fPath, remoteFileName string, et EncryptoTy
 func (that *Synchronizer) DownloadFile(fPath, remoteFileName string, et EncryptoType) {
 
 }
-
-// TODO: change gjson to v2.

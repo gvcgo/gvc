@@ -13,11 +13,11 @@ require (
 	github.com/knadh/koanf v1.5.0
 	github.com/mholt/archiver/v3 v3.5.1
 	github.com/moqsien/asciinema v0.3.0
-	github.com/moqsien/gogpt v0.2.4
-	github.com/moqsien/goutils v0.8.0
+	github.com/moqsien/gogpt v0.2.5
+	github.com/moqsien/goutils v0.8.1
 	github.com/moqsien/gshell v0.2.8
 	github.com/moqsien/hackbrowser v1.0.6
-	github.com/moqsien/neobox v1.5.6
+	github.com/moqsien/neobox v1.5.7
 	github.com/postfinance/single v0.0.2
 	github.com/spf13/cobra v1.8.0
 	github.com/studio-b12/gowebdav v0.0.0-20230203202212-3282f94193f2
@@ -33,14 +33,11 @@ require (
 	github.com/Microsoft/go-winio v0.6.1 // indirect
 	github.com/OpenPeeDeeP/xdg v1.0.0 // indirect
 	github.com/ProtonMail/go-crypto v0.0.0-20230828082145-3c4c8a2d2371 // indirect
-	github.com/abiosoft/ishell/v2 v2.0.2 // indirect
-	github.com/abiosoft/readline v0.0.0-20180607040430-155bce2042db // indirect
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/alecthomas/chroma v0.10.0 // indirect
 	github.com/alexmullins/zip v0.0.0-20180717182244-4affb64b04d0 // indirect
 	github.com/andybalholm/brotli v1.0.6 // indirect
 	github.com/andybalholm/cascadia v1.3.2 // indirect
-	github.com/aquasecurity/table v1.8.0 // indirect
 	github.com/atotto/clipboard v0.1.4 // indirect
 	github.com/avast/retry-go v3.0.0+incompatible // indirect
 	github.com/aybabtme/humanlog v0.4.1 // indirect
@@ -55,7 +52,6 @@ require (
 	github.com/charmbracelet/glamour v0.6.0 // indirect
 	github.com/charmbracelet/harmonica v0.2.0 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
-	github.com/clbanning/mxj v1.8.5-0.20200714211355-ff02cfb8ea28 // indirect
 	github.com/clbanning/mxj/v2 v2.7.0 // indirect
 	github.com/cloudflare/circl v1.3.6 // indirect
 	github.com/cloudfoundry/jibber_jabber v0.0.0-20151120183258-bcc4c8345a21 // indirect
@@ -71,7 +67,6 @@ require (
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/fatih/color v1.15.0 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
-	github.com/flynn-archive/go-shlex v0.0.0-20150515145356-3f9db97f8568 // indirect
 	github.com/francoispqt/gojay v1.2.13 // indirect
 	github.com/fsmiamoto/git-todo-parser v0.0.5 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
@@ -98,7 +93,6 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.13.0 // indirect
-	github.com/go-sql-driver/mysql v1.7.1 // indirect
 	github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/gobwas/httphead v0.1.0 // indirect
@@ -107,11 +101,9 @@ require (
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/gofrs/uuid/v5 v5.0.0 // indirect
-	github.com/gogf/gf v1.16.9 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/golang/snappy v0.0.2 // indirect
-	github.com/gomodule/redigo v1.8.9 // indirect
 	github.com/google/btree v1.1.2 // indirect
 	github.com/google/pprof v0.0.0-20231101202521-4ca4178f5c7a // indirect
 	github.com/google/uuid v1.3.1 // indirect
@@ -173,8 +165,6 @@ require (
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
-	github.com/moqsien/goktrl v1.3.8 // indirect
-	github.com/moqsien/processes v1.0.3 // indirect
 	github.com/moqsien/vpnparser v0.2.6 // indirect
 	github.com/moqsien/wgcf v0.0.0-20230611034603-e29859e0cae2 // indirect
 	github.com/moqsien/xtractr v0.0.2 // indirect
@@ -238,7 +228,7 @@ require (
 	github.com/sahilm/fuzzy v0.1.0 // indirect
 	github.com/samber/lo v1.31.0 // indirect
 	github.com/sasha-s/go-deadlock v0.3.1 // indirect
-	github.com/sashabaranov/go-openai v1.16.0 // indirect
+	github.com/sashabaranov/go-openai v1.18.3 // indirect
 	github.com/scjalliance/comshim v0.0.0-20230315213746-5e51f40bd3b9 // indirect
 	github.com/seiflotfy/cuckoofilter v0.0.0-20220411075957-e3b120b3f5fb // indirect
 	github.com/sergi/go-diff v1.2.0 // indirect
