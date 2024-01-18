@@ -162,6 +162,22 @@ func (that *Synchronizer) UploadFile(fPath, remoteFileName string, et EncryptoTy
 	}
 }
 
-func (that *Synchronizer) DownloadFile(fPath, remoteFileName string, et EncryptoType) {
+func (that *Synchronizer) download(remoteFileName string) (dUrl string) {
+	if that.storage == nil {
+		gprint.PrintError("No remote storages found.")
+		return
+	}
+	content := that.storage.GetContents(RepoName, "", remoteFileName)
+	dUrl = gjson.New(content).Get("download_url").String()
+	if dUrl == "" {
+		gprint.PrintWarning("can not find %s in remote repo. %s", remoteFileName, string(content))
+	}
+	return
+}
 
+func (that *Synchronizer) DownloadFile(fPath, remoteFileName string, et EncryptoType) {
+	dUrl := that.download(remoteFileName)
+	if dUrl == "" {
+		return
+	}
 }
