@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gogf/gf/os/genv"
+	"github.com/gogf/gf/v2/os/genv"
 	"github.com/mholt/archiver/v3"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/request"

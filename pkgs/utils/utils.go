@@ -20,7 +20,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/gogf/gf/os/genv"
+	"github.com/gogf/gf/v2/os/genv"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 )
 
