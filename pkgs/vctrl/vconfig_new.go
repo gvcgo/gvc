@@ -1,7 +1,6 @@
 package vctrl
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"time"
@@ -10,6 +9,7 @@ import (
 	"github.com/moqsien/goutils/pkgs/archiver"
 	"github.com/moqsien/goutils/pkgs/crypt"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
+	"github.com/moqsien/goutils/pkgs/gtea/input"
 	"github.com/moqsien/goutils/pkgs/koanfer"
 	"github.com/moqsien/goutils/pkgs/request"
 	"github.com/moqsien/goutils/pkgs/storage"
@@ -62,41 +62,15 @@ func (that *Synchronizer) initiate() {
 		gprint.PrintError("nil koanfer.")
 		return
 	}
-	// TODO: use bubbletea TUI.
-	if that.CNF.AccessToken == "" {
-		var SType RepoType
-		fmt.Println("Choose your repo type: ")
-		fmt.Println("1. Github. ")
-		fmt.Println("2. Gitee. ")
-		fmt.Scanln(&SType)
 
-		var username string
-		fmt.Println("Enter your username: ")
-		fmt.Scanln(&username)
-
-		var token string
-		fmt.Println("Enter your access token: ")
-		fmt.Scanln(&token)
-
-		var key string
-		fmt.Println("Enter your crypto key: ")
-		fmt.Scanln(&key)
-
-		var proxyUri string
-		fmt.Println("Enter your proxy uri: ")
-		fmt.Scanln(&proxyUri)
-
-		that.CNF.Type = SType
-		that.CNF.UserName = username
-		that.CNF.AccessToken = token
-		that.CNF.CryptoKey = key
-		that.CNF.ProxyURI = proxyUri
-		that.koanfer.Save(that.CNF)
+	// configs for remote repo.
+	if that.CNF.AccessToken == "" || that.CNF.UserName == "" || that.CNF.CryptoKey == "" {
+		that.Setup()
 	}
 
 	that.koanfer.Load(that.CNF)
 
-	// setup for remote storage.
+	// remote storage.
 	switch that.CNF.Type {
 	case RepoTypeGithub:
 		gh := storage.NewGhStorage(that.CNF.UserName, that.CNF.AccessToken)
@@ -105,8 +79,80 @@ func (that *Synchronizer) initiate() {
 	case RepoTypeGitee:
 		that.storage = storage.NewGtStorage(that.CNF.UserName, that.CNF.AccessToken)
 	default:
-		// TODO: copy file to backupdir.
 	}
+}
+
+func (that *Synchronizer) Setup() {
+	if ok, _ := utils.PathIsExist(that.path); ok {
+		that.koanfer.Load(that.CNF)
+	}
+	var (
+		repoType  string = "RepoType"
+		userName  string = "UserName"
+		authToken string = "AuthToken"
+		cryptoKey string = "CryptoKey"
+		proxyUri  string = "ProxyURI"
+	)
+	mInput := input.NewMultiInput()
+	repoTypeValueList := []string{
+		string(RepoTypeGithub),
+		string(RepoTypeGitee),
+	}
+
+	mInput.AddOneOption(
+		repoType,
+		repoTypeValueList,
+		input.MWithWidth(60),
+		input.MWithPlaceholder("choose your remote repository type."),
+		input.MWithDefaultValue(string(that.CNF.Type)),
+	)
+
+	mInput.AddOneItem(
+		userName,
+		input.MWithWidth(60),
+		input.MWithPlaceholder("your github/gitee username."),
+		input.MWithDefaultValue(that.CNF.UserName),
+	)
+
+	mInput.AddOneItem(
+		authToken,
+		input.MWithWidth(60),
+		input.MWithPlaceholder("your github/gitee access token."),
+		input.MWithDefaultValue(that.CNF.AccessToken),
+	)
+
+	mInput.AddOneItem(
+		cryptoKey,
+		input.MWithWidth(60),
+		input.MWithPlaceholder("your crypto key to encrypt private data."),
+		input.MWithDefaultValue(that.CNF.CryptoKey),
+	)
+
+	mInput.AddOneItem(
+		proxyUri,
+		input.MWithWidth(60),
+		input.MWithPlaceholder("proxy uri for github."),
+		input.MWithDefaultValue(that.CNF.ProxyURI),
+	)
+
+	mInput.Run()
+	result := mInput.Values()
+	if r := result[repoType]; r != "" {
+		that.CNF.Type = RepoType(r)
+	}
+	if r := result[userName]; r != "" {
+		that.CNF.UserName = r
+	}
+	if r := result[authToken]; r != "" {
+		that.CNF.AccessToken = r
+	}
+	if r := result[cryptoKey]; r != "" {
+		that.CNF.CryptoKey = r
+	}
+	if r := result[proxyUri]; r != "" {
+		that.CNF.ProxyURI = r
+	}
+	that.koanfer.Save(that.CNF)
 }
 
 func (that *Synchronizer) upload(fPath, remoteFileName string) (r []byte) {
