@@ -222,3 +222,11 @@ func (that *Code) Install() {
 		that.InstallForLinux()
 	}
 }
+
+/*
+TODO: synchronize vscode-related config files to remote repo.
+
+VSCode user settings file.
+VSCode key-bindings file.
+VSCode installed extensions.
+*/

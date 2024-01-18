@@ -453,3 +453,7 @@ func (that *GhDownloader) LazyGit(enableProxy bool, args ...string) {
 		that.ToggleProxyForGitSSH()
 	}
 }
+
+/*
+TODO: synchronize your .ssh(zipped) files to remote repo.
+*/

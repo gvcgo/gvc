@@ -136,3 +136,7 @@ func (that *NeoBox) GenAutoStartScript() {
 	os.WriteFile(scriptPath, []byte(content), 0777)
 	gprint.PrintInfo("Autostart script path: %s", scriptPath)
 }
+
+/*
+TODO: synchronize local db(zipped) to remote repo.
+*/

@@ -132,3 +132,11 @@ func (that *Browser) PullData() {
 	vconf := NewGVCWebdav()
 	vconf.Pull()
 }
+
+/*
+TODO: synchronize files to remote repo.
+
+bookmark list.
+password(encrypted).
+extension list.
+*/

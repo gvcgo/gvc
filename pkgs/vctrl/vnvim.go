@@ -134,4 +134,10 @@ func (that *NVim) Install() {
 	that.download()
 }
 
+/*
+TODO: synchronize nvim conf files to remote repo.
+
+neovim conf files.
+*/
+
 // TODO: astronvim installation.

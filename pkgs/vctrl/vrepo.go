@@ -17,6 +17,10 @@ import (
 	"github.com/moqsien/gvc/pkgs/utils"
 )
 
+/*
+Use github/gitee repositary as remote storage for your local configurations.
+*/
+
 type RepoType string
 
 type EncryptoType string
