@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/moqsien/goutils/pkgs/archiver"
 	"github.com/moqsien/goutils/pkgs/crypt"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/koanfer"
+	"github.com/moqsien/goutils/pkgs/request"
 	"github.com/moqsien/goutils/pkgs/storage"
 	config "github.com/moqsien/gvc/pkgs/confs"
 	"github.com/moqsien/gvc/pkgs/utils"
@@ -103,6 +105,7 @@ func (that *Synchronizer) initiate() {
 	case RepoTypeGitee:
 		that.storage = storage.NewGtStorage(that.CNF.UserName, that.CNF.AccessToken)
 	default:
+		// TODO: copy file to backupdir.
 	}
 }
 
@@ -151,6 +154,17 @@ func (that *Synchronizer) UploadFile(fPath, remoteFileName string, et EncryptoTy
 		}
 		fPath = filepath.Join(config.GVCBackupDir, remoteFileName)
 	default:
+		// copy local file to backupdir then upload.
+		content, err := os.ReadFile(fPath)
+		if err != nil {
+			gprint.PrintError("Read file error: %+v", err)
+			return
+		}
+		fPath = filepath.Join(config.GVCBackupDir, remoteFileName)
+		if err = os.WriteFile(fPath, content, os.ModePerm); err != nil {
+			gprint.PrintError("Write file error: %+v", err)
+			return
+		}
 	}
 
 	r := that.upload(fPath, remoteFileName)
@@ -179,5 +193,57 @@ func (that *Synchronizer) DownloadFile(fPath, remoteFileName string, et Encrypto
 	dUrl := that.download(remoteFileName)
 	if dUrl == "" {
 		return
+	}
+	// download and deploy files.
+	fetcher := request.NewFetcher()
+	fetcher.Timeout = time.Minute * 30
+	fetcher.SetUrl(dUrl)
+	fetcher.Proxy = that.CNF.ProxyURI
+
+	srcPath := filepath.Join(config.GVCBackupDir, remoteFileName)
+	if size := fetcher.GetAndSaveFile(srcPath, true); size > 20 {
+		switch et {
+		case EncryptByAES:
+			cc := crypt.NewCrptWithKey([]byte(that.CNF.CryptoKey))
+			content, err := os.ReadFile(srcPath)
+			if err != nil {
+				gprint.PrintError("Read file failed: %+v", err)
+				return
+			}
+			if r, err := cc.AesDecrypt([]byte(content)); err != nil {
+				gprint.PrintError("Decrypt file failed: %+v", err)
+				return
+			} else {
+				// deploy remote file to local.
+				if err = os.WriteFile(fPath, r, os.ModePerm); err != nil {
+					gprint.PrintError("Write file failed: %+v", err)
+					return
+				}
+			}
+		case EncryptByZip:
+			dstDir := filepath.Dir(fPath)
+			if archive, err := archiver.NewArchiver(srcPath, dstDir, false); err == nil {
+				archive.SetPassword(that.CNF.CryptoKey)
+				_, err = archive.UnArchive()
+				if err != nil {
+					gprint.PrintError("unarchive failed: %+v", err)
+					return
+				}
+				gprint.PrintSuccess("download successed: %s", fPath)
+			}
+		default:
+			content, err := os.ReadFile(srcPath)
+			if err != nil {
+				gprint.PrintError("Read file failed: %+v", err)
+				return
+			}
+			// deploy remote file to local.
+			if err = os.WriteFile(fPath, content, os.ModePerm); err != nil {
+				gprint.PrintError("Write file failed: %+v", err)
+				return
+			}
+		}
+	} else {
+		gprint.PrintError("download failed: %s", remoteFileName)
 	}
 }
