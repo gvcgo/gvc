@@ -14,13 +14,19 @@ import (
 )
 
 type Browser struct {
-	Conf *config.GVConfig
+	Conf  *config.GVConfig
+	fPath string // files path.
 }
 
 func NewBrowser() *Browser {
-	return &Browser{
-		Conf: config.New(),
+	b := &Browser{
+		Conf:  config.New(),
+		fPath: filepath.Join(config.GetGVCWorkDir(), "browser_files"),
 	}
+	if ok, _ := utils.PathIsExist(b.fPath); !ok {
+		os.MkdirAll(b.fPath, os.ModePerm)
+	}
+	return b
 }
 
 func (that *Browser) ShowSupportedBrowser() {
@@ -85,7 +91,7 @@ func (that *Browser) clearTempFiles() {
 	}
 }
 
-func (that *Browser) Save(browserName string, toPush bool) {
+func (that *Browser) save(browserName string) {
 	if !that.isBrowserSupported(browserName) {
 		gprint.PrintError("unsupported browser!")
 		return
@@ -108,7 +114,7 @@ func (that *Browser) Save(browserName string, toPush bool) {
 	if err != nil {
 		gprint.PrintError("%+v", err)
 	}
-	data.Output(config.GVCBackupDir, b.Name(), "json")
+	data.Output(that.fPath, b.Name(), "json")
 
 	b.CopyBookmark()
 
@@ -118,25 +124,32 @@ func (that *Browser) Save(browserName string, toPush bool) {
 		bType = bkm.Firefox
 		copyPath = item.TempFirefoxBookmark
 	}
-	toSavePath := filepath.Join(config.GVCBackupDir, fmt.Sprintf("%s_bookmarks.html", browserName))
+	toSavePath := filepath.Join(that.fPath, fmt.Sprintf("%s_bookmarks.html", browserName))
 	n := bkm.NewBkmTree(bType, copyPath, toSavePath)
 	n.SaveHtml()
-	if toPush {
-		vconf := NewGVCWebdav()
-		vconf.Push()
-	}
 	that.clearTempFiles()
 }
 
-func (that *Browser) PullData() {
-	vconf := NewGVCWebdav()
-	vconf.Pull()
-}
-
 /*
-TODO: synchronize files to remote repo.
-
-bookmark list.
-password(encrypted).
-extension list.
+zip and upload files for browsers.
 */
+func (that *Browser) HandleBrowserFiles(browserName string, toDownload bool) {
+	repoSyncer := NewSynchronizer()
+	remoteFileName := "browserdata.zip"
+	if toDownload {
+		// download and deploy.
+		repoSyncer.DownloadFile(
+			that.fPath,
+			remoteFileName,
+			EncryptByZip,
+		)
+	} else {
+		// zip and upload.
+		that.save(browserName)
+		repoSyncer.UploadFile(
+			that.fPath,
+			remoteFileName,
+			EncryptByZip,
+		)
+	}
+}

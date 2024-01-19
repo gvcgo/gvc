@@ -79,42 +79,28 @@ func (that *Cli) browser() {
 	})
 
 	browserCmd.AddCommand(&cobra.Command{
-		Use:     "push",
-		Aliases: []string{"p"},
-		Short:   "Push local data to your remote repo.",
-		Long:    "Example: b p <your_browser_name>; Your local data may include bookmarks, password(encrypted), extensions list.",
+		Use:     "upload",
+		Aliases: []string{"u"},
+		Short:   "Uploads your browser data to remote repo.",
+		Long:    `Example: b u <browser_name: To see browser name list, please use command "b list">.`,
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) == 0 {
 				cmd.Help()
 				return
 			}
 			b := vctrl.NewBrowser()
-			b.Save(args[0], true)
+			b.HandleBrowserFiles(args[0], false)
 		},
 	})
 
 	browserCmd.AddCommand(&cobra.Command{
-		Use:     "save",
-		Aliases: []string{"s"},
-		Short:   "Save browser data to the local dir.",
-		Long:    "Example: b s <your_browser_name>; Your local data may include bookmarks, password(encrypted), extensions list.",
-		Run: func(cmd *cobra.Command, args []string) {
-			if len(args) == 0 {
-				cmd.Help()
-				return
-			}
-			b := vctrl.NewBrowser()
-			b.Save(args[0], false)
-		},
-	})
-
-	browserCmd.AddCommand(&cobra.Command{
-		Use:     "pull",
-		Aliases: []string{"P"},
-		Short:   "Pull browser data from your remote repo.",
+		Use:     "download",
+		Aliases: []string{"d"},
+		Short:   "Downloads browser data from remote repo.",
+		Long:    "Example: b d.",
 		Run: func(cmd *cobra.Command, args []string) {
 			b := vctrl.NewBrowser()
-			b.PullData()
+			b.HandleBrowserFiles("", true)
 		},
 	})
 

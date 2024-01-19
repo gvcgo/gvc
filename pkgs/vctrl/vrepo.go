@@ -173,7 +173,7 @@ func (that *Synchronizer) createRepo() {
 	r := that.storage.GetRepoInfo(RepoName)
 	j := gjson.New(r)
 	if j.Get("id").Int64() == 0 {
-		gprint.PrintInfo("Create remote repo: %s", that.CNF.UserName+"/"+RepoName)
+		gprint.PrintInfo("Create remote repo: %s .", that.CNF.UserName+"/"+RepoName)
 		that.storage.CreateRepo(RepoName)
 	}
 }
@@ -298,8 +298,7 @@ func (that *Synchronizer) DownloadFile(fPath, remoteFileName string, et Encrypto
 				}
 			}
 		case EncryptByZip:
-			dstDir := filepath.Dir(fPath)
-			if archive, err := archiver.NewArchiver(srcPath, dstDir, false); err == nil {
+			if archive, err := archiver.NewArchiver(srcPath, fPath, false); err == nil {
 				archive.SetPassword(that.CNF.CryptoKey)
 				_, err = archive.UnArchive()
 				if err != nil {
@@ -307,6 +306,10 @@ func (that *Synchronizer) DownloadFile(fPath, remoteFileName string, et Encrypto
 					return
 				}
 				gprint.PrintSuccess("download successed: %s", fPath)
+			}
+			extraFile := filepath.Join(fPath, filepath.Base(fPath))
+			if ok, _ := utils.PathIsExist(extraFile); ok {
+				os.RemoveAll(extraFile)
 			}
 		default:
 			content, err := os.ReadFile(srcPath)
