@@ -40,6 +40,7 @@ type AsciiCast struct {
 }
 
 func NewAsciiCast() *AsciiCast {
+	// TODO: save to remote repo.
 	os.Setenv(util.DefaultHomeEnv, config.GVCBackupDir)
 	return &AsciiCast{
 		runner: cmd.New(),

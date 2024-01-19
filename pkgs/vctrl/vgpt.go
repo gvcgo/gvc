@@ -20,13 +20,14 @@ IFlytek Spark
 */
 type VGpt struct {
 	Conf    *config.GVConfig
-	GPTConf *gconf.Config
+	GPTConf *gconf.Config // TODO: prompt download from github.
 }
 
 func NewVGPT() (vg *VGpt) {
 	vg = &VGpt{
 		Conf: config.New(),
 	}
+	// TODO: zip and save to remote repo.
 	vg.GPTConf = gconf.NewConf(vg.Conf.GPT.WorkDir)
 	vg.GPTConf.Reload()
 	return

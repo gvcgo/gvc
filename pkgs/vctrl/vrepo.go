@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/charmbracelet/bubbles/textinput"
 	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/moqsien/goutils/pkgs/archiver"
 	"github.com/moqsien/goutils/pkgs/crypt"
@@ -134,6 +135,8 @@ func (that *Synchronizer) Setup() {
 		cryptoKey,
 		input.MWithWidth(60),
 		input.MWithPlaceholder("your crypto key to encrypt private data."),
+		input.MWithEchoChar("*"),
+		input.MWithEchoMode(textinput.EchoPassword),
 		input.MWithDefaultValue(that.CNF.CryptoKey),
 	)
 

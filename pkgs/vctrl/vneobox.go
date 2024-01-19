@@ -138,5 +138,5 @@ func (that *NeoBox) GenAutoStartScript() {
 }
 
 /*
-TODO: synchronize local db(zipped) to remote repo.
+TODO: synchronize local files to remote repo.
 */
