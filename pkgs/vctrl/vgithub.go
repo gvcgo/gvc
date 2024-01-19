@@ -455,5 +455,27 @@ func (that *GhDownloader) LazyGit(enableProxy bool, args ...string) {
 }
 
 /*
-TODO: synchronize your .ssh(zipped) files to remote repo.
+Pushes .ssh files to remote repo.
+Pulls .ssh files from remote repo.
 */
+func (that *GhDownloader) HandleDotSSHFiles(toDownload bool) {
+	localSSHDir := filepath.Join(utils.GetHomeDir(), ".ssh")
+	remoteFileName := "dotssh.zip"
+
+	repoSyncer := NewSynchronizer()
+	if toDownload {
+		// download and deploy.
+		repoSyncer.DownloadFile(
+			localSSHDir,
+			remoteFileName,
+			EncryptByZip,
+		)
+	} else {
+		// zip and upload.
+		repoSyncer.UploadFile(
+			localSSHDir,
+			remoteFileName,
+			EncryptByZip,
+		)
+	}
+}

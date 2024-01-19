@@ -574,9 +574,10 @@ func (that *GoVersion) zip(src, dst, binName string) (err error) {
 }
 
 func (that *GoVersion) findCompiledBinary(binaryStoreDir string) (bPath string) {
+	gprint.PrintInfo("binary dir: %s", binaryStoreDir)
 	if fList, err := os.ReadDir(binaryStoreDir); err == nil {
 		for _, f := range fList {
-			if !f.IsDir() {
+			if !f.IsDir() && !strings.HasPrefix(f.Name(), ".") {
 				return filepath.Join(binaryStoreDir, f.Name())
 			}
 		}
@@ -642,10 +643,12 @@ func (that *GoVersion) build(buildArgs []string, buildBaseDir, archOS string, to
 		} else if toGzip {
 			gprint.PrintSuccess(fmt.Sprintf("Compilation for %s succeeded.", archOS))
 			binPath := that.findCompiledBinary(binaryStoreDir)
-			nList := strings.Split(binPath, string(filepath.Separator))
-			binName := nList[len(nList)-1]
+			binName := filepath.Base(binPath)
 			binSuffix := path.Ext(binPath)
-			name := strings.TrimSuffix(binName, binSuffix)
+			name := binName
+			if binName != binSuffix {
+				name = strings.TrimSuffix(binName, binSuffix)
+			}
 			tarFilePath := strings.Join([]string{buildBaseDir, fmt.Sprintf(`%s_%s.zip`, name, dirName)}, string(filepath.Separator))
 			if ok, _ := utils.PathIsExist(tarFilePath); ok {
 				os.RemoveAll(tarFilePath)

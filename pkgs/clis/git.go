@@ -37,7 +37,7 @@ func (that *Cli) github() {
 	githubCmd.AddCommand(&cobra.Command{
 		Use:     "proxy",
 		Aliases: []string{"p"},
-		Short:   "Set a proxy URI for github downloads.",
+		Short:   "Sets a proxy URI for github downloads.",
 		Long:    "Example: gh p https://gh.flyinbug.top/gh/",
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) == 0 {
@@ -52,7 +52,7 @@ func (that *Cli) github() {
 	download := &cobra.Command{
 		Use:     "download",
 		Aliases: []string{"d"},
-		Short:   "Download released files or source code from a github repo.",
+		Short:   "Downloads released files or source code from a github repo.",
 		Long:    "Example: gh d http://github.com/moqsien/gvc",
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) == 0 {
@@ -65,6 +65,24 @@ func (that *Cli) github() {
 	}
 	download.Flags().BoolP(sourceCodeFlag, "c", false, "To download source code only.")
 	githubCmd.AddCommand(download)
+
+	githubCmd.AddCommand(&cobra.Command{
+		Use:     "upload-dotssh",
+		Aliases: []string{"u"},
+		Short:   "Uploads local .ssh files to remote repo after zipped with password.",
+		Run: func(cmd *cobra.Command, args []string) {
+			vg.HandleDotSSHFiles(false)
+		},
+	})
+
+	githubCmd.AddCommand(&cobra.Command{
+		Use:     "download-dotssh",
+		Aliases: []string{"D"},
+		Short:   "Downloads .ssh files from remote repo, then deploy them.",
+		Run: func(cmd *cobra.Command, args []string) {
+			vg.HandleDotSSHFiles(true)
+		},
+	})
 
 	that.rootCmd.AddCommand(githubCmd)
 }

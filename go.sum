@@ -664,10 +664,10 @@ github.com/modern-go/reflect2 v1.0.2 h1:xBagoLtFs94CBntxluKeaWgTMpvLxC4ur3nMaC9G
 github.com/modern-go/reflect2 v1.0.2/go.mod h1:yWuevngMOJpCy52FWWMvUC8ws7m/LJsjYzDa0/r8luk=
 github.com/moqsien/asciinema v0.3.0 h1:/aMlAcDhhClVbLDDvhy7Z2GrFqfZda2OQUbPGAOQA7I=
 github.com/moqsien/asciinema v0.3.0/go.mod h1:8805nYndqsLowovS0GrWMS2v1MotTb5Fe4uOVK3S1gI=
-github.com/moqsien/gogpt v0.2.5 h1:B4/FRNUhbttGGv+v6A93dUQ4McR96urw3OewvYgWXrI=
-github.com/moqsien/gogpt v0.2.5/go.mod h1:ATYh+54wn6D0yyHlYWuzW1PgTKCQv0wxnnCHkrb7j54=
-github.com/moqsien/goutils v0.8.2 h1:K9pcxrJyyzQohPZnKdm0ywzXwSFz+r48FruKNafSqTs=
-github.com/moqsien/goutils v0.8.2/go.mod h1:Xg3ZZVMVZLbtvwVwqZukkWVNwcdHPPHNqGJiXmd8ivc=
+github.com/moqsien/gogpt v0.2.6 h1:yO6vIIAZOfFfqUZd1k8Wx4rM3zzm0ISxWjjxruLV8zs=
+github.com/moqsien/gogpt v0.2.6/go.mod h1:u7Feqi19CdME0X+PnX55Gg3nT3bJrhMmHsPsnxHktSs=
+github.com/moqsien/goutils v0.8.3 h1:LNoMjM49nhIGb8cyp3hbNxRPgDVOjkLzNPJzZCaB7hI=
+github.com/moqsien/goutils v0.8.3/go.mod h1:Xg3ZZVMVZLbtvwVwqZukkWVNwcdHPPHNqGJiXmd8ivc=
 github.com/moqsien/gshell v0.2.8 h1:Hk6jeb1bAdN8dFN+IlHB4+dfP34Lksg4zmtWmoec1vc=
 github.com/moqsien/gshell v0.2.8/go.mod h1:xaGFcBGryyXWaTbWTrTqstsdrTTBu4s/Jg69AcWSmyg=
 github.com/moqsien/hackbrowser v1.0.6 h1:T1B/z1N9dZ0zCiZmo68BZBVGg+SET59Z066TRR2p6XY=

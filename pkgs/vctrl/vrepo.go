@@ -47,15 +47,17 @@ type StorageConf struct {
 }
 
 type Synchronizer struct {
-	CNF     *StorageConf
+	CNF     *StorageConf `json,koanf:"storage"`
 	storage storage.IStorage
 	path    string
 	koanfer *koanfer.JsonKoanfer
 }
 
 func NewSynchronizer() (s *Synchronizer) {
-	s = &Synchronizer{}
-	s.path = filepath.Join(config.GetGVCWorkDir(), StorageConfName)
+	s = &Synchronizer{
+		CNF: &StorageConf{},
+	}
+	s.path = filepath.Join(config.GVCDir, StorageConfName)
 	s.koanfer, _ = koanfer.NewKoanfer(s.path)
 	s.initiate()
 	return
@@ -67,12 +69,12 @@ func (that *Synchronizer) initiate() {
 		return
 	}
 
+	that.koanfer.Load(that.CNF)
+
 	// configs for remote repo.
 	if that.CNF.AccessToken == "" || that.CNF.UserName == "" || that.CNF.CryptoKey == "" {
 		that.Setup()
 	}
-
-	that.koanfer.Load(that.CNF)
 
 	// remote storage.
 	switch that.CNF.Type {
@@ -83,7 +85,10 @@ func (that *Synchronizer) initiate() {
 	case RepoTypeGitee:
 		that.storage = storage.NewGtStorage(that.CNF.UserName, that.CNF.AccessToken)
 	default:
+		gprint.PrintError("unsupported repo type.")
+		os.Exit(1)
 	}
+	that.createRepo()
 }
 
 func (that *Synchronizer) Setup() {
@@ -159,6 +164,20 @@ func (that *Synchronizer) Setup() {
 	that.koanfer.Save(that.CNF)
 }
 
+// Creates remote repo if needed.
+func (that *Synchronizer) createRepo() {
+	if that.storage == nil {
+		gprint.PrintError("No remote storages found.")
+		return
+	}
+	r := that.storage.GetRepoInfo(RepoName)
+	j := gjson.New(r)
+	if j.Get("id").Int64() == 0 {
+		gprint.PrintInfo("Create remote repo: %s", that.CNF.UserName+"/"+RepoName)
+		that.storage.CreateRepo(RepoName)
+	}
+}
+
 func (that *Synchronizer) upload(fPath, remoteFileName string) (r []byte) {
 	if that.storage == nil {
 		gprint.PrintError("No remote storages found.")
@@ -176,6 +195,10 @@ func (that *Synchronizer) UploadFile(fPath, remoteFileName string, et EncryptoTy
 	}
 	switch et {
 	case EncryptByAES:
+		if that.CNF.CryptoKey == "" {
+			gprint.PrintError("No crypto key found.")
+			return
+		}
 		cc := crypt.NewCrptWithKey([]byte(that.CNF.CryptoKey))
 		content, err := os.ReadFile(fPath)
 		if err != nil {
@@ -193,6 +216,10 @@ func (that *Synchronizer) UploadFile(fPath, remoteFileName string, et EncryptoTy
 			}
 		}
 	case EncryptByZip:
+		if that.CNF.CryptoKey == "" {
+			gprint.PrintError("No crypto key found.")
+			return
+		}
 		if archive, err := archiver.NewArchiver(fPath, config.GVCBackupDir, false); err == nil {
 			archive.SetZipName(remoteFileName)
 			archive.SetPassword(that.CNF.CryptoKey)
