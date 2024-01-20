@@ -1,6 +1,8 @@
 package vctrl
 
 import (
+	"crypto/md5"
+	"fmt"
 	"os"
 	"path/filepath"
 	"time"
@@ -181,6 +183,15 @@ func (that *Synchronizer) createRepo() {
 	}
 }
 
+func (that *Synchronizer) formatKeyForAES() (newKey string) {
+	if that.CNF.CryptoKey == "" {
+		return
+	}
+	data := []byte(that.CNF.CryptoKey)
+	newKey = fmt.Sprintf("%x", md5.Sum(data))[:16]
+	return
+}
+
 func (that *Synchronizer) upload(fPath, remoteFileName string) (r []byte) {
 	if that.storage == nil {
 		gprint.PrintError("No remote storages found.")
@@ -202,7 +213,7 @@ func (that *Synchronizer) UploadFile(fPath, remoteFileName string, et EncryptoTy
 			gprint.PrintError("No crypto key found.")
 			return
 		}
-		cc := crypt.NewCrptWithKey([]byte(that.CNF.CryptoKey))
+		cc := crypt.NewCrptWithKey([]byte(that.formatKeyForAES()))
 		content, err := os.ReadFile(fPath)
 		if err != nil {
 			gprint.PrintError("Read file error: %+v", err)
@@ -284,7 +295,12 @@ func (that *Synchronizer) DownloadFile(fPath, remoteFileName string, et Encrypto
 	if size := fetcher.GetAndSaveFile(srcPath, true); size > 20 {
 		switch et {
 		case EncryptByAES:
-			cc := crypt.NewCrptWithKey([]byte(that.CNF.CryptoKey))
+			if that.CNF.CryptoKey == "" {
+				gprint.PrintError("No crypto key found.")
+				return
+			}
+
+			cc := crypt.NewCrptWithKey([]byte(that.formatKeyForAES()))
 			content, err := os.ReadFile(srcPath)
 			if err != nil {
 				gprint.PrintError("Read file failed: %+v", err)

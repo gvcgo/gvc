@@ -149,7 +149,7 @@ func (that *Cli) asciinema() {
 	asnemaCmd.AddCommand(&cobra.Command{
 		Use:     "record",
 		Aliases: []string{"r"},
-		Short:   "Record your terminal operations.",
+		Short:   "Records your terminal operations.",
 		Long:    "Example: a r <your_file_name>",
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) == 0 {
@@ -189,7 +189,7 @@ func (that *Cli) asciinema() {
 	asnemaCmd.AddCommand(&cobra.Command{
 		Use:     "upload",
 		Aliases: []string{"u"},
-		Short:   "Upload an asciinema file to asciinema.org.",
+		Short:   "Uploads an asciinema file to asciinema.org.",
 		Long:    "Example: a u <your_file_path>",
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) == 0 {
@@ -198,6 +198,28 @@ func (that *Cli) asciinema() {
 			}
 			a := vctrl.NewAsciiCast()
 			a.Upload(args[0])
+		},
+	})
+
+	asnemaCmd.AddCommand(&cobra.Command{
+		Use:     "upload-conf",
+		Aliases: []string{"U"},
+		Short:   "Uploads asciinema config file to remote repo.",
+		Long:    "Example: a U",
+		Run: func(cmd *cobra.Command, args []string) {
+			a := vctrl.NewAsciiCast()
+			a.HandleAsciinemaConf(false)
+		},
+	})
+
+	asnemaCmd.AddCommand(&cobra.Command{
+		Use:     "download-conf",
+		Aliases: []string{"d"},
+		Short:   "Downloads asciinema config file from remote repo.",
+		Long:    "Example: a d",
+		Run: func(cmd *cobra.Command, args []string) {
+			a := vctrl.NewAsciiCast()
+			a.HandleAsciinemaConf(true)
 		},
 	})
 

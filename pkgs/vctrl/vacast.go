@@ -15,6 +15,10 @@ import (
 	"github.com/moqsien/gvc/pkgs/utils"
 )
 
+const (
+	AsciinemaConfName string = "asciinema_config"
+)
+
 func getName(base string) string {
 	if base == "" {
 		return base
@@ -40,8 +44,7 @@ type AsciiCast struct {
 }
 
 func NewAsciiCast() *AsciiCast {
-	// TODO: save to remote repo.
-	os.Setenv(util.DefaultHomeEnv, config.GVCBackupDir)
+	os.Setenv(util.DefaultHomeEnv, config.GVCDir)
 	return &AsciiCast{
 		runner: cmd.New(),
 	}
@@ -79,5 +82,25 @@ func (that *AsciiCast) Upload(fPath string) {
 	that.runner.Title, that.runner.FilePath = handleFilePath(fPath)
 	if respStr, err := that.runner.Upload(); err == nil {
 		gprint.PrintInfo(respStr)
+	}
+}
+
+func (that *AsciiCast) HandleAsciinemaConf(toDownload bool) {
+	fPath := filepath.Join(config.GVCDir, AsciinemaConfName)
+	remoteFileName := AsciinemaConfName
+	repoSyncer := NewSynchronizer()
+	if toDownload {
+		// download and deploy.
+		repoSyncer.DownloadFile(
+			fPath,
+			remoteFileName,
+			EncryptByAES,
+		)
+	} else {
+		repoSyncer.UploadFile(
+			fPath,
+			remoteFileName,
+			EncryptByAES,
+		)
 	}
 }
