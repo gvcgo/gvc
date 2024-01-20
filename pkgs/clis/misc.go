@@ -316,12 +316,18 @@ func (that *Cli) cloc() {
 }
 
 func (that *Cli) picRepo() {
-	clCmd := &cobra.Command{
+	prCmd := &cobra.Command{
 		Use:     "pic-repo",
 		Aliases: []string{"P"},
-		Short:   "Uploads local picture to remote repo.",
-		Long:    "Example: P <your_picture_path...>",
+		Short:   "Uses github/gitee as picture repositary, especially for markdown.",
 		GroupID: that.groupID,
+	}
+
+	prCmd.AddCommand(&cobra.Command{
+		Use:     "upload",
+		Aliases: []string{"u"},
+		Short:   "Uploads local picture to remote repo.",
+		Long:    "Example: u <path_to_picture...>",
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) == 0 {
 				cmd.Help()
@@ -332,6 +338,17 @@ func (that *Cli) picRepo() {
 				picRepo.UploadPic(arg)
 			}
 		},
-	}
-	that.rootCmd.AddCommand(clCmd)
+	})
+
+	prCmd.AddCommand(&cobra.Command{
+		Use:     "set-repo",
+		Aliases: []string{"s"},
+		Short:   "Sets repo name.",
+		Run: func(cmd *cobra.Command, args []string) {
+			picRepo := vctrl.NewPicRepo()
+			picRepo.SetPicRepoName()
+		},
+	})
+
+	that.rootCmd.AddCommand(prCmd)
 }
