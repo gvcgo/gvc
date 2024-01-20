@@ -127,9 +127,8 @@ func (that *CppManager) RepairGitForVSCode() {
 		os.WriteFile(bPath, []byte(config.Msys2CygwinGitFixBat), 0777)
 	}
 	bPath = strings.ReplaceAll(bPath, `\`, `\\`)
-	cnf := NewGVCWebdav()
-	filesToSync := cnf.GetFilesToSync()
-	vscodeSettingsPath := filesToSync[config.CodeUserSettingsBackupFileName]
+	vcode := NewCode()
+	_, vscodeSettingsPath := vcode.GetSettingsJson()
 	utils.AddNewlineToVscodeSettings("git.path", bPath, vscodeSettingsPath)
 }
 

@@ -114,9 +114,8 @@ func (that *Vlang) InstallVAnalyzerForVscode() {
 		}
 		binPath := filepath.Join(config.VlangFilesDir, binName)
 		if ok, _ := utils.PathIsExist(binPath); ok {
-			cnf := NewGVCWebdav()
-			filesToSync := cnf.GetFilesToSync()
-			vscodeSettingsPath := filesToSync[config.CodeUserSettingsBackupFileName]
+			vcode := NewCode()
+			_, vscodeSettingsPath := vcode.GetSettingsJson()
 			if runtime.GOOS == utils.Windows {
 				binPath = strings.ReplaceAll(binPath, `\`, `\\`)
 			}

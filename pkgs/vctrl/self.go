@@ -87,14 +87,6 @@ func (that *Self) Uninstall() {
 
 	if cfm.Result() {
 		that.env.RemoveSubs()
-
-		cfmDAV := confirm.NewConfirm(confirm.WithTitle("Save config files to WebDAV before removing gvc?"))
-		cfmDAV.Run()
-
-		if cfmDAV.Result() {
-			dav := NewGVCWebdav()
-			dav.GatherAndPushSettings()
-		}
 		if ok, _ := utils.PathIsExist(config.GVCInstallDir); ok {
 			os.RemoveAll(config.GVCInstallDir)
 		}

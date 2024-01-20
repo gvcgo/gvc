@@ -10,7 +10,6 @@ require (
 	github.com/gogf/gf/v2 v2.6.1
 	github.com/hhatto/gocloc v0.5.2
 	github.com/jesseduffield/lazygit v0.40.2
-	github.com/knadh/koanf v1.5.0
 	github.com/mholt/archiver/v3 v3.5.1
 	github.com/moqsien/asciinema v0.3.0
 	github.com/moqsien/gogpt v0.2.6
@@ -20,7 +19,6 @@ require (
 	github.com/moqsien/neobox v1.5.7
 	github.com/postfinance/single v0.0.2
 	github.com/spf13/cobra v1.8.0
-	github.com/studio-b12/gowebdav v0.0.0-20230203202212-3282f94193f2
 )
 
 require (
@@ -140,6 +138,7 @@ require (
 	github.com/klauspost/compress v1.17.2 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.6 // indirect
 	github.com/klauspost/pgzip v1.2.5 // indirect
+	github.com/knadh/koanf v1.5.0 // indirect
 	github.com/kr/logfmt v0.0.0-20140226030751-b84e30acd515 // indirect
 	github.com/kr/pty v1.1.8 // indirect
 	github.com/kyokomi/emoji/v2 v2.2.8 // indirect
