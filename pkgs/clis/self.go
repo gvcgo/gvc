@@ -94,73 +94,72 @@ func (that *Cli) configure() {
 	cfgCmd.AddCommand(&cobra.Command{
 		Use:     "reset",
 		Aliases: []string{"R"},
-		Short:   "Reset configurations fo GVC to default values.",
+		Short:   "Resets configs for GVC to default values.",
 		Run: func(cmd *cobra.Command, args []string) {
-			dav := vctrl.NewGVCWebdav()
-			dav.RestoreDefaultGVConf()
+			s := vctrl.NewSelf()
+			s.ResetConf()
 		},
 	})
 
 	cfgCmd.AddCommand(&cobra.Command{
-		Use:     "remote",
+		Use:     "repo",
 		Aliases: []string{"r"},
-		Short:   "Config account info for your remote Repo[WebDAV/Github/Gitee].",
+		Short:   "Sets account info for your remote Repo[Github/Gitee].",
 		Run: func(cmd *cobra.Command, args []string) {
-			// TODO: support github/gitee.
-			dav := vctrl.NewGVCWebdav()
-			dav.SetWebdavAccount()
+			s := vctrl.NewSynchronizer()
+			s.Setup()
 		},
 	})
 
 	cfgCmd.AddCommand(&cobra.Command{
-		Use:     "push",
-		Aliases: []string{"p"},
-		Short:   "Gather settings and push them to your remote Repo.",
+		Use:     "upload-conf",
+		Aliases: []string{"u"},
+		Short:   "Uploads gvc config file to your remote repo.",
 		Run: func(cmd *cobra.Command, args []string) {
-			dav := vctrl.NewGVCWebdav()
-			dav.GatherAndPushSettings()
+			s := vctrl.NewSelf()
+			s.HandleGvcConfigFile(false)
 		},
 	})
 
 	cfgCmd.AddCommand(&cobra.Command{
-		Use:     "pull",
-		Aliases: []string{"P"},
-		Short:   "Pull settings from your remote Repo and apply them.",
+		Use:     "download-conf",
+		Aliases: []string{"d"},
+		Short:   "Downloads gvc config file from your remote repo.",
 		Run: func(cmd *cobra.Command, args []string) {
-			dav := vctrl.NewGVCWebdav()
-			dav.FetchAndApplySettings()
+			s := vctrl.NewSelf()
+			s.HandleGvcConfigFile(true)
 		},
 	})
 	that.rootCmd.AddCommand(cfgCmd)
 }
 
 // to backup/deploy .ssh files.
-func (that *Cli) ssh() {
-	sshCmd := &cobra.Command{
-		Use:     "ssh",
-		Aliases: []string{"s"},
-		Short:   "Backups/Deploys your .ssh files.",
-		GroupID: that.groupID,
-	}
+// func (that *Cli) ssh() {
+// 	sshCmd := &cobra.Command{
+// 		Use:     "ssh",
+// 		Aliases: []string{"s"},
+// 		Short:   "Backups/Deploys your .ssh files.",
+// 		GroupID: that.groupID,
+// 	}
 
-	sshCmd.AddCommand(&cobra.Command{
-		Use:     "backup",
-		Aliases: []string{"b"},
-		Short:   "Backups your .ssh files to remote repo.",
-		Run: func(cmd *cobra.Command, args []string) {
-			dav := vctrl.NewGVCWebdav()
-			dav.GatherSSHFiles()
-		},
-	})
+// 	sshCmd.AddCommand(&cobra.Command{
+// 		Use:     "backup",
+// 		Aliases: []string{"b"},
+// 		Short:   "Backups your .ssh files to remote repo.",
+// 		Run: func(cmd *cobra.Command, args []string) {
+// 			dav := vctrl.NewGVCWebdav()
+// 			dav.GatherSSHFiles()
+// 		},
+// 	})
 
-	sshCmd.AddCommand(&cobra.Command{
-		Use:     "deploy",
-		Aliases: []string{"d"},
-		Short:   "Gets .ssh files from remote repo and deploys them.",
-		Run: func(cmd *cobra.Command, args []string) {
-			dav := vctrl.NewGVCWebdav()
-			dav.DeploySSHFiles()
-		},
-	})
-	that.rootCmd.AddCommand(sshCmd)
-}
+// 	sshCmd.AddCommand(&cobra.Command{
+// 		Use:     "deploy",
+// 		Aliases: []string{"d"},
+// 		Short:   "Gets .ssh files from remote repo and deploys them.",
+// 		Run: func(cmd *cobra.Command, args []string) {
+// 			dav := vctrl.NewGVCWebdav()
+// 			dav.DeploySSHFiles()
+// 		},
+// 	})
+// 	that.rootCmd.AddCommand(sshCmd)
+// }

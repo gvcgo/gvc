@@ -36,7 +36,7 @@ func (that *Cli) initiate() {
 	that.checkForUpdate()
 	that.uninstall()
 	that.configure()
-	that.ssh()
+	// that.ssh()
 	// ide related CLIs
 	that.vscode()
 	that.neovim()

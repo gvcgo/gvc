@@ -178,3 +178,28 @@ func (that *Self) download() {
 		}
 	}
 }
+
+func (that *Self) ResetConf() {
+	that.Conf.SetDefault()
+	that.Conf.Restore()
+}
+
+func (that *Self) HandleGvcConfigFile(toDownload bool) {
+	fPath := config.GVConfigPath
+	remoteFileName := filepath.Base(fPath)
+	repoSyncer := NewSynchronizer()
+	if toDownload {
+		// download and deploy.
+		repoSyncer.DownloadFile(
+			fPath,
+			remoteFileName,
+			EncryptByNone,
+		)
+	} else {
+		repoSyncer.UploadFile(
+			fPath,
+			remoteFileName,
+			EncryptByNone,
+		)
+	}
+}
