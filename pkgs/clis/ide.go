@@ -9,7 +9,7 @@ func (that *Cli) vscode() {
 	codeCmd := &cobra.Command{
 		Use:     "vscode",
 		Aliases: []string{"vs"},
-		Short:   "Installs vscode and extensions, etc.",
+		Short:   "Installs vscode, extensions, etc.",
 		GroupID: that.groupID,
 	}
 
@@ -24,12 +24,22 @@ func (that *Cli) vscode() {
 	})
 
 	codeCmd.AddCommand(&cobra.Command{
-		Use:     "extensions",
-		Aliases: []string{"e", "ie"},
-		Short:   "Installs extensions for vscode",
+		Use:     "upload-configs",
+		Aliases: []string{"u"},
+		Short:   "Uploads settings.json, keybindings.json, extensions.txt to remote repo.",
 		Run: func(cmd *cobra.Command, args []string) {
-			gcode := vctrl.NewGVCWebdav()
-			gcode.InstallVSCodeExts("")
+			gcode := vctrl.NewCode()
+			gcode.HandleVSCodeFiles(false)
+		},
+	})
+
+	codeCmd.AddCommand(&cobra.Command{
+		Use:     "download-configs",
+		Aliases: []string{"d"},
+		Short:   "Downloads settings.json, keybindings.json, extensions.txt from remote repo.",
+		Run: func(cmd *cobra.Command, args []string) {
+			gcode := vctrl.NewCode()
+			gcode.HandleVSCodeFiles(true)
 		},
 	})
 

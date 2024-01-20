@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/gogf/gf/v2/encoding/gjson"
+	"github.com/gogf/gf/v2/os/genv"
 	"github.com/mholt/archiver/v3"
 	"github.com/moqsien/goutils/pkgs/gtea/confirm"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
@@ -224,9 +225,131 @@ func (that *Code) Install() {
 }
 
 /*
-TODO: synchronize vscode-related config files to remote repo.
+https://code.visualstudio.com/docs/getstarted/settings#_extension-settings
 
-VSCode user settings file.
-VSCode key-bindings file.
-VSCode installed extensions.
+settings/keybindings path:
+Windows %APPDATA%\Code\User\settings.json
+macOS $HOME/Library/Application\ Support/Code/User/settings.json
+Linux $HOME/.config/Code/User/settings.json
+
+keybindings.json
 */
+func (that *Code) GetSettingsJson() (name, fPath string) {
+	fileName := "settings.json"
+	if runtime.GOOS == utils.Windows {
+		appDataDir, _ := os.UserConfigDir()
+		name = "win_vscode_settings.json"
+		fPath = filepath.Join(appDataDir, "Code", "User", fileName)
+	} else if runtime.GOOS == utils.MacOS {
+		homeDir, _ := os.UserHomeDir()
+		name = "mac_vscode_settings.json"
+		fPath = filepath.Join(homeDir, "Library", "Application Support", "Code", "User", fileName)
+	} else if runtime.GOOS == utils.Linux {
+		homeDir, _ := os.UserHomeDir()
+		name = "linux_vscode_settings.json"
+		fPath = filepath.Join(homeDir, ".config", "Code", "User", fileName)
+	}
+	return
+}
+
+func (that *Code) GetKeyBindingsJson() (name, fPath string) {
+	fileName := "keybindings.json"
+	if runtime.GOOS == utils.Windows {
+		appDataDir, _ := os.UserConfigDir()
+		name = "vscode_keybindings.json"
+		fPath = filepath.Join(appDataDir, "Code", "User", fileName)
+	} else if runtime.GOOS == utils.MacOS {
+		homeDir, _ := os.UserHomeDir()
+		name = "mac_vscode_keybindings.json"
+		fPath = filepath.Join(homeDir, "Library", `Application Support`, "Code", "User", fileName)
+	} else if runtime.GOOS == utils.Linux {
+		homeDir, _ := os.UserHomeDir()
+		name = "vscode_keybindings.json"
+		fPath = filepath.Join(homeDir, ".config", "Code", "User", fileName)
+	}
+	return
+}
+
+func (that *Code) GetExtensionsJson() (name, fPath string) {
+	cmd := exec.Command("code", "--list-extensions")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		gprint.PrintError("%+v", err)
+		return
+	}
+	iNameList := strings.Split(string(out), "\n")
+	if len(iNameList) > 0 {
+		newList := []string{}
+		for _, iName := range iNameList {
+			if strings.Contains(iName, ".") && len(iName) > 3 {
+				newList = append(newList, iName)
+			}
+		}
+		gprint.PrintInfo("Local installed vscode extensions: ")
+		fc := gprint.NewFadeColors(newList)
+		fc.Println()
+
+		if len(newList) > 0 {
+			name = "vscode_extensions.txt"
+			fPath = filepath.Join(config.CodeFileDir, name)
+			content := strings.Join(newList, "\n")
+			os.WriteFile(fPath, []byte(content), os.ModePerm)
+		} else {
+			gprint.PrintWarning("No extensions installed.")
+		}
+	}
+	return
+}
+
+func (that *Code) HandleVSCodeFiles(toDownload bool) {
+	fileList := [][]string{}
+	name, fPath := that.GetSettingsJson()
+	if name != "" && fPath != "" {
+		fileList = append(fileList, []string{name, fPath})
+	}
+	name, fPath = that.GetKeyBindingsJson()
+	if name != "" && fPath != "" {
+		fileList = append(fileList, []string{name, fPath})
+	}
+	name, fPath = that.GetExtensionsJson()
+	if name != "" && fPath != "" {
+		fileList = append(fileList, []string{name, fPath})
+	}
+	repoSyncer := NewSynchronizer()
+	for _, fileInfo := range fileList {
+		remoteFileName := fileInfo[0]
+		fPath := fileInfo[1]
+		if toDownload {
+			// download and deploy.
+			repoSyncer.DownloadFile(
+				fPath,
+				remoteFileName,
+				EncryptByNone,
+			)
+		} else {
+			repoSyncer.UploadFile(
+				fPath,
+				remoteFileName,
+				EncryptByNone,
+			)
+		}
+	}
+
+	if !toDownload {
+		return
+	}
+	// Only for "download".
+	_, fPath = that.GetExtensionsJson()
+	if ok, _ := utils.PathIsExist(fPath); ok {
+		content, _ := os.ReadFile(fPath)
+		extIdList := strings.Split(string(content), "\n")
+		for _, extId := range extIdList {
+			cmd := exec.Command("code", "--install-extension", extId)
+			cmd.Env = genv.All()
+			cmd.Stderr = os.Stderr
+			cmd.Stdout = os.Stdout
+			cmd.Stdin = os.Stdin
+			cmd.Run()
+		}
+	}
+}
