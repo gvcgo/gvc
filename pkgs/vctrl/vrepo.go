@@ -50,15 +50,21 @@ type StorageConf struct {
 }
 
 type Synchronizer struct {
-	CNF     *StorageConf `json,koanf:"storage"`
-	storage storage.IStorage
-	path    string
-	koanfer *koanfer.JsonKoanfer
+	CNF      *StorageConf `json,koanf:"storage"`
+	repoName string
+	storage  storage.IStorage
+	path     string
+	koanfer  *koanfer.JsonKoanfer
 }
 
-func NewSynchronizer() (s *Synchronizer) {
+func NewSynchronizer(repoName ...string) (s *Synchronizer) {
 	s = &Synchronizer{
 		CNF: &StorageConf{},
+	}
+	if len(repoName) == 0 {
+		s.repoName = RepoName
+	} else {
+		s.repoName = repoName[0]
 	}
 	s.path = filepath.Join(config.GVCDir, StorageConfName)
 	s.koanfer, _ = koanfer.NewKoanfer(s.path)
@@ -175,11 +181,11 @@ func (that *Synchronizer) createRepo() {
 		gprint.PrintError("No remote storages found.")
 		return
 	}
-	r := that.storage.GetRepoInfo(RepoName)
+	r := that.storage.GetRepoInfo(that.repoName)
 	j := gjson.New(r)
 	if j.Get("id").Int64() == 0 {
-		gprint.PrintInfo("Create remote repo: %s .", that.CNF.UserName+"/"+RepoName)
-		that.storage.CreateRepo(RepoName)
+		gprint.PrintInfo("Create remote repo: %s .", that.CNF.UserName+"/"+that.repoName)
+		that.storage.CreateRepo(that.repoName)
 	}
 }
 
@@ -197,9 +203,9 @@ func (that *Synchronizer) upload(fPath, remoteFileName string) (r []byte) {
 		gprint.PrintError("No remote storages found.")
 		return
 	}
-	content := that.storage.GetContents(RepoName, "", remoteFileName)
+	content := that.storage.GetContents(that.repoName, "", remoteFileName)
 	shaStr := gjson.New(content).Get("sha").String()
-	return that.storage.UploadFile(RepoName, "", fPath, shaStr)
+	return that.storage.UploadFile(that.repoName, "", fPath, shaStr)
 }
 
 func (that *Synchronizer) UploadFile(fPath, remoteFileName string, et EncryptoType) {
@@ -272,7 +278,7 @@ func (that *Synchronizer) download(remoteFileName string) (dUrl string) {
 		gprint.PrintError("No remote storages found.")
 		return
 	}
-	content := that.storage.GetContents(RepoName, "", remoteFileName)
+	content := that.storage.GetContents(that.repoName, "", remoteFileName)
 	dUrl = gjson.New(content).Get("download_url").String()
 	if dUrl == "" {
 		gprint.PrintWarning("can not find %s in remote repo. %s", remoteFileName, string(content))
