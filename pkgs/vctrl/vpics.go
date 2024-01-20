@@ -116,5 +116,5 @@ func (that *PicRepo) UploadPic(fPath string) {
 			return
 		}
 	}
-	gprint.PrintError("unspported format.")
+	gprint.PrintError("unsurpported format.")
 }
