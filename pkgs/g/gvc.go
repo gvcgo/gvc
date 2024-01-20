@@ -26,8 +26,12 @@ func main() {
 		// for test
 		cfg := confs.New()
 		cfg.Reset()
-		self := vctrl.NewSelf()
-		self.CheckLatestVersion("v1.6.4")
+
+		// self := vctrl.NewSelf()
+		// self.CheckLatestVersion("v1.6.4")
+
+		zig := vctrl.NewZig()
+		zig.GetZigList()
 	} else if len(os.Args) < 2 {
 		/*
 			GVC is allowed to be installed in ~/.gvc/ or $GOPATH/bin/ .
