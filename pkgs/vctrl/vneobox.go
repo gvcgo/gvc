@@ -138,5 +138,24 @@ func (that *NeoBox) GenAutoStartScript() {
 }
 
 /*
-TODO: synchronize local files to remote repo.
+synchronize local files to remote repo.
 */
+func (that *NeoBox) HandleNeoboxConf(toDownload bool) {
+	fPath := config.ProxyFilesDir
+	remoteFileName := "neobox_confs.zip"
+	repoSyncer := NewSynchronizer()
+	if toDownload {
+		// download and deploy.
+		repoSyncer.DownloadFile(
+			fPath,
+			remoteFileName,
+			EncryptByZip,
+		)
+	} else {
+		repoSyncer.UploadFile(
+			fPath,
+			remoteFileName,
+			EncryptByZip,
+		)
+	}
+}

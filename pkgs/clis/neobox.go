@@ -80,5 +80,23 @@ func (that *Cli) neobox() {
 	}
 	neoboxCmd.AddCommand(genScriptCmd)
 
+	neoboxCmd.AddCommand(&cobra.Command{
+		Use:     "upload-confs",
+		Aliases: []string{"u"},
+		Short:   "Uploads config files to remote repo.",
+		Run: func(cmd *cobra.Command, args []string) {
+			box.HandleNeoboxConf(false)
+		},
+	})
+
+	neoboxCmd.AddCommand(&cobra.Command{
+		Use:     "dowload-confs",
+		Aliases: []string{"d"},
+		Short:   "Downloads config files from remote repo.",
+		Run: func(cmd *cobra.Command, args []string) {
+			box.HandleNeoboxConf(true)
+		},
+	})
+
 	that.rootCmd.AddCommand(neoboxCmd)
 }

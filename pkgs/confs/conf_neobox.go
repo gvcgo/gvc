@@ -56,14 +56,14 @@ func (that *NeoboxConf) Reset() {
 	that.nconf.Conf.LogDir = filepath.Join(that.path, "neobox_logs")
 	that.nconf.Conf.GeoInfoDir = filepath.Join(that.path, "neobox_geoinfo")
 	that.nconf.Conf.SocketDir = filepath.Join(that.path, "neobox_socket")
-	// TODO: Encrypted.
-	that.nconf.Conf.DatabaseDir = GVCBackupDir // save sqlite db file to BackupDir
+	// save sqlite db file to ProxyFilesDir
+	that.nconf.Conf.DatabaseDir = ProxyFilesDir
 	// new added
 	that.nconf.Conf.HistoryMaxLines = 300
 	that.nconf.Conf.HistoryFileName = neoconf.HistoryFileName
 	that.nconf.Conf.ShellSocketName = neoconf.ShellSocketName
-	// TODO: change to github.
-	that.nconf.Conf.DownloadUrl = "https://gitlab.com/moqsien/neobox_related/-/raw/main/conf.txt"
+	// that.nconf.Conf.DownloadUrl = "https://gitlab.com/moqsien/neobox_related/-/raw/main/conf.txt"
+	that.nconf.Conf.DownloadUrl = "https://gvc.1710717.xyz/proxy/https://github.com/moqsien/neobox_resources/raw/main/conf.txt"
 
 	// ping related
 	that.nconf.Conf.MaxPingers = 120
@@ -72,12 +72,11 @@ func (that *NeoboxConf) Reset() {
 
 	// geoinfo files related
 	that.nconf.Conf.GeoInfoSumUrl = "https://gitlab.com/moqsien/gvc_resources/-/raw/main/files_info.json?ref_type=heads&inline=false"
-	// TODO: change to github.
 	that.nconf.Conf.GeoInfoUrls = map[string]string{
-		"geoip.dat":   "https://gitlab.com/moqsien/neobox_related/-/raw/main/geoip.dat",
-		"geosite.dat": "https://gitlab.com/moqsien/neobox_related/-/raw/main/geosite.dat",
-		"geoip.db":    "https://gitlab.com/moqsien/neobox_related/-/raw/main/geoip.db",
-		"geosite.db":  "https://gitlab.com/moqsien/neobox_related/-/raw/main/geosite.db",
+		"geoip.dat":   "https://gvc.1710717.xyz/proxy/https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat",
+		"geosite.dat": "https://gvc.1710717.xyz/proxy/https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat",
+		"geoip.db":    "https://gvc.1710717.xyz/proxy/https://github.com/lyc8503/sing-box-rules/releases/latest/download/geoip.db",
+		"geosite.db":  "https://gvc.1710717.xyz/proxy/https://github.com/lyc8503/sing-box-rules/releases/latest/download/geosite.db",
 	}
 
 	// verifier related
@@ -109,8 +108,8 @@ func (that *NeoboxConf) Reset() {
 		MaxLossRate:       0.0,
 		MaxSaveToDB:       1000,
 		WireGuardConfDir:  GVCBackupDir, // save wireguard configurations to BackupDir
-		// TODO: change to github.
-		CloudflareDomainFileUrl: "https://gitlab.com/moqsien/neobox_related/-/raw/main/cloudflare_domains.txt?ref_type=heads&inline=false",
+		// CloudflareDomainFileUrl: "https://gitlab.com/moqsien/neobox_related/-/raw/main/cloudflare_domains.txt?ref_type=heads&inline=false",
+		CloudflareDomainFileUrl: "https://gvc.1710717.xyz/proxy/https://github.com/moqsien/neobox_resources/raw/main/domains.txt",
 	}
 	// save to config file.
 	k, _ := koanfer.NewKoanfer(that.NeoConfPath)
