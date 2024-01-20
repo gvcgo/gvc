@@ -227,16 +227,44 @@ func (that *Cli) asciinema() {
 }
 
 func (that *Cli) gpt() {
-	that.rootCmd.AddCommand(&cobra.Command{
+	gptCmd := &cobra.Command{
 		Use:     "gpt",
 		Aliases: []string{"G"},
 		Short:   "Starts the ChatGPT/Spark bot.",
 		GroupID: that.groupID,
+	}
+
+	gptCmd.AddCommand(&cobra.Command{
+		Use:     "run",
+		Aliases: []string{"r"},
+		Short:   "Starts the ChatGPT/Spark bot.",
 		Run: func(cmd *cobra.Command, args []string) {
 			gv := vctrl.NewVGPT()
 			gv.Run()
 		},
 	})
+
+	gptCmd.AddCommand(&cobra.Command{
+		Use:     "upload-conf",
+		Aliases: []string{"u"},
+		Short:   "Uploads config files to remote repo.",
+		Run: func(cmd *cobra.Command, args []string) {
+			gv := vctrl.NewVGPT()
+			gv.HandleGPTConf(false)
+		},
+	})
+
+	gptCmd.AddCommand(&cobra.Command{
+		Use:     "download-conf",
+		Aliases: []string{"d"},
+		Short:   "Downloads config files from remote repo.",
+		Run: func(cmd *cobra.Command, args []string) {
+			gv := vctrl.NewVGPT()
+			gv.HandleGPTConf(true)
+		},
+	})
+
+	that.rootCmd.AddCommand(gptCmd)
 }
 
 type CCtx struct {

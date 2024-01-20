@@ -27,7 +27,6 @@ func NewVGPT() (vg *VGpt) {
 	vg = &VGpt{
 		Conf: config.New(),
 	}
-	// TODO: zip and save to remote repo.
 	vg.GPTConf = gconf.NewConf(vg.Conf.GPT.WorkDir)
 	vg.GPTConf.Reload()
 	return
@@ -52,4 +51,24 @@ func (that *VGpt) Run() {
 
 	ui := gptui.NewGPTUI(that.GPTConf)
 	ui.Run()
+}
+
+func (that *VGpt) HandleGPTConf(toDownload bool) {
+	fPath := that.Conf.GPT.WorkDir
+	remoteFileName := "gpt_confs.zip"
+	repoSyncer := NewSynchronizer()
+	if toDownload {
+		// download and deploy.
+		repoSyncer.DownloadFile(
+			fPath,
+			remoteFileName,
+			EncryptByZip,
+		)
+	} else {
+		repoSyncer.UploadFile(
+			fPath,
+			remoteFileName,
+			EncryptByZip,
+		)
+	}
 }
