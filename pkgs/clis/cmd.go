@@ -68,6 +68,7 @@ func (that *Cli) initiate() {
 	that.asciinema()
 	that.docker()
 	that.gpt()
+	that.picRepo()
 
 	/*
 		Programming Languages:

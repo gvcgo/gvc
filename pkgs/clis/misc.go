@@ -314,3 +314,24 @@ func (that *Cli) cloc() {
 
 	that.rootCmd.AddCommand(clCmd)
 }
+
+func (that *Cli) picRepo() {
+	clCmd := &cobra.Command{
+		Use:     "pic-repo",
+		Aliases: []string{"P"},
+		Short:   "Uploads local picture to remote repo.",
+		Long:    "Example: P <your_picture_path...>",
+		GroupID: that.groupID,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				return
+			}
+			picRepo := vctrl.NewPicRepo()
+			for _, arg := range args {
+				picRepo.UploadPic(arg)
+			}
+		},
+	}
+	that.rootCmd.AddCommand(clCmd)
+}
