@@ -6,7 +6,11 @@ import (
 )
 
 func SetVlang(reg IRegister) {
-	vlangCmd := &cobra.Command{}
+	vlangCmd := &cobra.Command{
+		Use:     "vlang",
+		Aliases: []string{"vl"},
+		Short:   "Vlang related CLIs.",
+	}
 
 	var overwriteFlagName = "force"
 	installCmd := &cobra.Command{

@@ -6,7 +6,11 @@ import (
 )
 
 func SetTypst(reg IRegister) {
-	typstCmd := &cobra.Command{}
+	typstCmd := &cobra.Command{
+		Use:     "typst",
+		Aliases: []string{"t"},
+		Short:   "typst related CLIs.",
+	}
 
 	var overWriteFlagName = "force"
 	installCmd := &cobra.Command{

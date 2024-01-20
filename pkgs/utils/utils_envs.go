@@ -39,6 +39,7 @@ const (
 	SUB_NVIM    = "neovim"
 	SUB_BREW    = "homebrew"
 	SUB_VLANG   = "vlang"
+	SUB_ZIG     = "zig"
 	SUB_FLUTTER = "flutter"
 	SUB_ANDROID = "android"
 	SUB_LUA     = "lua"
@@ -137,6 +138,11 @@ export HOMEBREW_PIP_INDEX_URL="%s"`
 Vlang Envs
 */
 var VlangEnv string = `export PATH="%s:$PATH"`
+
+/*
+Zig Envs
+*/
+var ZigEnv string = `export PATH="%s:$PATH"`
 
 /*
 Flutter Envs

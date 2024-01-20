@@ -72,4 +72,10 @@ func (that *Cli) langs() {
 		v-analyzer extension for VSCode
 	*/
 	langs.SetVlang(that)
+
+	/*
+		zig
+		zls
+	*/
+	langs.SetZig(that)
 }
