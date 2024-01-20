@@ -42,9 +42,12 @@ func SetZig(reg IRegister) {
 		Aliases: []string{"iz"},
 		Short:   "Installs zls.",
 		Run: func(cmd *cobra.Command, args []string) {
-			// TODO: zls
+			force, _ := cmd.Flags().GetBool(overwriteFlagName)
+			v := vctrl.NewZig()
+			v.InstalZls(force)
 		},
 	}
+	analyzerCmd.Flags().BoolP(overwriteFlagName, "f", false, "To overwrite the old version.")
 	zigCmd.AddCommand(analyzerCmd)
 
 	reg.Register(zigCmd)

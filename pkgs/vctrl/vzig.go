@@ -108,6 +108,10 @@ func (that *Zig) download(force bool) (fPath string) {
 
 func (that *Zig) Install(force bool) {
 	fPath := that.download(force)
+	if fPath == "" {
+		gprint.PrintError("download failed.")
+		return
+	}
 	if ok, _ := utils.PathIsExist(config.ZigRootDir); ok && !force {
 		gprint.PrintInfo("Zig is already installed.")
 		return
@@ -121,7 +125,7 @@ func (that *Zig) Install(force bool) {
 		return
 	}
 	that.renameZigDir()
-	if ok, _ := utils.PathIsExist(config.VlangRootDir); ok {
+	if ok, _ := utils.PathIsExist(config.ZigRootDir); ok {
 		that.CheckAndInitEnv()
 	}
 	gprint.PrintSuccess("Installation succeeded.")
@@ -139,8 +143,13 @@ func (that *Zig) renameZigDir() {
 
 func (that *Zig) CheckAndInitEnv() {
 	if runtime.GOOS != utils.Windows {
-		vlangEnv := fmt.Sprintf(utils.ZigEnv, config.ZigRootDir)
-		that.env.UpdateSub(utils.SUB_ZIG, vlangEnv)
+		zigEnv := fmt.Sprintf(utils.ZigEnv, config.ZigRootDir)
+		zlsBinDir := filepath.Join(config.ZlsRootDir, "bin")
+		if ok, _ := utils.PathIsExist(zlsBinDir); ok {
+			zlsEnv := fmt.Sprintf(utils.ZigEnv, zlsBinDir)
+			zigEnv = fmt.Sprintf("%s\n%s", zigEnv, zlsEnv)
+		}
+		that.env.UpdateSub(utils.SUB_ZIG, zigEnv)
 	} else {
 		envList := map[string]string{
 			"PATH": config.ZigRootDir,
@@ -149,6 +158,75 @@ func (that *Zig) CheckAndInitEnv() {
 	}
 }
 
-func (that *Zig) InstalZls() {
+func (that *Zig) downloadZls(force bool) (fPath string) {
+	dUrl := that.Conf.Zig.ZlsDownloadUrls[fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)]
+	if dUrl == "" {
+		gprint.PrintError("Cannot find download url.")
+		return
+	}
+	gprint.PrintInfo("download from: %s", dUrl)
+	// that.fetcher.SetUrl(dUrl)
+	that.fetcher.SetUrl(that.Conf.GVCProxy.WrapUrl(dUrl))
+	that.fetcher.Timeout = time.Minute * 30
+	that.fetcher.SetThreadNum(3)
+	fName := "zls.tar.gz"
+	if strings.HasSuffix(dUrl, ".zip") {
+		fName = "zls.zip"
+	}
+	fp := filepath.Join(config.ZigFilesDir, fName)
+	if force {
+		os.RemoveAll(fp)
+	}
+	if ok, _ := utils.PathIsExist(fp); !ok || force {
+		if size := that.fetcher.GetAndSaveFile(fp); size > 0 {
+			return fp
+		} else {
+			os.RemoveAll(fp)
+		}
+	} else if ok && !force {
+		return fp
+	}
+	return
+}
 
+func (that *Zig) renameZlsDir() {
+	itemList, _ := os.ReadDir(config.ZigFilesDir)
+	for _, item := range itemList {
+		if item.IsDir() && strings.Contains(item.Name(), "zls-") {
+			untarredDir := filepath.Join(config.ZigFilesDir, item.Name())
+			os.Rename(untarredDir, config.ZlsRootDir)
+		}
+	}
+	binDirPath := filepath.Join(config.ZlsRootDir, "bin")
+	binaryPath := filepath.Join(binDirPath, "zls")
+	if runtime.GOOS == utils.Windows {
+		binaryPath = filepath.Join(binDirPath, "zls.exe")
+	}
+	os.Chmod(binaryPath, 0777)
+}
+
+func (that *Zig) InstalZls(force bool) {
+	fPath := that.downloadZls(force)
+	if fPath == "" {
+		gprint.PrintError("download zls failed.")
+		return
+	}
+	if ok, _ := utils.PathIsExist(config.ZlsRootDir); ok && !force {
+		gprint.PrintInfo("zls is already installed.")
+		return
+	} else {
+		os.RemoveAll(config.ZlsRootDir)
+	}
+
+	if err := archiver.Unarchive(fPath, config.ZlsRootDir); err != nil {
+		os.RemoveAll(config.ZlsRootDir)
+		os.RemoveAll(fPath)
+		gprint.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
+		return
+	}
+	that.renameZlsDir()
+	if ok, _ := utils.PathIsExist(config.ZlsRootDir); ok {
+		that.CheckAndInitEnv()
+	}
+	gprint.PrintSuccess("Zls installation succeeded.")
 }

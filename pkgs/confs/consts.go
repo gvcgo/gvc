@@ -612,4 +612,5 @@ Zig related
 var (
 	ZigFilesDir string = filepath.Join(GVCInstallDir, "zig_files")
 	ZigRootDir  string = filepath.Join(ZigFilesDir, "zig")
+	ZlsRootDir  string = filepath.Join(ZigFilesDir, "zls")
 )
