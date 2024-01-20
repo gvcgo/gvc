@@ -605,3 +605,11 @@ var (
 	GitSSHProxyCommandWin string = `ProxyCommand connect -S %s %s %s`
 	GitSSHProxyCommandNix string = `ProxyCommand nc -v -x %s %s %s`
 )
+
+/*
+Zig related
+*/
+var (
+	ZigFilesDir string = filepath.Join(GVCInstallDir, "zig_files")
+	ZigRootDir  string = filepath.Join(VlangFilesDir, "zig")
+)

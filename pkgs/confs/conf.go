@@ -31,6 +31,7 @@ type GVConfig struct {
 	Cpp      *CppConf             `koanf:"cpp"`
 	Homebrew *HomebrewConf        `koanf:"homebrew"`
 	Vlang    *VlangConf           `koanf:"vlang"`
+	Zig      *ZigConf             `koanf:"zig"`
 	Flutter  *FlutterConf         `koanf:"flutter"`
 	Julia    *JuliaConf           `koanf:"julia"`
 	Typst    *TypstConf           `koanf:"typst"`
@@ -61,6 +62,7 @@ func New() (r *GVConfig) {
 		Cpp:      NewCppConf(),
 		Homebrew: NewHomebrewConf(),
 		Vlang:    NewVlangConf(),
+		Zig:      NewZigConf(),
 		Flutter:  NewFlutterConf(),
 		Julia:    NewJuliaConf(),
 		Typst:    NewTypstConf(),
@@ -128,6 +130,8 @@ func (that *GVConfig) SetDefault() {
 	that.Homebrew.Reset()
 	that.Vlang = NewVlangConf()
 	that.Vlang.Reset()
+	that.Zig = NewZigConf()
+	that.Zig.Reset()
 	that.Flutter = NewFlutterConf()
 	that.Flutter.Reset()
 	that.Julia = NewJuliaConf()
