@@ -40,7 +40,7 @@ func SetZig(reg IRegister) {
 	analyzerCmd := &cobra.Command{
 		Use:     "install-zls",
 		Aliases: []string{"iz"},
-		Short:   "Installs zls.",
+		Short:   "Installs zls and the zls extension for vscode.",
 		Run: func(cmd *cobra.Command, args []string) {
 			force, _ := cmd.Flags().GetBool(overwriteFlagName)
 			v := vctrl.NewZig()

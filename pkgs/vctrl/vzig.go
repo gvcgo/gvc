@@ -3,12 +3,14 @@ package vctrl
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/gogf/gf/v2/os/genv"
 	"github.com/mholt/archiver/v3"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/request"
@@ -228,5 +230,14 @@ func (that *Zig) InstalZls(force bool) {
 	if ok, _ := utils.PathIsExist(config.ZlsRootDir); ok {
 		that.CheckAndInitEnv()
 	}
+
 	gprint.PrintSuccess("Zls installation succeeded.")
+	// install zls extension for vscode.
+	// 	AugusteRame.zls-vscode
+	cmd := exec.Command("code", "--install-extension", "AugusteRame.zls-vscode")
+	cmd.Env = genv.All()
+	cmd.Stderr = os.Stderr
+	cmd.Stdout = os.Stdout
+	cmd.Stdin = os.Stdin
+	cmd.Run()
 }
