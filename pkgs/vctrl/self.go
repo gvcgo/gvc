@@ -101,7 +101,7 @@ func (that *Self) Uninstall() {
 func (that *Self) ShowPath() {
 	syncer := NewSynchronizer()
 	content := fmt.Sprintf(
-		"GVCDir: %s\nGVCInstallDir:%s\nGVConfPath: %s\nDAVConfPath: %s",
+		"GVCDir: %s\nAppsDir:%s\nGVConfPath: %s\nDAVConfPath: %s",
 		config.GVCDir,
 		config.GVCInstallDir,
 		config.GVConfigPath,
