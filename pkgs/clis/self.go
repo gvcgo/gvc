@@ -29,6 +29,8 @@ func (that *Cli) showVersion() {
 			}
 			pattern := "Name: GVC \nVersion: %s\nUpdatedAt: %s\nHomepage: %s\nEmail: %s\n"
 			pattern = pattern + "GVCBin: %s\nConfPath: %s\nRemoteConf: %s\nAppsDir: %s\n"
+
+			syncer := vctrl.NewSynchronizer()
 			s := fmt.Sprintf(
 				pattern,
 				fmt.Sprintf("%s(%s)", that.gitTag, hashTail),
@@ -38,7 +40,7 @@ func (that *Cli) showVersion() {
 				// installation info.
 				config.GVCDir,
 				config.GVConfigPath,
-				config.GVCWebdavConfigPath,
+				syncer.GetConfPath(),
 				config.GVCInstallDir,
 			)
 			bp := gprint.NewBlockPrinter(

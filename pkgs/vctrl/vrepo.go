@@ -72,6 +72,10 @@ func NewSynchronizer(repoName ...string) (s *Synchronizer) {
 	return
 }
 
+func (that *Synchronizer) GetConfPath() string {
+	return that.path
+}
+
 func (that *Synchronizer) initiate() {
 	if that.koanfer == nil {
 		gprint.PrintError("nil koanfer.")
