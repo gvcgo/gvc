@@ -34,7 +34,12 @@ func NewVlang() (vl *Vlang) {
 }
 
 func (that *Vlang) download(force bool) string {
-	that.fetcher.Url = that.Conf.Vlang.VlangUrls[runtime.GOOS]
+	if runtime.GOOS == utils.MacOS {
+		that.fetcher.Url = that.Conf.Vlang.VlangUrls[fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)]
+	} else {
+		that.fetcher.Url = that.Conf.Vlang.VlangUrls[runtime.GOOS]
+	}
+
 	that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(that.fetcher.Url)
 
 	if that.fetcher.Url != "" {

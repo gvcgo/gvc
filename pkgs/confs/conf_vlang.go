@@ -31,9 +31,10 @@ func (that *VlangConf) setup() {
 
 func (that *VlangConf) Reset() {
 	that.VlangUrls = map[string]string{
-		utils.MacOS:   "https://github.com/vlang/v/releases/latest/download/v_macos.zip",
-		utils.Linux:   "https://github.com/vlang/v/releases/latest/download/v_linux.zip",
-		utils.Windows: "https://github.com/vlang/v/releases/latest/download/v_windows.zip",
+		"darwin_amd64": "https://github.com/vlang/v/releases/latest/download/v_macos_x86_64.zip",
+		"darwin_arm64": "https://github.com/vlang/v/releases/latest/download/v_macos_arm64.zip",
+		utils.Linux:    "https://github.com/vlang/v/releases/latest/download/v_linux.zip",
+		utils.Windows:  "https://github.com/vlang/v/releases/latest/download/v_windows.zip",
 	}
 	that.AnalyzerUrls = map[string]string{
 		utils.Windows:  "https://github.com/v-analyzer/v-analyzer/releases/latest/download/v-analyzer-windows-x86_64.zip",
