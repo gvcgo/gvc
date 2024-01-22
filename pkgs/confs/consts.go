@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"runtime"
 
+	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/gtea/input"
 	"github.com/moqsien/gvc/pkgs/utils"
 )
@@ -32,7 +33,15 @@ func GetGVCWorkDir() string {
 		content, _ := os.ReadFile(installPathConfig)
 		return string(content)
 	}
-	ipt := input.NewInput(input.WithPlaceholder(`set where to install packages; default: "$HomeDir/.gvc/"`), input.WithWidth(100))
+	// Custom the apps dir.
+	gprint.PrintInfo("To custom the AppsDir(Apps installation Directory) for gvc.")
+	gprint.PrintInfo("If nothing is specified, then AppsDir will be %s .", filepath.Join(utils.GetHomeDir(), ".gvc"))
+
+	ipt := input.NewInput(
+		input.WithPlaceholder(`your path.`),
+		input.WithWidth(100),
+		input.WithPrompt("AppsDir: "),
+	)
 	ipt.Run()
 	d := ipt.Value()
 	if ok, _ := utils.PathIsExist(d); ok {
