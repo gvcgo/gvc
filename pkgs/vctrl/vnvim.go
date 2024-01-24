@@ -40,6 +40,7 @@ func (that *NVim) setup() {
 }
 
 func (that *NVim) download() (r string) {
+	// TODO: parse from releases.
 	nurl, ok := that.Conf.NVim.Urls[runtime.GOOS]
 	if ok {
 		utils.ClearDir(config.NVimFileDir)

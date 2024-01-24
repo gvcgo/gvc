@@ -63,6 +63,7 @@ func (that *Zig) GetZigList() {
 		doc.Find("table").Eq(1).Find("a").Each(func(i int, s *goquery.Selection) {
 			href := s.AttrOr("href", "")
 			if href != "" {
+				// TODO: parse from releases.
 				for k, v := range ZigOSArchMap {
 					if strings.Contains(href, k) && !strings.Contains(href, "minisig") {
 						that.zigList[v] = href
@@ -158,6 +159,7 @@ func (that *Zig) CheckAndInitEnv() {
 }
 
 func (that *Zig) downloadZls(force bool) (fPath string) {
+	// TODO: parse from releases.
 	dUrl := that.Conf.Zig.ZlsDownloadUrls[fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)]
 	if dUrl == "" {
 		gprint.PrintError("Cannot find download url.")

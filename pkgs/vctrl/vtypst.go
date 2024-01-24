@@ -33,7 +33,7 @@ func NewTypstVersion() (tv *Typst) {
 
 func (that *Typst) download(force bool) string {
 	vUrls := that.Conf.Typst.GithubUrls
-
+	// TODO: parse from releases.
 	if runtime.GOOS == utils.Windows {
 		that.fetcher.Url = vUrls[runtime.GOOS]
 	} else {

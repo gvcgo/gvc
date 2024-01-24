@@ -34,6 +34,7 @@ func NewVlang() (vl *Vlang) {
 }
 
 func (that *Vlang) download(force bool) string {
+	// TODO: parse from releases.
 	if runtime.GOOS == utils.MacOS {
 		that.fetcher.Url = that.Conf.Vlang.VlangUrls[fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)]
 	} else {
@@ -98,6 +99,7 @@ func (that *Vlang) InstallVAnalyzerForVscode() {
 	if key == utils.MacOS {
 		key = fmt.Sprintf("%s_%s", key, runtime.GOARCH)
 	}
+	// TODO: parse from releases.
 	that.fetcher.Url = that.Conf.Vlang.AnalyzerUrls[key]
 	that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(that.fetcher.Url)
 	if that.fetcher.Url != "" {

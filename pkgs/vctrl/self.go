@@ -150,6 +150,7 @@ func (that *Self) CheckLatestVersion(currentVersion string) {
 }
 
 func (that *Self) download() {
+	// TODO: parse from releases.
 	dUrl := that.Conf.GVC.Urls[fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)]
 	if dUrl != "" {
 		fPath := filepath.Join(config.GVCBinTempDir, "gvc.zip")

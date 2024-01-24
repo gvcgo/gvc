@@ -34,6 +34,7 @@ func (that *VProtoBuffer) Install(force bool) {
 	if runtime.GOOS == utils.Linux {
 		key = fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)
 	}
+	// TODO: parse from releases.
 	that.fetcher.Url = that.Conf.Protobuf.GithubUrls[key]
 	if that.fetcher.Url != "" {
 		that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(that.fetcher.Url)
