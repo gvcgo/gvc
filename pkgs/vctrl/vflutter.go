@@ -24,6 +24,12 @@ import (
 	"github.com/moqsien/gvc/pkgs/utils/sorts"
 )
 
+var FlutterJsonFiles = map[string]string{
+	utils.Windows: "windows",
+	utils.MacOS:   "macos",
+	utils.Linux:   "linux",
+}
+
 // only in china mianland
 type FlutterPackage struct {
 	Url         string
@@ -89,7 +95,11 @@ func (that *FlutterVersion) ChooseSource() {
 
 func (that *FlutterVersion) getJson() {
 	that.ChooseSource()
-	fUrl := that.flutterConf[runtime.GOOS]
+	/*
+		https://docs.flutter.dev/release/archive?tab=windows
+		https://flutter.cn/docs/release/archive?tab=windows
+	*/
+	fUrl := fmt.Sprintf(that.flutterConf["json_file_url"], FlutterJsonFiles[runtime.GOOS])
 	if !utils.VerifyUrls(fUrl) {
 		return
 	}
@@ -348,6 +358,12 @@ Install Android SDK for Flutter & VSCode
 func (that *FlutterVersion) GetAndroidSDKInfo() (androidSDKs map[string]string) {
 	androidSDKs = map[string]string{}
 	itemList := selector.NewItemList()
+	/*
+		https://developer.android.google.cn/tools/sdkmanager?hl=zh-cn
+		https://developer.android.google.cn/studio?hl=zh-cn
+		https://developer.android.com/tools/sdkmanager?hl=en
+		https://developer.android.com/studio?hl=en
+	*/
 	itemList.Add("from developer.android.google.cn", that.Conf.Flutter.AndroidCN)
 	itemList.Add("from developer.android.com", that.Conf.Flutter.Android)
 	sel := selector.NewSelector(

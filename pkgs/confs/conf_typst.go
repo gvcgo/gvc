@@ -28,6 +28,7 @@ func (that *TypstConf) setup() {
 	}
 }
 
+// TODO: find OS and Arch autmotically.
 func (that *TypstConf) Reset() {
 	that.GithubUrls = map[string]string{
 		"windows":      "https://github.com/typst/typst/releases/latest/download/typst-x86_64-pc-windows-msvc.zip",

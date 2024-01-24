@@ -107,6 +107,7 @@ func (that *NVim) setInitFile() {
 	utils.CopyFile(config.NVimInitBackupPath, dst)
 }
 
+// TODO: remove.
 func (that *NVim) initiatePlugins() {
 	that.fetcher.Url = that.Conf.NVim.PluginsUrl
 	that.fetcher.Timeout = 120 * time.Second
