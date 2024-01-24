@@ -55,10 +55,7 @@ func (that *Zig) GetZigList() {
 	that.fetcher.Timeout = time.Minute * 5
 	if resp := that.fetcher.Get(); resp != nil {
 		doc, err := goquery.NewDocumentFromReader(resp.RawBody())
-		if err != nil {
-			gprint.PrintError(fmt.Sprintf("Parse page errored: %+v", err))
-		}
-		if doc == nil {
+		if err != nil || doc == nil {
 			gprint.PrintError(fmt.Sprintf("Cannot parse html for %s", that.fetcher.Url))
 			os.Exit(1)
 		}

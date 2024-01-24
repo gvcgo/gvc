@@ -46,6 +46,9 @@ func NewGhDownloader() (gd *GhDownloader) {
 	return
 }
 
+/*
+TODO: Remove github accelerations.
+*/
 func (that *GhDownloader) findFileName(dUrl string) (name string) {
 	if strings.Contains(dUrl, "/archive") {
 		sList := strings.Split(dUrl, "github.com/")
@@ -187,6 +190,9 @@ func (that *GhDownloader) OpenByBrowser(chosen int) {
 	}
 }
 
+/*
+Set local proxy for go-git.
+*/
 func (that *GhDownloader) SaveDefaultProxy(proxyUrl string) {
 	filePath := filepath.Join(config.GVCDir, DefaultProxyFileName)
 	if proxyUrl == "" {
@@ -206,6 +212,9 @@ func (that *GhDownloader) ReadDefaultProxy() string {
 	return string(r)
 }
 
+/*
+go-git
+*/
 func (that *GhDownloader) Clone(projectUrl, proxyUrl string) {
 	that.git.SetProxyUrl(proxyUrl)
 	if _, err := that.git.CloneBySSH(projectUrl); err != nil {
@@ -254,6 +263,9 @@ func (that *GhDownloader) ShowLatestTag() {
 	}
 }
 
+/*
+git for windows.
+*/
 func (that *GhDownloader) downloadGitForWindows() {
 	if runtime.GOOS != utils.Windows {
 		return
@@ -290,6 +302,7 @@ func (that *GhDownloader) InstallGitForWindows() {
 	that.env.SetEnvForWin(envarList)
 }
 
+// github download acceleration.
 func (that *GhDownloader) SetReverseProxyForDownload(pUrl string) {
 	if pUrl == "" {
 		return
@@ -478,4 +491,152 @@ func (that *GhDownloader) HandleDotSSHFiles(toDownload bool) {
 			EncryptByZip,
 		)
 	}
+}
+
+/*
+TODO: parse.
+==============
+Parse releases list for github project.
+==============
+*/
+func (that *GhDownloader) ParseReleasesForGithubProject(releaseUrl string) (r map[string]string) {
+	r = map[string]string{}
+	if !strings.Contains(releaseUrl, "releases/latest") || !strings.Contains(releaseUrl, "github.com") {
+		gprint.PrintError("Illegal url: %s", releaseUrl)
+		return
+	}
+	that.fetcher.SetUrl(that.Conf.GVCProxy.WrapUrl(releaseUrl))
+	that.fetcher.Timeout = 5 * time.Minute
+	/*
+		//details//include-fragment/@src
+	*/
+	if resp := that.fetcher.Get(); resp != nil {
+		doc, err := goquery.NewDocumentFromReader(resp.RawBody())
+		if err != nil || doc == nil {
+			gprint.PrintError(fmt.Sprintf("Parse %s errored: %+v", releaseUrl, err))
+			os.Exit(1)
+		}
+		assetsUrl := doc.Find("details").Find("include-fragment").AttrOr("src", "")
+
+		if assetsUrl == "" {
+			gprint.PrintError("Cannot find download link.")
+			os.Exit(1)
+		}
+
+		uList := []string{}
+		that.fetcher.SetUrl(that.Conf.GVCProxy.WrapUrl(assetsUrl))
+		if rp := that.fetcher.Get(); rp != nil {
+			doc, err := goquery.NewDocumentFromReader(rp.RawBody())
+			if err != nil || doc == nil {
+				gprint.PrintError(fmt.Sprintf("Parse %s errored: %+v", assetsUrl, err))
+				os.Exit(1)
+			}
+			doc.Find("a").Each(func(_ int, s *goquery.Selection) {
+				if u := s.AttrOr("href", ""); u != "" {
+					uList = append(uList, u)
+				}
+			})
+		}
+		for _, u := range uList {
+			fName := filepath.Base(u)
+			osInfo, archInfo := that.parseOSAndArchFromFileName(fName)
+			if osInfo != "" && archInfo != "" {
+				r[fmt.Sprintf("%s_%s", osInfo, archInfo)] = u
+			} else if osInfo == utils.MacOS && archInfo == "" {
+				r[fmt.Sprintf("%s_%s", osInfo, "amd64")] = u
+				r[fmt.Sprintf("%s_%s", osInfo, "arm64")] = u
+			} else if osInfo == utils.Linux && archInfo == "" {
+				r[fmt.Sprintf("%s_%s", osInfo, "amd64")] = u
+			} else if osInfo == utils.Windows && archInfo == "" {
+				r[fmt.Sprintf("%s_%s", osInfo, "amd64")] = u
+			}
+		}
+	}
+	return
+}
+
+func (that *GhDownloader) parseOSAndArchFromFileName(fName string) (osInfo, archInfo string) {
+	extList := []string{
+		".tar.gz",
+		".zip",
+		".tar.xz",
+	}
+	ok := false
+	for _, ext := range extList {
+		if strings.HasSuffix(fName, ext) {
+			ok = true
+			break
+		}
+	}
+	if !ok {
+		return
+	}
+	osList := map[string][]string{
+		utils.Windows: {
+			"windows",
+			"win#darwin",
+			"win64",
+		},
+		utils.MacOS: {
+			"macos",
+			"darwin",
+			"osx",
+		},
+		utils.Linux: {
+			"linux",
+			"linux64",
+		},
+	}
+
+	archList := map[string][]string{
+		"amd64": {
+			"x86_64",
+			"amd64",
+			"x64",
+			"linux64",
+			"win64",
+		},
+		"arm64": {
+			"aarch64",
+			"aarch_64",
+			"arm64",
+		},
+	}
+
+OUTTER:
+	for osType, kList := range osList {
+		for _, k := range kList {
+			if strings.Contains(k, "#") {
+				l := strings.Split(k, "#")
+				if strings.Contains(fName, l[0]) && !strings.Contains(fName, l[1]) {
+					osInfo = osType
+					break OUTTER
+				}
+			} else {
+				if strings.Contains(fName, k) {
+					osInfo = osType
+					break OUTTER
+				}
+			}
+		}
+	}
+
+OUTTER2:
+	for archType, kList := range archList {
+		for _, k := range kList {
+			if strings.Contains(k, "#") {
+				l := strings.Split(k, "#")
+				if strings.Contains(fName, l[0]) && !strings.Contains(fName, l[1]) {
+					archInfo = archType
+					break OUTTER2
+				}
+			} else {
+				if strings.Contains(fName, k) {
+					archInfo = archType
+					break OUTTER2
+				}
+			}
+		}
+	}
+	return
 }
