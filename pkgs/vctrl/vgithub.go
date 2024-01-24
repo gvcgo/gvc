@@ -494,7 +494,7 @@ func (that *GhDownloader) HandleDotSSHFiles(toDownload bool) {
 }
 
 /*
-TODO: parse.
+TODO: format urls.
 ==============
 Parse releases list for github project.
 ==============
@@ -539,6 +539,9 @@ func (that *GhDownloader) ParseReleasesForGithubProject(releaseUrl string) (r ma
 		}
 		for _, u := range uList {
 			fName := filepath.Base(u)
+			if !strings.HasPrefix(u, "https://github.com/") {
+				u = "https://github.com/" + strings.TrimLeft(u, "/")
+			}
 			osInfo, archInfo := that.parseOSAndArchFromFileName(fName)
 			if osInfo != "" && archInfo != "" {
 				r[fmt.Sprintf("%s_%s", osInfo, archInfo)] = u
