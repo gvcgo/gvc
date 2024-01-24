@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -30,8 +31,21 @@ func main() {
 		// self := vctrl.NewSelf()
 		// self.CheckLatestVersion("v1.6.4")
 
-		zig := vctrl.NewZig()
-		zig.GetZigList()
+		// zig := vctrl.NewZig()
+		// zig.GetZigList()
+
+		gh := vctrl.NewGhDownloader()
+		/*
+			https://github.com/zigtools/zls/releases/latest/
+			https://github.com/neovim/neovim/releases/latest/
+			https://github.com/protocolbuffers/protobuf/releases/latest/
+			https://github.com/typst/typst/releases/latest/
+			https://github.com/vlang/v/releases/latest/
+			https://github.com/v-analyzer/v-analyzer/releases/latest/
+			https://github.com/zigtools/zls/releases/latest/
+			https://github.com/moqsien/gvc/releases/latest/
+		*/
+		fmt.Printf("%+v\n", gh.ParseReleasesForGithubProject("https://github.com/moqsien/gvc/releases/latest/"))
 	} else if len(os.Args) < 2 {
 		/*
 			GVC is allowed to be installed in ~/.gvc/ or $GOPATH/bin/ .
