@@ -13,7 +13,7 @@ require (
 	github.com/mholt/archiver/v3 v3.5.1
 	github.com/moqsien/asciinema v0.3.0
 	github.com/moqsien/gogpt v0.2.6
-	github.com/moqsien/goutils v0.8.3
+	github.com/moqsien/goutils v0.8.4
 	github.com/moqsien/gshell v0.2.8
 	github.com/moqsien/hackbrowser v1.0.6
 	github.com/moqsien/neobox v1.5.8

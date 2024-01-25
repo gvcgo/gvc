@@ -666,8 +666,8 @@ github.com/moqsien/asciinema v0.3.0 h1:/aMlAcDhhClVbLDDvhy7Z2GrFqfZda2OQUbPGAOQA
 github.com/moqsien/asciinema v0.3.0/go.mod h1:8805nYndqsLowovS0GrWMS2v1MotTb5Fe4uOVK3S1gI=
 github.com/moqsien/gogpt v0.2.6 h1:yO6vIIAZOfFfqUZd1k8Wx4rM3zzm0ISxWjjxruLV8zs=
 github.com/moqsien/gogpt v0.2.6/go.mod h1:u7Feqi19CdME0X+PnX55Gg3nT3bJrhMmHsPsnxHktSs=
-github.com/moqsien/goutils v0.8.3 h1:LNoMjM49nhIGb8cyp3hbNxRPgDVOjkLzNPJzZCaB7hI=
-github.com/moqsien/goutils v0.8.3/go.mod h1:Xg3ZZVMVZLbtvwVwqZukkWVNwcdHPPHNqGJiXmd8ivc=
+github.com/moqsien/goutils v0.8.4 h1:7fIv/Teg9myZNYs/+GzoOt8TDC2qNaQBaIL6hYJu3ys=
+github.com/moqsien/goutils v0.8.4/go.mod h1:Xg3ZZVMVZLbtvwVwqZukkWVNwcdHPPHNqGJiXmd8ivc=
 github.com/moqsien/gshell v0.2.8 h1:Hk6jeb1bAdN8dFN+IlHB4+dfP34Lksg4zmtWmoec1vc=
 github.com/moqsien/gshell v0.2.8/go.mod h1:xaGFcBGryyXWaTbWTrTqstsdrTTBu4s/Jg69AcWSmyg=
 github.com/moqsien/hackbrowser v1.0.6 h1:T1B/z1N9dZ0zCiZmo68BZBVGg+SET59Z066TRR2p6XY=
