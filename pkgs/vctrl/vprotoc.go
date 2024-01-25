@@ -30,12 +30,13 @@ func NewProtobuffer() (p *VProtoBuffer) {
 }
 
 func (that *VProtoBuffer) Install(force bool) {
-	key := runtime.GOOS
-	if runtime.GOOS == utils.Linux {
-		key = fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)
-	}
-	// TODO: parse from releases.
-	that.fetcher.Url = that.Conf.Protobuf.GithubUrls[key]
+	// key := runtime.GOOS
+	// if runtime.GOOS == utils.Linux {
+	// 	key = fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)
+	// }
+	gh := NewGhDownloader()
+	uList := gh.ParseReleasesForGithubProject(that.Conf.Protobuf.ProtocUrl)
+	that.fetcher.Url = uList[fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)]
 	if that.fetcher.Url != "" {
 		that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(that.fetcher.Url)
 		that.fetcher.Timeout = 20 * time.Minute
