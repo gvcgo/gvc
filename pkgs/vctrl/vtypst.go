@@ -32,14 +32,15 @@ func NewTypstVersion() (tv *Typst) {
 }
 
 func (that *Typst) download(force bool) string {
-	vUrls := that.Conf.Typst.GithubUrls
-	// TODO: parse from releases.
-	if runtime.GOOS == utils.Windows {
-		that.fetcher.Url = vUrls[runtime.GOOS]
-	} else {
-		that.fetcher.Url = vUrls[fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)]
-	}
-	that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(that.fetcher.Url)
+	// vUrls := that.Conf.Typst.GithubUrls
+	// if runtime.GOOS == utils.Windows {
+	// 	that.fetcher.Url = vUrls[runtime.GOOS]
+	// } else {
+	// 	that.fetcher.Url = vUrls[fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)]
+	// }
+	gh := NewGhDownloader()
+	uList := gh.ParseReleasesForGithubProject(that.Conf.Typst.TypstUrl)
+	that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(uList[fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)])
 	suffix := utils.GetExt(that.fetcher.Url)
 	if that.fetcher.Url != "" {
 		fpath := filepath.Join(config.TypstFilesDir, fmt.Sprintf("typst%s", suffix))
