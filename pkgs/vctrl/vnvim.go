@@ -39,15 +39,27 @@ func (that *NVim) setup() {
 	utils.MakeDirs(config.NVimFileDir)
 }
 
+func (that *NVim) getBinPath() string {
+	dfinder := utils.NewBinaryFinder()
+	dfinder.SetStartDir(config.NVimFileDir)
+	dfinder.SetParentDirName("bin")
+	fName := "nvim"
+	if runtime.GOOS == utils.Windows {
+		fName = "nvim.exe"
+	}
+	dfinder.SetUniqueFileName(fName)
+	return dfinder.String()
+}
+
 func (that *NVim) download() (r string) {
-	// TODO: parse from releases.
-	nurl, ok := that.Conf.NVim.Urls[runtime.GOOS]
-	if ok {
+	gh := NewGhDownloader()
+	uList := gh.ParseReleasesForGithubProject(that.Conf.NVim.NvimUrl)
+	that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(uList[fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)])
+	if that.fetcher.Url != "" {
 		utils.ClearDir(config.NVimFileDir)
-		that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(nurl.Url)
 		that.fetcher.Timeout = 20 * time.Minute
 		that.fetcher.SetThreadNum(3)
-		fpath := filepath.Join(config.NVimFileDir, fmt.Sprintf("%s%s", nurl.Name, nurl.Ext))
+		fpath := filepath.Join(config.NVimFileDir, filepath.Base(that.fetcher.Url))
 		if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
 			r = fpath
 		}
@@ -57,7 +69,7 @@ func (that *NVim) download() (r string) {
 	if ok, _ := utils.PathIsExist(config.NVimFileDir); ok && r != "" {
 		dst := config.NVimFileDir
 		if err := archiver.Unarchive(r, dst); err != nil {
-			os.RemoveAll(filepath.Dir(that.getBinaryPath()))
+			os.RemoveAll(filepath.Dir(that.getBinPath()))
 			os.RemoveAll(r)
 			gprint.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
 			return
@@ -68,66 +80,19 @@ func (that *NVim) download() (r string) {
 		return
 	}
 	that.setenv()
-	that.initiatePlugins()
 	return
 }
 
-func (that *NVim) getBinaryPath() (r string) {
-	nurl := that.Conf.NVim.Urls[runtime.GOOS]
-	r = filepath.Join(config.NVimFileDir, nurl.Name, "bin")
-	if runtime.GOOS == utils.Windows {
-		utils.MkSymLink(filepath.Join(r, "nvim.exe"), filepath.Join("nvim"))
-	}
-	return r
-}
-
 func (that *NVim) setenv() {
-	if ok, _ := utils.PathIsExist(that.getBinaryPath()); ok {
+	binPath := that.getBinPath()
+	if ok, _ := utils.PathIsExist(binPath); ok {
 		if runtime.GOOS == utils.Windows {
 			that.env.SetEnvForWin(map[string]string{
-				"PATH": that.getBinaryPath(),
+				"PATH": binPath,
 			})
 		} else {
-			nvimEnv := fmt.Sprintf(utils.NVimEnv, that.getBinaryPath())
+			nvimEnv := fmt.Sprintf(utils.NVimEnv, binPath)
 			that.env.UpdateSub(utils.SUB_NVIM, nvimEnv)
-		}
-		that.setInitFile()
-	}
-}
-
-func (that *NVim) setInitFile() {
-	dst := config.GetNVimInitPath()
-	if ok, _ := utils.PathIsExist(dst); ok {
-		gprint.PrintInfo(fmt.Sprintf("Neovim init file already exists: %s", dst))
-		return
-	}
-	dir_ := filepath.Dir(config.NVimInitBackupPath)
-	if ok, _ := utils.PathIsExist(dir_); !ok {
-		os.MkdirAll(dir_, os.ModePerm)
-	}
-	utils.CopyFile(config.NVimInitBackupPath, dst)
-}
-
-// TODO: remove.
-func (that *NVim) initiatePlugins() {
-	that.fetcher.Url = that.Conf.NVim.PluginsUrl
-	that.fetcher.Timeout = 120 * time.Second
-	fpath := filepath.Join(config.NVimFileDir, "nvim-plugins.zip")
-	if size := that.fetcher.GetAndSaveFile(fpath); size > 0 {
-		if ok, _ := utils.PathIsExist(fpath); ok {
-			archiver.Unarchive(fpath, config.NVimFileDir)
-			os.Remove(fpath)
-		}
-	}
-	if iList, err := os.ReadDir(config.NVimFileDir); err == nil {
-		for _, info := range iList {
-			if info.IsDir() && (info.Name() == "autoload" || info.Name() == "plugged") {
-				shortcut := filepath.Join(config.GetNVimPlugDir(), info.Name())
-				if ok, _ := utils.PathIsExist(shortcut); ok {
-					continue
-				}
-				utils.MkSymLink(filepath.Join(config.NVimFileDir, info.Name()), shortcut)
-			}
 		}
 	}
 }
@@ -135,6 +100,8 @@ func (that *NVim) initiatePlugins() {
 func (that *NVim) Install() {
 	that.download()
 }
+
+// TODO: neovide.
 
 /*
 TODO: synchronize nvim conf files to remote repo.

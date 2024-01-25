@@ -8,11 +8,9 @@ import (
 )
 
 type VlangConf struct {
-	VlangUrls    map[string]string `koanf:"vlang_url"`
-	AnalyzerUrls map[string]string `koanf:"analyzer_url"`
-	VlangUrl     string            `koanf,json:"vlang_url"`
-	AnalyzerUrl  string            `koanf,json:"analyzer_url"`
-	path         string
+	VlangUrl    string `koanf,json:"vlang_url"`
+	AnalyzerUrl string `koanf,json:"analyzer_url"`
+	path        string
 }
 
 func NewVlangConf() (r *VlangConf) {
@@ -32,18 +30,6 @@ func (that *VlangConf) setup() {
 }
 
 func (that *VlangConf) Reset() {
-	that.VlangUrls = map[string]string{
-		"darwin_amd64": "https://github.com/vlang/v/releases/latest/download/v_macos_x86_64.zip",
-		"darwin_arm64": "https://github.com/vlang/v/releases/latest/download/v_macos_arm64.zip",
-		utils.Linux:    "https://github.com/vlang/v/releases/latest/download/v_linux.zip",
-		utils.Windows:  "https://github.com/vlang/v/releases/latest/download/v_windows.zip",
-	}
 	that.VlangUrl = "https://github.com/vlang/v/releases/latest/"
-	that.AnalyzerUrls = map[string]string{
-		utils.Windows:  "https://github.com/v-analyzer/v-analyzer/releases/latest/download/v-analyzer-windows-x86_64.zip",
-		utils.Linux:    "https://github.com/v-analyzer/v-analyzer/releases/latest/download/v-analyzer-linux-x86_64.zip",
-		"darwin_amd64": "https://github.com/v-analyzer/v-analyzer/releases/latest/download/v-analyzer-darwin-x86_64.zip",
-		"darwin_arm64": "https://github.com/v-analyzer/v-analyzer/releases/latest/download/v-analyzer-darwin-arm64.zip",
-	}
 	that.AnalyzerUrl = "https://github.com/v-analyzer/v-analyzer/releases/latest/"
 }
