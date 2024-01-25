@@ -542,7 +542,7 @@ func (that *GhDownloader) ParseReleasesForGithubProject(releaseUrl string) (r ma
 			if !strings.HasPrefix(u, "https://github.com/") {
 				u = "https://github.com/" + strings.TrimLeft(u, "/")
 			}
-			osInfo, archInfo := that.parseOSAndArchFromFileName(fName)
+			osInfo, archInfo := that.ParseOSAndArchFromFileName(fName)
 			if osInfo != "" && archInfo != "" {
 				r[fmt.Sprintf("%s_%s", osInfo, archInfo)] = u
 			} else if osInfo == utils.MacOS && archInfo == "" {
@@ -558,7 +558,7 @@ func (that *GhDownloader) ParseReleasesForGithubProject(releaseUrl string) (r ma
 	return
 }
 
-func (that *GhDownloader) parseOSAndArchFromFileName(fName string) (osInfo, archInfo string) {
+func (that *GhDownloader) ParseOSAndArchFromFileName(fName string) (osInfo, archInfo string) {
 	extList := []string{
 		".tar.gz",
 		".zip",

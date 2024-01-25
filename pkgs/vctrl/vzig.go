@@ -27,8 +27,11 @@ var ZigOSArchMap = map[string]string{
 	"linux-aarch64":   "linux_arm64",
 }
 
-// https://github.com/ziglang/zig
-// https://ziglang.org/
+/*
+https://github.com/ziglang/zig
+https://ziglang.org/
+https://github.com/zigtools/zls/wiki/Installation
+*/
 type Zig struct {
 	Conf    *config.GVConfig
 	env     *utils.EnvsHandler
@@ -62,17 +65,27 @@ func (that *Zig) GetZigList() {
 		// Latest stable version only.
 		doc.Find("table").Eq(1).Find("a").Each(func(i int, s *goquery.Selection) {
 			href := s.AttrOr("href", "")
-			if href != "" {
-				// TODO: parse from releases.
-				for k, v := range ZigOSArchMap {
-					if strings.Contains(href, k) && !strings.Contains(href, "minisig") {
-						that.zigList[v] = href
-					}
+			gh := NewGhDownloader()
+			if href != "" && !strings.Contains(href, "minisig") {
+				osInfo, archInfo := gh.ParseOSAndArchFromFileName(filepath.Base(href))
+				if osInfo != "" && archInfo != "" {
+					that.zigList[fmt.Sprintf("%s_%s", osInfo, archInfo)] = href
+					return
 				}
+				if osInfo == utils.MacOS && archInfo == "" {
+					that.zigList[fmt.Sprintf("%s_%s", osInfo, "amd64")] = href
+					that.zigList[fmt.Sprintf("%s_%s", osInfo, "arm64")] = href
+				} else if osInfo != "" && archInfo == "" {
+					that.zigList[fmt.Sprintf("%s_%s", osInfo, "amd64")] = href
+				}
+				// for k, v := range ZigOSArchMap {
+				// 	if strings.Contains(href, k) && !strings.Contains(href, "minisig") {
+				// 		that.zigList[v] = href
+				// 	}
+				// }
 			}
 		})
 	}
-	// fmt.Printf("%+v\n", that.zigList)
 }
 
 func (that *Zig) download(force bool) (fPath string) {
@@ -159,14 +172,14 @@ func (that *Zig) CheckAndInitEnv() {
 }
 
 func (that *Zig) downloadZls(force bool) (fPath string) {
-	// TODO: parse from releases.
-	dUrl := that.Conf.Zig.ZlsDownloadUrls[fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)]
+	gh := NewGhDownloader()
+	uList := gh.ParseReleasesForGithubProject(that.Conf.Zig.ZlsDownloadUrl)
+	dUrl := uList[fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)]
 	if dUrl == "" {
 		gprint.PrintError("Cannot find download url.")
 		return
 	}
 	gprint.PrintInfo("download from: %s", dUrl)
-	// that.fetcher.SetUrl(dUrl)
 	that.fetcher.SetUrl(that.Conf.GVCProxy.WrapUrl(dUrl))
 	that.fetcher.Timeout = time.Minute * 30
 	that.fetcher.SetThreadNum(3)
