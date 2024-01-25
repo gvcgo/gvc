@@ -34,14 +34,16 @@ func NewVlang() (vl *Vlang) {
 }
 
 func (that *Vlang) download(force bool) string {
-	// TODO: parse from releases.
-	if runtime.GOOS == utils.MacOS {
-		that.fetcher.Url = that.Conf.Vlang.VlangUrls[fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)]
-	} else {
-		that.fetcher.Url = that.Conf.Vlang.VlangUrls[runtime.GOOS]
-	}
+	// if runtime.GOOS == utils.MacOS {
+	// 	that.fetcher.Url = that.Conf.Vlang.VlangUrls[fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)]
+	// } else {
+	// 	that.fetcher.Url = that.Conf.Vlang.VlangUrls[runtime.GOOS]
+	// }
 
-	that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(that.fetcher.Url)
+	gh := NewGhDownloader()
+	uList := gh.ParseReleasesForGithubProject(that.Conf.Vlang.VlangUrl)
+
+	that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(uList[fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)])
 
 	if that.fetcher.Url != "" {
 		fpath := filepath.Join(config.VlangFilesDir, "vlang.zip")
@@ -95,13 +97,14 @@ func (that *Vlang) CheckAndInitEnv() {
 }
 
 func (that *Vlang) InstallVAnalyzerForVscode() {
-	key := runtime.GOOS
-	if key == utils.MacOS {
-		key = fmt.Sprintf("%s_%s", key, runtime.GOARCH)
-	}
-	// TODO: parse from releases.
-	that.fetcher.Url = that.Conf.Vlang.AnalyzerUrls[key]
-	that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(that.fetcher.Url)
+	// key := runtime.GOOS
+	// if key == utils.MacOS {
+	// 	key = fmt.Sprintf("%s_%s", key, runtime.GOARCH)
+	// }
+	gh := NewGhDownloader()
+	uList := gh.ParseReleasesForGithubProject(that.Conf.Vlang.AnalyzerUrl)
+	that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(uList[fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)])
+
 	if that.fetcher.Url != "" {
 		fpath := filepath.Join(config.VlangFilesDir, "analyzer.zip")
 		that.fetcher.Timeout = 20 * time.Minute
