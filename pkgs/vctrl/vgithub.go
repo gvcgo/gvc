@@ -235,11 +235,18 @@ func (that *GhDownloader) ShowLatestTag() {
 git for windows.
 */
 func (that *GhDownloader) downloadGitForWindows() {
-	if runtime.GOOS != utils.Windows {
-		return
-	}
-	gUrl := that.Conf.Github.WinGitUrls[runtime.GOARCH]
+	// if runtime.GOOS != utils.Windows {
+	// 	return
+	// }
+	// gUrl := that.Conf.Github.WinGitUrls[runtime.GOARCH]
+	// if gUrl == "" {
+	// 	return
+	// }
+	gh := NewGhDownloader()
+	uList := gh.ParseReleasesForGithubProject(that.Conf.Github.WinGitUrl, "portable")
+	gUrl := uList[fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)]
 	if gUrl == "" {
+		gprint.PrintError("Cannot find download urls.")
 		return
 	}
 	if ok, _ := utils.PathIsExist(config.GitWindowsInstallationDir); !ok {
@@ -462,12 +469,11 @@ func (that *GhDownloader) HandleDotSSHFiles(toDownload bool) {
 }
 
 /*
-TODO: format urls.
 ==============
 Parse releases list for github project.
 ==============
 */
-func (that *GhDownloader) ParseReleasesForGithubProject(releaseUrl string) (r map[string]string) {
+func (that *GhDownloader) ParseReleasesForGithubProject(releaseUrl string, keywords ...string) (r map[string]string) {
 	r = map[string]string{}
 	if !strings.Contains(releaseUrl, "releases/latest") || !strings.Contains(releaseUrl, "github.com") {
 		gprint.PrintError("Illegal url: %s", releaseUrl)
@@ -506,6 +512,18 @@ func (that *GhDownloader) ParseReleasesForGithubProject(releaseUrl string) (r ma
 			})
 		}
 		for _, u := range uList {
+			if len(keywords) > 0 {
+				ok := false
+				for _, k := range keywords {
+					if strings.Contains(u, k) || strings.Contains(strings.ToLower(u), k) {
+						ok = true
+						break
+					}
+				}
+				if !ok {
+					continue
+				}
+			}
 			fName := filepath.Base(u)
 			if !strings.HasPrefix(u, "https://github.com/") {
 				u = "https://github.com/" + strings.TrimLeft(u, "/")
@@ -531,6 +549,9 @@ func (that *GhDownloader) ParseOSAndArchFromFileName(fName string) (osInfo, arch
 		".tar.gz",
 		".zip",
 		".tar.xz",
+		".exe",
+		".7z",
+		".7z.exe",
 	}
 	ok := false
 	for _, ext := range extList {
@@ -547,6 +568,7 @@ func (that *GhDownloader) ParseOSAndArchFromFileName(fName string) (osInfo, arch
 			"windows",
 			"win#darwin",
 			"win64",
+			".exe",
 		},
 		utils.MacOS: {
 			"macos",
@@ -566,6 +588,7 @@ func (that *GhDownloader) ParseOSAndArchFromFileName(fName string) (osInfo, arch
 			"x64",
 			"linux64",
 			"win64",
+			"64-bit",
 		},
 		"arm64": {
 			"aarch64",

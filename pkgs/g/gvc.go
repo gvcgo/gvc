@@ -44,8 +44,9 @@ func main() {
 			https://github.com/v-analyzer/v-analyzer/releases/latest/
 			https://github.com/zigtools/zls/releases/latest/
 			https://github.com/moqsien/gvc/releases/latest/
+			https://github.com/git-for-windows/git/releases/latest/
 		*/
-		fmt.Printf("%+v\n", gh.ParseReleasesForGithubProject("https://github.com/moqsien/gvc/releases/latest/"))
+		fmt.Printf("%+v\n", gh.ParseReleasesForGithubProject("https://github.com/git-for-windows/git/releases/latest/", "portable"))
 	} else if len(os.Args) < 2 {
 		/*
 			GVC is allowed to be installed in ~/.gvc/ or $GOPATH/bin/ .
