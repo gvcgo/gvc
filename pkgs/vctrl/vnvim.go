@@ -102,6 +102,7 @@ func (that *NVim) Install() {
 }
 
 // TODO: neovide.
+func (that *NVim) InstallNeovide() {}
 
 /*
 TODO: synchronize nvim conf files to remote repo.

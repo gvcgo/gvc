@@ -458,6 +458,10 @@ func (that *GhDownloader) HandleDotSSHFiles(toDownload bool) {
 			remoteFileName,
 			EncryptByZip,
 		)
+		idRsaPath := filepath.Join(localSSHDir, "id_rsa")
+		if ok, _ := utils.PathIsExist(idRsaPath); ok {
+			os.Chmod(idRsaPath, 0600)
+		}
 	} else {
 		// zip and upload.
 		repoSyncer.UploadFile(
