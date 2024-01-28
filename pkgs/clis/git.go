@@ -20,7 +20,7 @@ func (that *Cli) github() {
 	// automatically modifies hosts file.
 	githubCmd.AddCommand(&cobra.Command{
 		Use:     "hosts",
-		Aliases: []string{"h"},
+		Aliases: []string{"ho"},
 		Short:   "Modifies hosts file for github.",
 		Run: func(cmd *cobra.Command, args []string) {
 			h := vctrl.NewHosts()
@@ -32,6 +32,33 @@ func (that *Cli) github() {
 			h.ShowFilePath()
 		},
 	})
+
+	var (
+		destHostName string = "dest_host"
+		destPortName string = "dest_port"
+		timeoutName  string = "timeout"
+	)
+	sshProxyHttp := &cobra.Command{
+		Use:     "crokscrew",
+		Aliases: []string{"cs"},
+		Short:   "Http proxy for ssh.",
+		Long:    "Example: g gh cs --dest_host=xxx --dest_port=xxx --timeout=xxx",
+		Run: func(cmd *cobra.Command, args []string) {
+			destHost, _ := cmd.Flags().GetString(destHostName)
+			destPort, _ := cmd.Flags().GetString(destPortName)
+			timeout, _ := cmd.Flags().GetInt(timeoutName)
+			if destHost == "" || destPort == "" {
+				cmd.Help()
+				return
+			}
+			vctrl.GrokscrewHttpSSH(destHost, destPort, timeout)
+		},
+	}
+
+	sshProxyHttp.Flags().StringP(destHostName, "a", "", "Specifies dest host.")
+	sshProxyHttp.Flags().StringP(destPortName, "p", "", "Specifies dest port.")
+	sshProxyHttp.Flags().IntP(timeoutName, "t", 3, "Specifies timeout.")
+	githubCmd.AddCommand(sshProxyHttp)
 
 	// vg := vctrl.NewGhDownloader()
 
