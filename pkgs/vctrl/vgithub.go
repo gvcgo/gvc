@@ -578,6 +578,7 @@ func (that *GhDownloader) ParseOSAndArchFromFileName(fName string) (osInfo, arch
 			"macos",
 			"darwin",
 			"osx",
+			".dmg",
 		},
 		utils.Linux: {
 			"linux",

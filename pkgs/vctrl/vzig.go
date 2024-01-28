@@ -155,19 +155,24 @@ func (that *Zig) renameZigDir() {
 }
 
 func (that *Zig) CheckAndInitEnv() {
+	zlsBinDir := filepath.Join(config.ZlsRootDir, "bin")
+	exist, _ := utils.PathIsExist(zlsBinDir)
 	if runtime.GOOS != utils.Windows {
 		zigEnv := fmt.Sprintf(utils.ZigEnv, config.ZigRootDir)
-		zlsBinDir := filepath.Join(config.ZlsRootDir, "bin")
-		if ok, _ := utils.PathIsExist(zlsBinDir); ok {
+		if exist {
 			zlsEnv := fmt.Sprintf(utils.ZigEnv, zlsBinDir)
 			zigEnv = fmt.Sprintf("%s\n%s", zigEnv, zlsEnv)
 		}
 		that.env.UpdateSub(utils.SUB_ZIG, zigEnv)
 	} else {
-		envList := map[string]string{
+		that.env.SetEnvForWin(map[string]string{
 			"PATH": config.ZigRootDir,
+		})
+		if exist {
+			that.env.SetEnvForWin(map[string]string{
+				"PATH": filepath.Join(config.ZlsRootDir, "bin"),
+			})
 		}
-		that.env.SetEnvForWin(envList)
 	}
 }
 

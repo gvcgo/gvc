@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/mholt/archiver/v3"
+	arch "github.com/moqsien/goutils/pkgs/archiver"
 	"github.com/moqsien/goutils/pkgs/gtea/gprint"
 	"github.com/moqsien/goutils/pkgs/request"
 	config "github.com/moqsien/gvc/pkgs/confs"
@@ -79,19 +80,29 @@ func (that *NVim) download() (r string) {
 		os.MkdirAll(config.NVimFileDir, os.ModePerm)
 		return
 	}
-	that.setenv()
 	return
 }
 
 func (that *NVim) setenv() {
-	binPath := that.getBinPath()
-	if ok, _ := utils.PathIsExist(binPath); ok {
+	nvimBinPath := that.getBinPath()
+	neovideBinPath := that.FindNeovideBinary()
+	if ok, _ := utils.PathIsExist(nvimBinPath); ok {
+		exist, _ := utils.PathIsExist(neovideBinPath)
 		if runtime.GOOS == utils.Windows {
 			that.env.SetEnvForWin(map[string]string{
-				"PATH": binPath,
+				"PATH": nvimBinPath,
 			})
+			if exist {
+				that.env.SetEnvForWin(map[string]string{
+					"PATH": neovideBinPath,
+				})
+			}
 		} else {
-			nvimEnv := fmt.Sprintf(utils.NVimEnv, binPath)
+			nvimEnv := fmt.Sprintf(utils.NVimEnv, nvimBinPath)
+			if exist {
+				neovideEnv := fmt.Sprintf(utils.NVimEnv, neovideBinPath)
+				nvimEnv = fmt.Sprintf("%s\n%s", nvimEnv, neovideEnv)
+			}
 			that.env.UpdateSub(utils.SUB_NVIM, nvimEnv)
 		}
 	}
@@ -99,10 +110,75 @@ func (that *NVim) setenv() {
 
 func (that *NVim) Install() {
 	that.download()
+	that.setenv()
 }
 
-// TODO: neovide.
-func (that *NVim) InstallNeovide() {}
+func (that *NVim) downloadNeovide() (r string) {
+	gh := NewGhDownloader()
+	uList := gh.ParseReleasesForGithubProject(that.Conf.NVim.NeovideUrl)
+	that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(uList[fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)])
+	if that.fetcher.Url != "" {
+		utils.ClearDir(config.NeovideBinDir)
+		that.fetcher.Timeout = 20 * time.Minute
+		that.fetcher.SetThreadNum(3)
+		fpath := filepath.Join(config.NVimFileDir, filepath.Base(that.fetcher.Url))
+		if size := that.fetcher.GetAndSaveFile(fpath, true); size > 0 {
+			r = fpath
+		}
+	} else {
+		gprint.PrintError(fmt.Sprintf("Cannot find nvim package for %s", runtime.GOOS))
+	}
+	return
+}
+
+func (that *NVim) FindNeovideBinary() string {
+	dfinder := utils.NewBinaryFinder()
+	dfinder.SetStartDir(config.NVimFileDir)
+	dName := "neovide"
+	if runtime.GOOS == utils.MacOS {
+		dName = "MacOS"
+	}
+	dfinder.SetParentDirName(dName)
+	fName := "neovide"
+	if runtime.GOOS == utils.Windows {
+		fName = "neovide.exe"
+	}
+	dfinder.SetUniqueFileName(fName)
+	return dfinder.String()
+}
+
+func (that *NVim) InstallNeovide() {
+	srcPath := that.downloadNeovide()
+	if srcPath == "" {
+		return
+	}
+	if runtime.GOOS == utils.MacOS {
+		if archive, err := arch.NewArchiver(srcPath, config.NVimFileDir, false); err == nil {
+			_, err = archive.UnArchive()
+			if err != nil {
+				gprint.PrintError("unarchive failed: %+v", err)
+				return
+			}
+		}
+		dmgPath := filepath.Join(config.NVimFileDir, "neovide.dmg")
+		if ok, _ := utils.PathIsExist(dmgPath); ok {
+			os.RemoveAll(srcPath)
+			srcPath = dmgPath
+		} else {
+			gprint.PrintError("neovide.dmg not found: %s", dmgPath)
+		}
+	}
+	if archive, err := arch.NewArchiver(srcPath, config.NeovideBinDir, false); err == nil {
+		_, err = archive.UnArchive()
+		defer os.RemoveAll(srcPath)
+		if err != nil {
+			gprint.PrintError("unarchive failed: %+v", err)
+			return
+		}
+		gprint.PrintSuccess("download successed: %s", srcPath)
+	}
+	that.setenv()
+}
 
 /*
 TODO: synchronize nvim conf files to remote repo.

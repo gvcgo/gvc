@@ -193,6 +193,7 @@ var (
 	NVimWinInitPath        string = filepath.Join(utils.GetHomeDir(), `\AppData\Local\nvim\init.vim`)
 	NVimUnixInitPath       string = filepath.Join(utils.GetHomeDir(), ".config/nvim/init.vim")
 	NVimInitBackupPath     string = filepath.Join(GVCBackupDir, "nvim-init.vim")
+	NeovideBinDir          string = filepath.Join(NVimFileDir, "neovide")
 	NVimInitBackupFileName string = "nvim-init.vim"
 )
 

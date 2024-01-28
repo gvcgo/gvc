@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -34,7 +33,6 @@ func main() {
 		// zig := vctrl.NewZig()
 		// zig.GetZigList()
 
-		gh := vctrl.NewGhDownloader()
 		/*
 			https://github.com/zigtools/zls/releases/latest/
 			https://github.com/neovim/neovim/releases/latest/
@@ -45,8 +43,13 @@ func main() {
 			https://github.com/zigtools/zls/releases/latest/
 			https://github.com/moqsien/gvc/releases/latest/
 			https://github.com/git-for-windows/git/releases/latest/
+			https://github.com/neovide/neovide/releases/latest/
 		*/
-		fmt.Printf("%+v\n", gh.ParseReleasesForGithubProject("https://github.com/git-for-windows/git/releases/latest/", "portable"))
+		// gh := vctrl.NewGhDownloader()
+		// fmt.Printf("%+v\n", gh.ParseReleasesForGithubProject("https://github.com/neovide/neovide/releases/latest/"))
+
+		nv := vctrl.NewNVim()
+		nv.InstallNeovide()
 	} else if len(os.Args) < 2 {
 		/*
 			GVC is allowed to be installed in ~/.gvc/ or $GOPATH/bin/ .
