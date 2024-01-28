@@ -309,39 +309,50 @@ func (that *GhDownloader) SetProxyForGitSSH(pURI string) {
 			return
 		}
 		uStr := fmt.Sprintf("%s:%s", u.Hostname(), u.Port())
+		pxyCmd := ""
 		switch runtime.GOOS {
 		case utils.Windows:
-			pxyCmd := fmt.Sprintf(
-				config.GitSSHProxyCommandWin,
-				uStr,
-				`%h`,
-				`%p`,
-			)
-			content := fmt.Sprintf(
-				config.GitSSHConfigStr,
-				idRSAPath,
-				pxyCmd,
-				idRSAPath,
-				pxyCmd,
-			)
-			that.setProxyForGitSSH(dotSSHPath, idRSAPath, content)
+			if strings.Contains(u.Scheme, "sock") {
+				pxyCmd = fmt.Sprintf(
+					config.GitSSHProxyCommandWin,
+					uStr,
+					`%h`,
+					`%p`,
+				)
+			} else {
+				pxyCmd = fmt.Sprintf(
+					config.GitSSHProxyCommandHttp,
+					`%h`,
+					`%p`,
+				)
+			}
 		case utils.Linux, utils.MacOS:
-			pxyCmd := fmt.Sprintf(
-				config.GitSSHProxyCommandNix,
-				uStr,
-				`%h`,
-				`%p`,
-			)
-			content := fmt.Sprintf(
-				config.GitSSHConfigStr,
-				idRSAPath,
-				pxyCmd,
-				idRSAPath,
-				pxyCmd,
-			)
-			that.setProxyForGitSSH(dotSSHPath, idRSAPath, content)
+			if strings.Contains(u.Scheme, "sock") {
+				pxyCmd = fmt.Sprintf(
+					config.GitSSHProxyCommandNix,
+					uStr,
+					`%h`,
+					`%p`,
+				)
+			} else {
+				pxyCmd = fmt.Sprintf(
+					config.GitSSHProxyCommandHttp,
+					`%h`,
+					`%p`,
+				)
+			}
 		default:
 			gprint.PrintError("Unsupported OS.")
+		}
+		if pxyCmd != "" {
+			content := fmt.Sprintf(
+				config.GitSSHConfigStr,
+				idRSAPath,
+				pxyCmd,
+				idRSAPath,
+				pxyCmd,
+			)
+			that.setProxyForGitSSH(dotSSHPath, idRSAPath, content)
 		}
 	}
 }

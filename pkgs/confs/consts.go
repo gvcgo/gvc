@@ -612,8 +612,9 @@ Host ssh.github.com
 %p
 */
 var (
-	GitSSHProxyCommandWin string = `ProxyCommand connect -S %s %s %s`
-	GitSSHProxyCommandNix string = `ProxyCommand nc -v -x %s %s %s`
+	GitSSHProxyCommandWin  string = `ProxyCommand connect -S %s %s %s`
+	GitSSHProxyCommandNix  string = `ProxyCommand nc -v -x %s %s %s`
+	GitSSHProxyCommandHttp string = `ProxyCommand g gh cs -a %s -p %s`
 )
 
 /*
