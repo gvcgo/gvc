@@ -107,7 +107,7 @@ func SetGo(reg IRegister) {
 	goCmd.AddCommand(removeAllCmd)
 
 	removeCmd := &cobra.Command{
-		Use:     "reomve",
+		Use:     "remove",
 		Aliases: []string{"rm"},
 		Short:   "Remove an installed version.",
 		Long:    "Example: G rm 1.21.5",
