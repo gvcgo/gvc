@@ -26,7 +26,7 @@ func SetNodeJS(reg IRegister) {
 	useCmd := &cobra.Command{
 		Use:     "use",
 		Aliases: []string{"u"},
-		Short:   "Downloads and switches to the specifies version.",
+		Short:   "Downloads and switches to the specified version.",
 		Long:    "n u <version>",
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) == 0 {
