@@ -43,9 +43,6 @@ func NewGhDownloader() (gd *GhDownloader) {
 	return
 }
 
-/*
-TODO: Remove github accelerations.
-*/
 // func (that *GhDownloader) findFileName(dUrl string) (name string) {
 // 	if strings.Contains(dUrl, "/archive") {
 // 		sList := strings.Split(dUrl, "github.com/")

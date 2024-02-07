@@ -68,8 +68,8 @@ func (that *GoVersion) initeDirs() {
 func (that *GoVersion) getDoc() {
 	if len(that.Conf.Go.CompilerUrls) > 0 {
 		itemList := selector.NewItemList()
-		itemList.Add("from go.dev", that.Conf.Go.CompilerUrls[1])
 		itemList.Add("from golang.google.cn", that.Conf.Go.CompilerUrls[0])
+		itemList.Add("from go.dev", that.Conf.Go.CompilerUrls[1])
 		sel := selector.NewSelector(
 			itemList,
 			selector.WithTitle("Choose a resource to download:"),
@@ -280,11 +280,14 @@ func (that *GoVersion) download(version string) (r string) {
 	if p != nil {
 		cfm := confirm.NewConfirm(confirm.WithTitle("Use mirrors.aliyun.com/golang for download acceleration?"))
 		cfm.Run()
+
 		if cfm.Result() {
 			that.fetcher.Url = p.AliUrl
-			if that.fetcher.Url == "" {
-				that.fetcher.Url = p.Url
-			}
+		} else {
+			that.fetcher.Url = p.Url
+		}
+		if that.fetcher.Url == "" {
+			that.fetcher.Url = p.Url
 		}
 		that.fetcher.Timeout = 900 * time.Second
 		that.fetcher.SetThreadNum(4)
