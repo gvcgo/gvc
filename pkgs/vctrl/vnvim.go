@@ -10,9 +10,9 @@ import (
 	arch "github.com/gvcgo/goutils/pkgs/archiver"
 	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
 	"github.com/gvcgo/goutils/pkgs/request"
-	"github.com/mholt/archiver/v3"
 	config "github.com/gvcgo/gvc/pkgs/confs"
 	"github.com/gvcgo/gvc/pkgs/utils"
+	"github.com/mholt/archiver/v3"
 )
 
 type NVim struct {
@@ -108,6 +108,8 @@ func (that *NVim) setenv() {
 	}
 }
 
+// TODO: scrpit for nvim using proxy.
+// TODO: can be enabled/diabled.
 func (that *NVim) Install() {
 	that.download()
 	that.setenv()
@@ -147,6 +149,8 @@ func (that *NVim) FindNeovideBinary() string {
 	return dfinder.String()
 }
 
+// TODO: install packages.
+// TODO: Link nvim to neovide?
 func (that *NVim) InstallNeovide() {
 	srcPath := that.downloadNeovide()
 	if srcPath == "" {
