@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/moqsien/goutils/pkgs/gtea/gprint"
-	"github.com/moqsien/goutils/pkgs/gtea/input"
-	"github.com/moqsien/gvc/pkgs/utils"
+	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
+	"github.com/gvcgo/goutils/pkgs/gtea/input"
+	"github.com/gvcgo/gvc/pkgs/utils"
 )
 
 /*

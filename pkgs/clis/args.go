@@ -3,11 +3,11 @@ package clis
 import (
 	"strings"
 
-	"github.com/moqsien/gvc/pkgs/clis/langs"
+	"github.com/gvcgo/gvc/pkgs/clis/langs"
 )
 
 /*
-See "github.com/moqsien/gvc/pkgs/clis/langs"
+See "github.com/gvcgo/gvc/pkgs/clis/langs"
 */
 func HandleArgs(args ...string) (aList []string) {
 	if len(args) < 4 {

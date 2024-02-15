@@ -5,10 +5,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/moqsien/goutils/pkgs/gutils"
-	"github.com/moqsien/gvc/pkgs/clis"
-	"github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/vctrl"
+	"github.com/gvcgo/goutils/pkgs/gutils"
+	"github.com/gvcgo/gvc/pkgs/clis"
+	"github.com/gvcgo/gvc/pkgs/confs"
+	"github.com/gvcgo/gvc/pkgs/vctrl"
 )
 
 var (
@@ -41,7 +41,7 @@ func main() {
 			https://github.com/vlang/v/releases/latest/
 			https://github.com/v-analyzer/v-analyzer/releases/latest/
 			https://github.com/zigtools/zls/releases/latest/
-			https://github.com/moqsien/gvc/releases/latest/
+			https://github.com/gvcgo/gvc/releases/latest/
 			https://github.com/git-for-windows/git/releases/latest/
 			https://github.com/neovide/neovide/releases/latest/
 		*/

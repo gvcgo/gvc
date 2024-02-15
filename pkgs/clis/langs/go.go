@@ -5,10 +5,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/moqsien/goutils/pkgs/gtea/gprint"
-	"github.com/moqsien/gvc/pkgs/utils"
-	"github.com/moqsien/gvc/pkgs/utils/sorts"
-	"github.com/moqsien/gvc/pkgs/vctrl"
+	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
+	"github.com/gvcgo/gvc/pkgs/utils"
+	"github.com/gvcgo/gvc/pkgs/utils/sorts"
+	"github.com/gvcgo/gvc/pkgs/vctrl"
 	"github.com/spf13/cobra"
 )
 

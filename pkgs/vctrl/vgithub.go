@@ -10,12 +10,12 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/gvcgo/goutils/pkgs/ggit"
+	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
+	"github.com/gvcgo/goutils/pkgs/request"
 	lazyapp "github.com/jesseduffield/lazygit/pkg/app"
-	"github.com/moqsien/goutils/pkgs/ggit"
-	"github.com/moqsien/goutils/pkgs/gtea/gprint"
-	"github.com/moqsien/goutils/pkgs/request"
-	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/utils"
+	config "github.com/gvcgo/gvc/pkgs/confs"
+	"github.com/gvcgo/gvc/pkgs/utils"
 )
 
 const (
@@ -61,7 +61,7 @@ func NewGhDownloader() (gd *GhDownloader) {
 // }
 
 // func (that *GhDownloader) downloadArchive(githubProjectUrl string) {
-// 	// example: https://github.com/moqsien/gvc/archive/refs/heads/main.zip
+// 	// example: https://github.com/gvcgo/gvc/archive/refs/heads/main.zip
 // 	mainZipUrl := githubProjectUrl + "/archive/refs/heads/main.zip"
 // 	fPath := filepath.Join(that.path, that.findFileName(mainZipUrl))
 // 	that.fetcher.SetUrl(that.Conf.Github.DownProxy + mainZipUrl)
@@ -79,7 +79,7 @@ func NewGhDownloader() (gd *GhDownloader) {
 // }
 
 // func (that *GhDownloader) getCurrentTag(githubProjectUrl string) (tag string) {
-// 	// example: https://github.com/moqsien/gvc/releases/latest
+// 	// example: https://github.com/gvcgo/gvc/releases/latest
 // 	dUrl := githubProjectUrl + "/releases/latest"
 // 	client := resty.New()
 // 	client.SetTimeout(time.Minute * 3)
@@ -93,7 +93,7 @@ func NewGhDownloader() (gd *GhDownloader) {
 // }
 
 // func (that *GhDownloader) downloadBinary(githubProjectUrl string) {
-// 	// example: https://github.com/moqsien/gvc/releases/expanded_assets/v1.3.1
+// 	// example: https://github.com/gvcgo/gvc/releases/expanded_assets/v1.3.1
 // 	if tag := that.getCurrentTag(githubProjectUrl); tag != "" {
 // 		that.fetcher.Url = that.Conf.Github.DownProxy + githubProjectUrl + fmt.Sprintf("/releases/expanded_assets/%s", tag)
 // 		that.fetcher.Timeout = time.Minute * 3
@@ -141,7 +141,7 @@ func NewGhDownloader() (gd *GhDownloader) {
 // }
 
 // func (that *GhDownloader) Download(githubProjectUrl string, getSourceCode bool) {
-// 	// example: https://github.com/moqsien/gvc
+// 	// example: https://github.com/gvcgo/gvc
 // 	if !strings.Contains(githubProjectUrl, "github.com/") {
 // 		return
 // 	}

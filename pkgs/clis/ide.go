@@ -1,7 +1,7 @@
 package clis
 
 import (
-	"github.com/moqsien/gvc/pkgs/vctrl"
+	"github.com/gvcgo/gvc/pkgs/vctrl"
 	"github.com/spf13/cobra"
 )
 

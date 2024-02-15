@@ -5,12 +5,12 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/moqsien/goutils/pkgs/gtea/gprint"
-	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/utils"
-	"github.com/moqsien/gvc/pkgs/utils/bkm"
-	"github.com/moqsien/hackbrowser/browser"
-	"github.com/moqsien/hackbrowser/item"
+	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
+	"github.com/gvcgo/hackbrowser/browser"
+	"github.com/gvcgo/hackbrowser/item"
+	config "github.com/gvcgo/gvc/pkgs/confs"
+	"github.com/gvcgo/gvc/pkgs/utils"
+	"github.com/gvcgo/gvc/pkgs/utils/bkm"
 )
 
 type Browser struct {

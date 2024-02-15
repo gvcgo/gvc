@@ -6,11 +6,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/moqsien/goutils/pkgs/gtea/gprint"
-	"github.com/moqsien/goutils/pkgs/gtea/input"
-	"github.com/moqsien/goutils/pkgs/storage"
-	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/utils"
+	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
+	"github.com/gvcgo/goutils/pkgs/gtea/input"
+	"github.com/gvcgo/goutils/pkgs/storage"
+	config "github.com/gvcgo/gvc/pkgs/confs"
+	"github.com/gvcgo/gvc/pkgs/utils"
 )
 
 /*

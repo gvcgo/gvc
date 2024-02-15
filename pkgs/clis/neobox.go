@@ -4,8 +4,8 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/moqsien/gvc/pkgs/vctrl"
-	"github.com/moqsien/neobox/pkgs/run"
+	"github.com/gvcgo/neobox/pkgs/run"
+	"github.com/gvcgo/gvc/pkgs/vctrl"
 	"github.com/spf13/cobra"
 )
 

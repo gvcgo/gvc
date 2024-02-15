@@ -7,14 +7,14 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/moqsien/goutils/pkgs/gtea/gprint"
-	"github.com/moqsien/goutils/pkgs/logs"
-	"github.com/moqsien/gshell/pkgs/ktrl"
-	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/utils"
-	neoconf "github.com/moqsien/neobox/pkgs/conf"
-	"github.com/moqsien/neobox/pkgs/run"
-	"github.com/moqsien/neobox/pkgs/storage/model"
+	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
+	"github.com/gvcgo/goutils/pkgs/logs"
+	"github.com/gvcgo/gshell/pkgs/ktrl"
+	neoconf "github.com/gvcgo/neobox/pkgs/conf"
+	"github.com/gvcgo/neobox/pkgs/run"
+	"github.com/gvcgo/neobox/pkgs/storage/model"
+	config "github.com/gvcgo/gvc/pkgs/confs"
+	"github.com/gvcgo/gvc/pkgs/utils"
 	"github.com/spf13/cobra"
 )
 

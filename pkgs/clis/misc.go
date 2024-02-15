@@ -3,8 +3,8 @@ package clis
 import (
 	"runtime"
 
-	"github.com/moqsien/gvc/pkgs/utils"
-	"github.com/moqsien/gvc/pkgs/vctrl"
+	"github.com/gvcgo/gvc/pkgs/utils"
+	"github.com/gvcgo/gvc/pkgs/vctrl"
 	"github.com/spf13/cobra"
 )
 

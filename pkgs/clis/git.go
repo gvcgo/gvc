@@ -3,8 +3,8 @@ package clis
 import (
 	"runtime"
 
-	"github.com/moqsien/gvc/pkgs/utils"
-	"github.com/moqsien/gvc/pkgs/vctrl"
+	"github.com/gvcgo/gvc/pkgs/utils"
+	"github.com/gvcgo/gvc/pkgs/vctrl"
 	"github.com/spf13/cobra"
 )
 
@@ -81,7 +81,7 @@ func (that *Cli) github() {
 	// 	Use:     "download",
 	// 	Aliases: []string{"d"},
 	// 	Short:   "Downloads released files or source code from a github repo.",
-	// 	Long:    "Example: gh d http://github.com/moqsien/gvc",
+	// 	Long:    "Example: gh d http://github.com/gvcgo/gvc",
 	// 	Run: func(cmd *cobra.Command, args []string) {
 	// 		if len(args) == 0 {
 	// 			cmd.Help()

@@ -15,13 +15,13 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gogf/gf/v2/encoding/gjson"
+	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
+	"github.com/gvcgo/goutils/pkgs/gtea/selector"
+	"github.com/gvcgo/goutils/pkgs/request"
 	"github.com/mholt/archiver/v3"
-	"github.com/moqsien/goutils/pkgs/gtea/gprint"
-	"github.com/moqsien/goutils/pkgs/gtea/selector"
-	"github.com/moqsien/goutils/pkgs/request"
-	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/utils"
-	"github.com/moqsien/gvc/pkgs/utils/sorts"
+	config "github.com/gvcgo/gvc/pkgs/confs"
+	"github.com/gvcgo/gvc/pkgs/utils"
+	"github.com/gvcgo/gvc/pkgs/utils/sorts"
 )
 
 var FlutterJsonFiles = map[string]string{

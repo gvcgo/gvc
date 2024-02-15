@@ -3,10 +3,10 @@ package confs
 import (
 	"os"
 
-	"github.com/moqsien/goutils/pkgs/gtea/confirm"
-	"github.com/moqsien/goutils/pkgs/gtea/gprint"
-	"github.com/moqsien/goutils/pkgs/koanfer"
-	"github.com/moqsien/gvc/pkgs/utils"
+	"github.com/gvcgo/goutils/pkgs/gtea/confirm"
+	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
+	"github.com/gvcgo/goutils/pkgs/koanfer"
+	"github.com/gvcgo/gvc/pkgs/utils"
 )
 
 func init() {

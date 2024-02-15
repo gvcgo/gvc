@@ -1,6 +1,6 @@
 package confs
 
-import "github.com/moqsien/gvc/pkgs/utils"
+import "github.com/gvcgo/gvc/pkgs/utils"
 
 type Filemap map[string]string
 

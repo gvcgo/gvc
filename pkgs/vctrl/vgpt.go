@@ -4,12 +4,12 @@ import (
 	"os"
 	"path/filepath"
 
-	gconf "github.com/moqsien/gogpt/pkgs/config"
-	"github.com/moqsien/gogpt/pkgs/gpt"
-	gptui "github.com/moqsien/gogpt/pkgs/tui"
-	"github.com/moqsien/goutils/pkgs/gtea/gprint"
-	"github.com/moqsien/goutils/pkgs/gutils"
-	config "github.com/moqsien/gvc/pkgs/confs"
+	gconf "github.com/gvcgo/gogpt/pkgs/config"
+	"github.com/gvcgo/gogpt/pkgs/gpt"
+	gptui "github.com/gvcgo/gogpt/pkgs/tui"
+	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
+	"github.com/gvcgo/goutils/pkgs/gutils"
+	config "github.com/gvcgo/gvc/pkgs/confs"
 	"github.com/postfinance/single"
 )
 

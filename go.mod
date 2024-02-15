@@ -1,4 +1,4 @@
-module github.com/moqsien/gvc
+module github.com/gvcgo/gvc
 
 go 1.21.5
 
@@ -8,15 +8,15 @@ require (
 	github.com/charmbracelet/lipgloss v0.8.0
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/gogf/gf/v2 v2.6.1
+	github.com/gvcgo/asciinema v0.3.1
+	github.com/gvcgo/gogpt v0.2.7
+	github.com/gvcgo/goutils v0.8.5
+	github.com/gvcgo/gshell v0.3.0
+	github.com/gvcgo/hackbrowser v1.0.7
+	github.com/gvcgo/neobox v1.5.9
 	github.com/hhatto/gocloc v0.5.2
 	github.com/jesseduffield/lazygit v0.40.2
 	github.com/mholt/archiver/v3 v3.5.1
-	github.com/moqsien/asciinema v0.3.0
-	github.com/moqsien/gogpt v0.2.6
-	github.com/moqsien/goutils v0.8.4
-	github.com/moqsien/gshell v0.2.8
-	github.com/moqsien/hackbrowser v1.0.6
-	github.com/moqsien/neobox v1.5.8
 	github.com/postfinance/single v0.0.2
 	github.com/spf13/cobra v1.8.0
 )
@@ -112,6 +112,9 @@ require (
 	github.com/gorilla/css v1.0.0 // indirect
 	github.com/gorilla/websocket v1.5.1 // indirect
 	github.com/grokify/html-strip-tags-go v0.0.1 // indirect
+	github.com/gvcgo/vpnparser v0.2.7 // indirect
+	github.com/gvcgo/wgcf v0.0.0-20240215142944-92afb07aa1ec // indirect
+	github.com/gvcgo/xtractr v0.0.3 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/hashicorp/yamux v0.1.1 // indirect
@@ -156,7 +159,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.15 // indirect
 	github.com/mgutz/str v1.2.0 // indirect
 	github.com/mholt/acmez v1.2.0 // indirect
-	github.com/microcosm-cc/bluemonday v1.0.21 // indirect
+	github.com/microcosm-cc/bluemonday v1.0.26 // indirect
 	github.com/miekg/dns v1.1.57 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
@@ -164,9 +167,6 @@ require (
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
-	github.com/moqsien/vpnparser v0.2.6 // indirect
-	github.com/moqsien/wgcf v0.0.0-20230611034603-e29859e0cae2 // indirect
-	github.com/moqsien/xtractr v0.0.2 // indirect
 	github.com/muesli/ansi v0.0.0-20211018074035-2e021307bc4b // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
 	github.com/muesli/reflow v0.3.0 // indirect

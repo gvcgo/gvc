@@ -9,15 +9,15 @@ import (
 
 	"github.com/charmbracelet/bubbles/textinput"
 	"github.com/gogf/gf/v2/encoding/gjson"
-	"github.com/moqsien/goutils/pkgs/archiver"
-	"github.com/moqsien/goutils/pkgs/crypt"
-	"github.com/moqsien/goutils/pkgs/gtea/gprint"
-	"github.com/moqsien/goutils/pkgs/gtea/input"
-	"github.com/moqsien/goutils/pkgs/koanfer"
-	"github.com/moqsien/goutils/pkgs/request"
-	"github.com/moqsien/goutils/pkgs/storage"
-	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/utils"
+	"github.com/gvcgo/goutils/pkgs/archiver"
+	"github.com/gvcgo/goutils/pkgs/crypt"
+	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
+	"github.com/gvcgo/goutils/pkgs/gtea/input"
+	"github.com/gvcgo/goutils/pkgs/koanfer"
+	"github.com/gvcgo/goutils/pkgs/request"
+	"github.com/gvcgo/goutils/pkgs/storage"
+	config "github.com/gvcgo/gvc/pkgs/confs"
+	"github.com/gvcgo/gvc/pkgs/utils"
 )
 
 /*

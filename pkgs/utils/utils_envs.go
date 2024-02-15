@@ -9,8 +9,8 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/moqsien/goutils/pkgs/gtea/gprint"
-	"github.com/moqsien/goutils/pkgs/koanfer"
+	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
+	"github.com/gvcgo/goutils/pkgs/koanfer"
 )
 
 /*

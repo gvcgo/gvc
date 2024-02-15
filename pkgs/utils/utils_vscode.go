@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	tui "github.com/moqsien/goutils/pkgs/gtui"
+	tui "github.com/gvcgo/goutils/pkgs/gtui"
 )
 
 func AddNewlineToVscodeSettings(key, value, settingsPath string) {

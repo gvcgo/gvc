@@ -33,7 +33,7 @@
 
 gvc QQ group：
 
-<img src="https://github.com/moqsien/neobox/blob/main/docs/gvc_qq_group.jpg" width="30%">
+<img src="https://github.com/gvcgo/neobox/blob/main/docs/gvc_qq_group.jpg" width="30%">
 
 ## What's GVC?
 At the very beginning, GVC is just the abbreviation for **Go-Version-Controller**, which means, it provides auto-installation, environment variables handling, as well as multi-versions management only for Go compilers.

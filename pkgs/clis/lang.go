@@ -1,7 +1,7 @@
 package clis
 
 import (
-	"github.com/moqsien/gvc/pkgs/clis/langs"
+	"github.com/gvcgo/gvc/pkgs/clis/langs"
 	"github.com/spf13/cobra"
 )
 

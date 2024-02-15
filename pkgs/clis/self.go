@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	"github.com/charmbracelet/lipgloss"
-	"github.com/moqsien/goutils/pkgs/gtea/gprint"
-	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/vctrl"
+	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
+	config "github.com/gvcgo/gvc/pkgs/confs"
+	"github.com/gvcgo/gvc/pkgs/vctrl"
 	"github.com/spf13/cobra"
 )
 
@@ -35,7 +35,7 @@ func (that *Cli) showVersion() {
 				pattern,
 				fmt.Sprintf("%s(%s)", that.gitTag, hashTail),
 				that.gitTime,
-				"https://github.com/moqsien/gvc",
+				"https://github.com/gvcgo/gvc",
 				"moqsien2022@gmail.com",
 				// installation info.
 				config.GVCDir,

@@ -10,11 +10,11 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/moqsien/goutils/pkgs/gtea/confirm"
-	"github.com/moqsien/goutils/pkgs/gtea/gprint"
-	"github.com/moqsien/goutils/pkgs/request"
-	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/utils"
+	"github.com/gvcgo/goutils/pkgs/gtea/confirm"
+	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
+	"github.com/gvcgo/goutils/pkgs/request"
+	config "github.com/gvcgo/gvc/pkgs/confs"
+	"github.com/gvcgo/gvc/pkgs/utils"
 )
 
 type Self struct {
@@ -122,7 +122,7 @@ func (that *Self) ShowPath() {
 }
 
 func (that *Self) CheckLatestVersion(currentVersion string) {
-	gUrl := "https://github.com/moqsien/gvc/releases/latest"
+	gUrl := "https://github.com/gvcgo/gvc/releases/latest"
 	gUrl = that.Conf.GVCProxy.WrapUrl(gUrl)
 	fetcher := request.NewFetcher()
 	fetcher.SetUrl(gUrl)

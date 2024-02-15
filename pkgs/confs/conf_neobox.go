@@ -4,10 +4,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/moqsien/goutils/pkgs/gtea/gprint"
-	"github.com/moqsien/goutils/pkgs/koanfer"
-	"github.com/moqsien/gvc/pkgs/utils"
-	neoconf "github.com/moqsien/neobox/pkgs/conf"
+	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
+	"github.com/gvcgo/goutils/pkgs/koanfer"
+	neoconf "github.com/gvcgo/neobox/pkgs/conf"
+	"github.com/gvcgo/gvc/pkgs/utils"
 )
 
 type NBConf struct {

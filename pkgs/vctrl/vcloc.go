@@ -7,9 +7,9 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
+	"github.com/gvcgo/goutils/pkgs/gtea/gtable"
 	"github.com/hhatto/gocloc"
-	"github.com/moqsien/goutils/pkgs/gtea/gprint"
-	"github.com/moqsien/goutils/pkgs/gtea/gtable"
 )
 
 const (

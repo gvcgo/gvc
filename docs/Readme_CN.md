@@ -32,7 +32,7 @@
 ---------
 gvc交流QQ群：
 
-<img src="https://github.com/moqsien/neobox/blob/main/docs/gvc_qq_group.jpg" width="30%">
+<img src="https://github.com/gvcgo/neobox/blob/main/docs/gvc_qq_group.jpg" width="30%">
 
 ---------
 ## gvc是什么？

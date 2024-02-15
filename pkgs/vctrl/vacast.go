@@ -8,11 +8,11 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/moqsien/asciinema/cmd"
-	"github.com/moqsien/asciinema/util"
-	"github.com/moqsien/goutils/pkgs/gtea/gprint"
-	config "github.com/moqsien/gvc/pkgs/confs"
-	"github.com/moqsien/gvc/pkgs/utils"
+	"github.com/gvcgo/asciinema/cmd"
+	"github.com/gvcgo/asciinema/util"
+	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
+	config "github.com/gvcgo/gvc/pkgs/confs"
+	"github.com/gvcgo/gvc/pkgs/utils"
 )
 
 const (
