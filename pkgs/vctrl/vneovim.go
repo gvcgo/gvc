@@ -94,6 +94,7 @@ func (that *NeoVim) InstallNeovim() {
 	var fpath string
 
 	nvimDir := filepath.Join(config.NVimFileDir, NvimDirName)
+
 	if that.fetcher.Url != "" {
 		that.fetcher.Timeout = 20 * time.Minute
 		that.fetcher.SetThreadNum(3)
@@ -121,7 +122,7 @@ func (that *NeoVim) InstallNeovim() {
 					binPath := filepath.Join(nvimDir, "bin", "nvim.exe")
 					scriptPath := filepath.Join(config.NVimBinDir, "nvim.bat")
 					os.WriteFile(scriptPath,
-						[]byte(fmt.Sprintf("%s %s", binPath, `%*`)),
+						[]byte(fmt.Sprintf(NvimScriptWin, binPath, `%*`)),
 						os.ModePerm,
 					)
 				} else {
@@ -129,7 +130,7 @@ func (that *NeoVim) InstallNeovim() {
 					that.setupPrevillage(binPath)
 					scriptPath := filepath.Join(config.NVimBinDir, "nvim")
 					os.WriteFile(scriptPath,
-						[]byte(fmt.Sprintf("%s %s", binPath, `$*`)),
+						[]byte(fmt.Sprintf(NvimScriptUnix, binPath, `$*`)),
 						os.ModePerm,
 					)
 					that.setupPrevillage(scriptPath)
@@ -168,7 +169,6 @@ func (that *NeoVim) InstallNeovimDependencies() {
 
 	var fpath string
 	if that.fetcher.Url != "" {
-		os.RemoveAll(treesitterBinPath) // removes old tree-sitter
 		that.fetcher.Timeout = 20 * time.Minute
 		that.fetcher.SetThreadNum(3)
 		fpath = filepath.Join(config.NVimFileDir, filepath.Base(that.fetcher.Url))
@@ -177,31 +177,85 @@ func (that *NeoVim) InstallNeovimDependencies() {
 			return
 		}
 	} else {
-		gprint.PrintError(fmt.Sprintf("Cannot find nvim package for %s", runtime.GOOS))
+		gprint.PrintError(fmt.Sprintf("Cannot find tree-sitter package for %s", runtime.GOOS))
 	}
 
 	if ok, _ := utils.PathIsExist(config.NVimFileDir); ok && fpath != "" {
-		if archive, err := arch.NewArchiver(fpath, config.NVimFileDir, false); err == nil {
+		if archive, err := arch.NewArchiver(fpath, config.NVimBinDir, false); err == nil {
 			_, err = archive.UnArchive()
 			if err != nil {
 				that.renameTreeSitterBinary(treesitterBinPath)
-				os.RemoveAll(treesitterBinPath) // removes nvim dir.
+				os.RemoveAll(treesitterBinPath) // removes tree-sitter.
+				os.RemoveAll(fpath)
 				gprint.PrintError("Unarchive failed: %+v", err)
 				return
 			} else {
-				os.RemoveAll(treesitterBinPath)                // removes old neovim.
+				os.RemoveAll(treesitterBinPath)                // removes old tree-sitter.
 				that.renameTreeSitterBinary(treesitterBinPath) // rename
 				that.setupPrevillage(treesitterBinPath)
 			}
 		}
 	}
 
+	os.RemoveAll(fpath)
+
 	// lazygit
 	gprint.PrintInfo("Installing lazygit...")
+	if runtime.GOOS == utils.Windows {
+		scriptPath := filepath.Join(config.NVimBinDir, "lazygit.bat")
+		os.WriteFile(scriptPath,
+			[]byte(fmt.Sprintf(NvimScriptWin, "g git lazygit", `%*`)),
+			os.ModePerm,
+		)
+	} else {
+		scriptPath := filepath.Join(config.NVimBinDir, "nvim")
+		os.WriteFile(scriptPath,
+			[]byte(fmt.Sprintf(NvimScriptUnix, "g git lazygit", `$*`)),
+			os.ModePerm,
+		)
+		that.setupPrevillage(scriptPath)
+	}
 
 	// fzf
 	gprint.PrintInfo("Installing fzf...")
 
+	uList = gh.ParseReleasesForGithubProject(that.Conf.NVim.FzFUrl)
+	that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(uList[fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)])
+	fzfBinPath := filepath.Join(config.NVimBinDir, "fzf")
+	if runtime.GOOS == utils.Windows {
+		fzfBinPath += ".exe"
+	}
+
+	fpath = ""
+	if that.fetcher.Url != "" {
+		that.fetcher.Timeout = 20 * time.Minute
+		that.fetcher.SetThreadNum(3)
+		fpath = filepath.Join(config.NVimFileDir, filepath.Base(that.fetcher.Url))
+		if size := that.fetcher.GetAndSaveFile(fpath); size <= 0 {
+			gprint.PrintError(fmt.Sprintf("Download %s failed.", that.fetcher.Url))
+			that.SetEnvs()
+			return
+		}
+	} else {
+		gprint.PrintError(fmt.Sprintf("Cannot find fzf package for %s", runtime.GOOS))
+	}
+
+	if ok, _ := utils.PathIsExist(config.NVimFileDir); ok && fpath != "" {
+		if archive, err := arch.NewArchiver(fpath, config.NVimBinDir, false); err == nil {
+			_, err = archive.UnArchive()
+			if err != nil {
+				os.RemoveAll(fzfBinPath) // removes fzf dir.
+				gprint.PrintError("Unarchive failed: %+v", err)
+				that.SetEnvs()
+				return
+			} else {
+				os.RemoveAll(fzfBinPath) // removes old fzf.
+				that.setupPrevillage(fzfBinPath)
+			}
+		}
+	}
+
+	os.RemoveAll(fpath)
 	that.SetEnvs()
 }
 
@@ -221,7 +275,7 @@ func (that *NeoVim) InstallNeovide() {
 			return
 		}
 	} else {
-		gprint.PrintError(fmt.Sprintf("Cannot find nvim package for %s", runtime.GOOS))
+		gprint.PrintError(fmt.Sprintf("Cannot find neovide package for %s", runtime.GOOS))
 	}
 
 	if ok, _ := utils.PathIsExist(config.NVimFileDir); !ok || fpath == "" {
