@@ -18,6 +18,7 @@ type NVimConf struct {
 	NeovideUrl    string `koanf,json:"neovide_url"`
 	TreeSitterUrl string `koanf,json:"treesitter_url"`
 	FzFUrl        string `koanf,json:"fzf_url"`
+	GNvimUrl      string `koanf,json:"gnvim_url"`
 	AstroNvimUrl  string `koanf,json:"astro_nvim_url"`
 	PluginsUrl    string `koanf:"plugins_url"`
 	GithubProxy   string `koanf:"github_proxy"`
@@ -45,6 +46,7 @@ func (that *NVimConf) Reset() {
 	that.NeovideUrl = "https://github.com/neovide/neovide/releases/latest/"
 	that.TreeSitterUrl = "https://github.com/tree-sitter/tree-sitter/releases/latest/"
 	that.FzFUrl = "https://github.com/junegunn/fzf/releases/latest/"
+	that.GNvimUrl = "git@github.com:gvcgo/gnvim.git"
 	that.AstroNvimUrl = "https://codeload.github.com/AstroNvim/AstroNvim/zip/refs/heads/main"
 	that.PluginsUrl = "https://gitlab.com/moqsien/gvc_resources/uploads/753afef9d38f8f6224d221770d25c9a3/nvim-plugins.zip"
 	that.GithubProxy = "https://ghproxy.com/"

@@ -8,11 +8,11 @@ import (
 	"strings"
 	"time"
 
+	arch "github.com/gvcgo/goutils/pkgs/archiver"
 	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
 	"github.com/gvcgo/goutils/pkgs/request"
 	config "github.com/gvcgo/gvc/pkgs/confs"
 	"github.com/gvcgo/gvc/pkgs/utils"
-	"github.com/mholt/archiver/v3"
 )
 
 const (
@@ -108,44 +108,135 @@ func (that *NeoVim) InstallNeovim() {
 	}
 
 	if ok, _ := utils.PathIsExist(config.NVimFileDir); ok && fpath != "" {
-		dst := config.NVimFileDir
-		if err := archiver.Unarchive(fpath, dst); err != nil {
-			that.RenameNvimDir()
-			os.RemoveAll(nvimDir)
-			gprint.PrintError(fmt.Sprintf("Unarchive failed: %+v", err))
-		} else {
-			that.RenameNvimDir()
-			if runtime.GOOS == utils.Windows {
-				binPath := filepath.Join(nvimDir, "bin", "nvim.exe")
-				scriptPath := filepath.Join(config.NVimBinDir, "nvim.bat")
-				os.WriteFile(scriptPath,
-					[]byte(fmt.Sprintf("%s %s", binPath, `%*`)),
-					os.ModePerm,
-				)
+		if archive, err := arch.NewArchiver(fpath, config.NVimFileDir, false); err == nil {
+			_, err = archive.UnArchive()
+			if err != nil {
+				that.RenameNvimDir()
+				os.RemoveAll(nvimDir) // removes nvim dir.
+				gprint.PrintError("Unarchive failed: %+v", err)
+				return
 			} else {
-				binPath := filepath.Join(nvimDir, "bin", "nvim")
-				that.setupPrevillage(binPath)
-				scriptPath := filepath.Join(config.NVimBinDir, "nvim")
-				os.WriteFile(scriptPath,
-					[]byte(fmt.Sprintf("%s %s", binPath, `$*`)),
-					os.ModePerm,
-				)
-				that.setupPrevillage(scriptPath)
+				os.RemoveAll(nvimDir) // removes old neovim.
+				that.RenameNvimDir()
+				if runtime.GOOS == utils.Windows {
+					binPath := filepath.Join(nvimDir, "bin", "nvim.exe")
+					scriptPath := filepath.Join(config.NVimBinDir, "nvim.bat")
+					os.WriteFile(scriptPath,
+						[]byte(fmt.Sprintf("%s %s", binPath, `%*`)),
+						os.ModePerm,
+					)
+				} else {
+					binPath := filepath.Join(nvimDir, "bin", "nvim")
+					that.setupPrevillage(binPath)
+					scriptPath := filepath.Join(config.NVimBinDir, "nvim")
+					os.WriteFile(scriptPath,
+						[]byte(fmt.Sprintf("%s %s", binPath, `$*`)),
+						os.ModePerm,
+					)
+					that.setupPrevillage(scriptPath)
+				}
+				that.SetEnvs()
 			}
-			that.SetEnvs()
 		}
 		os.RemoveAll(fpath)
 	}
 }
 
-// Installs the latest stable version of neovide.
-func (that *NeoVim) InstallNeovide() {
-
-}
-
 // Installs tree-sitter, fzf, and lazygit for neovim.
 func (that *NeoVim) InstallNeovimDependencies() {
 
+	that.SetEnvs()
+}
+
+// Installs the latest stable version of neovide.
+func (that *NeoVim) InstallNeovide() {
+	gh := NewGhDownloader()
+	uList := gh.ParseReleasesForGithubProject(that.Conf.NVim.NeovideUrl)
+	that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(uList[fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)])
+	var fpath string
+
+	if that.fetcher.Url != "" {
+		utils.ClearDir(config.NeovideBinDir)
+		that.fetcher.Timeout = 20 * time.Minute
+		that.fetcher.SetThreadNum(3)
+		fpath = filepath.Join(config.NVimFileDir, filepath.Base(that.fetcher.Url))
+		if size := that.fetcher.GetAndSaveFile(fpath, true); size <= 0 {
+			gprint.PrintError(fmt.Sprintf("Download %s failed.", that.fetcher.Url))
+			return
+		}
+	} else {
+		gprint.PrintError(fmt.Sprintf("Cannot find nvim package for %s", runtime.GOOS))
+	}
+
+	if ok, _ := utils.PathIsExist(config.NVimFileDir); !ok || fpath == "" {
+		return
+	}
+
+	if runtime.GOOS == utils.MacOS {
+		if archive, err := arch.NewArchiver(fpath, config.NVimFileDir, false); err == nil {
+			_, err = archive.UnArchive()
+			if err != nil {
+				os.RemoveAll(fpath)
+				gprint.PrintError("unarchive failed: %+v", err)
+				return
+			}
+		}
+		// find .dmg file for MacOS
+		dList, _ := os.ReadDir(config.NVimFileDir)
+		var dmgPath string
+		for _, d := range dList {
+			if !d.IsDir() && strings.HasSuffix(d.Name(), ".dmg") {
+				dmgPath = filepath.Join(config.NVimFileDir, d.Name())
+				break
+			}
+		}
+		os.RemoveAll(fpath)
+		fpath = dmgPath
+	}
+
+	// removes old neovide files.
+	dList, _ := os.ReadDir(config.NVimBinDir)
+	for _, d := range dList {
+		if strings.Contains(strings.ToLower(d.Name()), "neovide") {
+			os.RemoveAll(filepath.Join(config.NVimBinDir, d.Name()))
+		}
+	}
+
+	if archive, err := arch.NewArchiver(fpath, config.NVimBinDir, false); err == nil {
+		_, err = archive.UnArchive()
+		defer os.RemoveAll(fpath)
+		if err != nil {
+			gprint.PrintError("unarchive failed: %+v", err)
+			return
+		}
+		gprint.PrintSuccess("download successed: %s", fpath)
+	}
+
+	// fix for MacOS: move binary to $NVimBinDir
+	if runtime.GOOS == utils.MacOS {
+		dList, _ := os.ReadDir(config.NVimBinDir)
+		var appPath string
+		for _, d := range dList {
+			if strings.HasSuffix(d.Name(), ".app") {
+				appPath = filepath.Join(config.NVimBinDir, d.Name())
+				break
+			}
+		}
+		if appPath != "" {
+			utils.CopyFile(
+				filepath.Join(appPath, "Contents", "MacOS", "neovide"),
+				filepath.Join(config.NVimBinDir, "neovide"),
+			)
+			os.RemoveAll(appPath)
+		}
+	}
+
+	if runtime.GOOS != utils.Windows {
+		that.setupPrevillage(filepath.Join(config.NVimBinDir, "neovide"))
+	}
+
+	that.SetEnvs()
+	os.RemoveAll(fpath)
 }
 
 // Installs gnvim config for neovim.
@@ -156,10 +247,16 @@ func (that *NeoVim) InstallGnvimConfig() {
 
 // Enables/Diables gvc proxy for neovim.
 func (that *NeoVim) ToggleProxy() {
+	// for git
+
+	// for neovim
 
 }
 
 // Removes all neovim related files.
 func (that *NeoVim) RemoveNeovim() {
-
+	if runtime.GOOS != utils.Windows {
+		that.env.RemoveSub(utils.SUB_NVIM)
+	}
+	utils.ClearDir(config.NVimFileDir)
 }
