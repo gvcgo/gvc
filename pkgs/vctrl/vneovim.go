@@ -95,7 +95,6 @@ func (that *NeoVim) InstallNeovim() {
 
 	nvimDir := filepath.Join(config.NVimFileDir, NvimDirName)
 	if that.fetcher.Url != "" {
-		utils.ClearDir(nvimDir)
 		that.fetcher.Timeout = 20 * time.Minute
 		that.fetcher.SetThreadNum(3)
 		fpath = filepath.Join(config.NVimFileDir, filepath.Base(that.fetcher.Url))
@@ -142,8 +141,66 @@ func (that *NeoVim) InstallNeovim() {
 	}
 }
 
+func (that *NeoVim) renameTreeSitterBinary(toBinPath string) {
+	dList, _ := os.ReadDir(config.NVimBinDir)
+	for _, d := range dList {
+		if !d.IsDir() && strings.Contains(d.Name(), "tree-sitter") {
+			os.Rename(
+				filepath.Join(config.NVimBinDir, d.Name()),
+				filepath.Join(config.NVimBinDir, toBinPath),
+			)
+			break
+		}
+	}
+}
+
 // Installs tree-sitter, fzf, and lazygit for neovim.
 func (that *NeoVim) InstallNeovimDependencies() {
+	// tree-sitter
+	gprint.PrintInfo("Installing tree-sitter...")
+	gh := NewGhDownloader()
+	uList := gh.ParseReleasesForGithubProject(that.Conf.NVim.TreeSitterUrl)
+	that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(uList[fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)])
+	treesitterBinPath := filepath.Join(config.NVimBinDir, "tree-sitter")
+	if runtime.GOOS == utils.Windows {
+		treesitterBinPath += ".exe"
+	}
+
+	var fpath string
+	if that.fetcher.Url != "" {
+		os.RemoveAll(treesitterBinPath) // removes old tree-sitter
+		that.fetcher.Timeout = 20 * time.Minute
+		that.fetcher.SetThreadNum(3)
+		fpath = filepath.Join(config.NVimFileDir, filepath.Base(that.fetcher.Url))
+		if size := that.fetcher.GetAndSaveFile(fpath); size <= 0 {
+			gprint.PrintError(fmt.Sprintf("Download %s failed.", that.fetcher.Url))
+			return
+		}
+	} else {
+		gprint.PrintError(fmt.Sprintf("Cannot find nvim package for %s", runtime.GOOS))
+	}
+
+	if ok, _ := utils.PathIsExist(config.NVimFileDir); ok && fpath != "" {
+		if archive, err := arch.NewArchiver(fpath, config.NVimFileDir, false); err == nil {
+			_, err = archive.UnArchive()
+			if err != nil {
+				that.renameTreeSitterBinary(treesitterBinPath)
+				os.RemoveAll(treesitterBinPath) // removes nvim dir.
+				gprint.PrintError("Unarchive failed: %+v", err)
+				return
+			} else {
+				os.RemoveAll(treesitterBinPath)                // removes old neovim.
+				that.renameTreeSitterBinary(treesitterBinPath) // rename
+				that.setupPrevillage(treesitterBinPath)
+			}
+		}
+	}
+
+	// lazygit
+	gprint.PrintInfo("Installing lazygit...")
+
+	// fzf
+	gprint.PrintInfo("Installing fzf...")
 
 	that.SetEnvs()
 }
@@ -156,7 +213,6 @@ func (that *NeoVim) InstallNeovide() {
 	var fpath string
 
 	if that.fetcher.Url != "" {
-		utils.ClearDir(config.NeovideBinDir)
 		that.fetcher.Timeout = 20 * time.Minute
 		that.fetcher.SetThreadNum(3)
 		fpath = filepath.Join(config.NVimFileDir, filepath.Base(that.fetcher.Url))
