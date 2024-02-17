@@ -423,12 +423,23 @@ func (that *NeoVim) RemoveNeovim() {
 	utils.ClearDir(config.NVimFileDir)
 }
 
-// Backups neovim config.
-func (that *NeoVim) BackupNeovimConfig() {
-
-}
-
-// Download neovim config from remote repo and deploy it.
-func (that *NeoVim) DownloadNeovimConfig() {
-
+// Backups/Deploys neovim config.
+func (that *NeoVim) HandleNeovimConfig(toDownload bool) {
+	fPath := that.FindConfigDir()
+	remoteFileName := "neovim_configs.zip"
+	repoSyncer := NewSynchronizer()
+	if toDownload {
+		// download and deploy.
+		repoSyncer.DownloadFile(
+			fPath,
+			remoteFileName,
+			EncryptByZip,
+		)
+	} else {
+		repoSyncer.UploadFile(
+			fPath,
+			remoteFileName,
+			EncryptByZip,
+		)
+	}
 }
