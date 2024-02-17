@@ -13,9 +13,9 @@ import (
 	"github.com/gvcgo/goutils/pkgs/ggit"
 	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
 	"github.com/gvcgo/goutils/pkgs/request"
-	lazyapp "github.com/jesseduffield/lazygit/pkg/app"
 	config "github.com/gvcgo/gvc/pkgs/confs"
 	"github.com/gvcgo/gvc/pkgs/utils"
+	lazyapp "github.com/jesseduffield/lazygit/pkg/app"
 )
 
 const (
@@ -175,6 +175,11 @@ func (that *GhDownloader) ReadDefaultProxy() string {
 		return "http://127.0.0.1:2023"
 	}
 	return string(r)
+}
+
+// Sets workdir for go-git
+func (that *GhDownloader) SetWorkDir(workDir string) {
+	that.git.SetWorkDir(workDir)
 }
 
 /*

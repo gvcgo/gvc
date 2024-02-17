@@ -195,6 +195,7 @@ func (that *Cli) git() {
 		defaultProxy        string = vg.ReadDefaultProxy()
 		manualProxyFlagName string = "proxy"
 		NoProxyFlagName     string = "no"
+		workDirName         string = "workdir"
 	)
 
 	getProxy := func(cmd *cobra.Command) string {
@@ -208,6 +209,11 @@ func (that *Cli) git() {
 		return pxy
 	}
 
+	setWorkDir := func(cmd *cobra.Command) {
+		wd, _ := cmd.Flags().GetString(workDirName)
+		vg.SetWorkDir(wd)
+	}
+
 	cloneCmd := &cobra.Command{
 		Use:     "clone",
 		Aliases: []string{"c"},
@@ -218,11 +224,13 @@ func (that *Cli) git() {
 				cmd.Help()
 				return
 			}
+			setWorkDir(cmd)
 			vg.Clone(args[0], getProxy(cmd))
 		},
 	}
 	cloneCmd.Flags().StringP(manualProxyFlagName, "p", "", "Specifies the proxy for using.")
 	cloneCmd.Flags().BoolP(NoProxyFlagName, "n", false, "Disables the proxy.")
+	cloneCmd.Flags().StringP(workDirName, "d", "", "Sets work dir for go-git.")
 	gitCmd.AddCommand(cloneCmd)
 
 	pullCmd := &cobra.Command{
@@ -231,11 +239,13 @@ func (that *Cli) git() {
 		Short:   "Pulls from a remote repo.",
 		Long:    "Example: g P --proxy=http://localhost:2023",
 		Run: func(cmd *cobra.Command, args []string) {
+			setWorkDir(cmd)
 			vg.Pull(getProxy(cmd))
 		},
 	}
 	pullCmd.Flags().StringP(manualProxyFlagName, "p", "", "Specifies the proxy for using.")
 	pullCmd.Flags().BoolP(NoProxyFlagName, "n", false, "Disables the proxy.")
+	pullCmd.Flags().StringP(workDirName, "d", "", "Sets work dir for go-git.")
 	gitCmd.AddCommand(pullCmd)
 
 	pushCmd := &cobra.Command{
@@ -244,11 +254,13 @@ func (that *Cli) git() {
 		Short:   "Pushes to a remot repo.",
 		Long:    "Example: g p --proxy=http://localhost:2023",
 		Run: func(cmd *cobra.Command, args []string) {
+			setWorkDir(cmd)
 			vg.Push(getProxy(cmd))
 		},
 	}
 	pushCmd.Flags().StringP(manualProxyFlagName, "p", "", "Specifies the proxy for using.")
 	pushCmd.Flags().BoolP(NoProxyFlagName, "n", false, "Disables the proxy.")
+	pushCmd.Flags().StringP(workDirName, "d", "", "Sets work dir for go-git.")
 	gitCmd.AddCommand(pushCmd)
 
 	commitPushCmd := &cobra.Command{
@@ -261,11 +273,13 @@ func (that *Cli) git() {
 			if len(args) > 0 {
 				commitMsg = args[0]
 			}
+			setWorkDir(cmd)
 			vg.CommitAndPush(commitMsg, getProxy(cmd))
 		},
 	}
 	commitPushCmd.Flags().StringP(manualProxyFlagName, "p", "", "Specifies the proxy for using.")
 	commitPushCmd.Flags().BoolP(NoProxyFlagName, "n", false, "Disables the proxy.")
+	commitPushCmd.Flags().StringP(workDirName, "d", "", "Sets work dir for go-git.")
 	gitCmd.AddCommand(commitPushCmd)
 
 	latesTagCmd := &cobra.Command{
@@ -273,9 +287,11 @@ func (that *Cli) git() {
 		Aliases: []string{"tl", "t"},
 		Short:   "Shows the latest tag of a local repo.",
 		Run: func(cmd *cobra.Command, args []string) {
+			setWorkDir(cmd)
 			vg.ShowLatestTag()
 		},
 	}
+	latesTagCmd.Flags().StringP(workDirName, "d", "", "Sets work dir for go-git.")
 	gitCmd.AddCommand(latesTagCmd)
 
 	addTagPushCmd := &cobra.Command{
@@ -288,11 +304,13 @@ func (that *Cli) git() {
 				cmd.Help()
 				return
 			}
+			setWorkDir(cmd)
 			vg.AddTagAndPush(args[0], getProxy(cmd))
 		},
 	}
 	addTagPushCmd.Flags().StringP(manualProxyFlagName, "p", "", "Specifies the proxy for using.")
 	addTagPushCmd.Flags().BoolP(NoProxyFlagName, "n", false, "Disables the proxy.")
+	addTagPushCmd.Flags().StringP(workDirName, "d", "", "Sets work dir for go-git.")
 	gitCmd.AddCommand(addTagPushCmd)
 
 	delTagCmd := &cobra.Command{
@@ -305,11 +323,13 @@ func (that *Cli) git() {
 				cmd.Help()
 				return
 			}
+			setWorkDir(cmd)
 			vg.DelTagAndPush(args[0], getProxy(cmd))
 		},
 	}
 	delTagCmd.Flags().StringP(manualProxyFlagName, "p", "", "Specifies the proxy for using.")
 	delTagCmd.Flags().BoolP(NoProxyFlagName, "n", false, "Disables the proxy.")
+	delTagCmd.Flags().StringP(workDirName, "d", "", "Sets work dir for go-git.")
 	gitCmd.AddCommand(delTagCmd)
 
 	that.rootCmd.AddCommand(gitCmd)
