@@ -249,12 +249,7 @@ func (that *NeoVim) renameTreeSitterBinary(toBinPath string) {
 	}
 }
 
-// Installs tree-sitter, fzf, and lazygit for neovim.
-/*
-TODO:
-https://github.com/charmbracelet/glow
-https://github.com/ellisonleao/glow.nvim
-*/
+// Installs tree-sitter, fzf, glow, and lazygit for neovim.
 func (that *NeoVim) InstallNeovimDependencies() {
 	// tree-sitter
 	gprint.PrintInfo("Installing tree-sitter...")
@@ -336,6 +331,58 @@ func (that *NeoVim) InstallNeovimDependencies() {
 			}
 		}
 	}
+	os.RemoveAll(fpath)
+	// glow
+	gprint.PrintInfo("Installing glow...")
+
+	uList = gh.ParseReleasesForGithubProject(that.Conf.NVim.GlowUrl)
+	that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(uList[fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)])
+	glowBinPath := filepath.Join(config.NVimBinDir, "glow")
+	if runtime.GOOS == utils.Windows {
+		glowBinPath += ".exe"
+	}
+
+	fpath = ""
+	if that.fetcher.Url != "" {
+		that.fetcher.Timeout = 20 * time.Minute
+		that.fetcher.SetThreadNum(3)
+		fpath = filepath.Join(config.NVimFileDir, filepath.Base(that.fetcher.Url))
+		if size := that.fetcher.GetAndSaveFile(fpath); size <= 0 {
+			gprint.PrintError(fmt.Sprintf("Download %s failed.", that.fetcher.Url))
+			that.SetEnvs()
+			return
+		}
+	} else {
+		gprint.PrintError(fmt.Sprintf("Cannot find glow package for %s", runtime.GOOS))
+	}
+
+	if ok, _ := utils.PathIsExist(config.NVimFileDir); ok && fpath != "" {
+		glowDstDir := filepath.Join(config.NVimFileDir, "glow")
+		if archive, err := arch.NewArchiver(fpath, glowDstDir, false); err == nil {
+			os.RemoveAll(glowBinPath) // removes old glow.
+			_, err = archive.UnArchive()
+			if err != nil {
+				os.RemoveAll(glowBinPath) // removes glow dir.
+				gprint.PrintError("Unarchive failed: %+v", err)
+				that.SetEnvs()
+				return
+			}
+			// copy binary to "bins"
+			binName := "glow"
+			if runtime.GOOS == utils.Windows {
+				binName += ".exe"
+			}
+			bPath := filepath.Join(glowDstDir, binName)
+			if ok, _ := utils.PathIsExist(bPath); ok {
+				utils.CopyFile(
+					bPath,
+					glowBinPath,
+				)
+			}
+			os.RemoveAll(glowDstDir)
+			that.setupPrevillage(glowBinPath)
+		}
+	}
 
 	os.RemoveAll(fpath)
 
@@ -403,6 +450,9 @@ func (that *NeoVim) InstallGnvimConfig() {
 		}
 		os.RemoveAll(configDir)
 	}
+
+	// install dependencies.
+	that.InstallNeovimDependencies()
 
 	// install gnvim.
 	utils.ExecuteSysCommand(

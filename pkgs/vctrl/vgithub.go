@@ -564,6 +564,7 @@ func (that *GhDownloader) ParseReleasesForGithubProject(releaseUrl string, keywo
 }
 
 func (that *GhDownloader) ParseOSAndArchFromFileName(fName string) (osInfo, archInfo string) {
+	fName = strings.ToLower(fName)
 	extList := []string{
 		".tar.gz",
 		".zip",
