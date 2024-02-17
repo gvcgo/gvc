@@ -478,6 +478,12 @@ func (that *NeoVim) ToggleProxy() {
 		)
 		that.setupPrevillage(scriptPath)
 	}
+
+	if ok {
+		gprint.PrintInfo("Proxy is enabled for nvim.")
+	} else {
+		gprint.PrintWarning("Proxy is disabled for nvim.")
+	}
 }
 
 // Removes all neovim related files.
