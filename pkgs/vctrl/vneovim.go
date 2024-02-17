@@ -250,6 +250,11 @@ func (that *NeoVim) renameTreeSitterBinary(toBinPath string) {
 }
 
 // Installs tree-sitter, fzf, and lazygit for neovim.
+/*
+TODO:
+https://github.com/charmbracelet/glow
+https://github.com/ellisonleao/glow.nvim
+*/
 func (that *NeoVim) InstallNeovimDependencies() {
 	// tree-sitter
 	gprint.PrintInfo("Installing tree-sitter...")

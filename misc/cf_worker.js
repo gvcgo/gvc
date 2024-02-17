@@ -60,7 +60,8 @@ function makeRes(body, status = 200, headers = {}) {
       "rustup.rs",
       "rust-lang.org",
       "github.com/tree-sitter/tree-sitter",
-      "github.com/junegunn/fzf"
+      "github.com/junegunn/fzf",
+      "github.com/charmbracelet/glow",
     ]
   
     for (var key in allowed_sites) {
