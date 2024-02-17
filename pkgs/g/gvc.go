@@ -50,7 +50,10 @@ func main() {
 
 		nv := vctrl.NewNeoVim()
 		// nv.InstallNeovim()
-		nv.ToggleProxy()
+		// nv.ToggleProxy()
+		// nv.InstallNeovide()
+		// nv.InstallNeovimDependencies()
+		nv.InstallGnvimConfig()
 	} else if len(os.Args) < 2 {
 		/*
 			GVC is allowed to be installed in ~/.gvc/ or $GOPATH/bin/ .

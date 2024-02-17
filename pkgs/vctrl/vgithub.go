@@ -528,6 +528,8 @@ func (that *GhDownloader) ParseReleasesForGithubProject(releaseUrl string, keywo
 				}
 			})
 		}
+		// fmt.Println(uList)
+
 		for _, u := range uList {
 			if len(keywords) > 0 {
 				ok := false
@@ -569,6 +571,7 @@ func (that *GhDownloader) ParseOSAndArchFromFileName(fName string) (osInfo, arch
 		".exe",
 		".7z",
 		".7z.exe",
+		".gz",
 	}
 	ok := false
 	for _, ext := range extList {
