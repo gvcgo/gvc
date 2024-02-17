@@ -23,6 +23,18 @@ func (that *Cli) showVersion() {
 		Short:   "Shows installation info about GVC.",
 		GroupID: that.groupID,
 		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Println(that.gitTag)
+		},
+	})
+}
+
+func (that *Cli) showInfo() {
+	that.rootCmd.AddCommand(&cobra.Command{
+		Use:     "info",
+		Aliases: []string{"in"},
+		Short:   "Shows installation info about GVC.",
+		GroupID: that.groupID,
+		Run: func(cmd *cobra.Command, args []string) {
 			hashTail := that.gitHash
 			if len(hashTail) > 8 {
 				hashTail = hashTail[len(hashTail)-8:]

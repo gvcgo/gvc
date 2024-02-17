@@ -33,6 +33,7 @@ func New() (c *Cli) {
 func (that *Cli) initiate() {
 	// self related CLIs
 	that.showVersion()
+	that.showInfo()
 	that.checkForUpdate()
 	that.uninstall()
 	that.configure()
