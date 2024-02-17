@@ -15,6 +15,7 @@ import (
 	"github.com/gvcgo/gvc/pkgs/utils"
 )
 
+// TODO: 1. edit asciinema file; 2. convert to gif.
 const (
 	AsciinemaConfName string = "asciinema_config"
 )

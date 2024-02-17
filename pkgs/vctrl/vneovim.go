@@ -349,10 +349,62 @@ func (that *NeoVim) InstallNeovide() {
 	os.RemoveAll(fpath)
 }
 
+// Finds neovim config dir.
+// https://neovim.io/doc/user/starting.html#standard-path
+func (that *NeoVim) FindConfigDir() string {
+	homeDir, _ := os.UserHomeDir()
+	var configDir string
+	/*
+		Unix:         ~/.config                   ~/.config/nvim
+		Windows:      ~/AppData/Local             ~/AppData/Local/nvim
+	*/
+	if runtime.GOOS != utils.Windows {
+		configDir = filepath.Join(homeDir, ".config", "nvim")
+	} else {
+		configDir = filepath.Join(homeDir, "AppData", "Local", "nvim")
+	}
+	return configDir
+}
+
 // Installs gnvim config for neovim.
 // https://github.com/gvcgo/gnvim
 func (that *NeoVim) InstallGnvimConfig() {
+	configDir := that.FindConfigDir()
+	gnvimDir := filepath.Join(configDir, "lua", "gnvim")
 
+	if ok, _ := utils.PathIsExist(gnvimDir); ok {
+		gprint.PrintInfo("updating gnvim...")
+		utils.ExecuteSysCommand(false, "g", "git", "pull", "-d", gnvimDir)
+		return
+	}
+
+	parentDir := filepath.Dir(configDir)
+	// backup old neovim configs.
+	gprint.PrintInfo("backuping old configs...")
+	if ok, _ := utils.PathIsExist(configDir); ok {
+		zipName := fmt.Sprintf("nvim_config_%v.zip", time.Now())
+		if archive, err := arch.NewArchiver(configDir, parentDir, false); err == nil {
+			archive.SetZipName(zipName)
+			err = archive.ZipDir()
+			if err != nil {
+				gprint.PrintError("Zip dir error: %+v", err)
+				return
+			}
+		}
+		os.RemoveAll(configDir)
+	}
+
+	// install gnvim.
+	utils.ExecuteSysCommand(
+		false,
+		"g",
+		"git",
+		"clone",
+		"-d",
+		parentDir,
+		that.Conf.NVim.GNvimUrl,
+	)
+	os.Rename(filepath.Join(parentDir, "gnvim"), configDir)
 }
 
 // Enables/Diables gvc proxy for neovim.
@@ -369,4 +421,14 @@ func (that *NeoVim) RemoveNeovim() {
 		that.env.RemoveSub(utils.SUB_NVIM)
 	}
 	utils.ClearDir(config.NVimFileDir)
+}
+
+// Backups neovim config.
+func (that *NeoVim) BackupNeovimConfig() {
+
+}
+
+// Download neovim config from remote repo and deploy it.
+func (that *NeoVim) DownloadNeovimConfig() {
+
 }
