@@ -22,6 +22,10 @@ const (
 	NvimScriptUnix string = `#!/bin/sh
 %s %s
 `
+	NvimProxyWin string = `set HTTP_PROXY =%s
+set HTTPS_PROXY=%s`
+	NvimProxyUnix string = `export HTTP_PROXY=%s
+export HTTPS_PROXY=%s`
 )
 
 type NeoVim struct {
@@ -350,11 +354,11 @@ func (that *NeoVim) InstallNeovide() {
 }
 
 // Finds neovim config dir.
-// https://neovim.io/doc/user/starting.html#standard-path
 func (that *NeoVim) FindConfigDir() string {
 	homeDir, _ := os.UserHomeDir()
 	var configDir string
 	/*
+		https://neovim.io/doc/user/starting.html#standard-path
 		Unix:         ~/.config                   ~/.config/nvim
 		Windows:      ~/AppData/Local             ~/AppData/Local/nvim
 	*/
@@ -410,9 +414,70 @@ func (that *NeoVim) InstallGnvimConfig() {
 // Enables/Diables gvc proxy for neovim.
 func (that *NeoVim) ToggleProxy() {
 	// for git
+	utils.ExecuteSysCommand(
+		false,
+		"g",
+		"git",
+		"toggle-ssh-proxy",
+	)
 
+	nvimDir := filepath.Join(config.NVimFileDir, NvimDirName)
+	if exist, _ := utils.PathIsExist(nvimDir); !exist {
+		gprint.PrintError("neovim is not installed by gvc.")
+		return
+	}
+
+	homeDir, _ := os.UserHomeDir()
+	confPath := filepath.Join(homeDir, ".ssh", "config")
+	backupConfPath := filepath.Join(homeDir, ".ssh", "config.bak")
 	// for neovim
+	ok, _ := utils.PathIsExist(confPath)
+	ok1, _ := utils.PathIsExist(backupConfPath)
+	if !ok && !ok1 {
+		gprint.PrintWarning(`Please set proxy for ssh using "g git ssh-proxy-fix".`)
+		return
+	}
 
+	content, _ := os.ReadFile(filepath.Join(config.GVCDir, DefaultProxyFileName))
+	if len(content) == 0 {
+		gprint.PrintError("No proxy is set for gvc.")
+		gprint.PrintInfo(`Set a proxy using "g git proxy http://127.0.0.1:port".`)
+		return
+	}
+
+	pxy := string(content)
+	switch runtime.GOOS {
+	case utils.Windows:
+		binPath := filepath.Join(nvimDir, "bin", "nvim.exe")
+		scriptPath := filepath.Join(config.NVimBinDir, "nvim.bat")
+
+		content := fmt.Sprintf(NvimScriptWin, binPath, `%*`)
+		if ok {
+			// enables proxy.
+			proxyStr := fmt.Sprintf(NvimProxyWin, pxy, pxy)
+			content = fmt.Sprintf(NvimScriptWin, proxyStr+"\n"+binPath, `%*`)
+		}
+		os.WriteFile(scriptPath,
+			[]byte(content),
+			os.ModePerm,
+		)
+	default:
+		binPath := filepath.Join(nvimDir, "bin", "nvim")
+		that.setupPrevillage(binPath)
+		scriptPath := filepath.Join(config.NVimBinDir, "nvim")
+
+		content := fmt.Sprintf(NvimScriptUnix, binPath, `$*`)
+		if ok {
+			// enables proxy.
+			proxyStr := fmt.Sprintf(NvimProxyUnix, pxy, pxy)
+			content = fmt.Sprintf(NvimScriptUnix, proxyStr+"\n"+binPath, `$*`)
+		}
+		os.WriteFile(scriptPath,
+			[]byte(content),
+			os.ModePerm,
+		)
+		that.setupPrevillage(scriptPath)
+	}
 }
 
 // Removes all neovim related files.
