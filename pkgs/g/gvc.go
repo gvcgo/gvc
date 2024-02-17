@@ -48,8 +48,9 @@ func main() {
 		// gh := vctrl.NewGhDownloader()
 		// fmt.Printf("%+v\n", gh.ParseReleasesForGithubProject("https://github.com/neovide/neovide/releases/latest/"))
 
-		nv := vctrl.NewNVim()
-		nv.InstallNeovide()
+		nv := vctrl.NewNeoVim()
+		// nv.InstallNeovim()
+		nv.ToggleProxy()
 	} else if len(os.Args) < 2 {
 		/*
 			GVC is allowed to be installed in ~/.gvc/ or $GOPATH/bin/ .

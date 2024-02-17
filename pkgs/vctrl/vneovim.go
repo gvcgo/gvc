@@ -22,10 +22,10 @@ const (
 	NvimScriptUnix string = `#!/bin/sh
 %s %s
 `
-	NvimProxyWin string = `set HTTP_PROXY =%s
-set HTTPS_PROXY=%s`
-	NvimProxyUnix string = `export HTTP_PROXY=%s
-export HTTPS_PROXY=%s`
+	NvimProxyWin string = `set http_proxy =%s
+set https_proxy=%s`
+	NvimProxyUnix string = `export http_proxy=%s
+export https_proxy=%s`
 )
 
 type NeoVim struct {
