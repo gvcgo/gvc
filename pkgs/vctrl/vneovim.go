@@ -406,6 +406,8 @@ func (that *NeoVim) InstallNeovimDependencies() {
 	that.SetEnvs()
 }
 
+// TODO: install hacknerd fonts for windows.
+
 // Finds neovim config dir.
 func (that *NeoVim) FindConfigDir() string {
 	homeDir, _ := os.UserHomeDir()

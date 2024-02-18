@@ -55,6 +55,7 @@ func (that *Cli) vscode() {
 	that.rootCmd.AddCommand(codeCmd)
 }
 
+// TODO: new command.
 func (that *Cli) neovim() {
 	nvimCmd := &cobra.Command{
 		Use:     "nvim",
