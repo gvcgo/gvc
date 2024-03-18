@@ -162,7 +162,7 @@ func (that *Cli) asciinema() {
 	})
 
 	asnemaCmd.AddCommand(&cobra.Command{
-		Use:     "paly",
+		Use:     "play",
 		Aliases: []string{"p"},
 		Short:   "Plays an asciinema file.",
 		Long:    "Example: a p <your_file_path>",
