@@ -18,6 +18,8 @@ type NVimConf struct {
 	NeovideUrl    string `koanf,json:"neovide_url"`
 	TreeSitterUrl string `koanf,json:"treesitter_url"`
 	FzFUrl        string `koanf,json:"fzf_url"`
+	FdUrl         string `koanf,josn:"fd_url"`
+	RipgrepUrl    string `koanf,json:"ripgrep_url"`
 	GNvimUrl      string `koanf,json:"gnvim_url"`
 	GlowUrl       string `koanf,json:"glow_url"`
 	AstroNvimUrl  string `koanf,json:"astro_nvim_url"`
@@ -47,6 +49,8 @@ func (that *NVimConf) Reset() {
 	that.NeovideUrl = "https://github.com/neovide/neovide/releases/latest/"
 	that.TreeSitterUrl = "https://github.com/tree-sitter/tree-sitter/releases/latest/"
 	that.FzFUrl = "https://github.com/junegunn/fzf/releases/latest/"
+	that.FdUrl = "https://github.com/sharkdp/fd/releases/latest/"
+	that.RipgrepUrl = "https://github.com/BurntSushi/ripgrep/releases/latest/"
 	that.GlowUrl = "https://github.com/charmbracelet/glow/releases/latest/"
 	that.GNvimUrl = "git@github.com:gvcgo/gnvim.git"
 	that.AstroNvimUrl = "https://codeload.github.com/AstroNvim/AstroNvim/zip/refs/heads/main"

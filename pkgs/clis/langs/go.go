@@ -169,10 +169,11 @@ func SetGo(reg IRegister) {
 	goCmd.AddCommand(searchPkgCmd)
 
 	buildCmd := &cobra.Command{
-		Use:     "build",
-		Aliases: []string{"b"},
-		Short:   `Compiles go code for multi-platforms [with <-ldflags "-s -w"> builtin].`,
-		Long:    `If you are planning to use "-X", then remember to replace any "$" by "#".`,
+		Use:                "build",
+		Aliases:            []string{"b"},
+		Short:              `Compiles go code for multi-platforms [with <-ldflags "-s -w"> builtin].`,
+		Long:               `If you are planning to use "-X", then remember to replace any "$" by "#".`,
+		DisableFlagParsing: true,
 		Run: func(cmd *cobra.Command, args []string) {
 			gv := vctrl.NewGoVersion()
 			if len(os.Args) > 3 {

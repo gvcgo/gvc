@@ -249,7 +249,57 @@ func (that *NeoVim) renameTreeSitterBinary(toBinPath string) {
 	}
 }
 
-// Installs tree-sitter, fzf, glow, and lazygit for neovim.
+// TODO:
+func (that *NeoVim) downloadDependency(sUrl, zipDir, binName string) {
+	if runtime.GOOS == utils.Windows {
+		binName += ".exe"
+	}
+	gh := NewGhDownloader()
+	uList := gh.ParseReleasesForGithubProject(sUrl)
+	that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(uList[fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)])
+	binPath := filepath.Join(config.NVimBinDir, binName)
+
+	var fpath string
+	if that.fetcher.Url != "" {
+		that.fetcher.Timeout = 20 * time.Minute
+		that.fetcher.SetThreadNum(3)
+		fpath = filepath.Join(config.NVimFileDir, filepath.Base(that.fetcher.Url))
+		if size := that.fetcher.GetAndSaveFile(fpath); size <= 0 {
+			gprint.PrintError(fmt.Sprintf("Download %s failed.", that.fetcher.Url))
+			return
+		}
+	} else {
+		gprint.PrintError(fmt.Sprintf("Cannot find %s package for %s", binName, runtime.GOOS))
+	}
+
+	if ok, _ := utils.PathIsExist(config.NVimFileDir); ok && fpath != "" {
+
+		if archive, err := arch.NewArchiver(fpath, config.NVimBinDir, false); err == nil {
+			os.RemoveAll(binPath) // removes old binary.
+			_, err = archive.UnArchive()
+			if err != nil {
+				if strings.HasPrefix(binName, "tree-sitter") {
+					that.renameTreeSitterBinary(binPath)
+				}
+				os.RemoveAll(binPath) // removes binary.
+				os.RemoveAll(fpath)
+				gprint.PrintError("Unarchive failed: %+v", err)
+				return
+			} else {
+				if strings.HasPrefix(binName, "tree-sitter") {
+					that.renameTreeSitterBinary(binPath)
+				}
+				that.setupPrevillage(binPath)
+			}
+		}
+	}
+
+	if fpath != "" {
+		os.RemoveAll(fpath)
+	}
+}
+
+// Installs tree-sitter, fd, ripgrep, glow, and lazygit for neovim.
 func (that *NeoVim) InstallNeovimDependencies() {
 	// tree-sitter
 	gprint.PrintInfo("Installing tree-sitter...")
@@ -293,14 +343,14 @@ func (that *NeoVim) InstallNeovimDependencies() {
 
 	os.RemoveAll(fpath)
 
-	// fzf
-	gprint.PrintInfo("Installing fzf...")
+	// fd
+	gprint.PrintInfo("Installing fd...")
 
-	uList = gh.ParseReleasesForGithubProject(that.Conf.NVim.FzFUrl)
+	uList = gh.ParseReleasesForGithubProject(that.Conf.NVim.FdUrl)
 	that.fetcher.Url = that.Conf.GVCProxy.WrapUrl(uList[fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH)])
-	fzfBinPath := filepath.Join(config.NVimBinDir, "fzf")
+	fdBinPath := filepath.Join(config.NVimBinDir, "fd")
 	if runtime.GOOS == utils.Windows {
-		fzfBinPath += ".exe"
+		fdBinPath += ".exe"
 	}
 
 	fpath = ""
@@ -314,24 +364,42 @@ func (that *NeoVim) InstallNeovimDependencies() {
 			return
 		}
 	} else {
-		gprint.PrintError(fmt.Sprintf("Cannot find fzf package for %s", runtime.GOOS))
+		gprint.PrintError(fmt.Sprintf("Cannot find glow package for %s", runtime.GOOS))
 	}
 
 	if ok, _ := utils.PathIsExist(config.NVimFileDir); ok && fpath != "" {
-		if archive, err := arch.NewArchiver(fpath, config.NVimBinDir, false); err == nil {
-			os.RemoveAll(fzfBinPath) // removes old fzf.
+		fdDstDir := config.NVimBinDir
+		if archive, err := arch.NewArchiver(fpath, fdDstDir, false); err == nil {
+			os.RemoveAll(fdBinPath) // removes old fd.
 			_, err = archive.UnArchive()
 			if err != nil {
-				os.RemoveAll(fzfBinPath) // removes fzf dir.
+				os.RemoveAll(fdBinPath) // removes fd dir.
 				gprint.PrintError("Unarchive failed: %+v", err)
 				that.SetEnvs()
 				return
-			} else {
-				that.setupPrevillage(fzfBinPath)
 			}
+			// copy binary to "bins"
+			binName := "fd"
+			if runtime.GOOS == utils.Windows {
+				binName += ".exe"
+			}
+			bPath := filepath.Join(fdDstDir, binName)
+			if ok, _ := utils.PathIsExist(bPath); ok {
+				utils.CopyFile(
+					bPath,
+					fdBinPath,
+				)
+			}
+			if ok, _ := utils.PathIsExist(fdBinPath); !ok {
+				return
+			}
+			os.RemoveAll(fdDstDir)
+			that.setupPrevillage(fdBinPath)
 		}
 	}
+
 	os.RemoveAll(fpath)
+
 	// glow
 	gprint.PrintInfo("Installing glow...")
 

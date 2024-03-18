@@ -6,8 +6,8 @@ import (
 
 	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
 	"github.com/gvcgo/goutils/pkgs/koanfer"
-	neoconf "github.com/gvcgo/neobox/pkgs/conf"
 	"github.com/gvcgo/gvc/pkgs/utils"
+	neoconf "github.com/gvcgo/neobox/pkgs/conf"
 )
 
 type NBConf struct {
@@ -42,8 +42,9 @@ func (that *NeoboxConf) setup() {
 
 func (that *NeoboxConf) GetNeoConf() *neoconf.NeoConf {
 	if ok, _ := utils.PathIsExist(that.NeoConfPath); ok {
-		k, _ := koanfer.NewKoanfer(that.NeoConfPath)
-		k.Load(that.nconf.Conf)
+		// k, _ := koanfer.NewKoanfer(that.NeoConfPath)
+		// k.Load(that.nconf.Conf)
+		that.nconf.Conf = neoconf.NewNeoConf(filepath.Dir(that.NeoConfPath))
 	}
 	return that.nconf.Conf
 }

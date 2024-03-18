@@ -13,7 +13,7 @@ require (
 	github.com/gvcgo/goutils v0.8.5
 	github.com/gvcgo/gshell v0.3.0
 	github.com/gvcgo/hackbrowser v1.0.7
-	github.com/gvcgo/neobox v1.5.9
+	github.com/gvcgo/neobox v1.5.10
 	github.com/hhatto/gocloc v0.5.2
 	github.com/jesseduffield/lazygit v0.40.2
 	github.com/mholt/archiver/v3 v3.5.1
