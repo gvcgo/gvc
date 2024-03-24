@@ -35,6 +35,7 @@ func NewCli(gitTag, gitHash string) (c *Cli) {
 }
 
 func (c *Cli) initiate() {
+	RegisterAsciinema(c)
 }
 
 func (that *Cli) Run() {

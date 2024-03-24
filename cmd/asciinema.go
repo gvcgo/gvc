@@ -24,5 +24,20 @@ func RegisterAsciinema(cli *Cli) {
 	}
 	parent.AddCommand(auth)
 
+	record := &cobra.Command{
+		Use:     "record",
+		Aliases: []string{"r"},
+		Short:   "Create a record.",
+		Long:    "g a record <xxx.cast>",
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				cmd.Help()
+				return
+			}
+			ascer.Record(args[0])
+		},
+	}
+	parent.AddCommand(record)
+
 	cli.rootCmd.AddCommand(parent)
 }
