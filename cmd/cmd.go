@@ -38,6 +38,7 @@ func (c *Cli) initiate() {
 	RegisterAsciinema(c)
 	RegisterBrowser(c)
 	RegisterCloc(c)
+	RegisterGit(c)
 }
 
 func (that *Cli) Run() {
