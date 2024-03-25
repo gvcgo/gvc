@@ -8,9 +8,9 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/cirocosta/asciinema-edit/cast"
-	"github.com/cirocosta/asciinema-edit/commands/transformer"
-	"github.com/cirocosta/asciinema-edit/editor"
+	"github.com/gvcgo/asciinema-edit/cast"
+	"github.com/gvcgo/asciinema-edit/commands/transformer"
+	"github.com/gvcgo/asciinema-edit/editor"
 	acmd "github.com/gvcgo/asciinema/cmd"
 	autil "github.com/gvcgo/asciinema/util"
 	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
@@ -96,10 +96,7 @@ func (a *Asciinema) Upload(fPath string) error {
 	return nil
 }
 
-/*
-Cut an asciinema cast.
-*/
-
+// Cut: Removes a certain range of time frames.
 type cutTransformation struct {
 	from float64
 	to   float64
@@ -110,12 +107,12 @@ func (t *cutTransformation) Transform(c *cast.Cast) (err error) {
 	return
 }
 
-func (a *Asciinema) Cut(fPath, outFilePath string, start, end float64) (err error) {
+func (a *Asciinema) Cut(inFilePath, outFilePath string, start, end float64) error {
 	transformation := &cutTransformation{
 		from: start,
 		to:   end,
 	}
-	t, err := transformer.New(transformation, fPath, outFilePath)
+	t, err := transformer.New(transformation, inFilePath, outFilePath)
 	if err != nil {
 		return err
 	}
@@ -123,9 +120,7 @@ func (a *Asciinema) Cut(fPath, outFilePath string, start, end float64) (err erro
 	return t.Transform()
 }
 
-/*
-Modifies the playing speed of an asciinema cast.
-*/
+// Speed: Updates the cast speed by a certain factor.
 type speedTransformation struct {
 	from   float64
 	to     float64
@@ -142,13 +137,13 @@ func (t *speedTransformation) Transform(c *cast.Cast) (err error) {
 	return
 }
 
-func (a *Asciinema) Speed(fPath, outFilePath string, factor, start, end float64) (err error) {
+func (a *Asciinema) Speed(inFilePath, outFilePath string, factor, start, end float64) error {
 	transformation := &speedTransformation{
 		factor: factor,
 		from:   start,
 		to:     end,
 	}
-	t, err := transformer.New(transformation, fPath, outFilePath)
+	t, err := transformer.New(transformation, inFilePath, outFilePath)
 	if err != nil {
 		return err
 	}

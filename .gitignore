@@ -43,3 +43,6 @@ build/darwin-*/*
 build/linux-*/*
 build/windows-*/*
 build/*.zip
+cmd/g/g
+cmd/g/g.exe
+cmd/g/test*

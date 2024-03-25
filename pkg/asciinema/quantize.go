@@ -6,11 +6,13 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/cirocosta/asciinema-edit/cast"
-	"github.com/cirocosta/asciinema-edit/commands/transformer"
-	"github.com/cirocosta/asciinema-edit/editor"
+	"github.com/gvcgo/asciinema-edit/cast"
+	"github.com/gvcgo/asciinema-edit/commands/transformer"
+	"github.com/gvcgo/asciinema-edit/editor"
 	"github.com/pkg/errors"
 )
+
+// Quantize: Updates the cast delays following quantization ranges.
 
 type quantizeTransformation struct {
 	ranges []editor.QuantizeRange
@@ -72,7 +74,6 @@ func ParseQuantizeRange(input string) (res editor.QuantizeRange, err error) {
 			"constraint not verified: from < to")
 		return
 	}
-
 	return
 }
 
@@ -98,29 +99,20 @@ func parseQuantizeRanges(inputs []string) (ranges []editor.QuantizeRange, err er
 	return
 }
 
-/*
-The command acts on the delays between the frames, reducing such
-timings to the lowest value defined in a given range that they
-lie in.
-*/
-
-func (a *Asciinema) Quantize(fPath, outFilePath string, ranges []string) (err error) {
+func (a *Asciinema) Quantize(inFilePath, outFilePath string, ranges []string) (err error) {
 	if len(ranges) == 0 {
 		return fmt.Errorf("a range must be specified")
 	}
-
 	transformation := &quantizeTransformation{}
 	transformation.ranges, err = parseQuantizeRanges(ranges)
 	if err != nil {
-		return err
+		return
 	}
-
 	var t *transformer.Transformer
-	t, err = transformer.New(transformation, fPath, outFilePath)
+	t, err = transformer.New(transformation, inFilePath, outFilePath)
 	if err != nil {
-		return err
+		return
 	}
 	defer t.Close()
-
 	return t.Transform()
 }
