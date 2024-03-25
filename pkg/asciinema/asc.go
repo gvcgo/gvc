@@ -77,7 +77,11 @@ func (a *Asciinema) Auth() error {
 // Records an asciinema cast.
 func (a *Asciinema) Record(fPath string) error {
 	a.cmd.Title, a.cmd.FilePath = handleFilePath(fPath)
-	return a.cmd.Rec()
+	err := a.cmd.Rec()
+	if err == nil {
+		FixCast(a.cmd.FilePath)
+	}
+	return err
 }
 
 // Plays an asciinema cast.
