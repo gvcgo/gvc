@@ -7,6 +7,7 @@ require (
 	github.com/gvcgo/asciinema v0.3.3
 	github.com/gvcgo/asciinema-edit v0.0.1
 	github.com/gvcgo/goutils v0.8.9
+	github.com/hhatto/gocloc v0.5.2
 	github.com/moond4rk/hackbrowserdata v0.4.5
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.8.0
@@ -23,6 +24,8 @@ require (
 	github.com/creack/pty v1.1.15 // indirect
 	github.com/creack/termios v0.0.0-20160714173321-88d0029e36a1 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
+	github.com/go-enry/go-enry/v2 v2.8.0 // indirect
+	github.com/go-enry/go-oniguruma v1.2.1 // indirect
 	github.com/go-logr/logr v1.3.0 // indirect
 	github.com/gocarina/gocsv v0.0.0-20231116093920-b87c2d0e983a // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
