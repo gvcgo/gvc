@@ -39,6 +39,7 @@ func (c *Cli) initiate() {
 	RegisterBrowser(c)
 	RegisterCloc(c)
 	RegisterGit(c)
+	RegisterGPT(c)
 }
 
 func (that *Cli) Run() {
