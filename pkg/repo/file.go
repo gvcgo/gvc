@@ -221,6 +221,9 @@ func UploadSSHFiles(repoType RepoType) {
 
 func DownloadSSHFiles(repoType RepoType) {
 	DownloadFromRepo(repoType, true, dotSSHRemoteFileName, getDotSSHDir())
+	if runtime.GOOS != gutils.Windows {
+		gutils.ExecuteSysCommand(false, "", "chmod", "-R", "700", getDotSSHDir())
+	}
 }
 
 /*
