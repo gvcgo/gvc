@@ -191,7 +191,7 @@ func (r *Repo) Download(repoName, remoteFileName, localFilePath string) (err err
 		if password == "" {
 			return fmt.Errorf("password not found")
 		}
-		if utils.PathIsDir(localFilePath) {
+		if strings.HasSuffix(dUrl, ".zip") {
 			// zip file
 			if archive, err1 := archiver.NewArchiver(fPath, localFilePath, false); err1 == nil {
 				archive.SetPassword(password)
@@ -203,7 +203,7 @@ func (r *Repo) Download(repoName, remoteFileName, localFilePath string) (err err
 			} else {
 				return fmt.Errorf("unarchive failed: %+v", err1)
 			}
-			extraFile := filepath.Join(localFilePath, filepath.Base(fPath))
+			extraFile := filepath.Join(localFilePath, filepath.Base(localFilePath))
 			if ok, _ := gutils.PathIsExist(extraFile); ok {
 				os.RemoveAll(extraFile)
 			}

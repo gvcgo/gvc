@@ -71,10 +71,10 @@ func getVSCodeSettingsFile() (fPath string) {
 		fPath = filepath.Join(appDataDir, "Code", "User", "settings.json")
 	case gutils.Linux:
 		homeDir, _ := os.UserHomeDir()
-		fPath = filepath.Join(homeDir, "Library", "Application Support", "Code", "User", "settings.json")
+		fPath = filepath.Join(homeDir, ".config", "Code", "User", "settings.json")
 	case gutils.Darwin:
 		homeDir, _ := os.UserHomeDir()
-		fPath = filepath.Join(homeDir, ".config", "Code", "User", "settings.json")
+		fPath = filepath.Join(homeDir, "Library", "Application Support", "Code", "User", "settings.json")
 	default:
 	}
 	return
@@ -97,7 +97,9 @@ func getVSCodeKeybindingFile() (fPath string) {
 }
 
 func getVSCodeExtensionsFile() (fPath string) {
-	return filepath.Join(conf.GetGVCWorkDir(), "vscode_extensions.txt")
+	vscodeDir := filepath.Join(conf.GetGVCWorkDir(), "vscode_data")
+	os.MkdirAll(vscodeDir, os.ModePerm)
+	return filepath.Join(vscodeDir, "vscode_extensions.txt")
 }
 
 func isCodeInstalled() bool {
@@ -144,10 +146,9 @@ func collectVSCodeExtensions() {
 	if cmdStr != "" {
 		b, err := gutils.ExecuteSysCommand(true, "", cmdStr, "--list-extensions")
 		if err == nil {
-			content := []byte{}
-			b.Read(content)
+			content := b.String()
 			if len(content) > 0 {
-				os.WriteFile(getVSCodeExtensionsFile(), content, os.ModePerm)
+				os.WriteFile(getVSCodeExtensionsFile(), []byte(content), os.ModePerm)
 			}
 		}
 	}
