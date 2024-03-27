@@ -29,7 +29,7 @@ func UploadPics(repoType RepoType, picFiles ...string) {
 			if err := repo.Upload(repoName, fName, picFile); err == nil {
 				switch repoType {
 				case RepoGithub:
-					fmt.Println(gprint.CyanStr(GiteePicUrlPattern, cfg.GetGitUserName(), repoName, fName))
+					fmt.Println(gprint.CyanStr(GithubPicUrlPattern, cfg.GetGitUserName(), repoName, fName))
 					fmt.Println(gprint.CyanStr(JsDelivrPicUrlPattern, cfg.GetGitUserName(), repoName, fName))
 				case RepoGitee:
 					fmt.Println(gprint.CyanStr(GiteePicUrlPattern, cfg.GetGiteeUserName(), repoName, fName))

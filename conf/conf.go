@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
 	"github.com/gvcgo/goutils/pkgs/gutils"
@@ -65,7 +66,7 @@ func (c *GVConfig) GetGitUserName() string {
 		fmt.Println(gprint.CyanStr(`Please set your github username:`))
 		var username string
 		fmt.Scanln(&username)
-		c.GitUserName = username
+		c.GitUserName = strings.TrimSpace(username)
 		c.Save()
 	}
 	return c.GitUserName
@@ -77,7 +78,7 @@ func (c *GVConfig) GetGitToken() string {
 		fmt.Println(gprint.CyanStr(`Please set your github token:`))
 		var token string
 		fmt.Scanln(&token)
-		c.GitToken = token
+		c.GitToken = strings.TrimSpace(token)
 		c.Save()
 	}
 	return c.GitToken
@@ -89,7 +90,7 @@ func (c *GVConfig) GetGiteeUserName() string {
 		fmt.Println(gprint.CyanStr(`Please set your gitee username:`))
 		var username string
 		fmt.Scanln(&username)
-		c.GiteeUserName = username
+		c.GiteeUserName = strings.TrimSpace(username)
 		c.Save()
 	}
 	return c.GiteeUserName
@@ -101,7 +102,7 @@ func (c *GVConfig) GetGiteeToken() string {
 		fmt.Println(gprint.CyanStr(`Please set your gitee token:`))
 		var token string
 		fmt.Scanln(&token)
-		c.GiteeToken = token
+		c.GiteeToken = strings.TrimSpace(token)
 		c.Save()
 	}
 	return c.GiteeToken
@@ -113,7 +114,7 @@ func (c *GVConfig) GetPassword() string {
 		fmt.Println(gprint.CyanStr(`Please set your password for encryting files:`))
 		var password string
 		fmt.Scanln(&password)
-		c.Password = password
+		c.Password = strings.TrimSpace(password)
 		c.Save()
 	}
 	return c.Password
@@ -125,7 +126,7 @@ func (c *GVConfig) GetPicRepo() string {
 		fmt.Println(gprint.CyanStr(`Please set your picture repo name:`))
 		var repo string
 		fmt.Scanln(&repo)
-		c.PicRepo = repo
+		c.PicRepo = strings.TrimSpace(repo)
 		c.Save()
 	}
 	return c.PicRepo
@@ -137,7 +138,7 @@ func (c *GVConfig) GetConfPath() string {
 		fmt.Println(gprint.CyanStr(`Please set your backup repo name:`))
 		var repo string
 		fmt.Scanln(&repo)
-		c.BackupRepo = repo
+		c.BackupRepo = strings.TrimSpace(repo)
 		c.Save()
 	}
 	return c.BackupRepo
@@ -149,7 +150,7 @@ func (c *GVConfig) GetLocalProxy() string {
 		fmt.Println(gprint.CyanStr(`Please set your local proxy:`))
 		var proxy string
 		fmt.Scanln(&proxy)
-		c.LocalProxy = proxy
+		c.LocalProxy = strings.TrimSpace(proxy)
 		c.Save()
 	}
 	return c.LocalProxy
@@ -161,7 +162,7 @@ func (c *GVConfig) GetReverseProxy() string {
 		fmt.Println(gprint.CyanStr(`Please set your reverse proxy:`))
 		var proxy string
 		fmt.Scanln(&proxy)
-		c.ReverseProxy = proxy
+		c.ReverseProxy = strings.TrimSpace(proxy)
 		c.Save()
 	}
 	return c.ReverseProxy

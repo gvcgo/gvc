@@ -93,8 +93,7 @@ func (r *Repo) Upload(repoName, remoteFileName, localFilePath string) (err error
 	if r.EncryptEnabled || utils.PathIsDir(localFilePath) {
 		password := r.cfg.GetPassword()
 		if password == "" {
-			gprint.PrintError("password not found")
-			os.Exit(1)
+			return fmt.Errorf("password not found")
 		}
 		if utils.PathIsDir(localFilePath) {
 			// zip with password
@@ -106,12 +105,10 @@ func (r *Repo) Upload(repoName, remoteFileName, localFilePath string) (err error
 				archive.SetPassword(password)
 				err = archive.ZipDir()
 				if err != nil {
-					gprint.PrintError("Zip dir error: %+v", err)
-					os.Exit(1)
+					return fmt.Errorf("create zip failed: %+v", err)
 				}
 			} else {
-				gprint.PrintError("Create zip error: %+v", err1)
-				os.Exit(1)
+				return fmt.Errorf("create zip failed: %+v", err1)
 			}
 			fPath = filepath.Join(conf.GetGVCWorkDir(), remoteFileName)
 		} else {
@@ -120,18 +117,15 @@ func (r *Repo) Upload(repoName, remoteFileName, localFilePath string) (err error
 			var content []byte
 			content, err = os.ReadFile(fPath)
 			if err != nil {
-				gprint.PrintError("Read file error: %+v", err)
-				os.Exit(1)
+				return fmt.Errorf("read file failed: %+v", err)
 			}
 
 			if content, err = cc.AesEncrypt([]byte(content)); err != nil {
-				gprint.PrintError("Encrypt file error: %+v", err)
-				os.Exit(1)
+				return fmt.Errorf("encrypt file failed: %+v", err)
 			} else {
 				fPath = filepath.Join(conf.GetGVCWorkDir(), remoteFileName)
 				if err = os.WriteFile(fPath, content, os.ModePerm); err != nil {
-					gprint.PrintError("Write file error: %+v", err)
-					os.Exit(1)
+					return fmt.Errorf("write file failed: %+v", err)
 				}
 			}
 		}
@@ -139,8 +133,7 @@ func (r *Repo) Upload(repoName, remoteFileName, localFilePath string) (err error
 		// no encryption
 		fPath = filepath.Join(conf.GetGVCWorkDir(), remoteFileName)
 		if err = gutils.CopyAFile(localFilePath, fPath); err != nil {
-			gprint.PrintError("copy file failed: %+v", err)
-			os.Exit(1)
+			return fmt.Errorf("copy file failed: %+v", err)
 		}
 	}
 	r.Create(repoName)
