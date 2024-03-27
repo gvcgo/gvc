@@ -132,7 +132,7 @@ func (c *GVConfig) GetPicRepo() string {
 	return c.PicRepo
 }
 
-func (c *GVConfig) GetConfPath() string {
+func (c *GVConfig) GetBackupRepo() string {
 	c.Load()
 	if c.BackupRepo == "" {
 		fmt.Println(gprint.CyanStr(`Please set your backup repo name:`))
