@@ -28,13 +28,15 @@ func GetConfPath() string {
 }
 
 type GVConfig struct {
-	GitToken     string `json:"git_token"`
-	GiteeToken   string `json:"gitee_token"`
-	Password     string `json:"password"`
-	PicRepo      string `json:"pic_repo"`
-	BackupRepo   string `json:"backup_repo"`
-	LocalProxy   string `json:"local_proxy"`
-	ReverseProxy string `json:"reverse_proxy"`
+	GitUserName   string `json:"git_username"`
+	GitToken      string `json:"git_token"`
+	GiteeUserName string `json:"gitee_username"`
+	GiteeToken    string `json:"gitee_token"`
+	Password      string `json:"password"`
+	PicRepo       string `json:"pic_repo"`
+	BackupRepo    string `json:"backup_repo"`
+	LocalProxy    string `json:"local_proxy"`
+	ReverseProxy  string `json:"reverse_proxy"`
 }
 
 func NewGVConfig() *GVConfig {
@@ -57,6 +59,18 @@ func (c *GVConfig) Save() {
 /*
 Get/Set config values.
 */
+func (c *GVConfig) GetGitUserName() string {
+	c.Load()
+	if c.GitUserName == "" {
+		fmt.Println(gprint.CyanStr(`Please set your github username:`))
+		var username string
+		fmt.Scanln(&username)
+		c.GitUserName = username
+		c.Save()
+	}
+	return c.GitUserName
+}
+
 func (c *GVConfig) GetGitToken() string {
 	c.Load()
 	if c.GitToken == "" {
@@ -67,6 +81,18 @@ func (c *GVConfig) GetGitToken() string {
 		c.Save()
 	}
 	return c.GitToken
+}
+
+func (c *GVConfig) GetGiteeUserName() string {
+	c.Load()
+	if c.GiteeUserName == "" {
+		fmt.Println(gprint.CyanStr(`Please set your gitee username:`))
+		var username string
+		fmt.Scanln(&username)
+		c.GiteeUserName = username
+		c.Save()
+	}
+	return c.GiteeUserName
 }
 
 func (c *GVConfig) GetGiteeToken() string {
