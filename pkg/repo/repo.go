@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"crypto/md5"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -45,6 +46,12 @@ func NewRepo(repoType RepoType, encryptEnabled bool) (r *Repo) {
 		cfg:            &conf.GVConfig{},
 	}
 	r.cfg.Load()
+	return
+}
+
+func (r *Repo) formatAESPassword(password string) (newPass string) {
+	has := md5.Sum([]byte(password))
+	newPass = fmt.Sprintf("%x", has)[:16]
 	return
 }
 
@@ -117,9 +124,9 @@ func (r *Repo) Upload(repoName, remoteFileName, localFilePath string) (err error
 			fPath = filepath.Join(conf.GetGVCWorkDir(), remoteFileName)
 		} else {
 			// encrypt content with password
-			cc := crypt.NewCrptWithKey([]byte(password))
+			cc := crypt.NewCrptWithKey([]byte(r.formatAESPassword(password)))
 			var content []byte
-			content, err = os.ReadFile(fPath)
+			content, err = os.ReadFile(localFilePath)
 			if err != nil {
 				return fmt.Errorf("read file failed: %+v", err)
 			}
@@ -209,7 +216,7 @@ func (r *Repo) Download(repoName, remoteFileName, localFilePath string) (err err
 			}
 		} else {
 			// encrypted file
-			cc := crypt.NewCrptWithKey([]byte(password))
+			cc := crypt.NewCrptWithKey([]byte(r.formatAESPassword(password)))
 			var content []byte
 			content, err = os.ReadFile(fPath)
 			if err != nil {

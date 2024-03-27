@@ -37,6 +37,12 @@ func handleFilePath(fpath string) (title, result string) {
 	return getName(base), fpath
 }
 
+func GetAsciinemaWorkDir() string {
+	d := filepath.Join(conf.GetGVCWorkDir(), "asciinema")
+	os.MkdirAll(d, os.ModePerm)
+	return d
+}
+
 /*
 Github: https://github.com/asciinema
 Homepage: https://asciinema.org/
@@ -46,7 +52,7 @@ type Asciinema struct {
 }
 
 func NewAsciinema() *Asciinema {
-	os.Setenv(autil.DefaultHomeEnv, conf.GetGVCWorkDir())
+	os.Setenv(autil.DefaultHomeEnv, GetAsciinemaWorkDir())
 	a := &Asciinema{
 		cmd: acmd.New(),
 	}

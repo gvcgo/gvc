@@ -10,6 +10,7 @@ import (
 	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
 	"github.com/gvcgo/goutils/pkgs/gutils"
 	"github.com/gvcgo/gvc/conf"
+	"github.com/gvcgo/gvc/pkg/asciinema"
 	"github.com/gvcgo/gvc/utils"
 )
 
@@ -230,7 +231,7 @@ const (
 )
 
 func getAsciinemaIDFile() string {
-	return filepath.Join(conf.GetGVCWorkDir(), AsciinemaIDFileName)
+	return filepath.Join(asciinema.GetAsciinemaWorkDir(), AsciinemaIDFileName)
 }
 
 func UploadAsciinemaID(repoType RepoType) {
