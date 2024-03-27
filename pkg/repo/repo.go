@@ -86,6 +86,10 @@ func (r *Repo) Create(repoName string) {
 
 // Uploads local file to remote repo.
 func (r *Repo) Upload(repoName, remoteFileName, localFilePath string) (err error) {
+	if ok, _ := gutils.PathIsExist(localFilePath); !ok {
+		gprint.PrintError("file not found: %s", localFilePath)
+		return fmt.Errorf("file not found: %s", localFilePath)
+	}
 	if remoteFileName == "" {
 		remoteFileName = filepath.Base(localFilePath)
 	}
