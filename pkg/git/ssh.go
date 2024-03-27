@@ -130,7 +130,7 @@ func ToggleProxyForSSH() {
 	ok2, _ := gutils.PathIsExist(backupConfPath)
 
 	if !ok1 && !ok2 {
-		gprint.PrintWarning("No proxy available. Please set a proxy for ssh.")
+		gprint.PrintWarning("Set a proxy for ssh...")
 		SetProxyForSSH()
 	} else if ok1 && !ok2 {
 		if err := os.Rename(confPath, backupConfPath); err == nil {
