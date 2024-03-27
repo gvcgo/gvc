@@ -40,6 +40,7 @@ func (c *Cli) initiate() {
 	RegisterCloc(c)
 	RegisterGit(c)
 	RegisterGPT(c)
+	RegisterRepo(c)
 }
 
 func (that *Cli) Run() {
