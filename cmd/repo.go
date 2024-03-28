@@ -9,7 +9,7 @@ func RegisterRepo(cli *Cli) {
 	parent := &cobra.Command{
 		Use:     "repo",
 		Aliases: []string{"r"},
-		Short:   "Use remote github/gitee repo as OSS.",
+		Short:   "Uses remote github/gitee repo as OSS.",
 		GroupID: cli.groupID,
 	}
 

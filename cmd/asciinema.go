@@ -10,7 +10,7 @@ func RegisterAsciinema(cli *Cli) {
 		Use:     "asciinema",
 		Aliases: []string{"asc", "a"},
 		GroupID: cli.groupID,
-		Short:   "Record your terminal in asciinema cast form.",
+		Short:   "Records your terminal in asciinema cast form.",
 	}
 	ascer := asciinema.NewAsciinema()
 
