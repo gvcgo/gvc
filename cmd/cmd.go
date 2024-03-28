@@ -41,6 +41,7 @@ func (c *Cli) initiate() {
 	RegisterGit(c)
 	RegisterGPT(c)
 	RegisterRepo(c)
+	RegisterGopher(c)
 }
 
 func (that *Cli) Run() {

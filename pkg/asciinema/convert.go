@@ -28,3 +28,5 @@ func (a *Asciinema) ConvertToGif(fPath, outFilePath string) (err error) {
 	)
 	return
 }
+
+// TODO: upload converted file to github/gitee repo.
