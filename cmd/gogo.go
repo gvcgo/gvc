@@ -55,7 +55,14 @@ func RegisterGopher(cli *Cli) {
 	}
 	parent.AddCommand(rename)
 
-	installBinaries := &cobra.Command{}
+	installBinaries := &cobra.Command{
+		Use:     "install-binaries",
+		Aliases: []string{"ib"},
+		Short:   "Installs some commonly used binaries.",
+		Run: func(cmd *cobra.Command, args []string) {
+			dev.InstallGolangBinaries()
+		},
+	}
 	parent.AddCommand(installBinaries)
 
 	cli.rootCmd.AddCommand(parent)

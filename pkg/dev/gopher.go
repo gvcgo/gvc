@@ -361,13 +361,97 @@ func RenameLocalModule(moduleDir, newName string) {
 
 /*
 TODO: install binaries.
-2. grpc
 
-3. goctrl gf
+ 2. grpc
+    google.golang.org/protobuf/cmd/protoc-gen-go@latest
+    google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 
-4. stress test
+ 3. goctrl gf
+    github.com/zeromicro/go-zero/tools/goctl@latest
+    github.com/gogf/gf/cmd/gf/v2@latest
 
-5. fmt lint etc.
+ 4. stress/load test
+    github.com/tsenart/vegeta@latest
+    github.com/bojand/ghz/cmd/ghz@latest
 
-6. neobox
+    github.com/linkxzhou/http_bench@latest
+    github.com/BuoyantIO/strest-grpc@latest
+
+ 5. fmt lint etc.
+    golang.org/x/tools/gopls@latest
+    github.com/cweill/gotests/gotests@v1.6.0
+    github.com/fatih/gomodifytags@v1.16.0
+    github.com/josharian/impl@v1.1.0
+    github.com/haya14busa/goplay/cmd/goplay@v1.0.0
+    github.com/go-delve/delve/cmd/dlv@latest
+    honnef.co/go/tools/cmd/staticcheck@latest
+
+ 6. neobox
+    go install -tags "with_wireguard with_utls with_gvisor with_grpc with_ech with_dhcp" github.com/gvcgo/neobox/cmd/nbox@latest
 */
+func InstallGolangBinaries() {
+	if !isGolangInstalled() {
+		gprint.PrintError("Cannot find a go compiler.")
+		return
+	}
+	itemList := selector.NewItemList()
+	itemList.Add("for vscode(dlv, gopls, etc.)", []string{
+		"golang.org/x/tools/gopls@latest",
+		"github.com/go-delve/delve/cmd/dlv@latest",
+		"honnef.co/go/tools/cmd/staticcheck@latest",
+		"github.com/cweill/gotests/gotests@latest",
+		"github.com/fatih/gomodifytags@latest",
+		"github.com/josharian/impl@latest",
+		"github.com/haya14busa/goplay/cmd/goplay@latest",
+	})
+	itemList.Add("for grpc", []string{
+		"google.golang.org/protobuf/cmd/protoc-gen-go@latest",
+		"google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest",
+	})
+	itemList.Add("neobox", []string{
+		"github.com/gvcgo/neobox/cmd/nbox@latest",
+	})
+	itemList.Add("for goframe", []string{
+		"github.com/gogf/gf/cmd/gf/v2@latest",
+	})
+	itemList.Add("for go-zero", []string{
+		"github.com/zeromicro/go-zero/tools/goctl@latest",
+	})
+	itemList.Add("http stress/load test", []string{
+		"github.com/linkxzhou/http_bench@latest",
+		"github.com/tsenart/vegeta@latest",
+	})
+	itemList.Add("grpc stress/load test", []string{
+		"github.com/BuoyantIO/strest-grpc@latest",
+		"github.com/bojand/ghz/cmd/ghz@latest",
+	})
+
+	sel := selector.NewSelector(
+		itemList,
+		selector.WithTitle("Choose binaries to install:"),
+		selector.WidthEnableMulti(true),
+		selector.WithEnbleInfinite(true),
+		selector.WithWidth(40),
+		selector.WithHeight(20),
+	)
+	sel.Run()
+	list := sel.Value()
+
+	ll := []string{}
+	for _, item := range list {
+		ll = append(ll, item.([]string)...)
+	}
+
+	for _, item := range ll {
+		if strings.Contains(item, "neobox") {
+			// go install -tags "with_wireguard with_utls with_gvisor with_grpc with_ech with_dhcp" github.com/gvcgo/neobox/cmd/nbox@latest
+			gutils.ExecuteSysCommand(false, "",
+				"go", "install", "-tags",
+				"with_wireguard with_utls with_gvisor with_grpc with_ech with_dhcp",
+				item,
+			)
+		} else {
+			gutils.ExecuteSysCommand(false, "", "go", "install", item)
+		}
+	}
+}
