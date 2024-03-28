@@ -1,7 +1,11 @@
 package cmd
 
 import (
+	"fmt"
+
+	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
 	"github.com/gvcgo/gvc/pkg/asciinema"
+	"github.com/gvcgo/gvc/pkg/repo"
 	"github.com/spf13/cobra"
 )
 
@@ -79,7 +83,22 @@ func RegisterAsciinema(cli *Cli) {
 				cmd.Help()
 				return
 			}
-			ascer.ConvertToGif(args[0], args[1])
+			err := ascer.ConvertToGif(args[0], args[1])
+			if err == nil {
+				var repoType string
+				fmt.Println(gprint.CyanStr("Upload gif to remote repo?"))
+				fmt.Println(gprint.CyanStr("1) github."))
+				fmt.Println(gprint.CyanStr("2) gitee."))
+				fmt.Println(gprint.CyanStr("3) abort."))
+				fmt.Scanln(&repoType)
+				if repoType == "1" {
+					repo.UploadPics(repo.RepoGithub, args[1])
+				} else if repoType == "2" {
+					repo.UploadPics(repo.RepoGitee, args[1])
+				} else {
+					return
+				}
+			}
 		},
 	}
 	parent.AddCommand(convert)
