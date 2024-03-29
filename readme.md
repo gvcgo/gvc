@@ -2,6 +2,8 @@
 
 GVC是一个实用工具集合。它集成了一些好用的命令行工具, 支持MacOS/Windows/Linux。
 
+需要编程语言/工具版本管理的，请使用[version-manager](https://github.com/gvcgo/version-manager)。
+
 ### 子命令简介
 
 ```bash
@@ -16,7 +18,7 @@ gpt         ChatGPT or FlyTek spark bot.
 repo        Uses remote github/gitee repo as OSS.
 ```
 
-**asciinema**: 终端session录制功能，支持编辑和上传，也支持转换为gif(通过version-manager安装agg后支持)后上传到github/gitee，对于写文档非常有用。
+**asciinema**: 终端session录制功能，支持编辑和上传，也支持转换为gif(通过[version-manager](https://github.com/gvcgo/version-manager)安装agg后支持)后上传到github/gitee，对于写文档非常有用。
 
 **browser**: 浏览器数据导出，数据一般存放在$HOME/.gvc/browser_data/目录下。
 
