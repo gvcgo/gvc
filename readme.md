@@ -37,3 +37,7 @@ repo        Uses remote github/gitee repo as OSS.
 ```bash
 go install github.com/gvcgo/gvc/cmd/g@latest
 ```
+
+### 说明
+
+- gvc不再集成任何和梯子有关的功能，需要梯子的同学请使用其他资源。
