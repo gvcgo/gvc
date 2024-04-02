@@ -4,7 +4,7 @@ go 1.22.1
 
 require (
 	github.com/gogf/gf/v2 v2.6.1
-	github.com/gvcgo/asciinema v0.3.3
+	github.com/gvcgo/asciinema v0.3.8
 	github.com/gvcgo/asciinema-edit v0.0.1
 	github.com/gvcgo/gogpt v0.2.7
 	github.com/gvcgo/goutils v0.8.9
@@ -61,7 +61,6 @@ require (
 	github.com/klauspost/compress v1.16.5 // indirect
 	github.com/klauspost/pgzip v1.2.5 // indirect
 	github.com/knadh/koanf v1.5.0 // indirect
-	github.com/kr/pty v1.1.8 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect

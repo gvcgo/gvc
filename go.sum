@@ -90,7 +90,6 @@ github.com/containerd/console v1.0.4-0.20230313162750-1ae8d489ac81/go.mod h1:Yyn
 github.com/coreos/go-semver v0.3.0/go.mod h1:nnelYz7RCh+5ahJtPPxZlU+153eP4D4r3EedlOD2RNk=
 github.com/coreos/go-systemd/v22 v22.3.2/go.mod h1:Y58oyj3AT4RCenI/lSvhwexgC+NSVTIJ3seZv2GcEnc=
 github.com/cpuguy83/go-md2man/v2 v2.0.3/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
-github.com/creack/pty v1.1.7/go.mod h1:lj5s0c3V2DBrqTV7llrYr5NG6My20zk30Fl46Y7DoTY=
 github.com/creack/pty v1.1.15 h1:cKRCLMj3Ddm54bKSpemfQ8AtYFBhAI2MPmdys22fBdc=
 github.com/creack/pty v1.1.15/go.mod h1:MOBLtS5ELjhRRrroQr9kyvTxUAFNvYEK993ew/Vr4O4=
 github.com/creack/termios v0.0.0-20160714173321-88d0029e36a1 h1:3ZFknr3UZk2E18CuCeA0NMRk226zM/slMEFOmJTtJjI=
@@ -218,8 +217,8 @@ github.com/grokify/html-strip-tags-go v0.0.1 h1:0fThFwLbW7P/kOiTBs03FsJSV9RM2M/Q
 github.com/grokify/html-strip-tags-go v0.0.1/go.mod h1:2Su6romC5/1VXOQMaWL2yb618ARB8iVo6/DR99A6d78=
 github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0/go.mod h1:8NvIoxWQoOIhqOTXgfV/d3M/q6VIi02HzZEHgUlZvzk=
 github.com/grpc-ecosystem/grpc-gateway v1.16.0/go.mod h1:BDjrQk3hbvj6Nolgz8mAMFbcEtjT1g+wF4CSlocrBnw=
-github.com/gvcgo/asciinema v0.3.3 h1:b33g3GXPZOVC3pAbMDPtGcmLkXuHQw4U8XLYmdrTv8Y=
-github.com/gvcgo/asciinema v0.3.3/go.mod h1:1oVoCy/nY2Pe2VoCV5eZklCLGVvVIM1qs8GozL90NI4=
+github.com/gvcgo/asciinema v0.3.8 h1:HA0Odg8+D2N1v9IE2dnag7QjqzOaaEdIU0aGE/o/s7E=
+github.com/gvcgo/asciinema v0.3.8/go.mod h1:+3oi0sw+Q7f38IHkvtcBEfvs+o3F5UahROZ6qWEUr08=
 github.com/gvcgo/asciinema-edit v0.0.1 h1:0lWIev7Ui5JuDUDmfdETHy8acL5ol5VeGlErOPs2wiA=
 github.com/gvcgo/asciinema-edit v0.0.1/go.mod h1:x77dWwoCujUVYBQ0LrCMbXwLYRJ0+EUOBd0GuDsZlZM=
 github.com/gvcgo/gogpt v0.2.7 h1:C6S6xgm9JAQQxQuYosghfm008SX52ZKbHJIQvNaihXg=

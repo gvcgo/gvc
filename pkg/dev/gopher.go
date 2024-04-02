@@ -425,6 +425,9 @@ func InstallGolangBinaries() {
 		"github.com/BuoyantIO/strest-grpc@latest",
 		"github.com/bojand/ghz/cmd/ghz@latest",
 	})
+	itemList.Add("wails", []string{
+		"github.com/wailsapp/wails/v2/cmd/wails@latest",
+	})
 
 	sel := selector.NewSelector(
 		itemList,
